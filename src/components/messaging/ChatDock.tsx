@@ -16,8 +16,8 @@ import {
   Check,
   CheckCheck
 } from 'lucide-react';
-import { useChatDock } from '../contexts/ChatDockContext';
-import { useAuth } from '../contexts/AuthContext';
+import { useChatDock } from '@/context/ChatDockContext';
+import { useAuth } from '@/context/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
 
 const ChatDock: React.FC = () => {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Mail, Lock, User, Eye, EyeOff, Upload, Camera, MapPin, Calendar, Users, Building, UserCheck, Sparkles, AlertCircle, CheckCircle } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -161,7 +161,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
 
   const updateLanguage = (index: number, field: 'language' | 'level', value: string | number) => {
     const updatedLanguages = [...languages];
-    updatedLanguages[index][field] = value;
+    (updatedLanguages[index] as any)[field] = value;
     setLanguages(updatedLanguages);
   };
 
