@@ -1,16 +1,16 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { User, Session } from '@supabase/supabase-js';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { supabase } from '../lib/supabase';
+import type { User, Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  isAdmin: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, metadata?: any) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, userData?: any) => Promise<any>;
+  signIn: (email: string, password: string) => Promise<any>;
   signOut: () => Promise<void>;
-  resendConfirmation: (email: string) => Promise<{ error: any }>;
+  resendConfirmation: (email: string) => Promise<any>;
+  isAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,116 +23,121 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        // Check if user is admin based on metadata or profile
-        if (session?.user) {
-          setTimeout(() => {
-            checkAdminStatus(session.user.id);
-          }, 0);
-        } else {
-          setIsAdmin(false);
-        }
-        
-        setLoading(false);
-      }
-    );
-
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        setTimeout(() => {
-          checkAdminStatus(session.user.id);
-        }, 0);
-      } else {
-        setIsAdmin(false);
-      }
-      
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
       setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const checkAdminStatus = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('account_type')
-        .eq('id', userId)
-        .single();
-      
-      if (!error && data) {
-        setIsAdmin(data.account_type === 'admin');
-      }
-    } catch (error) {
-      console.error('Error checking admin status:', error);
-      setIsAdmin(false);
-    }
-  };
-
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
-  };
-
-  const signUp = async (email: string, password: string, metadata?: any) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signUp({
+  const signUp = async (email: string, password: string, userData?: any) => {
+    // First, sign up the user with auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: redirectUrl,
-        data: metadata
-      }
+        data: userData,
+      },
     });
-    return { error };
+    
+    if (authError) {
+      return { data: authData, error: authError };
+    }
+    
+    // If signup was successful, ensure a user profile exists
+    if (authData.user) {
+      try {
+        // Create or update user profile using upsert
+        const { error: profileError } = await supabase
+          .from('user_profiles')
+          .upsert({
+            id: authData.user.id,
+            full_name: userData?.full_name || null,
+            job_title: userData?.job_title || null,
+            company: userData?.company || null,
+            bio: userData?.bio || null,
+            location: userData?.location || null,
+            website: userData?.website || null,
+            github: userData?.github || null,
+            linkedin: userData?.linkedin || null,
+            twitter: userData?.twitter || null,
+            profile_photo: userData?.profile_photo || null,
+            interests: userData?.interests || [],
+            account_type: userData?.account_type || 'creator',
+            birth_date: userData?.birth_date || null,
+            age: userData?.age || null,
+            gender: userData?.gender || null,
+            country: userData?.country || null,
+            city: userData?.city || null,
+            languages: userData?.languages || [],
+            newsletter_subscription: userData?.newsletter_subscription || false,
+            contact_visible: userData?.contact_visible || false,
+            phone: userData?.phone || null
+          });
+        
+        if (profileError) {
+          console.error('Error creating user profile:', profileError);
+        }
+      } catch (profileError) {
+        console.error('Error checking/creating user profile:', profileError);
+      }
+    }
+    
+    return { data: authData, error: authError };
+  };
+
+  const signIn = async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    return { data, error };
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
   };
 
   const resendConfirmation = async (email: string) => {
-    const { error } = await supabase.auth.resend({
+    const { data, error } = await supabase.auth.resend({
       type: 'signup',
-      email,
+      email: email,
     });
-    return { error };
+    return { data, error };
   };
+
+  // Check if user is admin - updated with your email
+  const isAdmin = user?.email === 'moataz.elnady@gmail.com' || user?.user_metadata?.account_type === 'admin';
 
   const value = {
     user,
     session,
     loading,
-    isAdmin,
-    signIn,
     signUp,
+    signIn,
     signOut,
     resendConfirmation,
+    isAdmin,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
