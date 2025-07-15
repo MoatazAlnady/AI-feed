@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { MainNavigation } from "./MainNavigation";
-import { Header } from "./Header";
+import Header from "./Header";
 
 export const AppLayout = () => {
   return (
