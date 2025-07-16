@@ -62,7 +62,7 @@ const NewsletterPopup: React.FC<NewsletterPopupProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full relative overflow-hidden animate-slide-up">
+      <div className="bg-white dark:bg-[#091527] rounded-2xl shadow-xl max-w-md w-full relative overflow-hidden animate-slide-up border border-gray-200 dark:border-gray-700">
         {/* Close button */}
         <button 
           onClick={onClose}
@@ -112,7 +112,7 @@ const NewsletterPopup: React.FC<NewsletterPopupProps> = ({ onClose }) => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Your email address"
-                    className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-[#091527] text-gray-900 dark:text-white"
                     required
                   />
                   {error && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>}

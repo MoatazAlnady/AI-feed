@@ -280,7 +280,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-overlay">
-      <div className={`bg-background dark:bg-card rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-content border border-border ${isOpen ? 'show' : ''}`}>
+      <div className={`bg-white dark:bg-[#091527] rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-content border border-gray-200 dark:border-gray-700 ${isOpen ? 'show' : ''}`}>
         <div className="p-6">
           {/* Header */}
           <header className="flex w-full items-center justify-center py-6 relative">
