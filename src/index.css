@@ -192,17 +192,17 @@ button {
 }
 
 .dark .text-primary-600 {
-  @apply text-primary-400;
+  @apply text-primary;
 }
 
 .dark .text-secondary-600 {
-  @apply text-secondary-400;
+  @apply text-secondary;
 }
 
 .dark .border-primary-200 {
-  @apply border-primary-800;
+  @apply border-primary;
 }
 
 .dark .border-secondary-200 {
-  @apply border-secondary-800;
+  @apply border-secondary;
 }
