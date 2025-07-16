@@ -69,7 +69,7 @@ const AIChatBot = ({ initialMessage, autoOpen }: AIChatBotProps) => {
           className="w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white shadow-lg transition-all duration-300 hover:scale-105"
           size="icon"
         >
-          {isOpen ? <X className="h-8 w-8" /> : <Bot className="h-10 w-10" />}
+          {isOpen ? <X className="h-6 w-6" /> : <Bot className="h-8 w-8" />}
         </Button>
       </div>
 
