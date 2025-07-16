@@ -59,7 +59,7 @@ const NewsFeed: React.FC = () => {
     // Only show posts if there are any - remove dummy data
     // In real app, this would fetch posts from API based on user's network and interests
     setPosts([]);
-  }, []); // Remove userInterests dependency to prevent infinite loop
+  }, [userInterests]);
 
   const handleHashtagClick = (hashtag: string) => {
     // Navigate to search with hashtag

@@ -66,7 +66,7 @@ const Tools: React.FC = () => {
 
   if (loading) {
     return (
-        <div className="py-8 bg-background min-h-screen">
+      <div className="py-8 bg-gray-50 min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
@@ -78,16 +78,16 @@ const Tools: React.FC = () => {
 
   return (
     <>
-      <div className="py-8 bg-background min-h-screen">
+      <div className="py-8 bg-gray-50 min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
+                <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
                   AI Tools Directory
                 </h1>
-                <p className="text-xl text-muted-foreground">
+                <p className="text-xl text-gray-600">
                   Discover and explore AI tools across various categories
                 </p>
               </div>
@@ -110,7 +110,7 @@ const Tools: React.FC = () => {
           </div>
 
           {/* Search and Filters */}
-          <div className="bg-card rounded-2xl shadow-sm p-6 mb-8">
+          <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Search */}
               <div className="flex-1 relative">
@@ -120,7 +120,7 @@ const Tools: React.FC = () => {
                   placeholder="Search AI tools..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border border-input bg-background text-foreground rounded-xl focus:ring-2 focus:ring-muted-foreground focus:border-transparent"
+                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
 
@@ -129,7 +129,7 @@ const Tools: React.FC = () => {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="appearance-none bg-background border border-input text-foreground rounded-xl px-4 py-3 pr-8 focus:ring-2 focus:ring-muted-foreground focus:border-transparent"
+                  className="appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3 pr-8 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
                   {categories.map((category) => (
                     <option key={category} value={category.toLowerCase().replace(' ', '-')}>
@@ -159,7 +159,7 @@ const Tools: React.FC = () => {
 
           {/* Results */}
           <div className="mb-6">
-            <p className="text-muted-foreground">
+            <p className="text-gray-600">
               Showing {filteredTools.length} tools
               {searchTerm && ` for "${searchTerm}"`}
               {selectedCategory !== 'all-categories' && ` in ${selectedCategory.replace('-', ' ')}`}
@@ -170,10 +170,10 @@ const Tools: React.FC = () => {
           {tools.length === 0 ? (
             <div className="text-center py-20">
               <Zap className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 No AI Tools Yet
               </h3>
-              <p className="text-muted-foreground mb-6">
+              <p className="text-gray-600 mb-6">
                 Be the first to submit an AI tool to our directory! Tools will appear here once they are submitted and approved.
               </p>
               <Link
@@ -186,10 +186,10 @@ const Tools: React.FC = () => {
           ) : filteredTools.length === 0 ? (
             <div className="text-center py-20">
               <Filter className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 No tools found
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-gray-600">
                 Try adjusting your search terms or filters to find what you're looking for.
               </p>
             </div>
@@ -201,7 +201,7 @@ const Tools: React.FC = () => {
                   {filteredTools.map((tool) => (
                     <div
                       key={tool.id}
-                      className="bg-card rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group"
+                      className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group"
                     >
                       <div className="relative">
                         <img
@@ -221,7 +221,7 @@ const Tools: React.FC = () => {
 
                       <div className="p-6">
                         <div className="flex items-start justify-between mb-3">
-                          <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                          <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors">
                             {tool.name}
                           </h3>
                           <div className="flex items-center space-x-1 text-sm text-yellow-500">
@@ -230,7 +230,7 @@ const Tools: React.FC = () => {
                           </div>
                         </div>
 
-                        <p className="text-muted-foreground mb-4 line-clamp-2">
+                        <p className="text-gray-600 mb-4 line-clamp-2">
                           {tool.description}
                         </p>
 

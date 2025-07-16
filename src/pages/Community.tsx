@@ -56,36 +56,36 @@ const Community: React.FC = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-card rounded-lg border border-border p-6">
-              <Calendar className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-3 text-foreground">Events</h3>
+              <MessageSquare className="h-12 w-12 text-primary mb-4" />
+              <h3 className="text-xl font-semibold mb-3 text-foreground">Discussion Forums</h3>
               <p className="text-muted-foreground mb-4">
-                Join virtual and in-person events, workshops, and conferences.
+                Join topic-specific discussions about AI trends, tools, and techniques.
               </p>
-              <a href="/community/features" className="text-primary hover:underline">
-                Browse Events →
-              </a>
+              <button className="text-primary hover:underline">
+                Browse Forums →
+              </button>
             </div>
             
             <div className="bg-card rounded-lg border border-border p-6">
               <Users className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-3 text-foreground">Groups</h3>
+              <h3 className="text-xl font-semibold mb-3 text-foreground">Networking</h3>
               <p className="text-muted-foreground mb-4">
-                Create and join specialized groups for focused discussions and networking.
+                Connect with fellow creators, share experiences, and find collaborators.
               </p>
-              <a href="/community/features" className="text-primary hover:underline">
-                Explore Groups →
-              </a>
+              <button className="text-primary hover:underline">
+                Find Members →
+              </button>
             </div>
             
             <div className="bg-card rounded-lg border border-border p-6">
-              <MessageSquare className="h-12 w-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-3 text-foreground">Discussions</h3>
+              <Lightbulb className="h-12 w-12 text-primary mb-4" />
+              <h3 className="text-xl font-semibold mb-3 text-foreground">Knowledge Sharing</h3>
               <p className="text-muted-foreground mb-4">
-                Participate in group discussions and share knowledge with the community.
+                Share tutorials, tips, and best practices with the community.
               </p>
-              <a href="/community/features" className="text-primary hover:underline">
-                Join Discussions →
-              </a>
+              <button className="text-primary hover:underline">
+                Share Knowledge →
+              </button>
             </div>
           </div>
         </div>

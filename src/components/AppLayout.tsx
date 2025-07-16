@@ -2,11 +2,10 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import ChatDock from '@/components/ChatDock';
 
 const AppLayout: React.FC = () => {
   return (
-    <div className="min-h-screen text-gray-900 dark:text-gray-100 bg-gradient-primary-global">
+    <div className="min-h-screen text-gray-900 dark:text-gray-100 authenticated-layout">
       {/* Light mode orbs */}
       <div className="orb light-only h-[240px] w-[240px] top-10 left-10" style={{ backgroundColor: 'hsl(var(--c-amber))' }}></div>
       <div className="orb light-only h-[300px] w-[300px] top-1/2 -left-24" style={{ backgroundColor: 'hsl(var(--c-cyan))' }}></div>
@@ -21,7 +20,6 @@ const AppLayout: React.FC = () => {
         <Outlet />
       </main>
       <Footer />
-      <ChatDock />
     </div>
   );
 };
