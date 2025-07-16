@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, X, Maximize2, Minimize2, ChevronDown, ChevronUp } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 interface Message {
   id: string;

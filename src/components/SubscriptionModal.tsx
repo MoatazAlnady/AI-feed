@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Check, Crown, Star, Zap, Users, Briefcase, BarChart3, MessageCircle, Shield } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 interface SubscriptionModalProps {
   isOpen: boolean;
@@ -21,6 +21,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, 
       color: 'from-blue-500 to-blue-600',
       monthly: 29,
       yearly: 290,
+      popular: false as const,
       features: [
         'Search up to 50 profiles per month',
         'Basic filters (location, experience)',
@@ -41,7 +42,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, 
       color: 'from-purple-500 to-purple-600',
       monthly: 79,
       yearly: 790,
-      popular: true,
+      popular: true as const,
       features: [
         'Search up to 200 profiles per month',
         'Advanced filters (skills, languages, age)',
@@ -64,6 +65,7 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, 
       color: 'from-yellow-500 to-orange-500',
       monthly: 199,
       yearly: 1990,
+      popular: false as const,
       features: [
         'Unlimited profile searches',
         'All advanced filters',

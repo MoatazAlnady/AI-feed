@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Image, Video, Link as LinkIcon, Send, User, Plus, Hash } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 interface CreatePostModalProps {
   isOpen: boolean;

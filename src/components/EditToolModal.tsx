@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Link, Tag, DollarSign, Plus, Minus, Send, Check } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 
 interface EditToolModalProps {
@@ -75,7 +75,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
       const { data, error } = await supabase
         .from('tools')
         .select('*')
-        .eq('id', toolId)
+          .eq('id', String(toolId))
         .single();
 
       if (error) throw error;
@@ -176,7 +176,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
         const { error } = await supabase
           .from('tools')
           .update(updateData)
-          .eq('id', toolId);
+          .eq('id', String(toolId));
 
         if (error) throw error;
         setSuccess('Tool updated successfully!');
@@ -189,7 +189,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
       } else {
         // Regular users create an edit request
         const { error } = await supabase.rpc('create_tool_edit_request', {
-          tool_id_param: toolId,
+          tool_id_param: String(toolId),
           name_param: formData.name,
           description_param: formData.description,
           category_id_param: formData.category_id,

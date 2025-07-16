@@ -276,11 +276,10 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
                   <div className="flex items-center space-x-2 mb-1">
                     <h4 className="font-semibold text-gray-900">{comment.userName}</h4>
                     <VerificationBadge 
-                      user={{
-                        verified: comment.userVerified,
-                        ai_nexus_top_voice: comment.userTopVoice,
-                        account_type: null
-                      }} 
+                      type={comment.userVerified && comment.userTopVoice ? 'both' : 
+                            comment.userVerified ? 'verified' : 
+                            comment.userTopVoice ? 'top-voice' : 'verified'}
+                      size="sm"
                     />
                   </div>
                   
@@ -367,11 +366,8 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
                             <div className="flex items-center space-x-2 mb-1">
                               <h5 className="font-medium text-gray-900 text-sm">{reply.userName}</h5>
                               <VerificationBadge 
-                                user={{
-                                  verified: reply.userVerified,
-                                  ai_nexus_top_voice: false,
-                                  account_type: null
-                                }} 
+                                type={reply.userVerified ? 'verified' : 'verified'}
+                                size="sm"
                               />
                               <span className="text-xs text-gray-500">{reply.timestamp}</span>
                             </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, CheckCircle, Settings } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 const Newsletter: React.FC = () => {
   const { user } = useAuth();

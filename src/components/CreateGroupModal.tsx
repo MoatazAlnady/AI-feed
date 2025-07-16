@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Users, Upload, Send } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 interface CreateGroupModalProps {
   isOpen: boolean;

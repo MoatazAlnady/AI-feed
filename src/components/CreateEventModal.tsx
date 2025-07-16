@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Calendar, MapPin, Clock, Send } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 interface CreateEventModalProps {
   isOpen: boolean;

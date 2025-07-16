@@ -1,12 +1,12 @@
 import React from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 // Pages
 import Home from '../pages/Home';
 import Tools from '../pages/Tools';
-import ToolDetail from '../pages/ToolDetail';
+import ToolDetails from '../pages/ToolDetails';
 import Categories from '../pages/Categories';
 import Community from '../pages/Community';
 import Newsfeed from '../pages/NewsFeed';
@@ -14,9 +14,9 @@ import Blog from '../pages/Blog';
 import About from '../pages/About';
 import SubmitTool from '../pages/SubmitTool';
 import SubmitArticle from '../pages/SubmitArticle';
-import AdminDashboard from '../pages/AdminDashboard';
+import Admin from '../pages/Admin';
 import AdminToolRequests from '../pages/AdminToolRequests';
-import EmployerDashboard from '../pages/EmployerDashboard';
+import Dashboard from '../pages/Dashboard';
 import ProjectsPage from '../pages/ProjectsPage';
 import Profile from '../pages/Profile';
 import Messages from '../pages/Messages';
@@ -46,7 +46,7 @@ const AnimatedRoutes: React.FC = () => {
             {/* Redirect to Newsfeed if user is logged in and trying to access home */}
             <Route path="/" element={user ? <Navigate to="/newsfeed" replace /> : <Home />} />
             <Route path="/tools" element={<Tools />} />
-            <Route path="/tools/:id" element={<ToolDetail />} />
+            <Route path="/tools/:id" element={<ToolDetails />} />
             <Route path="/tools/create" element={
               <ProtectedRoute>
                 <SubmitTool />
@@ -111,17 +111,17 @@ const AnimatedRoutes: React.FC = () => {
             {/* Employer Dashboard - Protected Route for Employers */}
             <Route path="/employer" element={
               <ProtectedRoute>
-                <EmployerDashboard />
+                <Dashboard />
               </ProtectedRoute>
             } />
             <Route path="/employer/talents" element={
               <ProtectedRoute>
-                <EmployerDashboard section="talents" />
+                <Dashboard />
               </ProtectedRoute>
             } />
             <Route path="/employer/jobs" element={
               <ProtectedRoute>
-                <EmployerDashboard section="jobs" />
+                <Dashboard />
               </ProtectedRoute>
             } />
             <Route path="/employer/projects" element={
@@ -131,7 +131,7 @@ const AnimatedRoutes: React.FC = () => {
             } />
             <Route path="/employer/analytics" element={
               <ProtectedRoute>
-                <EmployerDashboard section="analytics" />
+                <Analytics />
               </ProtectedRoute>
             } />
             <Route path="/employer/profile" element={
@@ -158,7 +158,7 @@ const AnimatedRoutes: React.FC = () => {
             {/* Admin Only Routes */}
             <Route path="/admin" element={
               <ProtectedRoute requireAdmin={true}>
-                <AdminDashboard />
+                <Admin />
               </ProtectedRoute>
             } />
             <Route path="/admin/user/:userId" element={

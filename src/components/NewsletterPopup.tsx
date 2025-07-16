@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Mail, CheckCircle } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '../integrations/supabase/client';
 
 interface NewsletterPopupProps {
   onClose: () => void;

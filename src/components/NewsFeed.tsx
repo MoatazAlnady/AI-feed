@@ -11,7 +11,7 @@ import {
   Send,
   User
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { makeHashtagsClickable } from '../utils/hashtagUtils';
 
 interface Post {
@@ -188,7 +188,7 @@ const NewsFeed: React.FC = () => {
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{post.author.title} • {post.timestamp}</p>
               
               <div className="text-gray-800 dark:text-gray-200 mb-4">
-                {makeHashtagsClickable(post.content, handleHashtagClick)}
+                {post.content}
               </div>
               
               {post.image && (
@@ -290,7 +290,7 @@ const NewsFeed: React.FC = () => {
                               </span>
                             </div>
                             <div className="text-sm text-gray-800 dark:text-gray-200">
-                              {makeHashtagsClickable(comment.content, handleHashtagClick)}
+                              {comment.content}
                             </div>
                           </div>
                           <div className="flex items-center space-x-2 mt-1 ml-3">
