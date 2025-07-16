@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Search, Filter, Grid, List, GitCompare, Star, ExternalLink, Bookmark, Zap } from 'lucide-react';
 import ToolComparisonModal from '../components/ToolComparisonModal';
 
@@ -168,7 +169,7 @@ const Tools: React.FC = () => {
                 Be the first to submit an AI tool to our directory! Tools will appear here once they are submitted and approved.
               </p>
               <a
-                href="/submit-tool"
+                href="/auth"
                 className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-semibold rounded-xl hover:shadow-lg transition-shadow"
               >
                 Submit Your Tool
@@ -246,12 +247,12 @@ const Tools: React.FC = () => {
                         </div>
 
                         <div className="flex space-x-2">
-                          <a
-                            href={`/tools/${tool.id}`}
+                          <Link
+                            to={`/tools/${tool.id}`}
                             className="flex-1 bg-primary-500 text-white text-center py-2 px-4 rounded-lg font-medium hover:bg-primary-600 transition-colors"
                           >
                             Learn More
-                          </a>
+                          </Link>
                           <button 
                             onClick={() => setShowComparison(true)}
                             className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
@@ -319,12 +320,12 @@ const Tools: React.FC = () => {
                               {tool.pricing}
                             </div>
                             <div className="flex space-x-2">
-                              <a
-                                href={`/tools/${tool.id}`}
+                              <Link
+                                to={`/tools/${tool.id}`}
                                 className="bg-primary-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-600 transition-colors"
                               >
                                 Learn More
-                              </a>
+                              </Link>
                               <button 
                                 onClick={() => setShowComparison(true)}
                                 className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"

@@ -69,7 +69,7 @@ const Blog: React.FC = () => {
               Be the first to share your AI insights! Articles will appear here once they are submitted and approved.
             </p>
             <a
-              href="/submit-article"
+              href="/auth"
               className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-semibold rounded-xl hover:shadow-lg transition-shadow"
             >
               <Edit className="h-5 w-5 mr-2" />

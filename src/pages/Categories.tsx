@@ -1,14 +1,19 @@
 import React from 'react';
 import { 
-  MessageSquare, 
+  Brain, 
   Image, 
   Video, 
   Code, 
-  BarChart, 
-  Mic, 
+  BarChart3, 
+  Music, 
   FileText, 
-  Zap 
+  Zap,
+  MessageSquare,
+  Gamepad2,
+  Camera,
+  Globe
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Categories: React.FC = () => {
   const categories = [
@@ -16,104 +21,140 @@ const Categories: React.FC = () => {
       name: 'Conversational AI',
       description: 'Chatbots, virtual assistants, and dialogue systems',
       icon: MessageSquare,
-      count: 145,
-      color: 'from-blue-500 to-blue-600',
+      color: 'bg-blue-500',
+      count: 45,
+      tools: ['ChatGPT', 'Claude', 'Bard']
     },
     {
       name: 'Image Generation',
       description: 'AI-powered image creation and editing tools',
       icon: Image,
-      count: 89,
-      color: 'from-purple-500 to-purple-600',
+      color: 'bg-purple-500',
+      count: 38,
+      tools: ['DALL-E', 'Midjourney', 'Stable Diffusion']
     },
     {
       name: 'Video AI',
       description: 'Video generation, editing, and enhancement',
       icon: Video,
-      count: 67,
-      color: 'from-red-500 to-red-600',
+      color: 'bg-red-500',
+      count: 22,
+      tools: ['Runway', 'Synthesia', 'Luma AI']
     },
     {
       name: 'Code Assistant',
       description: 'Programming help, code generation, and debugging',
       icon: Code,
-      count: 78,
-      color: 'from-green-500 to-green-600',
+      color: 'bg-green-500',
+      count: 31,
+      tools: ['GitHub Copilot', 'Cursor', 'Replit']
     },
     {
       name: 'Data Analysis',
-      description: 'Analytics, visualization, and insights',
-      icon: BarChart,
-      count: 56,
-      color: 'from-yellow-500 to-orange-500',
+      description: 'Analytics, insights, and data visualization',
+      icon: BarChart3,
+      color: 'bg-yellow-500',
+      count: 27,
+      tools: ['Tableau', 'DataRobot', 'H2O.ai']
     },
     {
       name: 'Audio AI',
-      description: 'Voice synthesis, music, and audio processing',
-      icon: Mic,
-      count: 43,
-      color: 'from-indigo-500 to-indigo-600',
-    },
-    {
-      name: 'Writing & Content',
-      description: 'Content creation, copywriting, and editing',
-      icon: FileText,
-      count: 92,
-      color: 'from-teal-500 to-teal-600',
-    },
-    {
-      name: 'Productivity',
-      description: 'Workflow automation and task management',
-      icon: Zap,
-      count: 134,
-      color: 'from-pink-500 to-pink-600',
+      description: 'Voice synthesis, music generation, and audio editing',
+      icon: Music,
+      color: 'bg-pink-500',
+      count: 19,
+      tools: ['ElevenLabs', 'Mubert', 'AIVA']
     }
   ];
 
   return (
-    <div className="py-8 bg-gray-50 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <section className="py-16 px-6">
+        <div className="container max-w-6xl mx-auto text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
             AI Tool Categories
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Explore AI tools organized by category to find exactly what you need for your projects.
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Explore our curated collection of AI tools organized by category. 
+            Find the perfect tool for your specific needs.
           </p>
         </div>
+      </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {categories.map((category) => (
-            <div
-              key={category.name}
-              className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer"
-            >
-              <div className="p-8">
-                <div className={`inline-flex p-4 bg-gradient-to-r ${category.color} rounded-2xl mb-6 group-hover:shadow-lg transition-shadow`}>
-                  <category.icon className="h-8 w-8 text-white" />
-                </div>
-                
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors">
-                  {category.name}
-                </h3>
-                
-                <p className="text-gray-600 mb-6">
-                  {category.description}
-                </p>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500">
-                    {category.count} tools available
-                  </span>
-                  <span className="text-primary-600 font-medium group-hover:text-primary-700">
-                    Explore →
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
+      {/* Categories Grid */}
+      <section className="py-8 px-6">
+        <div className="container max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {categories.map((category) => {
+              const Icon = category.icon;
+              return (
+                <Link
+                  key={category.name}
+                  to={`/tools?category=${category.name.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`}
+                  className="group"
+                >
+                  <div className="bg-card rounded-xl border p-6 hover:shadow-lg transition-all duration-300 group-hover:border-primary/20">
+                    <div className="flex items-start space-x-4">
+                      <div className={`${category.color} p-3 rounded-lg text-white flex-shrink-0`}>
+                        <Icon className="h-6 w-6" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                          {category.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                          {category.description}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-primary">
+                            {category.count} tools
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            View all →
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Popular Tools Preview */}
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <div className="flex flex-wrap gap-1">
+                        {category.tools.slice(0, 3).map((tool, index) => (
+                          <span
+                            key={tool}
+                            className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded"
+                          >
+                            {tool}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 px-6 bg-muted/30">
+        <div className="container max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-4 text-foreground">
+            Can't find what you're looking for?
+          </h2>
+          <p className="text-lg text-muted-foreground mb-8">
+            Submit your favorite AI tool to help others discover amazing new technologies.
+          </p>
+          <Link
+            to="/auth"
+            className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Submit a Tool
+          </Link>
+        </div>
+      </section>
     </div>
   );
 };

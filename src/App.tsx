@@ -14,6 +14,11 @@ import Admin from "./pages/Admin";
 import Messages from "./pages/Messages";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import About from "./pages/About";
+import Categories from "./pages/Categories";
+import Community from "./pages/Community";
+import Blog from "./pages/Blog";
+import ToolDetails from "./pages/ToolDetails";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +35,11 @@ const App = () => (
             <Route path="/" element={<AppLayout />}>
               <Route index element={<Index />} />
               <Route path="tools" element={<Tools />} />
+              <Route path="tools/:id" element={<ToolDetails />} />
+              <Route path="categories" element={<Categories />} />
+              <Route path="about" element={<About />} />
+              <Route path="blog" element={<Blog />} />
+              <Route path="community" element={<Community />} />
               <Route path="talent" element={<Talent />} />
               <Route path="dashboard" element={<EmployerDashboard />} />
               <Route path="admin" element={<Admin />} />
