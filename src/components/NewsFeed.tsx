@@ -9,7 +9,11 @@ import {
   Video,
   Link,
   Send,
-  User
+  User,
+  Edit3,
+  Trash2,
+  Check,
+  X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -17,12 +21,14 @@ import { makeHashtagsClickable } from '../utils/hashtagUtils';
 import PostReactions from './PostReactions';
 
 interface Post {
-  id: number;
+  id: string;
+  user_id: string;
   author: {
     name: string;
     avatar: string;
     title: string;
     verified: boolean;
+    topVoice: boolean;
   };
   content: string;
   timestamp: string;
@@ -35,6 +41,9 @@ interface Post {
   tags: string[];
   liked: boolean;
   bookmarked: boolean;
+  created_at: string;
+  updated_at: string;
+  canEdit: boolean;
 }
 
 interface Comment {
@@ -51,8 +60,10 @@ interface Comment {
 const NewsFeed: React.FC = () => {
   const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
-  const [newComment, setNewComment] = useState<{ [key: number]: string }>({});
-  const [showComments, setShowComments] = useState<{ [key: number]: boolean }>({});
+  const [newComment, setNewComment] = useState<{ [key: string]: string }>({});
+  const [showComments, setShowComments] = useState<{ [key: string]: boolean }>({});
+  const [editingPost, setEditingPost] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState<string>('');
 
   // Get user interests for personalized feed
   const userInterests = user?.user_metadata?.interests || [];
@@ -85,21 +96,28 @@ const NewsFeed: React.FC = () => {
 
       // Fetch user profiles for each post
       const userIds = [...new Set(postsData.map(post => post.user_id))];
-      const { data: userProfiles, error: profileError } = await supabase
-        .from('user_profiles')
-        .select('id, full_name, profile_photo, job_title, verified, ai_nexus_top_voice')
-        .in('id', userIds);
+      let userProfiles = [];
+      
+      if (userIds.length > 0) {
+        const { data: profiles, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('id, full_name, profile_photo, job_title, verified, ai_nexus_top_voice')
+          .in('id', userIds);
 
-      if (profileError) {
-        console.error('Error fetching user profiles:', profileError);
+        if (profileError) {
+          console.error('Error fetching user profiles:', profileError);
+        } else {
+          userProfiles = profiles || [];
+        }
       }
 
-      const profilesMap = new Map(userProfiles?.map(profile => [profile.id, profile]) || []);
+      const profilesMap = new Map(userProfiles.map(profile => [profile.id, profile]));
 
       const formattedPosts = postsData.map(post => {
         const profile = profilesMap.get(post.user_id);
         return {
-          id: parseInt(post.id),
+          id: post.id,
+          user_id: post.user_id,
           author: {
             name: profile?.full_name || 'Anonymous User',
             avatar: profile?.profile_photo || '',
@@ -117,7 +135,10 @@ const NewsFeed: React.FC = () => {
           link: post.link_url,
           tags: [],
           liked: false,
-          bookmarked: false
+          bookmarked: false,
+          created_at: post.created_at,
+          updated_at: post.updated_at,
+          canEdit: user?.id === post.user_id
         };
       });
 
@@ -134,7 +155,7 @@ const NewsFeed: React.FC = () => {
     window.location.href = `/tools?search=${encodeURIComponent(hashtag)}`;
   };
 
-  const handleLike = (postId: number) => {
+  const handleLike = (postId: string) => {
     setPosts(posts.map(post => 
       post.id === postId 
         ? { 
@@ -146,7 +167,7 @@ const NewsFeed: React.FC = () => {
     ));
   };
 
-  const handleBookmark = (postId: number) => {
+  const handleBookmark = (postId: string) => {
     setPosts(posts.map(post => 
       post.id === postId 
         ? { ...post, bookmarked: !post.bookmarked }
@@ -154,17 +175,69 @@ const NewsFeed: React.FC = () => {
     ));
   };
 
-  const handleShare = (postId: number) => {
+  const handleShare = (postId: string) => {
     setPosts(posts.map(post => 
       post.id === postId 
         ? { ...post, shares: post.shares + 1 }
         : post
     ));
-    // In a real app, this would open a share dialog
     alert('Post shared!');
   };
 
-  const handleComment = (postId: number) => {
+  const handleEditPost = (postId: string) => {
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+      setEditingPost(postId);
+      setEditContent(post.content);
+    }
+  };
+
+  const handleSaveEdit = async (postId: string) => {
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .update({ content: editContent, updated_at: new Date().toISOString() })
+        .eq('id', postId);
+
+      if (error) throw error;
+
+      setPosts(posts.map(post => 
+        post.id === postId 
+          ? { ...post, content: editContent }
+          : post
+      ));
+      setEditingPost(null);
+      setEditContent('');
+    } catch (error) {
+      console.error('Error updating post:', error);
+      alert('Failed to update post');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingPost(null);
+    setEditContent('');
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    if (!confirm('Are you sure you want to delete this post?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .delete()
+        .eq('id', postId);
+
+      if (error) throw error;
+
+      setPosts(posts.filter(post => post.id !== postId));
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      alert('Failed to delete post');
+    }
+  };
+
+  const handleComment = (postId: string) => {
     const commentText = newComment[postId];
     if (!commentText?.trim()) return;
 
@@ -188,7 +261,7 @@ const NewsFeed: React.FC = () => {
     setNewComment({ ...newComment, [postId]: '' });
   };
 
-  const toggleComments = (postId: number) => {
+  const toggleComments = (postId: string) => {
     setShowComments({ ...showComments, [postId]: !showComments[postId] });
   };
 
@@ -253,10 +326,55 @@ const NewsFeed: React.FC = () => {
                   </div>
                 )}
               </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{post.author.title} • {post.timestamp}</p>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm text-gray-500 dark:text-gray-400">{post.author.title} • {post.timestamp}</p>
+                {post.canEdit && (
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleEditPost(post.id)}
+                      className="p-1 text-gray-400 hover:text-blue-500 rounded"
+                    >
+                      <Edit3 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeletePost(post.id)}
+                      className="p-1 text-gray-400 hover:text-red-500 rounded"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
               
               <div className="text-gray-800 dark:text-gray-200 mb-4">
-                {post.content}
+                {editingPost === post.id ? (
+                  <div className="space-y-3">
+                    <textarea
+                      value={editContent}
+                      onChange={(e) => setEditContent(e.target.value)}
+                      className="w-full p-3 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                      rows={3}
+                    />
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleSaveEdit(post.id)}
+                        className="flex items-center space-x-1 px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                      >
+                        <Check className="h-4 w-4" />
+                        <span>Save</span>
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        className="flex items-center space-x-1 px-3 py-1 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                      >
+                        <X className="h-4 w-4" />
+                        <span>Cancel</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  post.content
+                )}
               </div>
               
               {post.image && (

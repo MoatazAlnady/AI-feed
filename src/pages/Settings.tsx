@@ -5,11 +5,14 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
-import { Bell, User, Mail, Globe } from 'lucide-react';
+import { Bell, User, Mail, Globe, Shield, Settings as SettingsIcon } from 'lucide-react';
+import NotificationSettings from '@/components/NotificationSettings';
+import SecuritySettings from '@/components/SecuritySettings';
 
 const Settings = () => {
   const { user } = useAuth();
@@ -148,116 +151,151 @@ const Settings = () => {
         <p className="text-muted-foreground">Manage your account settings and preferences.</p>
       </div>
 
-      <div className="space-y-6">
-        {/* Profile Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              Profile Information
-            </CardTitle>
-            <CardDescription>
-              Update your personal information and public profile.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="full_name">Full Name</Label>
-              <Input
-                id="full_name"
-                value={profile.full_name}
-                onChange={(e) => setProfile(prev => ({ ...prev, full_name: e.target.value }))}
-                placeholder="Enter your full name"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                value={profile.bio}
-                onChange={(e) => setProfile(prev => ({ ...prev, bio: e.target.value }))}
-                placeholder="Tell us about yourself"
-                rows={3}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="website">Website</Label>
-              <Input
-                id="website"
-                type="url"
-                value={profile.website}
-                onChange={(e) => setProfile(prev => ({ ...prev, website: e.target.value }))}
-                placeholder="https://your-website.com"
-              />
-            </div>
-          </CardContent>
-        </Card>
+      <Tabs defaultValue="profile" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="profile" className="flex items-center gap-2">
+            <User className="h-4 w-4" />
+            Profile
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="flex items-center gap-2">
+            <Bell className="h-4 w-4" />
+            Notifications
+          </TabsTrigger>
+          <TabsTrigger value="privacy" className="flex items-center gap-2">
+            <Globe className="h-4 w-4" />
+            Privacy
+          </TabsTrigger>
+          <TabsTrigger value="security" className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            Security
+          </TabsTrigger>
+        </TabsList>
 
-        {/* Newsletter Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Mail className="h-5 w-5" />
-              Newsletter Subscription
-            </CardTitle>
-            <CardDescription>
-              Manage your newsletter preferences and email notifications.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label htmlFor="newsletter">Newsletter Updates</Label>
-                <p className="text-sm text-muted-foreground">
-                  Receive updates about new AI tools, features, and industry insights.
-                </p>
+        {/* Profile Settings */}
+        <TabsContent value="profile" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Profile Information
+              </CardTitle>
+              <CardDescription>
+                Update your personal information and public profile.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="full_name">Full Name</Label>
+                <Input
+                  id="full_name"
+                  value={profile.full_name}
+                  onChange={(e) => setProfile(prev => ({ ...prev, full_name: e.target.value }))}
+                  placeholder="Enter your full name"
+                />
               </div>
-              <Switch
-                id="newsletter"
-                checked={profile.newsletter_subscription}
-                onCheckedChange={handleNewsletterToggle}
-              />
-            </div>
-          </CardContent>
-        </Card>
+              <div className="space-y-2">
+                <Label htmlFor="bio">Bio</Label>
+                <Textarea
+                  id="bio"
+                  value={profile.bio}
+                  onChange={(e) => setProfile(prev => ({ ...prev, bio: e.target.value }))}
+                  placeholder="Tell us about yourself"
+                  rows={3}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="website">Website</Label>
+                <Input
+                  id="website"
+                  type="url"
+                  value={profile.website}
+                  onChange={(e) => setProfile(prev => ({ ...prev, website: e.target.value }))}
+                  placeholder="https://your-website.com"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Mail className="h-5 w-5" />
+                Newsletter Subscription
+              </CardTitle>
+              <CardDescription>
+                Basic newsletter preferences.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label htmlFor="newsletter">Newsletter Updates</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Receive updates about new AI tools, features, and industry insights.
+                  </p>
+                </div>
+                <Switch
+                  id="newsletter"
+                  checked={profile.newsletter_subscription}
+                  onCheckedChange={handleNewsletterToggle}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-end">
+            <Button onClick={handleSave} disabled={loading}>
+              {loading ? "Saving..." : "Save Profile Changes"}
+            </Button>
+          </div>
+        </TabsContent>
+
+        {/* Notification Settings */}
+        <TabsContent value="notifications">
+          <NotificationSettings />
+        </TabsContent>
 
         {/* Privacy Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Globe className="h-5 w-5" />
-              Privacy Settings
-            </CardTitle>
-            <CardDescription>
-              Control how your information is displayed to other users.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label htmlFor="contact_visible">Contact Information Visible</Label>
-                <p className="text-sm text-muted-foreground">
-                  Allow other users to see your contact information in your profile.
-                </p>
+        <TabsContent value="privacy" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Globe className="h-5 w-5" />
+                Privacy Settings
+              </CardTitle>
+              <CardDescription>
+                Control how your information is displayed to other users.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label htmlFor="contact_visible">Contact Information Visible</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Allow other users to see your contact information in your profile.
+                  </p>
+                </div>
+                <Switch
+                  id="contact_visible"
+                  checked={profile.contact_visible}
+                  onCheckedChange={(checked) => setProfile(prev => ({ ...prev, contact_visible: checked }))}
+                />
               </div>
-              <Switch
-                id="contact_visible"
-                checked={profile.contact_visible}
-                onCheckedChange={(checked) => setProfile(prev => ({ ...prev, contact_visible: checked }))}
-              />
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <Separator />
+          <div className="flex justify-end">
+            <Button onClick={handleSave} disabled={loading}>
+              {loading ? "Saving..." : "Save Privacy Settings"}
+            </Button>
+          </div>
+        </TabsContent>
 
-        {/* Save Button */}
-        <div className="flex justify-end">
-          <Button onClick={handleSave} disabled={loading}>
-            {loading ? "Saving..." : "Save Changes"}
-          </Button>
-        </div>
-      </div>
+        {/* Security Settings */}
+        <TabsContent value="security">
+          <SecuritySettings />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
