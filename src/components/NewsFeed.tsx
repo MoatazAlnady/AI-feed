@@ -67,12 +67,18 @@ const NewsFeed: React.FC = () => {
   const [showComments, setShowComments] = useState<{ [key: string]: boolean }>({});
   const [editingPost, setEditingPost] = useState<string | null>(null);
   const [editContent, setEditContent] = useState<string>('');
+  const [shareModalPost, setShareModalPost] = useState<Post | null>(null);
+  const [showNewsletterPopup, setShowNewsletterPopup] = useState(false);
 
   // Get user interests for personalized feed
   const userInterests = user?.user_metadata?.interests || [];
 
   useEffect(() => {
     console.log('Current user:', user);
+    // Show newsletter popup for unsubscribed registered users
+    if (user && !user.user_metadata?.newsletter_subscription) {
+      setShowNewsletterPopup(true);
+    }
     ensureUserProfile();
     fetchPosts();
   }, [user]);
