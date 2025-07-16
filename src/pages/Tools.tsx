@@ -91,13 +91,21 @@ const Tools: React.FC = () => {
                   Discover and explore AI tools across various categories
                 </p>
               </div>
-              <button
-                onClick={() => setShowComparison(true)}
-                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-lg hover:shadow-lg transition-shadow"
-              >
-                <GitCompare className="h-5 w-5" />
-                <span>Compare Tools</span>
-              </button>
+              <div className="flex items-center space-x-4">
+                <Link
+                  to="/tools/create"
+                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-lg hover:shadow-lg transition-shadow"
+                >
+                  <span>Submit A New AI Tool</span>
+                </Link>
+                <button
+                  onClick={() => setShowComparison(true)}
+                  className="flex items-center space-x-2 px-4 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <GitCompare className="h-5 w-5" />
+                  <span>Compare Tools</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -172,7 +180,7 @@ const Tools: React.FC = () => {
                 to="/tools/create"
                 className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-semibold rounded-xl hover:shadow-lg transition-shadow"
               >
-                Submit Your Tool
+                Submit A New AI Tool
               </Link>
             </div>
           ) : filteredTools.length === 0 ? (
