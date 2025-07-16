@@ -1,10 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageSquare, Users, Lightbulb, TrendingUp, Star, Calendar, Plus, Search, Hash } from 'lucide-react';
 import ChatDock from '../components/ChatDockProvider';
+import { supabase } from '../integrations/supabase/client';
 
 const Community: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'networking' | 'feed' | 'events' | 'groups'>('networking');
   const [searchTerm, setSearchTerm] = useState('');
+  const [creators, setCreators] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchCreators = async () => {
+      setLoading(true);
+      try {
+        const { data: profiles, error } = await supabase
+          .from('user_profiles')
+          .select('id, full_name, job_title, bio, profile_photo, verified, ai_nexus_top_voice')
+          .limit(20)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error fetching creators:', error);
+        } else {
+          console.log('Fetched creators:', profiles);
+          setCreators(profiles || []);
+        }
+      } catch (error) {
+        console.error('Error fetching creators:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (activeTab === 'networking') {
+      fetchCreators();
+    }
+  }, [activeTab]);
+
+  const filteredCreators = creators.filter(creator => {
+    if (!searchTerm) return true;
+    return creator.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           creator.job_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           creator.bio?.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const renderFeed = () => (
       <div className="space-y-6">
@@ -127,43 +165,64 @@ const Community: React.FC = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-semibold">JD</span>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 dark:text-white">John Doe</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400">AI Researcher</p>
-            </div>
-          </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            Passionate about ML and NLP. Published 20+ research papers.
-          </p>
-          <button className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200">
-            Connect
-          </button>
+      {loading ? (
+        <div className="flex justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
         </div>
-        
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-semibold">SM</span>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 dark:text-white">Sarah Miller</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Product Manager</p>
-            </div>
-          </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            Building AI-powered products. Love to share insights and tools.
+      ) : filteredCreators.length === 0 ? (
+        <div className="text-center py-8">
+          <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+          <p className="text-gray-500 dark:text-gray-500">
+            {searchTerm ? 'No creators found matching your search.' : 'No creators available yet.'}
           </p>
-          <button className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200">
-            Connect
-          </button>
         </div>
-      </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredCreators.map((creator) => (
+            <div key={creator.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                {creator.profile_photo ? (
+                  <img 
+                    src={creator.profile_photo} 
+                    alt={creator.full_name || 'User'} 
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-semibold">
+                      {(creator.full_name || 'U').charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2">
+                    <h4 className="font-semibold text-gray-900 dark:text-white">
+                      {creator.full_name || 'Anonymous User'}
+                    </h4>
+                    {creator.verified && (
+                      <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs">✓</span>
+                      </div>
+                    )}
+                    {creator.ai_nexus_top_voice && (
+                      <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {creator.job_title || 'AI Enthusiast'}
+                  </p>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                {creator.bio || 'Passionate about AI and technology.'}
+              </p>
+              <button className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200">
+                Connect
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 
