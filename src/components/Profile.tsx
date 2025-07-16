@@ -7,13 +7,14 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { Zap } from 'lucide-react';
 import PromoteContentModal from '../components/PromoteContentModal';
+import InterestManagement from '../components/InterestManagement';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'overview' | 'posts' | 'saved'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'posts' | 'saved' | 'interests'>('overview');
   const [showPromoteModal, setShowPromoteModal] = useState(false);
   const [selectedContent, setSelectedContent] = useState<any>(null);
   const [savedItems, setSavedItems] = useState<any[]>([]);
@@ -317,7 +318,8 @@ const Profile: React.FC = () => {
               {[
                 { key: 'overview', label: 'Overview' },
                 { key: 'posts', label: 'My Content' },
-                { key: 'saved', label: 'Saved Items' }
+                { key: 'saved', label: 'Saved Items' },
+                { key: 'interests', label: 'My Interests' }
               ].map(({ key, label }) => (
                 <button
                   key={key}
@@ -485,6 +487,17 @@ const Profile: React.FC = () => {
                     </div>
                   )}
                 </div>
+              )}
+
+              {activeTab === 'interests' && (
+                <InterestManagement 
+                  mode="user"
+                  userInterests={user?.user_metadata?.interests || []}
+                  onUserInterestsChange={(interests) => {
+                    // Update user interests in real-time
+                    console.log('Updated interests:', interests);
+                  }}
+                />
               )}
             </div>
           </div>

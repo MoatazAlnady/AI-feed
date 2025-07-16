@@ -390,56 +390,16 @@ const NewsFeed: React.FC = () => {
               </div>
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm text-gray-500 dark:text-gray-400">{post.author.title} • {post.timestamp}</p>
-                {post.canEdit && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </button>
-                    </DropdownMenuTrigger>
-                     <DropdownMenuContent className="w-48 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-lg z-[9999]">
-                       <DropdownMenuItem 
-                         onClick={() => handleEditPost(post.id)}
-                         className="text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
-                       >
-                         <Edit3 className="h-4 w-4 mr-2" />
-                         Edit Post
-                       </DropdownMenuItem>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <DropdownMenuItem 
-                            onSelect={(e) => e.preventDefault()}
-                            className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete Post
-                          </DropdownMenuItem>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                          <AlertDialogHeader>
-                             <AlertDialogTitle className="text-gray-900 dark:text-white">
-                               Are you sure you want to delete this post?
-                             </AlertDialogTitle>
-                             <AlertDialogDescription className="text-gray-600 dark:text-gray-300">
-                               This action cannot be undone. This will permanently delete your post and remove it from the feed.
-                             </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>
-                              Cancel
-                            </AlertDialogCancel>
-                            <AlertDialogAction 
-                              onClick={() => handleDeletePost(post.id)} 
-                              className="bg-red-500 hover:bg-red-600 text-white"
-                            >
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
+                <PostOptionsMenu
+                  postId={post.id}
+                  authorId={post.user_id}
+                  contentType="post"
+                  onEdit={() => handleEditPost(post.id)}
+                  onDelete={() => handleDeletePost(post.id)}
+                  onShare={() => handleShare(post.id)}
+                  isBookmarked={post.bookmarked}
+                  onBookmark={() => handleBookmark(post.id)}
+                />
               </div>
               
               <div className="text-gray-800 dark:text-gray-200 mb-4">

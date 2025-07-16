@@ -27,16 +27,12 @@ const Newsfeed: React.FC = () => {
   const [posts, setPosts] = useState<any[]>([]);
   const [trendingTools, setTrendingTools] = useState<any[]>([]);
 
-  // Check if user should see newsletter popup
+  // Check if user should see newsletter popup - show on every refresh for unsubscribed users
   useEffect(() => {
     const checkNewsletterSubscription = () => {
       if (user && !user.user_metadata?.newsletter_subscription) {
-        // Show newsletter popup for registered but unsubscribed users
-        const hasSeenPopup = sessionStorage.getItem('newsletter_popup_shown_this_session');
-        if (!hasSeenPopup) {
-          setShowNewsletterPopup(true);
-          sessionStorage.setItem('newsletter_popup_shown_this_session', 'true');
-        }
+        // Always show newsletter popup for registered but unsubscribed users on refresh
+        setShowNewsletterPopup(true);
       }
     };
 
