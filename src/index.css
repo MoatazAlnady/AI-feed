@@ -11,14 +11,13 @@
     --c-amber: 41 63% 67%;    /* #ebb966 */
 
     /* Light gradient stops */
-    --light-1: 48 100% 69%;   /* #ffd863 - bright amber */
-    --light-2: 175 100% 69%;  /* #63fff1 - bright cyan */
-    --light-3: 197 100% 69%;  /* #5dd3ff - bright blue */
+    --light-1: 48 100% 69%;   /* #ffd863 */
+    --light-2: 175 100% 69%;  /* #63fff1 */
+    --light-3: 197 100% 69%;  /* #5dd3ff */
 
-    /* Dark gradient stops - dark versions of light colors */
-    --dark-1: 48 30% 15%;     /* Dark amber #2a1f0d */
-    --dark-2: 175 35% 12%;    /* Dark cyan #0d1f1c */
-    --dark-3: 197 40% 10%;    /* Dark blue #0a1520 */
+    /* Dark gradient stops */
+    --dark-1: 248 32% 18%;    /* #212140 */
+    --dark-2: 285 76% 27%;    /* #751984 */
 
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
@@ -88,12 +87,11 @@
     @apply text-foreground;
   }
   .dark body {
-    /* Dark mode gradient background - dark versions of light colors */
+    /* Dark mode gradient background */
     background: linear-gradient(
       135deg,
       hsl(var(--dark-1)) 0%,
-      hsl(var(--dark-2)) 50%,
-      hsl(var(--dark-3)) 100%
+      hsl(var(--dark-2)) 100%
     );
   }
 }
