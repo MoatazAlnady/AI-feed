@@ -71,8 +71,43 @@ const NewsFeed: React.FC = () => {
   const userInterests = user?.user_metadata?.interests || [];
 
   useEffect(() => {
+    console.log('Current user:', user);
+    ensureUserProfile();
     fetchPosts();
   }, [user]);
+
+  const ensureUserProfile = async () => {
+    if (!user) return;
+    
+    try {
+      // Check if user profile exists
+      const { data: existingProfile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError && profileError.code === 'PGRST116') {
+        // Profile doesn't exist, create one
+        console.log('Creating user profile for:', user.id);
+        const { error: insertError } = await supabase
+          .from('user_profiles')
+          .insert({
+            id: user.id,
+            full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'AI Enthusiast',
+            account_type: 'creator'
+          });
+
+        if (insertError) {
+          console.error('Error creating user profile:', insertError);
+        } else {
+          console.log('User profile created successfully');
+        }
+      }
+    } catch (error) {
+      console.error('Error ensuring user profile:', error);
+    }
+  };
 
   const fetchPosts = async () => {
     try {
@@ -102,11 +137,14 @@ const NewsFeed: React.FC = () => {
       let userProfiles = [];
       
       if (userIds.length > 0) {
+        console.log('Querying user_profiles for IDs:', userIds);
         const { data: profiles, error: profileError } = await supabase
           .from('user_profiles')
           .select('id, full_name, profile_photo, job_title, verified, ai_nexus_top_voice')
           .in('id', userIds);
 
+        console.log('Profile query result:', { profiles, profileError });
+        
         if (profileError) {
           console.error('Error fetching user profiles:', profileError);
         } else {
@@ -120,13 +158,27 @@ const NewsFeed: React.FC = () => {
       const formattedPosts = postsData.map(post => {
         const profile = profilesMap.get(post.user_id);
         console.log(`Post ${post.id}: user_id = ${post.user_id}, found profile:`, profile);
+        
+        // If no profile found, try to get user data from auth context for current user
+        let authorName = 'Anonymous User';
+        let authorTitle = 'AI Enthusiast';
+        
+        if (profile) {
+          authorName = profile.full_name || 'Anonymous User';
+          authorTitle = profile.job_title || 'AI Enthusiast';
+        } else if (user && post.user_id === user.id) {
+          // Use auth user data if it's the current user's post
+          authorName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous User';
+          authorTitle = 'AI Enthusiast';
+        }
+        
         return {
           id: post.id,
           user_id: post.user_id,
           author: {
-            name: profile?.full_name || 'Anonymous User',
+            name: authorName,
             avatar: profile?.profile_photo || '',
-            title: profile?.job_title || 'AI Enthusiast',
+            title: authorTitle,
             verified: profile?.verified || false,
             topVoice: profile?.ai_nexus_top_voice || false
           },
