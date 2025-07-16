@@ -27,6 +27,7 @@ const Header: React.FC = () => {
     { name: 'Newsfeed', href: '/newsfeed', protected: true },
     { name: 'Tools', href: '/tools' },
     { name: 'Categories', href: '/categories' },
+    { name: 'Jobs', href: '/jobs' },
     { name: 'Community', href: '/community', protected: true },
     { name: 'Blog', href: '/blog' },
   ];
@@ -52,7 +53,7 @@ const Header: React.FC = () => {
   // Filter navigation items based on authentication status
   const filteredNavigation = user 
     ? navigation.filter(item => !item.hideWhenLoggedIn)
-    : navigation.filter(item => item.name === 'Home' || item.name === 'About' || item.name === 'Tools' || item.name === 'Categories' || item.name === 'Blog');
+    : navigation.filter(item => item.name === 'Home' || item.name === 'About' || item.name === 'Tools' || item.name === 'Categories' || item.name === 'Jobs' || item.name === 'Blog');
 
   useEffect(() => {
     // Fetch real notification and message counts from API

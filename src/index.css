@@ -31,24 +31,24 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 13 28% 16%; /* Petroleum blue #0d1b2a */
     --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
+    --card: 211 32% 20%; /* Slightly lighter petroleum */
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
+    --popover: 211 32% 20%;
     --popover-foreground: 0 0% 98%;
     --primary: 221 83% 53%;
     --primary-foreground: 210 40% 98%;
     --secondary: 262 83% 58%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 240 3.7% 15.9%;
+    --muted: 211 32% 24%; /* Darker petroleum for panels */
     --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
+    --accent: 211 32% 24%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --border: 211 32% 28%; /* Petroleum border */
+    --input: 211 32% 24%; /* Petroleum input background */
     --ring: 221 83% 53%;
     
     /* Custom gradients for dark mode */
@@ -293,16 +293,30 @@ button {
 .dark input,
 .dark textarea,
 .dark select {
-  @apply bg-gray-800 text-white border-gray-600;
+  @apply bg-card text-foreground border-border;
 }
 
 .dark input:focus,
 .dark textarea:focus,
 .dark select:focus {
-  @apply bg-gray-800 text-white border-primary;
+  @apply bg-card text-foreground border-primary;
 }
 
 .dark input::placeholder,
 .dark textarea::placeholder {
-  @apply text-gray-400;
+  @apply text-muted-foreground;
+}
+
+/* Brand circle canvas background */
+.brand-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(600px at 15% 25%, hsl(var(--primary)) 0%, transparent 60%),
+    radial-gradient(500px at 85% 15%, hsl(var(--secondary)) 0%, transparent 60%),
+    radial-gradient(400px at 25% 80%, hsl(var(--primary)) 0%, transparent 60%);
+  opacity: 0.08;
+  filter: blur(60px);
 }

@@ -66,7 +66,7 @@ const AIChatBot = ({ initialMessage, autoOpen }: AIChatBotProps) => {
       <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={() => setIsOpen(!isOpen)}
-          className="w-14 h-14 rounded-full bg-gradient-primary text-white hover:opacity-90 shadow-lg transition-all duration-300 hover:scale-105"
+          className="w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white shadow-lg transition-all duration-300 hover:scale-105"
           size="icon"
         >
           {isOpen ? <X className="h-8 w-8" /> : <Bot className="h-10 w-10" />}

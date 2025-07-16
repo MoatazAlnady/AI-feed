@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 const AppLayout: React.FC = () => {
   return (
     <div className="min-h-screen bg-white text-gray-900 dark:bg-[#0d1b2a] dark:text-gray-100">
+      <div className="brand-canvas"></div>
       <Header />
       <main>
         <Outlet />
