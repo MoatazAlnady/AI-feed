@@ -1,6 +1,10 @@
-// Supabase client configuration - src lib file
-// This file is different from the separate lib file
-// Paste your code here
+import { createClient } from '@supabase/supabase-js';
 
-// Temporary export to prevent build errors - replace with your code
-export { supabase } from '@/integrations/supabase/client';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables');
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
