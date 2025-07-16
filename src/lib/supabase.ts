@@ -1,3 +1,6 @@
-// This file is deprecated. Use @/integrations/supabase/client instead.
-// Redirecting to the correct client to maintain compatibility.
+// Supabase client configuration - src lib file
+// This file is different from the separate lib file
+// Paste your code here
+
+// Temporary export to prevent build errors - replace with your code
 export { supabase } from '@/integrations/supabase/client';
