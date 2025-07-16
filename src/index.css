@@ -407,7 +407,7 @@ body.logged-in.dark {
     #0b1120 0%,
     #131c3a 40%,
     #1c263f 75%
-  );
+  ) !important;
 }
 
 /* Light theme gradient */
@@ -417,7 +417,7 @@ body.logged-in:not(.dark) {
     #f5f7ff 0%,
     #e8effd 35%,
     #e8e2ff 75%
-  );
+  ) !important;
 }
 
 /* === DARK-MODE GRADIENT (remove conflicting styles) === */
