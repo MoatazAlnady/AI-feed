@@ -14,7 +14,7 @@ const AnimatedBackground: React.FC = () => {
       <div 
         className="fixed top-0 left-0 w-full h-full -z-20 hidden dark:block"
         style={{ 
-          background: 'linear-gradient(135deg, #202444 0%, #462560 100%)' 
+          background: 'linear-gradient(135deg, #202444 0%, #090a27 100%)' 
         }}
       />
     </>
