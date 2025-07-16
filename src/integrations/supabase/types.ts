@@ -298,6 +298,36 @@ export type Database = {
           },
         ]
       }
+      site_content: {
+        Row: {
+          content_key: string
+          content_type: string
+          content_value: Json
+          created_at: string
+          description: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          content_key: string
+          content_type?: string
+          content_value?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          content_key?: string
+          content_type?: string
+          content_value?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tool_categories: {
         Row: {
           color: string | null
