@@ -32,6 +32,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
   const [country, setCountry] = useState('');
   const [city, setCity] = useState('');
   const [accountType, setAccountType] = useState('creator'); // creator, employer
+  const [phoneCountryCode, setPhoneCountryCode] = useState('+1');
+  const [phoneNumber, setPhoneNumber] = useState('');
   
   // Languages and skills
   const [languages, setLanguages] = useState<Array<{language: string, level: number}>>([]);
@@ -47,21 +49,93 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
     'Finance AI', 'Education AI', 'Gaming AI', 'Art & Creativity', 'Music AI'
   ];
 
-  const countries = [
-    'United States', 'Canada', 'United Kingdom', 'Germany', 'France', 'Spain', 'Italy',
-    'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Finland', 'Australia', 'New Zealand',
-    'Japan', 'South Korea', 'Singapore', 'India', 'China', 'Brazil', 'Mexico',
-    'Argentina', 'Chile', 'South Africa', 'Palestine', 'UAE', 'Switzerland', 'Austria',
-    'Belgium', 'Ireland', 'Portugal', 'Poland', 'Czech Republic', 'Hungary', 'Romania',
-    'Russia', 'Turkey', 'Greece', 'Croatia', 'Bulgaria', 'Serbia', 'Slovenia',
-    'Slovakia', 'Estonia', 'Latvia', 'Lithuania', 'Malta', 'Cyprus', 'Luxembourg',
-    'Iceland', 'Thailand', 'Vietnam', 'Philippines', 'Indonesia', 'Malaysia',
-    'Bangladesh', 'Pakistan', 'Sri Lanka', 'Nepal', 'Myanmar', 'Cambodia', 'Laos',
+  const countriesWithCodes = [
+    { name: 'United States', code: '+1' },
+    { name: 'Canada', code: '+1' },
+    { name: 'United Kingdom', code: '+44' },
+    { name: 'Germany', code: '+49' },
+    { name: 'France', code: '+33' },
+    { name: 'Spain', code: '+34' },
+    { name: 'Italy', code: '+39' },
+    { name: 'Netherlands', code: '+31' },
+    { name: 'Sweden', code: '+46' },
+    { name: 'Norway', code: '+47' },
+    { name: 'Denmark', code: '+45' },
+    { name: 'Finland', code: '+358' },
+    { name: 'Australia', code: '+61' },
+    { name: 'New Zealand', code: '+64' },
+    { name: 'Japan', code: '+81' },
+    { name: 'South Korea', code: '+82' },
+    { name: 'Singapore', code: '+65' },
+    { name: 'India', code: '+91' },
+    { name: 'China', code: '+86' },
+    { name: 'Brazil', code: '+55' },
+    { name: 'Mexico', code: '+52' },
+    { name: 'Argentina', code: '+54' },
+    { name: 'Chile', code: '+56' },
+    { name: 'South Africa', code: '+27' },
+    { name: 'Palestine', code: '+970' },
+    { name: 'UAE', code: '+971' },
+    { name: 'Switzerland', code: '+41' },
+    { name: 'Austria', code: '+43' },
+    { name: 'Belgium', code: '+32' },
+    { name: 'Ireland', code: '+353' },
+    { name: 'Portugal', code: '+351' },
+    { name: 'Poland', code: '+48' },
+    { name: 'Czech Republic', code: '+420' },
+    { name: 'Hungary', code: '+36' },
+    { name: 'Romania', code: '+40' },
+    { name: 'Russia', code: '+7' },
+    { name: 'Turkey', code: '+90' },
+    { name: 'Greece', code: '+30' },
+    { name: 'Croatia', code: '+385' },
+    { name: 'Bulgaria', code: '+359' },
+    { name: 'Serbia', code: '+381' },
+    { name: 'Slovenia', code: '+386' },
+    { name: 'Slovakia', code: '+421' },
+    { name: 'Estonia', code: '+372' },
+    { name: 'Latvia', code: '+371' },
+    { name: 'Lithuania', code: '+370' },
+    { name: 'Malta', code: '+356' },
+    { name: 'Cyprus', code: '+357' },
+    { name: 'Luxembourg', code: '+352' },
+    { name: 'Iceland', code: '+354' },
+    { name: 'Thailand', code: '+66' },
+    { name: 'Vietnam', code: '+84' },
+    { name: 'Philippines', code: '+63' },
+    { name: 'Indonesia', code: '+62' },
+    { name: 'Malaysia', code: '+60' },
+    { name: 'Bangladesh', code: '+880' },
+    { name: 'Pakistan', code: '+92' },
+    { name: 'Sri Lanka', code: '+94' },
+    { name: 'Nepal', code: '+977' },
+    { name: 'Myanmar', code: '+95' },
+    { name: 'Cambodia', code: '+855' },
+    { name: 'Laos', code: '+856' },
     // Arabic Countries
-    'Saudi Arabia', 'Egypt', 'Iraq', 'Jordan', 'Lebanon', 'Syria', 'Yemen', 'Kuwait',
-    'Qatar', 'Bahrain', 'Oman', 'Libya', 'Tunisia', 'Algeria', 'Morocco', 'Sudan',
-    'Somalia', 'Djibouti', 'Comoros', 'Mauritania'
+    { name: 'Saudi Arabia', code: '+966' },
+    { name: 'Egypt', code: '+20' },
+    { name: 'Iraq', code: '+964' },
+    { name: 'Jordan', code: '+962' },
+    { name: 'Lebanon', code: '+961' },
+    { name: 'Syria', code: '+963' },
+    { name: 'Yemen', code: '+967' },
+    { name: 'Kuwait', code: '+965' },
+    { name: 'Qatar', code: '+974' },
+    { name: 'Bahrain', code: '+973' },
+    { name: 'Oman', code: '+968' },
+    { name: 'Libya', code: '+218' },
+    { name: 'Tunisia', code: '+216' },
+    { name: 'Algeria', code: '+213' },
+    { name: 'Morocco', code: '+212' },
+    { name: 'Sudan', code: '+249' },
+    { name: 'Somalia', code: '+252' },
+    { name: 'Djibouti', code: '+253' },
+    { name: 'Comoros', code: '+269' },
+    { name: 'Mauritania', code: '+222' }
   ];
+
+  const countries = countriesWithCodes.map(c => c.name);
 
   const cities = {
     'United States': ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose', 'Austin', 'Jacksonville', 'Fort Worth', 'Columbus', 'Charlotte', 'San Francisco', 'Indianapolis', 'Seattle', 'Denver', 'Washington DC', 'Boston', 'Nashville', 'Baltimore', 'Oklahoma City', 'Louisville', 'Portland', 'Las Vegas', 'Milwaukee', 'Albuquerque', 'Tucson', 'Fresno', 'Sacramento', 'Kansas City', 'Mesa', 'Atlanta', 'Omaha', 'Colorado Springs', 'Raleigh', 'Virginia Beach', 'Long Beach', 'Miami', 'Oakland', 'Minneapolis', 'Tulsa', 'Bakersfield', 'Wichita', 'Arlington'],
@@ -170,6 +244,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
     setLanguages(languages.filter((_, i) => i !== index));
   };
 
+  const handleCountryChange = (selectedCountry: string) => {
+    setCountry(selectedCountry);
+    const countryData = countriesWithCodes.find(c => c.name === selectedCountry);
+    if (countryData) {
+      setPhoneCountryCode(countryData.code);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -193,8 +275,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
       } else {
         if (step === 1) {
           // Basic info validation
-          if (!fullName || !email || !password || !birthDate || !gender || !country || !city || !accountType) {
-            throw new Error('Please fill in all required fields');
+          if (!fullName || !email || !password || !birthDate || !gender || !country || !city || !accountType || !phoneNumber) {
+            throw new Error('Please fill in all required fields including phone number');
           }
           
           // Age validation (must be 13+)
@@ -231,7 +313,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
             articles_written: 0,
             total_reach: 0,
             total_engagement: 0,
-            languages: validLanguages
+            languages: validLanguages,
+            phone: phoneNumber,
+            phone_country_code: phoneCountryCode
           });
           if (error) throw error;
           setSuccess('Account created successfully! Please check your email for a confirmation link before signing in.');
@@ -264,6 +348,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
     setCity('');
     setAccountType('creator');
     setLanguages([]);
+    setPhoneCountryCode('+1');
+    setPhoneNumber('');
     setError('');
     setSuccess('');
     setShowPassword(false);

@@ -139,7 +139,7 @@ const TalentSearchFilters: React.FC<TalentSearchFiltersProps> = ({ onFilterChang
       </div>
 
       {/* Always visible filters */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4" style={{ display: showFilters ? 'grid' : 'none' }}>
         {/* Language Dropdown */}
         <div>
           <label htmlFor="language" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -202,7 +202,7 @@ const TalentSearchFilters: React.FC<TalentSearchFiltersProps> = ({ onFilterChang
         </div>
       </div>
 
-      {/* Expandable filters */}
+      {/* Additional filters when expanded */}
       {showFilters && (
         <div className="pt-4 border-t border-gray-200 dark:border-gray-700 animate-slide-up">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">

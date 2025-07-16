@@ -213,29 +213,6 @@ const EmployerDashboard = () => {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Employer Dashboard</h1>
           </div>
           
-          {/* Tab Navigation */}
-          <div className="border-b border-gray-200 dark:border-gray-700">
-            <nav className="-mb-px flex space-x-8">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => handleTabClick(tab)}
-                    className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-all duration-200 ${
-                      isActive
-                        ? 'border-blue-500 text-blue-600 dark:text-blue-400 bg-sky-50 dark:bg-blue-900/20 rounded-t-lg'
-                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-                    }`}
-                  >
-                    <Icon className="h-5 w-5" />
-                    <span>{tab.label}</span>
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
         </div>
 
         {/* Content Area */}

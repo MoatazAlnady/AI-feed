@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Image, Video, Link as LinkIcon, Send, User, Plus, Hash } from 'lucide-react';
+import { X, Image, Video, Link as LinkIcon, Send, User, Plus, Hash, Calendar, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface CreatePostModalProps {
@@ -19,6 +19,9 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onPo
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showVideoInput, setShowVideoInput] = useState(false);
   const [showLinkInput, setShowLinkInput] = useState(false);
+  const [scheduleDate, setScheduleDate] = useState('');
+  const [scheduleTime, setScheduleTime] = useState('');
+  const [isScheduled, setIsScheduled] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,6 +64,9 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onPo
     setLinkUrl('');
     setShowVideoInput(false);
     setShowLinkInput(false);
+    setScheduleDate('');
+    setScheduleTime('');
+    setIsScheduled(false);
     setIsSubmitting(false);
     onClose();
   };
@@ -258,6 +264,56 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onPo
               </div>
             )}
 
+            {/* Scheduling Section */}
+            <div className="mb-6">
+              <div className="flex items-center space-x-2 mb-4">
+                <input
+                  type="checkbox"
+                  id="schedule-post"
+                  checked={isScheduled}
+                  onChange={(e) => setIsScheduled(e.target.checked)}
+                  className="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500"
+                />
+                <label htmlFor="schedule-post" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Schedule for later
+                </label>
+              </div>
+              
+              {isScheduled && (
+                <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Date
+                    </label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+                      <input
+                        type="date"
+                        value={scheduleDate}
+                        onChange={(e) => setScheduleDate(e.target.value)}
+                        min={new Date().toISOString().split('T')[0]}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Time
+                    </label>
+                    <div className="relative">
+                      <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+                      <input
+                        type="time"
+                        value={scheduleTime}
+                        onChange={(e) => setScheduleTime(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Media Buttons */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex space-x-2">
@@ -316,7 +372,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onPo
               ) : (
                 <>
                   <Send className="h-5 w-5" />
-                  <span>Share Post</span>
+                  <span>{isScheduled ? 'Schedule Post' : 'Share Post'}</span>
                 </>
               )}
             </button>
