@@ -130,7 +130,7 @@ const Header: React.FC = () => {
     <>
       <header className="w-full bg-white dark:bg-[#091527] shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 backdrop-blur-sm bg-white/95 dark:bg-[#091527]/95">
         <div className="mx-auto flex max-w-[1440px] items-center px-4 h-16">
-          {/* Col 1 - Left: Logo */}
+          {/* Col 1 - Left: Logo + Navigation cluster */}
           <div className="flex items-center gap-x-2">
             <Link to={isEmployerView ? "/employer" : "/"} className="flex items-center space-x-3 group flex-shrink-0">
               <div className="p-2 bg-gradient-primary rounded-lg group-hover:shadow-lg transition-all duration-300 transform group-hover:scale-105">
@@ -143,7 +143,7 @@ const Header: React.FC = () => {
           </div>
 
           {/* Col 2 - Center: Navigation Links */}
-          <nav className="flex flex-1 justify-center gap-x-10 max-lg:hidden">
+          <nav className="flex flex-1 justify-center gap-x-10 max-lg:hidden ml-2">
             {!isEmployerView && filteredNavigation.map((item) => (
               <Link
                 key={item.name}
@@ -373,30 +373,28 @@ const Header: React.FC = () => {
                   </div>
                 )}
 
-                {/* User Menu */}
-                <div className="relative">
+                {/* User Avatar with Dropdown */}
+                <div className="relative ml-6">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center space-x-2 p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200"
+                    className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:shadow-md transition-all duration-200"
+                    title={user?.user_metadata?.full_name || user?.email || 'User'}
                   >
-                    <div className="relative">
-                      <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
-                        <User className="h-4 w-4 text-white" />
-                      </div>
-                      {/* Verification Badge */}
-                      {verificationBadgeType && (
-                        <div className="absolute -bottom-1 -right-1">
-                          <VerificationBadge type={verificationBadgeType} size="sm" />
-                        </div>
-                      )}
-                    </div>
-                    <span className="hidden sm:inline text-sm font-medium">
-                      {user?.user_metadata?.full_name || user.email?.split('@')[0]}
-                    </span>
-                    {/* Account type indicator */}
-                    {isEmployer && (
-                      <div className="hidden sm:flex items-center">
-                        <Building className="h-3 w-3 text-purple-500 dark:text-purple-400" />
+                    {user?.user_metadata?.profile_photo ? (
+                      <img 
+                        src={user.user_metadata.profile_photo} 
+                        alt="Profile" 
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-white text-sm font-medium">
+                        {((user?.user_metadata?.full_name || user?.email || 'User')[0] || 'U').toUpperCase()}
+                      </span>
+                    )}
+                    {/* Verification Badge */}
+                    {verificationBadgeType && (
+                      <div className="absolute -bottom-1 -right-1">
+                        <VerificationBadge type={verificationBadgeType} size="sm" />
                       </div>
                     )}
                   </button>
