@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight, Zap, FolderOpen, Briefcase, Star, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import NewsletterPopup from '@/components/NewsletterPopup';
@@ -16,19 +16,18 @@ const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showNewsletterPopup, setShowNewsletterPopup] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [chatIsOpen, setChatIsOpen] = useState(false);
+  const chatBotRef = useRef<any>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Newsletter popup logic - show for unsubscribed users every time
+  // Newsletter popup logic - always show with transition after 3 seconds
   useEffect(() => {
-    // Always show newsletter popup for unsubscribed users after 3 seconds
-    if (!user || (user && !user.user_metadata?.newsletter_subscription)) {
-      const timer = setTimeout(() => {
-        setShowNewsletterPopup(true);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [user]);
+    const timer = setTimeout(() => {
+      setShowNewsletterPopup(true);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleCloseNewsletterPopup = () => {
     setShowNewsletterPopup(false);
@@ -37,6 +36,12 @@ const Index = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim()) {
+      // Open AI chat with the search query
+      setChatIsOpen(true);
+      if (chatBotRef.current) {
+        chatBotRef.current.openWithMessage(searchTerm);
+      }
+      // Also navigate to tools page
       navigate(`/tools?search=${encodeURIComponent(searchTerm.trim())}`);
       setSearchTerm('');
     }
@@ -208,7 +213,7 @@ const Index = () => {
       )}
 
       {/* Chat Dock */}
-      <AIChatBot />
+      <AIChatBot ref={chatBotRef} isOpen={chatIsOpen} setIsOpen={setChatIsOpen} />
     </div>
   );
 };

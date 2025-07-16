@@ -5,7 +5,7 @@ import Footer from '@/components/Footer';
 
 const AppLayout: React.FC = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background bg-canvas">
       <Header />
       <main>
         <Outlet />
