@@ -319,23 +319,27 @@ button {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(800px at 15% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
-    radial-gradient(600px at 85% 30%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
-    radial-gradient(500px at 40% 70%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
-    radial-gradient(400px at 75% 80%, rgba(168, 85, 247, 0.04) 0%, transparent 50%),
-    radial-gradient(300px at 60% 40%, rgba(99, 102, 241, 0.03) 0%, transparent 50%);
+    radial-gradient(900px at 12% 18%, rgba(99, 102, 241, 0.20) 0%, transparent 65%),
+    radial-gradient(700px at 88% 25%, rgba(139, 92, 246, 0.15) 0%, transparent 60%),
+    radial-gradient(500px at 35% 75%, rgba(59, 130, 246, 0.12) 0%, transparent 55%),
+    radial-gradient(400px at 78% 82%, rgba(168, 85, 247, 0.10) 0%, transparent 50%),
+    radial-gradient(300px at 55% 45%, rgba(147, 51, 234, 0.08) 0%, transparent 45%),
+    radial-gradient(200px at 25% 60%, rgba(79, 70, 229, 0.06) 0%, transparent 40%);
   animation: float 20s ease-in-out infinite;
+  filter: blur(80px);
 }
 
 /* Dark mode canvas - darker blue to purple gradients */
 .dark .brand-canvas {
   background:
-    radial-gradient(800px at 15% 20%, rgba(30, 58, 138, 0.15) 0%, transparent 50%),
-    radial-gradient(600px at 85% 30%, rgba(67, 56, 202, 0.12) 0%, transparent 50%),
-    radial-gradient(500px at 40% 70%, rgba(29, 78, 216, 0.10) 0%, transparent 50%),
-    radial-gradient(400px at 75% 80%, rgba(91, 33, 182, 0.08) 0%, transparent 50%),
-    radial-gradient(300px at 60% 40%, rgba(37, 99, 235, 0.06) 0%, transparent 50%);
+    radial-gradient(900px at 12% 18%, rgba(30, 58, 138, 0.30) 0%, transparent 65%),
+    radial-gradient(700px at 88% 25%, rgba(67, 56, 202, 0.25) 0%, transparent 60%),
+    radial-gradient(500px at 35% 75%, rgba(29, 78, 216, 0.20) 0%, transparent 55%),
+    radial-gradient(400px at 78% 82%, rgba(91, 33, 182, 0.18) 0%, transparent 50%),
+    radial-gradient(300px at 55% 45%, rgba(76, 29, 149, 0.15) 0%, transparent 45%),
+    radial-gradient(200px at 25% 60%, rgba(55, 48, 163, 0.12) 0%, transparent 40%);
   animation: float 25s ease-in-out infinite reverse;
+  filter: blur(100px);
 }
 
 @keyframes float {
