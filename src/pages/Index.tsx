@@ -56,10 +56,12 @@ const Index = () => {
     e.preventDefault();
     if (searchTerm.trim()) {
       // Set the search term to be displayed in the chat
-      setChatMessage(searchTerm.trim());
+      setChatMessage(`I'm looking for: ${searchTerm.trim()}`);
       setAutoOpenChat(true);
-      // Still navigate to tools page
-      navigate(`/tools?search=${encodeURIComponent(searchTerm.trim())}`);
+      // Small delay to ensure state is set before navigation
+      setTimeout(() => {
+        navigate(`/tools?search=${encodeURIComponent(searchTerm.trim())}`);
+      }, 100);
       setSearchTerm('');
     }
   };

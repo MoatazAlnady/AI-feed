@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import TodoSystem from '../components/TodoSystem';
 import EmployerChatDock from '../components/EmployerChatDock';
+import JobsManagement from '../components/JobsManagement';
+import TalentSearch from './TalentSearch';
 
 const EmployerDashboard = () => {
   const navigate = useNavigate();
@@ -141,27 +143,20 @@ const EmployerDashboard = () => {
       </div>
 
       {/* Todo System */}
-      <TodoSystem className="mt-6" />
-    </div>
-  );
-
-  const TalentsPage = () => (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Talent Management</h2>
       <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-        <p className="text-gray-600 dark:text-gray-400">Talent search and management functionality will be implemented here.</p>
+        <TodoSystem />
       </div>
     </div>
   );
 
-  const JobsPage = () => (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Job Management</h2>
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-        <p className="text-gray-600 dark:text-gray-400">Job posting and management functionality will be implemented here.</p>
-      </div>
-    </div>
-  );
+  const TalentsPage = () => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchQuery = urlParams.get('search') || '';
+    
+    return <TalentSearch initialSearch={searchQuery} />;
+  };
+
+  const JobsPage = () => <JobsManagement />;
 
   const ProjectsPage = () => (
     <div className="space-y-6">

@@ -37,10 +37,14 @@ interface Talent {
   phone?: string;
 }
 
-const TalentSearch: React.FC = () => {
+interface TalentSearchProps {
+  initialSearch?: string;
+}
+
+const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
   const { user } = useAuth();
   const location = useLocation();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [talents, setTalents] = useState<Talent[]>([]);
   const [filteredTalents, setFilteredTalents] = useState<Talent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,6 +60,12 @@ const TalentSearch: React.FC = () => {
   useEffect(() => {
     fetchTalents();
   }, []);
+
+  useEffect(() => {
+    if (initialSearch) {
+      setSearchTerm(initialSearch);
+    }
+  }, [initialSearch]);
 
   useEffect(() => {
     // Apply filters whenever they change
