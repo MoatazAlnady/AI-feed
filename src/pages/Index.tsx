@@ -10,7 +10,7 @@ import AuthModal from '@/components/AuthModal';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import TrendingTools from '@/components/TrendingTools';
 import TopCreators from '@/components/TopCreators';
-import ChatDock from '@/components/ChatDock';
+import AIChatBot from '@/components/ChatDock';
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -208,7 +208,7 @@ const Index = () => {
       )}
 
       {/* Chat Dock */}
-      <ChatDock />
+      <AIChatBot />
     </div>
   );
 };

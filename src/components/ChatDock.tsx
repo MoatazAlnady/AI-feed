@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { MessageCircle, X, Send, Bot } from 'lucide-react';
+import { X, Send, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
-const ChatDock = () => {
+const AIChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Array<{id: number, text: string, sender: 'user' | 'ai'}>>([]);
@@ -108,4 +108,4 @@ const ChatDock = () => {
   );
 };
 
-export default ChatDock;
+export default AIChatBot;
