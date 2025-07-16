@@ -46,11 +46,11 @@ const Index = () => {
       <section className="py-20 px-6">
         <div className="container max-w-6xl mx-auto text-center">
           <div className="mb-8">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gradient">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gradient font-playfair">
               Welcome to AI Nexus
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              The unified SaaS platform connecting AI-skilled creators with innovative employers
+              The unified SaaS platform connecting AI-skilled creators
             </p>
           </div>
           
@@ -59,9 +59,6 @@ const Index = () => {
               <Link to="/tools">
                 Explore AI Tools <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
-            </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8" asChild>
-              <Link to="/talent">Find Talent</Link>
             </Button>
           </div>
           
@@ -89,7 +86,7 @@ const Index = () => {
             <p className="text-xl text-muted-foreground">Discover, connect, and collaborate in the AI ecosystem</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Card className="group hover:shadow-lg transition-shadow">
               <CardContent className="p-8 text-center">
                 <div className="mb-6 mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
@@ -110,27 +107,12 @@ const Index = () => {
                 <div className="mb-6 mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                   <Users className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4">Talent Marketplace</h3>
+                <h3 className="text-xl font-semibold mb-4">Creators Marketplace</h3>
                 <p className="text-muted-foreground mb-6">
                   Find skilled AI creators and professionals for your next project
                 </p>
                 <Link to="/talent" className="text-primary hover:underline font-medium">
-                  Find Talent →
-                </Link>
-              </CardContent>
-            </Card>
-            
-            <Card className="group hover:shadow-lg transition-shadow">
-              <CardContent className="p-8 text-center">
-                <div className="mb-6 mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                  <Target className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold mb-4">Project Management</h3>
-                <p className="text-muted-foreground mb-6">
-                  Manage projects and collaborate seamlessly with your team
-                </p>
-                <Link to="/dashboard" className="text-primary hover:underline font-medium">
-                  Get Started →
+                  Find Creators →
                 </Link>
               </CardContent>
             </Card>

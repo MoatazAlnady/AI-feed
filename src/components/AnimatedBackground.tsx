@@ -32,23 +32,23 @@ const AnimatedBackground: React.FC = () => {
       const numberOfCircles = Math.floor((window.innerWidth * window.innerHeight) / 15000);
       
       const colors = [
-        'rgba(59, 130, 246, 0.08)', // blue from design system
-        'rgba(168, 85, 247, 0.08)', // purple from design system
-        'rgba(59, 130, 246, 0.12)', // blue slightly more opaque
-        'rgba(168, 85, 247, 0.12)', // purple slightly more opaque
-        'rgba(139, 92, 246, 0.1)', // violet
-        'rgba(79, 70, 229, 0.1)', // indigo
+        'rgba(59, 130, 246, 0.15)', // blue more visible
+        'rgba(168, 85, 247, 0.15)', // purple more visible  
+        'rgba(59, 130, 246, 0.2)', // blue even more visible
+        'rgba(168, 85, 247, 0.2)', // purple even more visible
+        'rgba(139, 92, 246, 0.18)', // violet
+        'rgba(79, 70, 229, 0.18)', // indigo
       ];
 
       for (let i = 0; i < numberOfCircles; i++) {
         circles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          radius: Math.random() * 100 + 20,
-          dx: (Math.random() - 0.5) * 0.5,
-          dy: (Math.random() - 0.5) * 0.5,
+          radius: Math.random() * 120 + 40, // Larger circles
+          dx: (Math.random() - 0.5) * 0.8, // Slightly faster movement
+          dy: (Math.random() - 0.5) * 0.8,
           color: colors[Math.floor(Math.random() * colors.length)],
-          opacity: Math.random() * 0.3 + 0.1,
+          opacity: Math.random() * 0.4 + 0.2, // More visible
         });
       }
       
@@ -71,10 +71,19 @@ const AnimatedBackground: React.FC = () => {
           circle.dy = -circle.dy;
         }
 
-        // Draw circle
+        // Draw circle with glow effect
         ctx.beginPath();
         ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
-        ctx.fillStyle = circle.color;
+        
+        // Create gradient for glow effect
+        const gradient = ctx.createRadialGradient(
+          circle.x, circle.y, 0,
+          circle.x, circle.y, circle.radius
+        );
+        gradient.addColorStop(0, circle.color.replace('0.15', '0.25').replace('0.2', '0.3').replace('0.18', '0.28'));
+        gradient.addColorStop(1, circle.color.replace('0.15', '0.05').replace('0.2', '0.05').replace('0.18', '0.05'));
+        
+        ctx.fillStyle = gradient;
         ctx.fill();
       });
 
@@ -104,7 +113,7 @@ const AnimatedBackground: React.FC = () => {
     <canvas
       ref={canvasRef}
       className="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none"
-      style={{ background: 'linear-gradient(135deg, hsl(221 83% 53% / 0.02) 0%, hsl(262 83% 58% / 0.02) 100%)' }}
+      style={{ background: 'linear-gradient(135deg, hsl(221 83% 53% / 0.03) 0%, hsl(262 83% 58% / 0.03) 50%, hsl(221 83% 53% / 0.02) 100%)' }}
     />
   );
 };
