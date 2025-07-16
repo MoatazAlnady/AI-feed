@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Briefcase, MapPin, DollarSign, Clock, ExternalLink, Building, Target } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
-import { PromoteContentModal } from './PromoteContentModal';
+import { useAuth } from '../contexts/AuthContext';
+import PromoteContentModal from './PromoteContentModal';
 
 interface CreateJobModalProps {
   isOpen: boolean;
