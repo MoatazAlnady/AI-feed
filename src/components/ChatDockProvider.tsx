@@ -80,9 +80,9 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="absolute bottom-16 right-0 w-80 h-96 bg-white dark:bg-[hsl(248_32%_18%)] border border-gray-200 dark:border-[hsl(252_88%_29%)] rounded-lg shadow-xl animate-slide-up">
+        <div className="absolute bottom-16 right-0 w-80 h-96 bg-white dark:bg-[hsl(248,32%,18%)] border border-gray-200 dark:border-[hsl(252,88%,29%)] rounded-lg shadow-xl animate-slide-up">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-[hsl(252_88%_29%)]">
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-[hsl(252,88%,29%)]">
             <h3 className="font-semibold text-gray-900 dark:text-white">Messages</h3>
             <div className="flex space-x-1">
               <button
@@ -111,7 +111,7 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
                 {chats.map((chat) => (
                   <div
                     key={chat.id}
-                    className="flex items-center space-x-3 p-3 hover:bg-gray-100 dark:hover:bg-[hsl(252_88%_35%)] cursor-pointer border-b border-gray-200 dark:border-[hsl(252_88%_29%)]/50"
+                    className="flex items-center space-x-3 p-3 hover:bg-gray-100 dark:hover:bg-[hsl(252,88%,35%)] cursor-pointer border-b border-gray-200 dark:border-[hsl(252,88%,29%)]/50"
                   >
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                       {chat.isAI ? (
@@ -166,14 +166,14 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
                 </div>
 
                 {/* AI Input */}
-                <form onSubmit={handleSendAiMessage} className="p-3 border-t border-gray-200 dark:border-[hsl(252_88%_29%)]">
+                <form onSubmit={handleSendAiMessage} className="p-3 border-t border-gray-200 dark:border-[hsl(252,88%,29%)]">
                   <div className="flex space-x-2">
                     <input
                       type="text"
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Ask AI assistant..."
-                      className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-[hsl(252_88%_29%)] rounded-md focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-[hsl(248_32%_18%)] text-gray-900 dark:text-white"
+                      className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-[hsl(252,88%,29%)] rounded-md focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-[hsl(248,32%,18%)] text-gray-900 dark:text-white"
                     />
                     <button
                       type="submit"
