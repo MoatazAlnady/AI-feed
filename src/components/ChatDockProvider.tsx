@@ -80,15 +80,15 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="absolute bottom-16 right-0 w-80 h-96 bg-white dark:bg-[hsl(248_32%_18%)] border border-gray-200 dark:border-[hsl(252_88%_29%)] rounded-lg shadow-xl animate-slide-up">
+        <div className="absolute bottom-16 right-0 w-80 h-96 bg-white dark:bg-[hsl(248,32%,18%)] border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl animate-slide-up">
           {/* Header */}
-           <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-[hsl(252_88%_29%)]">
+           <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
              <h3 className="font-semibold text-gray-900 dark:text-white">Messages</h3>
             <div className="flex space-x-1">
               <button
                 onClick={() => setActiveTab('chats')}
                  className={`px-3 py-1 text-xs rounded ${
-                   activeTab === 'chats' ? 'bg-blue-600 dark:bg-[hsl(191_100%_50%)] text-white' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                   activeTab === 'chats' ? 'bg-blue-600 text-white' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
                  }`}
               >
                 Chats
@@ -96,7 +96,7 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
               <button
                 onClick={() => setActiveTab('ai')}
                  className={`px-3 py-1 text-xs rounded ${
-                   activeTab === 'ai' ? 'bg-blue-600 dark:bg-[hsl(191_100%_50%)] text-white' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                   activeTab === 'ai' ? 'bg-blue-600 text-white' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
                  }`}
               >
                 AI
@@ -111,11 +111,11 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
                 {chats.map((chat) => (
                   <div
                     key={chat.id}
-                    className="flex items-center space-x-3 p-3 hover:bg-gray-50 dark:hover:bg-[hsl(248_32%_22%)] cursor-pointer border-b border-gray-200 dark:border-[hsl(252_88%_29%)]"
+                    className="flex items-center space-x-3 p-3 hover:bg-gray-50 dark:hover:bg-[hsl(248,32%,22%)] cursor-pointer border-b border-gray-200 dark:border-gray-700"
                   >
-                     <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-[hsl(191_100%_50%)]/20 flex items-center justify-center">
+                     <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
                        {chat.isAI ? (
-                         <Bot className="h-5 w-5 text-blue-600 dark:text-[hsl(191_100%_50%)]" />
+                         <Bot className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                        ) : (
                          <span className="text-sm font-medium text-gray-900 dark:text-white">{chat.avatar}</span>
                        )}
@@ -128,7 +128,7 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
                       <p className="text-xs text-gray-600 dark:text-gray-300 truncate">{chat.lastMessage}</p>
                     </div>
                     {chat.unread > 0 && (
-                      <span className="bg-blue-600 dark:bg-[hsl(191_100%_50%)] text-white text-xs rounded-full px-2 py-1 min-w-[1.25rem] h-5 flex items-center justify-center">
+                      <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-1 min-w-[1.25rem] h-5 flex items-center justify-center">
                         {chat.unread}
                       </span>
                     )}
@@ -141,7 +141,7 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
                 <div className="flex-1 p-3 overflow-y-auto space-y-3">
                   {aiMessages.length === 0 ? (
                      <div className="text-center text-gray-500 dark:text-gray-400 text-sm">
-                       <Bot className="h-8 w-8 mx-auto mb-2 text-blue-600 dark:text-[hsl(191_100%_50%)]/50" />
+                       <Bot className="h-8 w-8 mx-auto mb-2 text-blue-600 dark:text-blue-400" />
                        <p>Hi! I'm your AI assistant.</p>
                        <p>Ask me anything about the platform!</p>
                      </div>
@@ -154,8 +154,8 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
                         <div
                            className={`max-w-[80%] p-2 rounded-lg text-sm ${
                              msg.sender === 'user'
-                               ? 'bg-blue-600 dark:bg-[hsl(191_100%_50%)] text-white'
-                               : 'bg-gray-100 dark:bg-[hsl(248_32%_22%)] text-gray-900 dark:text-white'
+                               ? 'bg-blue-600 text-white'
+                               : 'bg-gray-200 dark:bg-[hsl(248,32%,22%)] text-gray-900 dark:text-white'
                            }`}
                         >
                           {msg.text}
@@ -166,18 +166,18 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
                 </div>
 
                 {/* AI Input */}
-                 <form onSubmit={handleSendAiMessage} className="p-3 border-t border-gray-200 dark:border-[hsl(252_88%_29%)]">
+                 <form onSubmit={handleSendAiMessage} className="p-3 border-t border-gray-200 dark:border-gray-700">
                    <div className="flex space-x-2">
                      <input
                        type="text"
                        value={message}
                        onChange={(e) => setMessage(e.target.value)}
                        placeholder="Ask AI assistant..."
-                       className="flex-1 px-3 py-2 text-sm border border-gray-200 dark:border-[hsl(252_88%_29%)] rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-[hsl(191_100%_50%)] focus:border-transparent bg-white dark:bg-[hsl(248_32%_22%)] text-gray-900 dark:text-white"
+                       className="flex-1 px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[hsl(248,32%,22%)] text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                      />
                      <button
                        type="submit"
-                       className="px-3 py-2 bg-blue-600 dark:bg-[hsl(191_100%_50%)] text-white rounded-md hover:bg-blue-700 dark:hover:bg-[hsl(191_100%_45%)] transition-colors"
+                       className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                      >
                        <Send className="h-4 w-4" />
                      </button>
