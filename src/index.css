@@ -307,6 +307,11 @@ button {
   @apply text-muted-foreground;
 }
 
+/* Window border colors */
+* {
+  @apply border-border;
+}
+
 /* Brand circle canvas background */
 .brand-canvas {
   position: fixed;
@@ -314,9 +319,20 @@ button {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(600px at 15% 25%, hsl(var(--primary)) 0%, transparent 60%),
-    radial-gradient(500px at 85% 15%, hsl(var(--secondary)) 0%, transparent 60%),
-    radial-gradient(400px at 25% 80%, hsl(var(--primary)) 0%, transparent 60%);
-  opacity: 0.08;
+    radial-gradient(800px at 12% 18%, hsl(221 83% 53% / 0.12) 0%, transparent 65%),
+    radial-gradient(600px at 88% 25%, hsl(262 83% 58% / 0.10) 0%, transparent 60%),
+    radial-gradient(450px at 35% 75%, hsl(221 83% 53% / 0.08) 0%, transparent 55%),
+    radial-gradient(350px at 78% 82%, hsl(262 83% 58% / 0.06) 0%, transparent 50%),
+    radial-gradient(250px at 55% 45%, hsl(240 100% 70% / 0.04) 0%, transparent 45%);
   filter: blur(60px);
+}
+
+/* Dark mode canvas - darker blue to purple gradients */
+.dark .brand-canvas {
+  background:
+    radial-gradient(800px at 12% 18%, hsl(220 50% 25% / 0.15) 0%, transparent 65%),
+    radial-gradient(600px at 88% 25%, hsl(260 45% 30% / 0.12) 0%, transparent 60%),
+    radial-gradient(450px at 35% 75%, hsl(210 60% 20% / 0.10) 0%, transparent 55%),
+    radial-gradient(350px at 78% 82%, hsl(270 40% 25% / 0.08) 0%, transparent 50%),
+    radial-gradient(250px at 55% 45%, hsl(240 35% 30% / 0.06) 0%, transparent 45%);
 }
