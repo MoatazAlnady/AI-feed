@@ -132,10 +132,10 @@ const Header: React.FC = () => {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link to={isEmployerView ? "/employer" : "/"} className="flex items-center space-x-3 group flex-shrink-0">
-              <div className="p-2 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-lg group-hover:shadow-lg transition-all duration-300 transform group-hover:scale-105">
+              <div className="p-2 bg-gradient-primary rounded-lg group-hover:shadow-lg transition-all duration-300 transform group-hover:scale-105">
                 <Zap className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent whitespace-nowrap">
+              <span className="text-xl font-bold text-gradient whitespace-nowrap">
                 AI Nexus
               </span>
             </Link>
