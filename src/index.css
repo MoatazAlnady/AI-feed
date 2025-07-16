@@ -48,7 +48,7 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
     --border: 220 91% 15%; /* Dark blue border */
-    --input: 211 32% 18%; /* Darker petroleum input background */
+    --input: 220 91% 15%; /* Dark blue input background to match border */
     --ring: 221 83% 53%;
     
     /* Custom gradients for dark mode */
