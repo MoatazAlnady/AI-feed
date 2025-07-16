@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, Grid, List, GitCompare, Star, ExternalLink, Bookmark, Zap } from 'lucide-react';
+import { Search, Filter, Grid, List, GitCompare, Star, ExternalLink, Bookmark, Zap, Plus } from 'lucide-react';
 import ToolComparisonModal from '../components/ToolComparisonModal';
 
 interface Tool {
@@ -94,13 +94,14 @@ const Tools: React.FC = () => {
               <div className="flex items-center space-x-4">
                 <Link
                   to="/tools/create"
-                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-lg hover:shadow-lg transition-shadow"
+                  className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200 font-semibold"
                 >
+                  <Plus className="h-5 w-5" />
                   <span>Submit A New AI Tool</span>
                 </Link>
                 <button
                   onClick={() => setShowComparison(true)}
-                  className="flex items-center space-x-2 px-4 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex items-center space-x-2 px-6 py-3 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 font-semibold"
                 >
                   <GitCompare className="h-5 w-5" />
                   <span>Compare Tools</span>
@@ -178,9 +179,10 @@ const Tools: React.FC = () => {
               </p>
               <Link
                 to="/tools/create"
-                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-semibold rounded-xl hover:shadow-lg transition-shadow"
+                className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-200"
               >
-                Submit A New AI Tool
+                <Plus className="h-5 w-5" />
+                <span>Submit A New AI Tool</span>
               </Link>
             </div>
           ) : filteredTools.length === 0 ? (
