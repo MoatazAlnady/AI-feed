@@ -71,8 +71,8 @@ const Newsfeed: React.FC = () => {
 
   return (
     <>
-      <div className="py-8 bg-white dark:bg-[#091527] min-h-screen w-full overflow-x-hidden">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -83,11 +83,11 @@ const Newsfeed: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Sidebar */}
             <div className="lg:col-span-1">
               {/* Create Content Card */}
-              <div className="bg-white dark:bg-[#091527] rounded-2xl shadow-sm p-6 mb-6 border border-gray-200 dark:border-gray-700">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 mb-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold text-gray-900 dark:text-white">Create Something</h3>
                   <button
@@ -162,7 +162,7 @@ const Newsfeed: React.FC = () => {
             {/* Main Content */}
             <div className="lg:col-span-3">
               {/* Create Post Quick Access */}
-              <div className="bg-white dark:bg-[#091527] rounded-2xl shadow-sm p-6 mb-6 border border-gray-200 dark:border-gray-700">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 mb-6">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
                     <User className="h-6 w-6 text-white" />
@@ -185,7 +185,7 @@ const Newsfeed: React.FC = () => {
 
               {/* Trending Tools Section - Only show if there are trending tools */}
               {trendingTools.length > 0 && (
-                <div className="bg-white dark:bg-[#091527] rounded-2xl shadow-sm p-6 mb-6 border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 mb-6">
                   <div className="flex items-center space-x-2 mb-4">
                     <TrendingUp className="h-5 w-5 text-primary-600 dark:text-primary-400" />
                     <h3 className="font-semibold text-gray-900 dark:text-white">Weekly Trending AI Tools</h3>

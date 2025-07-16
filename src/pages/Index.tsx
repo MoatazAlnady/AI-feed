@@ -70,13 +70,13 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen relative w-full overflow-x-hidden">
+    <div className="min-h-screen relative">
       <AnimatedBackground />
       {/* Hero Section */}
-      <section ref={heroAnimation.ref} className={`py-20 px-6 transition-all duration-1000 w-full ${
+      <section ref={heroAnimation.ref} className={`py-20 px-6 transition-all duration-1000 ${
         heroAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}>
-        <div className="container max-w-6xl mx-auto text-center w-full">
+        <div className="container max-w-6xl mx-auto text-center">
           <div className="mb-8">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gradient slogan">
               Welcome to AI Nexus
@@ -106,7 +106,7 @@ const Index = () => {
           </div>
           
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="max-w-4xl mx-auto w-full">
+          <form onSubmit={handleSearch} className="max-w-4xl mx-auto">
             <div className="relative bg-white dark:bg-[#091527] rounded-2xl shadow-lg p-2 border border-gray-200 dark:border-gray-700">
               <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <input
@@ -133,16 +133,16 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section ref={featuresAnimation.ref} className={`py-20 px-6 bg-white/30 dark:bg-[#091527]/30 backdrop-blur-sm transition-all duration-1000 w-full ${
+      <section ref={featuresAnimation.ref} className={`py-20 px-6 bg-white/30 dark:bg-[#091527]/30 backdrop-blur-sm transition-all duration-1000 ${
         featuresAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}>
-        <div className="container max-w-6xl mx-auto w-full">
+        <div className="container max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Everything you need in one platform</h2>
             <p className="text-xl text-muted-foreground">Discover, connect, and collaborate in the AI ecosystem</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <Card className={`group hover:shadow-lg transition-all duration-500 bg-white dark:bg-[#091527] border-gray-200 dark:border-gray-700 ${
               featuresAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`} style={{ transitionDelay: '100ms' }}>
