@@ -12,7 +12,7 @@ import Talent from "./pages/Talent";
 import EmployerDashboard from "./pages/EmployerDashboard";
 import Admin from "./pages/Admin";
 import Messages from "./pages/Messages";
-import Auth from "./pages/Auth";
+
 import NotFound from "./pages/NotFound";
 import About from "./pages/About";
 import Categories from "./pages/Categories";
@@ -31,7 +31,6 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
           <Routes>
-            <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<AppLayout />}>
               <Route index element={<Index />} />
               <Route path="tools" element={<Tools />} />

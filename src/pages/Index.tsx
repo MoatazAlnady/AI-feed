@@ -6,10 +6,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import NewsletterPopup from '@/components/NewsletterPopup';
+import AuthModal from '@/components/AuthModal';
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showNewsletterPopup, setShowNewsletterPopup] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -164,10 +166,8 @@ const Index = () => {
           <p className="text-xl text-muted-foreground mb-8">
             Start your journey with AI Nexus today and connect with the future of technology.
           </p>
-          <Button size="lg" className="text-lg px-8" asChild>
-            <Link to="/auth">
-              Get Started Free <Star className="ml-2 h-5 w-5" />
-            </Link>
+          <Button size="lg" className="text-lg px-8" onClick={() => setShowAuthModal(true)}>
+            Get Started Free <Star className="ml-2 h-5 w-5" />
           </Button>
         </div>
       </section>
@@ -175,6 +175,15 @@ const Index = () => {
       {/* Newsletter Popup */}
       {showNewsletterPopup && (
         <NewsletterPopup onClose={handleCloseNewsletterPopup} />
+      )}
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <AuthModal 
+          isOpen={showAuthModal} 
+          onClose={() => setShowAuthModal(false)}
+          initialMode="signin"
+        />
       )}
     </div>
   );
