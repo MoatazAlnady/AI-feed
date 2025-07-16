@@ -3,7 +3,8 @@ import { MessageSquare, Users, Lightbulb, TrendingUp, Star, Calendar, Plus, Sear
 import ChatDock from '../components/ChatDockProvider';
 
 const Community: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'feed' | 'events' | 'groups' | 'networking'>('feed');
+  const [activeTab, setActiveTab] = useState<'feed' | 'events' | 'groups' | 'networking'>('networking');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const renderFeed = () => (
       <div className="space-y-6">
@@ -119,6 +120,8 @@ const Community: React.FC = () => {
           <input
             type="text"
             placeholder="Search creators..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
           />
         </div>
@@ -212,10 +215,10 @@ const Community: React.FC = () => {
           <div className="border-b border-border">
             <nav className="-mb-px flex space-x-8">
               {[
+                { id: 'networking', label: 'Networking', icon: Users },
                 { id: 'feed', label: 'Feed', icon: MessageSquare },
                 { id: 'events', label: 'Events', icon: Calendar },
-                { id: 'groups', label: 'Groups', icon: Hash },
-                { id: 'networking', label: 'Networking', icon: Users }
+                { id: 'groups', label: 'Groups', icon: Hash }
               ].map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;

@@ -80,10 +80,10 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="absolute bottom-16 right-0 w-80 h-96 bg-background border border-border rounded-lg shadow-xl animate-slide-up">
+        <div className="absolute bottom-16 right-0 w-80 h-96 bg-white dark:bg-[hsl(var(--dark-1))] border border-gray-200 dark:border-[hsl(var(--c-indigo))] rounded-lg shadow-xl animate-slide-up">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-border">
-            <h3 className="font-semibold text-foreground">Messages</h3>
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-[hsl(var(--c-indigo))]">
+            <h3 className="font-semibold text-gray-900 dark:text-white">Messages</h3>
             <div className="flex space-x-1">
               <button
                 onClick={() => setActiveTab('chats')}
@@ -111,21 +111,21 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
                 {chats.map((chat) => (
                   <div
                     key={chat.id}
-                    className="flex items-center space-x-3 p-3 hover:bg-muted/50 cursor-pointer border-b border-border/50"
+                    className="flex items-center space-x-3 p-3 hover:bg-gray-100 dark:hover:bg-[hsl(var(--c-indigo))] cursor-pointer border-b border-gray-200 dark:border-[hsl(var(--c-indigo))]/50"
                   >
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                       {chat.isAI ? (
                         <Bot className="h-5 w-5 text-primary" />
                       ) : (
-                        <span className="text-sm font-medium text-foreground">{chat.avatar}</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">{chat.avatar}</span>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium text-foreground truncate">{chat.name}</p>
-                        <span className="text-xs text-muted-foreground">{chat.time}</span>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{chat.name}</p>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{chat.time}</span>
                       </div>
-                      <p className="text-xs text-muted-foreground truncate">{chat.lastMessage}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{chat.lastMessage}</p>
                     </div>
                     {chat.unread > 0 && (
                       <span className="bg-primary text-primary-foreground text-xs rounded-full px-2 py-1 min-w-[1.25rem] h-5 flex items-center justify-center">
@@ -166,14 +166,14 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
                 </div>
 
                 {/* AI Input */}
-                <form onSubmit={handleSendAiMessage} className="p-3 border-t border-border">
+                <form onSubmit={handleSendAiMessage} className="p-3 border-t border-gray-200 dark:border-[hsl(var(--c-indigo))]">
                   <div className="flex space-x-2">
                     <input
                       type="text"
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Ask AI assistant..."
-                      className="flex-1 px-3 py-2 text-sm border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+                      className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-[hsl(var(--c-indigo))] rounded-md focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-[hsl(var(--dark-1))] text-gray-900 dark:text-white"
                     />
                     <button
                       type="submit"

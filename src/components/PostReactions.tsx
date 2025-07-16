@@ -22,11 +22,11 @@ const PostReactions: React.FC<PostReactionsProps> = ({
   const [showReactionPicker, setShowReactionPicker] = useState(false);
 
   const reactionTypes = [
-    { type: 'like', icon: ThumbsUp, label: 'Like', color: 'text-blue-500' },
-    { type: 'love', icon: Heart, label: 'Love', color: 'text-red-500' },
-    { type: 'laugh', icon: Laugh, label: 'Laugh', color: 'text-yellow-500' },
-    { type: 'angry', icon: Angry, label: 'Angry', color: 'text-red-600' },
-    { type: 'sad', icon: Frown, label: 'Sad', color: 'text-gray-500' }
+    { type: 'like', icon: ThumbsUp, label: 'Like', color: 'text-blue-500', emoji: '👍' },
+    { type: 'insightful', icon: Heart, label: 'Insightful', color: 'text-orange-500', emoji: '💡' },
+    { type: 'celebrate', icon: Laugh, label: 'Celebrate', color: 'text-green-500', emoji: '🎉' },
+    { type: 'support', icon: Heart, label: 'Support', color: 'text-purple-500', emoji: '❤️' },
+    { type: 'funny', icon: Laugh, label: 'Funny', color: 'text-yellow-500', emoji: '😂' }
   ];
 
   const totalReactions = Object.values(reactions).reduce((sum, reaction) => sum + reaction.count, 0);

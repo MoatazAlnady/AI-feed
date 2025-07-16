@@ -96,8 +96,9 @@ const NewsFeed: React.FC = () => {
         return;
       }
 
-      // Fetch user profiles for each post
+          // Fetch user profiles for each post
       const userIds = [...new Set(postsData.map(post => post.user_id))];
+      console.log('User IDs from posts:', userIds);
       let userProfiles = [];
       
       if (userIds.length > 0) {
@@ -109,6 +110,7 @@ const NewsFeed: React.FC = () => {
         if (profileError) {
           console.error('Error fetching user profiles:', profileError);
         } else {
+          console.log('Fetched profiles:', profiles);
           userProfiles = profiles || [];
         }
       }
@@ -117,6 +119,7 @@ const NewsFeed: React.FC = () => {
 
       const formattedPosts = postsData.map(post => {
         const profile = profilesMap.get(post.user_id);
+        console.log(`Post ${post.id}: user_id = ${post.user_id}, found profile:`, profile);
         return {
           id: post.id,
           user_id: post.user_id,
@@ -341,7 +344,7 @@ const NewsFeed: React.FC = () => {
                         <MoreHorizontal className="h-4 w-4" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-48 bg-white dark:bg-[hsl(var(--dark-1))] border-gray-200 dark:border-[hsl(var(--c-indigo))] shadow-lg">
+                    <DropdownMenuContent className="w-48 bg-white dark:bg-[hsl(var(--dark-1))] border-gray-200 dark:border-[hsl(var(--c-indigo))] shadow-lg z-50">
                       <DropdownMenuItem 
                         onClick={() => handleEditPost(post.id)}
                         className="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[hsl(var(--c-indigo))]"
@@ -369,7 +372,7 @@ const NewsFeed: React.FC = () => {
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel className="bg-gray-100 dark:bg-[hsl(var(--c-indigo))] text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-[hsl(var(--c-violet))] border-gray-300 dark:border-[hsl(var(--c-indigo))]">
+                            <AlertDialogCancel>
                               Cancel
                             </AlertDialogCancel>
                             <AlertDialogAction 
