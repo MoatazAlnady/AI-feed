@@ -424,20 +424,25 @@ button {
     ) !important;
   }
   
-  /* Make main containers transparent for logged-in users to show gradient */
-  body.logged-in .min-h-screen {
-    background: transparent !important;
-  }
-  
-  /* Make page containers transparent to show body gradient */
-  body.logged-in main {
-    background: transparent !important;
-  }
-  
-  /* Make specific page wrappers transparent */
+  /* Aggressive override: Make ALL main containers transparent for logged-in users */
+  body.logged-in .min-h-screen,
+  body.logged-in main,
   body.logged-in .container,
   body.logged-in .max-w-6xl,
-  body.logged-in .max-w-4xl {
+  body.logged-in .max-w-4xl,
+  body.logged-in .max-w-7xl,
+  body.logged-in > div,
+  body.logged-in #root,
+  body.logged-in [data-theme] {
+    background: transparent !important;
+  }
+  
+  /* Override common page background classes for logged-in users */
+  body.logged-in .bg-white,
+  body.logged-in .bg-gray-50,
+  body.logged-in .bg-gray-100,
+  body.logged-in .dark\:bg-gray-900,
+  body.logged-in .dark\:bg-gray-800 {
     background: transparent !important;
   }
 }
