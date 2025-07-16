@@ -38,7 +38,11 @@ const App = () => (
               <Route index element={<Index />} />
               <Route path="newsfeed" element={<Index />} />
               <Route path="tools" element={<Tools />} />
-              <Route path="tools/create" element={<SubmitTool />} />
+              <Route path="tools/create" element={
+                <div className="animate-fade-in">
+                  <SubmitTool />
+                </div>
+              } />
               <Route path="tools/:id" element={<ToolDetails />} />
               <Route path="articles/create" element={<SubmitArticle />} />
               <Route path="categories" element={<Categories />} />

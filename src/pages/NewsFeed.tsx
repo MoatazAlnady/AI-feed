@@ -14,6 +14,7 @@ import NewsFeedComponent from '../components/NewsFeed';
 import CreatePostModal from '../components/CreatePostModal';
 import CreateEventModal from '../components/CreateEventModal';
 import HashtagSystem from '../components/HashtagSystem';
+import ChatDock from '../components/ChatDockProvider';
 import { useAuth } from '../context/AuthContext';
 
 const Newsfeed: React.FC = () => {
@@ -230,6 +231,9 @@ const Newsfeed: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Chat Dock */}
+      <ChatDock />
 
       {/* Modals */}
       <CreatePostModal

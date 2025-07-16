@@ -11,6 +11,7 @@ const SubmitTool: React.FC = () => {
     description: '',
     category: '',
     subcategory: '',
+    toolType: '',
     website: '',
     pricing: 'free',
     tags: '',
@@ -155,6 +156,7 @@ const SubmitTool: React.FC = () => {
       description: '',
       category: '',
       subcategory: '',
+      toolType: '',
       website: '',
       pricing: 'free',
       tags: '',
@@ -220,8 +222,8 @@ const SubmitTool: React.FC = () => {
               onClick={() => setSubmissionMode('form')}
               className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-colors ${
                 submissionMode === 'form'
-                  ? 'bg-primary-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-primary-500 text-white shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600'
               }`}
             >
               <FileText className="h-5 w-5" />
@@ -231,8 +233,8 @@ const SubmitTool: React.FC = () => {
               onClick={() => setSubmissionMode('csv')}
               className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-colors ${
                 submissionMode === 'csv'
-                  ? 'bg-primary-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-primary-500 text-white shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600'
               }`}
             >
               <Upload className="h-5 w-5" />
@@ -278,8 +280,8 @@ const SubmitTool: React.FC = () => {
               />
             </div>
 
-            {/* Category & Subcategory */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {/* Category, Subcategory & Tool Type */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               <div>
                 <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
                   Category *
@@ -313,6 +315,28 @@ const SubmitTool: React.FC = () => {
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   placeholder="e.g., Text-to-Image, Chatbots"
                 />
+              </div>
+              <div>
+                <label htmlFor="toolType" className="block text-sm font-medium text-gray-700 mb-2">
+                  Tool Type
+                </label>
+                <select
+                  id="toolType"
+                  name="toolType"
+                  value={formData.toolType}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                >
+                  <option value="">Select tool type</option>
+                  <option value="Web App">Web App</option>
+                  <option value="Desktop App">Desktop App</option>
+                  <option value="Mobile App">Mobile App</option>
+                  <option value="API">API</option>
+                  <option value="Browser Extension">Browser Extension</option>
+                  <option value="Plugin">Plugin</option>
+                  <option value="Cloud Service">Cloud Service</option>
+                  <option value="Library/Framework">Library/Framework</option>
+                </select>
               </div>
             </div>
 
