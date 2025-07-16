@@ -128,10 +128,10 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="bg-white dark:bg-[#091527] shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 backdrop-blur-sm bg-white/95 dark:bg-[#091527]/95">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
+      <header className="w-full bg-white dark:bg-[#091527] shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 backdrop-blur-sm bg-white/95 dark:bg-[#091527]/95">
+        <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 h-16 gap-x-6">
+          {/* Left: Logo + Navigation */}
+          <div className="flex items-center gap-x-6">
             <Link to={isEmployerView ? "/employer" : "/"} className="flex items-center space-x-3 group flex-shrink-0">
               <div className="p-2 bg-gradient-primary rounded-lg group-hover:shadow-lg transition-all duration-300 transform group-hover:scale-105">
                 <Zap className="h-6 w-6 text-white" />
@@ -142,7 +142,7 @@ const Header: React.FC = () => {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-6 ml-5">
+            <div className="hidden lg:flex items-center space-x-4">
               {!isEmployerView && filteredNavigation.map((item) => (
                 <Link
                   key={item.name}
@@ -221,20 +221,300 @@ const Header: React.FC = () => {
                 </>
               )}
             </div>
+          </div>
 
-            {/* Right Side Actions */}
-            <div className="flex items-center space-x-3 flex-shrink-0">
-              {/* Theme Toggle */}
+          {/* Right Side Actions */}
+          <div className="flex items-center gap-x-3 flex-shrink-0">
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-colors"
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
+            
+            {/* Search Button */}
+            <form onSubmit={handleSearch} className="hidden md:block">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder={isEmployerView ? "Search talent, jobs..." : "Search AI tools..."}
+                  className="pl-10 pr-4 py-2 border border-gray-200 dark:border-blue-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent w-64 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+            </form>
+            
+            {/* Mobile Search Button */}
+            <button 
+              onClick={() => navigate(isEmployerView ? '/employer/talents' : '/tools')}
+              className="md:hidden p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-colors"
+            >
+              <Search className="h-5 w-5" />
+            </button>
+            
+            {user ? (
+              <>
+                {/* Analytics - Only for creators */}
+                {isCreator && !isEmployerView && (
+                  <Link
+                    to="/analytics"
+                    className={`p-2 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg ${
+                      location.pathname === '/analytics'
+                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30'
+                        : 'text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100'
+                    }`}
+                    title="Analytics"
+                  >
+                    <BarChart3 className="h-5 w-5" />
+                  </Link>
+                )}
+
+                {/* Notifications */}
+                {isEmployerView ? (
+                  <Link
+                    to="/employer/notifications"
+                    className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                  >
+                    <Bell className="h-5 w-5" />
+                    {notificationCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                        {notificationCount}
+                      </span>
+                    )}
+                  </Link>
+                ) : (
+                  <Link
+                    to="/notifications"
+                    className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                  >
+                    <Bell className="h-5 w-5" />
+                    {notificationCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                        {notificationCount}
+                      </span>
+                    )}
+                  </Link>
+                )}
+
+                {/* Messages */}
+                {isEmployerView ? (
+                  <Link
+                    to="/employer/messages"
+                    className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                  >
+                    <MessageCircle className="h-5 w-5" />
+                    {messageCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                        {messageCount}
+                      </span>
+                    )}
+                  </Link>
+                ) : (
+                  <Link
+                    to="/messages"
+                    className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                  >
+                    <MessageCircle className="h-5 w-5" />
+                    {messageCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                        {messageCount}
+                      </span>
+                    )}
+                  </Link>
+                )}
+
+                {/* Create Dropdown - Only for authenticated users in creator view */}
+                {!isEmployerView && (
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowCreateMenu(!showCreateMenu)}
+                      className="flex items-center space-x-1 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-all duration-200 whitespace-nowrap"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span className="text-sm font-medium hidden sm:inline">Create</span>
+                    </button>
+                    
+                    {showCreateMenu && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 animate-slide-up">
+                        <Link
+                          to="/tools/create"
+                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          onClick={() => setShowCreateMenu(false)}
+                        >
+                          AI Tool
+                        </Link>
+                        <Link
+                          to="/articles/create"
+                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          onClick={() => setShowCreateMenu(false)}
+                        >
+                          Article
+                        </Link>
+                        <Link
+                          to="/posts/create"
+                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          onClick={() => setShowCreateMenu(false)}
+                        >
+                          Post
+                        </Link>
+                        <Link
+                          to="/community"
+                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          onClick={() => setShowCreateMenu(false)}
+                        >
+                          Event
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* User Menu */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="flex items-center space-x-2 p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200"
+                  >
+                    <div className="relative">
+                      <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
+                        <User className="h-4 w-4 text-white" />
+                      </div>
+                      {/* Verification Badge */}
+                      {verificationBadgeType && (
+                        <div className="absolute -bottom-1 -right-1">
+                          <VerificationBadge type={verificationBadgeType} size="sm" />
+                        </div>
+                      )}
+                    </div>
+                    <span className="hidden sm:inline text-sm font-medium">
+                      {user?.user_metadata?.full_name || user.email?.split('@')[0]}
+                    </span>
+                    {/* Account type indicator */}
+                    {isEmployer && (
+                      <div className="hidden sm:flex items-center">
+                        <Building className="h-3 w-3 text-purple-500 dark:text-purple-400" />
+                      </div>
+                    )}
+                  </button>
+
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 animate-slide-up">
+                      <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
+                        <div className="flex items-center space-x-2">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            {user?.user_metadata?.full_name || user.email?.split('@')[0]}
+                          </p>
+                          {verificationBadgeType && (
+                            <VerificationBadge type={verificationBadgeType} size="sm" />
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {isEmployer ? 'Employer Account' : 'Creator Account'}
+                        </p>
+                      </div>
+                      {isEmployerView ? (
+                        <>
+                          <Link
+                            to="/employer/profile"
+                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                            onClick={() => setShowUserMenu(false)}
+                          >
+                            Profile
+                          </Link>
+                        </>
+                      ) : (
+                        <>
+                          <Link
+                            to="/profile"
+                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                            onClick={() => setShowUserMenu(false)}
+                          >
+                            Profile
+                          </Link>
+                          {isCreator && (
+                            <Link
+                              to="/analytics"
+                              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                              onClick={() => setShowUserMenu(false)}
+                            >
+                              <div className="flex items-center">
+                                <BarChart3 className="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" />
+                                Analytics
+                              </div>
+                            </Link>
+                          )}
+                        </>
+                      )}
+                      {(isEmployer || isAdmin) && (
+                        <Link
+                          to={isEmployerView ? "/" : "/employer"}
+                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          onClick={() => {
+                            setShowUserMenu(false);
+                            toggleEmployerView();
+                          }}
+                        >
+                          <div className="flex items-center">
+                            <Building className="h-4 w-4 mr-2 text-purple-500 dark:text-purple-400" />
+                            {isEmployerView ? "Switch to Creator View" : "Switch to Employer View"}
+                          </div>
+                        </Link>
+                      )}
+                      {isAdmin && (
+                        <Link
+                          to="/admin"
+                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          Admin Dashboard
+                        </Link>
+                      )}
+                      <button
+                        onClick={handleSignOut}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center"
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              /* Auth Buttons for non-authenticated users */
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => openAuthModal('signin')}
+                  className="px-4 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-gray-600 dark:text-gray-300 text-sm font-medium rounded-lg hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                  id="signupBtn"
+                >
+                  Sign In
+                </button>
+              </div>
+            )}
+
+            {/* Mobile menu button */}
+            <div className="lg:hidden">
               <button
-                onClick={toggleTheme}
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-colors"
-                aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
               >
-                {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
-              
-              {/* Search Button */}
-              <form onSubmit={handleSearch} className="hidden md:block">
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="lg:hidden animate-slide-up">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
+              {/* Mobile Search */}
+              <form onSubmit={handleSearch} className="mb-4">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
                   <input
@@ -242,546 +522,244 @@ const Header: React.FC = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder={isEmployerView ? "Search talent, jobs..." : "Search AI tools..."}
-                    className="pl-10 pr-4 py-2 border border-gray-200 dark:border-blue-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent w-64 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-blue-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
                 </div>
               </form>
-              
-              {/* Mobile Search Button */}
-              <button 
-                onClick={() => navigate(isEmployerView ? '/employer/talents' : '/tools')}
-                className="md:hidden p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-colors"
-              >
-                <Search className="h-5 w-5" />
-              </button>
+
+              {!isEmployerView ? (
+                // Regular navigation for creator view
+                filteredNavigation.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={`block px-3 py-2 text-base font-medium rounded-md transition-colors ${
+                      isActive(item.href)
+                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30'
+                        : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    } ${item.protected && !user ? 'opacity-50' : ''}`}
+                    onClick={(e) => {
+                      if (item.protected && !user) {
+                        e.preventDefault();
+                        openAuthModal('signin');
+                      } else {
+                        setIsMenuOpen(false);
+                      }
+                    }}
+                  >
+                    {item.name}
+                    {item.protected && !user && (
+                      <span className="ml-1 text-xs text-primary-500 dark:text-primary-400">*</span>
+                    )}
+                  </Link>
+                ))
+              ) : (
+                // Employer dashboard navigation
+                <>
+                  <Link
+                    to="/employer"
+                    className={`block px-3 py-2 text-base font-medium rounded-md transition-colors ${
+                      isActive('/employer')
+                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30'
+                        : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    to="/employer/talents"
+                    className={`block px-3 py-2 text-base font-medium rounded-md transition-colors ${
+                      location.pathname.includes('/employer/talents')
+                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30'
+                        : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Talents
+                  </Link>
+                  <Link
+                    to="/employer/jobs"
+                    className={`block px-3 py-2 text-base font-medium rounded-md transition-colors ${
+                      location.pathname.includes('/employer/jobs')
+                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30'
+                        : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Jobs
+                  </Link>
+                  <Link
+                    to="/employer/projects"
+                    className={`block px-3 py-2 text-base font-medium rounded-md transition-colors ${
+                      location.pathname.includes('/employer/projects')
+                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30'
+                        : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Projects
+                  </Link>
+                  <Link
+                    to="/employer/analytics"
+                    className={`block px-3 py-2 text-base font-medium rounded-md transition-colors ${
+                      location.pathname.includes('/employer/analytics')
+                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30'
+                        : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Analytics
+                  </Link>
+                </>
+              )}
               
               {user ? (
-                <>
-                  {/* Analytics - Only for creators */}
+                <div className="pt-2 border-t border-gray-100 dark:border-gray-700 space-y-2">
+                  {isEmployerView ? (
+                    <>
+                      <Link
+                        to="/employer/notifications"
+                        className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Notifications {notificationCount > 0 && `(${notificationCount})`}
+                      </Link>
+                      <Link
+                        to="/employer/messages"
+                        className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Messages {messageCount > 0 && `(${messageCount})`}
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/notifications"
+                        className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Notifications {notificationCount > 0 && `(${notificationCount})`}
+                      </Link>
+                      <Link
+                        to="/messages"
+                        className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Messages {messageCount > 0 && `(${messageCount})`}
+                      </Link>
+                    </>
+                  )}
+                  
                   {isCreator && !isEmployerView && (
                     <Link
                       to="/analytics"
-                      className={`p-2 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg ${
-                        location.pathname === '/analytics'
-                          ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30'
-                          : 'text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100'
-                      }`}
-                      title="Analytics"
+                      className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
                     >
-                      <BarChart3 className="h-5 w-5" />
+                      <div className="flex items-center">
+                        <BarChart3 className="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" />
+                        Analytics
+                      </div>
                     </Link>
                   )}
-
-                  {/* Notifications */}
-                  {isEmployerView ? (
-                    <Link
-                      to="/employer/notifications"
-                      className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                    >
-                      <Bell className="h-5 w-5" />
-                      {notificationCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                          {notificationCount}
-                        </span>
-                      )}
-                    </Link>
-                  ) : (
-                    <Link
-                      to="/notifications"
-                      className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                    >
-                      <Bell className="h-5 w-5" />
-                      {notificationCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                          {notificationCount}
-                        </span>
-                      )}
-                    </Link>
-                  )}
-
-                  {/* Messages */}
-                  {isEmployerView ? (
-                    <Link
-                      to="/employer/messages"
-                      className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                    >
-                      <MessageCircle className="h-5 w-5" />
-                      {messageCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                          {messageCount}
-                        </span>
-                      )}
-                    </Link>
-                  ) : (
-                    <Link
-                      to="/messages"
-                      className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                    >
-                      <MessageCircle className="h-5 w-5" />
-                      {messageCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                          {messageCount}
-                        </span>
-                      )}
-                    </Link>
-                  )}
-
-                  {/* Create Dropdown - Only for authenticated users in creator view */}
                   {!isEmployerView && (
-                    <div className="relative">
-                      <button
-                        onClick={() => setShowCreateMenu(!showCreateMenu)}
-                        className="flex items-center space-x-1 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-all duration-200 whitespace-nowrap"
+                    <>
+                      <Link
+                        to="/tools/create"
+                        className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
                       >
-                        <Plus className="h-4 w-4" />
-                        <span className="text-sm font-medium hidden sm:inline">Create</span>
-                      </button>
-                      
-                      {showCreateMenu && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 animate-slide-up">
-                          <Link
-                            to="/tools/create"
-                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                            onClick={() => setShowCreateMenu(false)}
-                          >
-                            AI Tool
-                          </Link>
-                          <Link
-                            to="/articles/create"
-                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                            onClick={() => setShowCreateMenu(false)}
-                          >
-                            Article
-                          </Link>
-                          <Link
-                            to="/posts/create"
-                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                            onClick={() => setShowCreateMenu(false)}
-                          >
-                            Post
-                          </Link>
-                          <Link
-                            to="/community"
-                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                            onClick={() => setShowCreateMenu(false)}
-                          >
-                            Event
-                          </Link>
-                        </div>
-                      )}
-                    </div>
+                        AI Tool
+                      </Link>
+                      <Link
+                        to="/articles/create"
+                        className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Article
+                      </Link>
+                      <Link
+                        to="/posts/create"
+                        className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Post
+                      </Link>
+                      <Link
+                        to="/community"
+                        className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Event
+                      </Link>
+                    </>
                   )}
-
-                  {/* Toggle View Button - Only for employers (hidden in header) */}
                   {(isEmployer || isAdmin) && (
                     <button
-                      onClick={toggleEmployerView}
-                      className="hidden"
-                      title={isEmployerView ? "Switch to Creator View" : "Switch to Employer View"}
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        toggleEmployerView();
+                      }}
+                      className="block w-full text-left px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
                     >
-                      <Building className="h-5 w-5" />
+                      <div className="flex items-center">
+                        <Building className="h-4 w-4 mr-2 text-purple-500 dark:text-purple-400" />
+                        {isEmployerView ? "Switch to Creator View" : "Switch to Employer View"}
+                      </div>
                     </button>
                   )}
-
-                  {/* Admin Button - Only for admins (hidden in header) */}
                   {isAdmin && (
                     <Link
                       to="/admin"
-                      className="hidden"
-                      title="Admin Dashboard"
+                      className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
                     >
-                      <Settings className="h-5 w-5" />
+                      Admin Dashboard
                     </Link>
                   )}
-
-                  {/* User Menu */}
-                  <div className="relative">
-                    <button
-                      onClick={() => setShowUserMenu(!showUserMenu)}
-                      className="flex items-center space-x-2 p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200"
+                  {isEmployerView ? (
+                    <Link
+                      to="/employer/profile"
+                      className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
                     >
-                      <div className="relative">
-                        <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
-                          <User className="h-4 w-4 text-white" />
-                        </div>
-                        {/* Verification Badge */}
-                        {verificationBadgeType && (
-                          <div className="absolute -bottom-1 -right-1">
-                            <VerificationBadge type={verificationBadgeType} size="sm" />
-                          </div>
-                        )}
-                      </div>
-                      <span className="hidden sm:inline text-sm font-medium">
-                        {user?.user_metadata?.full_name || user.email?.split('@')[0]}
-                      </span>
-                      {/* Account type indicator */}
-                      {isEmployer && (
-                        <div className="hidden sm:flex items-center">
-                          <Building className="h-3 w-3 text-purple-500 dark:text-purple-400" />
-                        </div>
-                      )}
-                    </button>
-
-                    {showUserMenu && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 animate-slide-up">
-                        <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
-                          <div className="flex items-center space-x-2">
-                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                              {user?.user_metadata?.full_name || user.email?.split('@')[0]}
-                            </p>
-                            {verificationBadgeType && (
-                              <VerificationBadge type={verificationBadgeType} size="sm" />
-                            )}
-                          </div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {isEmployer ? 'Employer Account' : 'Creator Account'}
-                          </p>
-                        </div>
-                        {isEmployerView ? (
-                          <>
-                            <Link
-                              to="/employer/profile"
-                              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                              onClick={() => setShowUserMenu(false)}
-                            >
-                              Profile
-                            </Link>
-                          </>
-                        ) : (
-                          <>
-                            <Link
-                              to="/profile"
-                              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                              onClick={() => setShowUserMenu(false)}
-                            >
-                              Profile
-                            </Link>
-                            {isCreator && (
-                              <Link
-                                to="/analytics"
-                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                                onClick={() => setShowUserMenu(false)}
-                              >
-                                <div className="flex items-center">
-                                  <BarChart3 className="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" />
-                                  Analytics
-                                </div>
-                              </Link>
-                            )}
-                          </>
-                        )}
-                        {(isEmployer || isAdmin) && (
-                          <Link
-                            to={isEmployerView ? "/" : "/employer"}
-                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                            onClick={() => {
-                              setShowUserMenu(false);
-                              toggleEmployerView();
-                            }}
-                          >
-                            <div className="flex items-center">
-                              <Building className="h-4 w-4 mr-2 text-purple-500 dark:text-purple-400" />
-                              {isEmployerView ? "Switch to Creator View" : "Switch to Employer View"}
-                            </div>
-                          </Link>
-                        )}
-                        {isAdmin && (
-                          <Link
-                            to="/admin"
-                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                            onClick={() => setShowUserMenu(false)}
-                          >
-                            Admin Dashboard
-                          </Link>
-                        )}
-                        <button
-                          onClick={handleSignOut}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center"
-                        >
-                          <LogOut className="h-4 w-4 mr-2" />
-                          Sign Out
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </>
-              ) : (
-                /* Auth Buttons for non-authenticated users */
-                <div className="flex items-center space-x-2">
+                      Profile
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/profile"
+                      className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Profile
+                    </Link>
+                  )}
                   <button
-                    onClick={() => openAuthModal('signin')}
-                    className="px-4 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-gray-600 dark:text-gray-300 text-sm font-medium rounded-lg hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                    onClick={handleSignOut}
+                    className="w-full text-left px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <div className="pt-2 border-t border-gray-100 dark:border-gray-700 space-y-2">
+                  <button
+                    onClick={() => {
+                      openAuthModal('signin');
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-base font-medium bg-gradient-to-r from-primary-500 to-secondary-500 text-gray-600 dark:text-gray-300 rounded-md transition-colors"
                     id="signupBtn"
                   >
                     Sign In
                   </button>
                 </div>
               )}
-
-              {/* Mobile menu button */}
-              <div className="lg:hidden">
-                <button
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-colors"
-                >
-                  {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                </button>
-              </div>
             </div>
           </div>
-
-          {/* Mobile Navigation */}
-          {isMenuOpen && (
-            <div className="lg:hidden animate-slide-up">
-              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
-                {/* Mobile Search */}
-                <form onSubmit={handleSearch} className="mb-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
-                    <input
-                      type="text"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      placeholder={isEmployerView ? "Search talent, jobs..." : "Search AI tools..."}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-blue-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                    />
-                  </div>
-                </form>
-
-                {!isEmployerView ? (
-                  // Regular navigation for creator view
-                  filteredNavigation.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      className={`block px-3 py-2 text-base font-medium rounded-md transition-colors ${
-                        isActive(item.href)
-                          ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30'
-                          : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                      } ${item.protected && !user ? 'opacity-50' : ''}`}
-                      onClick={(e) => {
-                        if (item.protected && !user) {
-                          e.preventDefault();
-                          openAuthModal('signin');
-                        } else {
-                          setIsMenuOpen(false);
-                        }
-                      }}
-                    >
-                      {item.name}
-                      {item.protected && !user && (
-                        <span className="ml-1 text-xs text-primary-500 dark:text-primary-400">*</span>
-                      )}
-                    </Link>
-                  ))
-                ) : (
-                  // Employer dashboard navigation
-                  <>
-                    <Link
-                      to="/employer"
-                      className={`block px-3 py-2 text-base font-medium rounded-md transition-colors ${
-                        isActive('/employer')
-                          ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30'
-                          : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                      }`}
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Dashboard
-                    </Link>
-                    <Link
-                      to="/employer/talents"
-                      className={`block px-3 py-2 text-base font-medium rounded-md transition-colors ${
-                        location.pathname.includes('/employer/talents')
-                          ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30'
-                          : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                      }`}
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Talents
-                    </Link>
-                    <Link
-                      to="/employer/jobs"
-                      className={`block px-3 py-2 text-base font-medium rounded-md transition-colors ${
-                        location.pathname.includes('/employer/jobs')
-                          ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30'
-                          : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                      }`}
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Jobs
-                    </Link>
-                    <Link
-                      to="/employer/projects"
-                      className={`block px-3 py-2 text-base font-medium rounded-md transition-colors ${
-                        location.pathname.includes('/employer/projects')
-                          ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30'
-                          : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                      }`}
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Projects
-                    </Link>
-                    <Link
-                      to="/employer/analytics"
-                      className={`block px-3 py-2 text-base font-medium rounded-md transition-colors ${
-                        location.pathname.includes('/employer/analytics')
-                          ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30'
-                          : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                      }`}
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Analytics
-                    </Link>
-                  </>
-                )}
-                
-                {user ? (
-                  <div className="pt-2 border-t border-gray-100 dark:border-gray-700 space-y-2">
-                    {isEmployerView ? (
-                      <>
-                        <Link
-                          to="/employer/notifications"
-                          className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          Notifications {notificationCount > 0 && `(${notificationCount})`}
-                        </Link>
-                        <Link
-                          to="/employer/messages"
-                          className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          Messages {messageCount > 0 && `(${messageCount})`}
-                        </Link>
-                      </>
-                    ) : (
-                      <>
-                        <Link
-                          to="/notifications"
-                          className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          Notifications {notificationCount > 0 && `(${notificationCount})`}
-                        </Link>
-                        <Link
-                          to="/messages"
-                          className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          Messages {messageCount > 0 && `(${messageCount})`}
-                        </Link>
-                      </>
-                    )}
-                    
-                    {isCreator && !isEmployerView && (
-                      <Link
-                        to="/analytics"
-                        className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <div className="flex items-center">
-                          <BarChart3 className="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" />
-                          Analytics
-                        </div>
-                      </Link>
-                    )}
-                    {!isEmployerView && (
-                      <>
-                        <Link
-                          to="/tools/create"
-                          className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          AI Tool
-                        </Link>
-                        <Link
-                          to="/articles/create"
-                          className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          Article
-                        </Link>
-                        <Link
-                          to="/posts/create"
-                          className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          Post
-                        </Link>
-                        <Link
-                          to="/community"
-                          className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          Event
-                        </Link>
-                      </>
-                    )}
-                    {(isEmployer || isAdmin) && (
-                      <button
-                        onClick={() => {
-                          setIsMenuOpen(false);
-                          toggleEmployerView();
-                        }}
-                        className="block w-full text-left px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                      >
-                        <div className="flex items-center">
-                          <Building className="h-4 w-4 mr-2 text-purple-500 dark:text-purple-400" />
-                          {isEmployerView ? "Switch to Creator View" : "Switch to Employer View"}
-                        </div>
-                      </button>
-                    )}
-                    {isAdmin && (
-                      <Link
-                        to="/admin"
-                        className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Admin Dashboard
-                      </Link>
-                    )}
-                    {isEmployerView ? (
-                      <Link
-                        to="/employer/profile"
-                        className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Profile
-                      </Link>
-                    ) : (
-                      <Link
-                        to="/profile"
-                        className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Profile
-                      </Link>
-                    )}
-                    <button
-                      onClick={handleSignOut}
-                      className="w-full text-left px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                    >
-                      Sign Out
-                    </button>
-                  </div>
-                ) : (
-                  <div className="pt-2 border-t border-gray-100 dark:border-gray-700 space-y-2">
-                    <button
-                      onClick={() => {
-                        openAuthModal('signin');
-                        setIsMenuOpen(false);
-                      }}
-                      className="w-full text-left px-3 py-2 text-base font-medium bg-gradient-to-r from-primary-500 to-secondary-500 text-gray-600 dark:text-gray-300 rounded-md transition-colors"
-                      id="signupBtn"
-                    >
-                      Sign In
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </nav>
+        )}
         
         {/* Overlays */}
         {showCreateMenu && (
