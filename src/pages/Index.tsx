@@ -98,14 +98,14 @@ const Index = () => {
           
           {/* Search Bar */}
           <form onSubmit={handleSearch} className="max-w-4xl mx-auto">
-            <div className="relative bg-background rounded-2xl shadow-lg p-2 border border-border">
+            <div className="relative bg-white dark:bg-[#091527] rounded-2xl shadow-lg p-2 border border-gray-200 dark:border-gray-700">
               <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="What do you want AI to do? What tools do you need? Search with keywords, fields, categories..."
-                className="w-full pl-14 pr-4 py-4 text-lg border-0 rounded-xl focus:ring-0 focus:outline-none bg-transparent text-foreground placeholder:text-muted-foreground"
+                className="w-full pl-14 pr-4 py-4 text-lg border-0 rounded-xl focus:ring-0 focus:outline-none bg-white dark:bg-[#091527] text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
               />
             </div>
           </form>
@@ -124,7 +124,7 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-6 bg-muted/30">
+      <section className="py-20 px-6 bg-white dark:bg-[#091527]">
         <div className="container max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Everything you need in one platform</h2>
@@ -132,7 +132,7 @@ const Index = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="group hover:shadow-lg transition-shadow">
+            <Card className="group hover:shadow-lg transition-shadow bg-white dark:bg-[#091527] border-gray-200 dark:border-gray-700">
               <CardContent className="p-8 text-center">
                 <div className="mb-6 mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                   <Zap className="h-8 w-8 text-primary" />
@@ -147,7 +147,7 @@ const Index = () => {
               </CardContent>
             </Card>
             
-            <Card className="group hover:shadow-lg transition-shadow">
+            <Card className="group hover:shadow-lg transition-shadow bg-white dark:bg-[#091527] border-gray-200 dark:border-gray-700">
               <CardContent className="p-8 text-center">
                 <div className="mb-6 mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                   <FolderOpen className="h-8 w-8 text-primary" />
@@ -162,7 +162,7 @@ const Index = () => {
               </CardContent>
             </Card>
             
-            <Card className="group hover:shadow-lg transition-shadow">
+            <Card className="group hover:shadow-lg transition-shadow bg-white dark:bg-[#091527] border-gray-200 dark:border-gray-700">
               <CardContent className="p-8 text-center">
                 <div className="mb-6 mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                   <Briefcase className="h-8 w-8 text-primary" />
@@ -201,7 +201,7 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6 bg-primary/5">
+      <section className="py-20 px-6 bg-white dark:bg-[#091527]">
         <div className="container max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to join the AI revolution?</h2>
           <p className="text-xl text-muted-foreground mb-8">

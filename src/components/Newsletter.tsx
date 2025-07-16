@@ -131,7 +131,7 @@ const Newsletter: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email address"
-                  className="w-full px-6 py-4 text-gray-900 dark:text-white rounded-xl border-0 focus:ring-2 focus:ring-white/50 focus:outline-none bg-white dark:bg-gray-800"
+                  className="w-full px-6 py-4 text-gray-900 dark:text-white rounded-xl border-0 focus:ring-2 focus:ring-white/50 focus:outline-none bg-white dark:bg-[#091527]"
                   required
                   disabled={isLoading}
                 />
