@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight, Zap, FolderOpen, Briefcase, Star, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import NewsletterPopup from '@/components/NewsletterPopup';
@@ -21,6 +22,12 @@ const Index = () => {
   const [autoOpenChat, setAutoOpenChat] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  // Scroll animations
+  const heroAnimation = useScrollAnimation(0.1);
+  const featuresAnimation = useScrollAnimation(0.1);
+  const statsAnimation = useScrollAnimation(0.1);
+  const ctaAnimation = useScrollAnimation(0.1);
 
   // Redirect authenticated users to newsfeed
   useEffect(() => {
@@ -66,7 +73,9 @@ const Index = () => {
     <div className="min-h-screen relative">
       <AnimatedBackground />
       {/* Hero Section */}
-      <section className="py-20 px-6">
+      <section ref={heroAnimation.ref} className={`py-20 px-6 transition-all duration-1000 ${
+        heroAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      }`}>
         <div className="container max-w-6xl mx-auto text-center">
           <div className="mb-8">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gradient slogan">
@@ -124,7 +133,9 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-6 bg-white dark:bg-[#091527]">
+      <section ref={featuresAnimation.ref} className={`py-20 px-6 bg-white/30 dark:bg-[#091527]/30 backdrop-blur-sm transition-all duration-1000 ${
+        featuresAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      }`}>
         <div className="container max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Everything you need in one platform</h2>
@@ -132,7 +143,9 @@ const Index = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="group hover:shadow-lg transition-shadow bg-white dark:bg-[#091527] border-gray-200 dark:border-gray-700">
+            <Card className={`group hover:shadow-lg transition-all duration-500 bg-white dark:bg-[#091527] border-gray-200 dark:border-gray-700 ${
+              featuresAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+            }`} style={{ transitionDelay: '100ms' }}>
               <CardContent className="p-8 text-center">
                 <div className="mb-6 mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                   <Zap className="h-8 w-8 text-primary" />
@@ -147,7 +160,9 @@ const Index = () => {
               </CardContent>
             </Card>
             
-            <Card className="group hover:shadow-lg transition-shadow bg-white dark:bg-[#091527] border-gray-200 dark:border-gray-700">
+            <Card className={`group hover:shadow-lg transition-all duration-500 bg-white dark:bg-[#091527] border-gray-200 dark:border-gray-700 ${
+              featuresAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+            }`} style={{ transitionDelay: '200ms' }}>
               <CardContent className="p-8 text-center">
                 <div className="mb-6 mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                   <FolderOpen className="h-8 w-8 text-primary" />
@@ -162,7 +177,9 @@ const Index = () => {
               </CardContent>
             </Card>
             
-            <Card className="group hover:shadow-lg transition-shadow bg-white dark:bg-[#091527] border-gray-200 dark:border-gray-700">
+            <Card className={`group hover:shadow-lg transition-all duration-500 bg-white dark:bg-[#091527] border-gray-200 dark:border-gray-700 ${
+              featuresAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+            }`} style={{ transitionDelay: '300ms' }}>
               <CardContent className="p-8 text-center">
                 <div className="mb-6 mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                   <Briefcase className="h-8 w-8 text-primary" />
@@ -181,18 +198,26 @@ const Index = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 px-6">
+      <section ref={statsAnimation.ref} className={`py-20 px-6 transition-all duration-1000 ${
+        statsAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      }`}>
         <div className="container max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div>
+            <div className={`transition-all duration-500 ${
+              statsAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+            }`} style={{ transitionDelay: '100ms' }}>
               <div className="text-4xl font-bold text-primary mb-2">500+</div>
               <div className="text-muted-foreground">AI Tools Listed</div>
             </div>
-            <div>
+            <div className={`transition-all duration-500 ${
+              statsAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+            }`} style={{ transitionDelay: '200ms' }}>
               <div className="text-4xl font-bold text-primary mb-2">10K+</div>
               <div className="text-muted-foreground">Active Creators</div>
             </div>
-            <div>
+            <div className={`transition-all duration-500 ${
+              statsAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+            }`} style={{ transitionDelay: '300ms' }}>
               <div className="text-4xl font-bold text-primary mb-2">50K+</div>
               <div className="text-muted-foreground">Projects Completed</div>
             </div>
@@ -201,7 +226,9 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6 bg-white dark:bg-[#091527]">
+      <section ref={ctaAnimation.ref} className={`py-20 px-6 bg-white dark:bg-[#091527] transition-all duration-1000 ${
+        ctaAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      }`}>
         <div className="container max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to join the AI revolution?</h2>
           <p className="text-xl text-muted-foreground mb-8">
