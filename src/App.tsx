@@ -20,6 +20,8 @@ import Categories from "./pages/Categories";
 import Community from "./pages/Community";
 import Blog from "./pages/Blog";
 import ToolDetails from "./pages/ToolDetails";
+import Profile from "./pages/Profile";
+import Jobs from "./pages/Jobs";
 
 const queryClient = new QueryClient();
 
@@ -44,9 +46,11 @@ const App = () => (
               <Route path="blog" element={<Blog />} />
               <Route path="community" element={<Community />} />
               <Route path="talent" element={<Talent />} />
-              <Route path="jobs" element={<Talent />} />
-              <Route path="profile" element={<Talent />} />
+              <Route path="jobs" element={<Jobs />} />
+              <Route path="profile" element={<Profile />} />
               <Route path="dashboard" element={<EmployerDashboard />} />
+              <Route path="employer" element={<EmployerDashboard />} />
+              <Route path="employer/*" element={<EmployerDashboard />} />
               <Route path="admin" element={<Admin />} />
               <Route path="messages" element={<Messages />} />
             </Route>

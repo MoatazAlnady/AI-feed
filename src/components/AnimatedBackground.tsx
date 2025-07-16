@@ -29,16 +29,19 @@ const AnimatedBackground: React.FC = () => {
 
     const createCircles = () => {
       const circles: Circle[] = [];
-      const numberOfCircles = Math.floor((window.innerWidth * window.innerHeight) / 12000);
+      const numberOfCircles = Math.floor((window.innerWidth * window.innerHeight) / 8000); // More circles
       
-      // Using direct hex colors for better visibility
+      // Using direct hex colors for better visibility - more variety
       const colors = [
         '#3B82F6', // blue
         '#A855F7', // purple
         '#8B5CF6', // violet
         '#6366F1', // indigo
-        '#3B82F6', // blue
-        '#A855F7', // purple
+        '#EC4899', // pink
+        '#10B981', // emerald
+        '#F59E0B', // amber
+        '#EF4444', // red
+        '#06B6D4', // cyan
       ];
 
       for (let i = 0; i < numberOfCircles; i++) {
@@ -46,11 +49,11 @@ const AnimatedBackground: React.FC = () => {
         circles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          radius: Math.random() * 150 + 50, // Larger circles
-          dx: (Math.random() - 0.5) * 1, // Faster movement
-          dy: (Math.random() - 0.5) * 1,
+          radius: Math.random() * 200 + 30, // Varied circle sizes
+          dx: (Math.random() - 0.5) * 1.5, // More movement
+          dy: (Math.random() - 0.5) * 1.5,
           color: color,
-          opacity: Math.random() * 0.3 + 0.1, // More visible
+          opacity: Math.random() * 0.4 + 0.1, // More visible
         });
       }
       
