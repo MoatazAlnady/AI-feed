@@ -82,7 +82,7 @@ const Index = () => {
           
           {/* Search Bar */}
           <form onSubmit={handleSearch} className="max-w-4xl mx-auto">
-            <div className="relative bg-background rounded-2xl shadow-lg p-2" style={{ border: '1px solid hsl(220, 91%, 15%)' }}>
+            <div className="relative bg-background rounded-2xl shadow-lg p-2 border border-border">
               <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <input
                 type="text"
