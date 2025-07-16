@@ -404,6 +404,11 @@ button {
 
 /* Global gradient backgrounds for authenticated pages - using @layer to ensure proper specificity */
 @layer components {
+  /* Debug: Test with a bright color first */
+  body.logged-in {
+    background: red !important;
+  }
+  
   /* Dark theme gradient */
   body.logged-in.dark {
     background: radial-gradient(
