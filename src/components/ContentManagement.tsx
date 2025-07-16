@@ -8,7 +8,8 @@ import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, FileText, Layout, BarChart } from 'lucide-react';
+import { Settings, FileText, Layout, BarChart, Users, Wrench, Mail, Building } from 'lucide-react';
+import AdminToolRequests from './AdminToolRequests';
 
 interface ContentItem {
   id: string;
@@ -190,25 +191,38 @@ const ContentManagement = () => {
       </div>
 
       <Tabs defaultValue="hero" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
           <TabsTrigger value="hero" className="flex items-center gap-2">
             <Layout className="h-4 w-4" />
-            Hero Section
+            <span className="hidden sm:inline">Hero</span>
           </TabsTrigger>
           <TabsTrigger value="features" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
-            Features
+            <span className="hidden sm:inline">Features</span>
           </TabsTrigger>
           <TabsTrigger value="stats" className="flex items-center gap-2">
             <BarChart className="h-4 w-4" />
-            Statistics
+            <span className="hidden sm:inline">Stats</span>
           </TabsTrigger>
           <TabsTrigger value="cta" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
-            Call to Action
+            <span className="hidden sm:inline">CTA</span>
           </TabsTrigger>
-          <TabsTrigger value="other">
-            Other
+          <TabsTrigger value="tools" className="flex items-center gap-2">
+            <Wrench className="h-4 w-4" />
+            <span className="hidden sm:inline">Tools</span>
+          </TabsTrigger>
+          <TabsTrigger value="users" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            <span className="hidden sm:inline">Users</span>
+          </TabsTrigger>
+          <TabsTrigger value="orgs" className="flex items-center gap-2">
+            <Building className="h-4 w-4" />
+            <span className="hidden sm:inline">Orgs</span>
+          </TabsTrigger>
+          <TabsTrigger value="newsletter" className="flex items-center gap-2">
+            <Mail className="h-4 w-4" />
+            <span className="hidden sm:inline">Newsletter</span>
           </TabsTrigger>
         </TabsList>
 
@@ -288,21 +302,51 @@ const ContentManagement = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="other" className="space-y-4">
+        <TabsContent value="tools" className="space-y-4">
+          <AdminToolRequests />
+        </TabsContent>
+
+        <TabsContent value="users" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Other Content</CardTitle>
+              <CardTitle>User Management</CardTitle>
               <CardDescription>
-                Manage other website content and general settings.
+                Manage users, their roles, and access levels.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              {categories.other.map((item) => (
-                <div key={item.id} className="space-y-2">
-                  <Label className="font-semibold">{item.description}</Label>
-                  {renderEditField(item)}
-                </div>
-              ))}
+            <CardContent className="text-center py-8">
+              <Users className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+              <p className="text-muted-foreground">User management features coming soon.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="orgs" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Organization Management</CardTitle>
+              <CardDescription>
+                Manage employer organizations, their members, and features.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center py-8">
+              <Building className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+              <p className="text-muted-foreground">Organization management features coming soon.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="newsletter" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Newsletter Management</CardTitle>
+              <CardDescription>
+                Manage newsletter content and subscribers.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center py-8">
+              <Mail className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+              <p className="text-muted-foreground">Newsletter management features coming soon.</p>
             </CardContent>
           </Card>
         </TabsContent>

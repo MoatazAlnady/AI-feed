@@ -76,7 +76,7 @@ const AIChatBot = ({ initialMessage, autoOpen }: AIChatBotProps) => {
       {/* Chat Window */}
       {isOpen && (
         <div className="fixed bottom-24 right-6 z-40 w-80 h-96 animate-slide-up">
-          <Card className="h-full flex flex-col bg-background border shadow-2xl">
+          <Card className="h-full flex flex-col bg-white dark:bg-[#091527] border border-gray-200 dark:border-gray-700 shadow-2xl">
             {/* Header */}
             <div className="p-4 border-b bg-gradient-primary text-white rounded-t-lg">
               <div className="flex items-center gap-2">

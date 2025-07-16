@@ -118,6 +118,30 @@ export type Database = {
           },
         ]
       }
+      country_codes: {
+        Row: {
+          country_code: string
+          country_name: string
+          created_at: string
+          id: string
+          phone_code: string
+        }
+        Insert: {
+          country_code: string
+          country_name: string
+          created_at?: string
+          id?: string
+          phone_code: string
+        }
+        Update: {
+          country_code?: string
+          country_name?: string
+          created_at?: string
+          id?: string
+          phone_code?: string
+        }
+        Relationships: []
+      }
       employer_projects: {
         Row: {
           created_at: string | null
@@ -223,6 +247,75 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      organization_members: {
+        Row: {
+          created_at: string
+          id: string
+          organization_id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          organization_id: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          organization_id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          features_enabled: Json
+          id: string
+          max_users: number
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          features_enabled?: Json
+          id?: string
+          max_users?: number
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          features_enabled?: Json
+          id?: string
+          max_users?: number
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       project_candidates: {
         Row: {
@@ -495,6 +588,7 @@ export type Database = {
       user_profiles: {
         Row: {
           account_type: string | null
+          admin_access_level: string | null
           age: number | null
           ai_nexus_top_voice: boolean | null
           articles_written: number | null
@@ -515,7 +609,9 @@ export type Database = {
           linkedin: string | null
           location: string | null
           newsletter_subscription: boolean | null
+          organization_id: string | null
           phone: string | null
+          phone_country_code: string | null
           profile_photo: string | null
           tools_submitted: number | null
           total_engagement: number | null
@@ -527,6 +623,7 @@ export type Database = {
         }
         Insert: {
           account_type?: string | null
+          admin_access_level?: string | null
           age?: number | null
           ai_nexus_top_voice?: boolean | null
           articles_written?: number | null
@@ -547,7 +644,9 @@ export type Database = {
           linkedin?: string | null
           location?: string | null
           newsletter_subscription?: boolean | null
+          organization_id?: string | null
           phone?: string | null
+          phone_country_code?: string | null
           profile_photo?: string | null
           tools_submitted?: number | null
           total_engagement?: number | null
@@ -559,6 +658,7 @@ export type Database = {
         }
         Update: {
           account_type?: string | null
+          admin_access_level?: string | null
           age?: number | null
           ai_nexus_top_voice?: boolean | null
           articles_written?: number | null
@@ -579,7 +679,9 @@ export type Database = {
           linkedin?: string | null
           location?: string | null
           newsletter_subscription?: boolean | null
+          organization_id?: string | null
           phone?: string | null
+          phone_country_code?: string | null
           profile_photo?: string | null
           tools_submitted?: number | null
           total_engagement?: number | null
@@ -589,7 +691,15 @@ export type Database = {
           verified?: boolean | null
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_profiles_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

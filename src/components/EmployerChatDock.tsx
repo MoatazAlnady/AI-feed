@@ -87,7 +87,7 @@ const EmployerChatDock: React.FC<EmployerChatDockProps> = ({ className = '', onT
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="absolute bottom-16 right-0 w-80 h-96 bg-background border border-border rounded-lg shadow-xl animate-slide-up">
+        <div className="absolute bottom-16 right-0 w-80 h-96 bg-white dark:bg-[#091527] border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl animate-slide-up">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-border">
             <h3 className="font-semibold text-foreground">Messages</h3>

@@ -12,7 +12,7 @@ import { supabase } from '../lib/supabase';
 const Profile: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'overview' | 'posts' | 'saved'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'posts' | 'content' | 'saved'>('overview');
   const [showPromoteModal, setShowPromoteModal] = useState(false);
   const [selectedContent, setSelectedContent] = useState<any>(null);
   const [savedItems, setSavedItems] = useState<any[]>([]);
@@ -318,7 +318,8 @@ const Profile: React.FC = () => {
             <div className="flex border-b border-gray-200 dark:border-gray-700">
               {[
                 { key: 'overview', label: 'Overview' },
-                { key: 'posts', label: 'My Content' },
+                { key: 'posts', label: 'Posts' },
+                { key: 'content', label: 'My Content' },
                 { key: 'saved', label: 'Saved Items' }
               ].map(({ key, label }) => (
                 <button
@@ -369,6 +370,18 @@ const Profile: React.FC = () => {
               )}
 
               {activeTab === 'posts' && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Posts</h3>
+                  <div className="text-center py-8">
+                    <MessageSquare className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                    <p className="text-gray-600 dark:text-gray-400">
+                      No posts yet. Start sharing your thoughts and insights with the community!
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'content' && (
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">My Content</h3>
                   {userContent.length > 0 ? (
