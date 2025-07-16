@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Heart, 
   MessageCircle, 
@@ -18,6 +18,8 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { makeHashtagsClickable } from '../utils/hashtagUtils';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import PostReactions from './PostReactions';
 
 interface Post {
@@ -220,8 +222,6 @@ const NewsFeed: React.FC = () => {
   };
 
   const handleDeletePost = async (postId: string) => {
-    if (!confirm('Are you sure you want to delete this post?')) return;
-
     try {
       const { error } = await supabase
         .from('posts')
@@ -312,11 +312,17 @@ const NewsFeed: React.FC = () => {
       {posts.map((post) => (
         <div key={post.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-start space-x-4">
-            <img
-              src={post.author.avatar}
-              alt={post.author.name}
-              className="w-12 h-12 rounded-full object-cover"
-            />
+            {post.author.avatar ? (
+              <img
+                src={post.author.avatar}
+                alt={post.author.name}
+                className="w-12 h-12 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
+                <User className="h-6 w-6 text-white" />
+              </div>
+            )}
             <div className="flex-1">
               <div className="flex items-center space-x-2 mb-1">
                 <h3 className="font-semibold text-gray-900 dark:text-white">{post.author.name}</h3>
@@ -329,20 +335,41 @@ const NewsFeed: React.FC = () => {
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm text-gray-500 dark:text-gray-400">{post.author.title} • {post.timestamp}</p>
                 {post.canEdit && (
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleEditPost(post.id)}
-                      className="p-1 text-gray-400 hover:text-blue-500 rounded"
-                    >
-                      <Edit3 className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDeletePost(post.id)}
-                      className="p-1 text-gray-400 hover:text-red-500 rounded"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-48">
+                      <DropdownMenuItem onClick={() => handleEditPost(post.id)}>
+                        <Edit3 className="h-4 w-4 mr-2" />
+                        Edit Post
+                      </DropdownMenuItem>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                            <Trash2 className="h-4 w-4 mr-2 text-red-500" />
+                            <span className="text-red-500">Delete Post</span>
+                          </DropdownMenuItem>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure you want to delete this post?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will permanently delete your post and remove it from the feed.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDeletePost(post.id)} className="bg-red-500 hover:bg-red-600">
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )}
               </div>
               
