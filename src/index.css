@@ -117,13 +117,10 @@
   z-index: -1;
 }
 
-/* Slogan text shadows */
-.slogan {
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-}
-
+/* Slogan text shadows - removed */
+.slogan,
 .dark .slogan {
-  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
+  text-shadow: none !important;
 }
 
 /* Custom gradient utilities */
@@ -418,8 +415,8 @@ button {
 .dark body {
   background: linear-gradient(
     135deg,
-    var(--dark-1, #212140) 0%,
-    var(--dark-2, #751984) 100%
+    #202444 0%,
+    #462560 100%
   ) !important;
 }
 
