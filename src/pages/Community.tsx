@@ -207,7 +207,7 @@ const Community: React.FC = () => {
         {/* Navigation Tabs */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm mb-8">
           <div className="border-b border-gray-200 dark:border-gray-700">
-            <nav className="-mb-px flex space-x-8 px-6">
+            <nav className="-mb-px flex space-x-0 px-6">
               {[
                 { id: 'networking', label: 'Networking', icon: Users },
                 { id: 'feed', label: 'Feed', icon: MessageSquare },
@@ -220,10 +220,10 @@ const Community: React.FC = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as any)}
-                    className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-all duration-200 ${
+                    className={`relative flex items-center space-x-2 py-4 px-6 font-medium text-sm transition-all duration-200 ${
                       isActive
-                        ? 'border-primary-500 text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 rounded-t-lg'
-                        : 'border-transparent text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white hover:border-gray-200 dark:hover:border-gray-700'
+                        ? 'text-cyan-400 bg-gray-700 dark:bg-gray-700 rounded-t-xl border-b-2 border-cyan-400'
+                        : 'text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-t-xl'
                     }`}
                   >
                     <Icon className="h-5 w-5" />
