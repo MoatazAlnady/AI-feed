@@ -1,10 +1,44 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Zap, Users, Target, Star, TrendingUp } from 'lucide-react';
+import { ArrowRight, Zap, Users, Target, Star, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Footer from '@/components/Footer';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
+import NewsletterPopup from '@/components/NewsletterPopup';
 
 const Index = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showNewsletterPopup, setShowNewsletterPopup] = useState(false);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  // Newsletter popup logic
+  useEffect(() => {
+    if (!user || (user && !user.user_metadata?.newsletter_subscription)) {
+      const hasShownInSession = sessionStorage.getItem('newsletter_shown');
+      if (!hasShownInSession) {
+        const timer = setTimeout(() => {
+          setShowNewsletterPopup(true);
+        }, 5000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [user]);
+
+  const handleCloseNewsletterPopup = () => {
+    setShowNewsletterPopup(false);
+    sessionStorage.setItem('newsletter_shown', 'true');
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/tools?search=${encodeURIComponent(searchTerm.trim())}`);
+      setSearchTerm('');
+    }
+  };
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -29,6 +63,20 @@ const Index = () => {
               <Link to="/talent">Find Talent</Link>
             </Button>
           </div>
+          
+          {/* Search Bar */}
+          <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search for AI tools, categories, or features..."
+                className="w-full pl-12 pr-4 py-4 text-lg border border-input rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground placeholder:text-muted-foreground"
+              />
+            </div>
+          </form>
         </div>
       </section>
 
@@ -124,7 +172,10 @@ const Index = () => {
         </div>
       </section>
 
-      <Footer />
+      {/* Newsletter Popup */}
+      {showNewsletterPopup && (
+        <NewsletterPopup onClose={handleCloseNewsletterPopup} />
+      )}
     </div>
   );
 };
