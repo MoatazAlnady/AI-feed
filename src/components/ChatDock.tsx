@@ -1,60 +1,42 @@
 import React, { useState } from 'react';
-import { X, Send, Bot } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { MessageCircle, X, Send, Bot } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
-interface AIChatBotProps {
-  initialMessage?: string;
-  autoOpen?: boolean;
-}
-
-const AIChatBot = ({ initialMessage, autoOpen }: AIChatBotProps) => {
-  const [isOpen, setIsOpen] = useState(autoOpen || false);
+const ChatDock: React.FC = () => {
+  const { user } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<Array<{id: number, text: string, sender: 'user' | 'ai'}>>([]);
-
-  // Handle initial message from search
-  React.useEffect(() => {
-    if (initialMessage && initialMessage.trim()) {
-      const newMessage = {
-        id: Date.now(),
-        text: initialMessage,
-        sender: 'user' as const
-      };
-      setMessages([newMessage]);
-      setIsOpen(true);
-      
-      // Simulate AI response
-      setTimeout(() => {
-        const aiResponse = {
-          id: Date.now() + 1,
-          text: `I understand you're looking for: "${initialMessage}". AI-powered search responses coming soon! I'll help you find the perfect tools and solutions.`,
-          sender: 'ai' as const
-        };
-        setMessages(prev => [...prev, aiResponse]);
-      }, 1000);
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      type: 'ai',
+      content: 'Hello! I\'m your AI assistant. How can I help you today?',
+      timestamp: new Date()
     }
-  }, [initialMessage]);
+  ]);
 
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
+  if (!user) return null;
+
+  const handleSendMessage = () => {
     if (!message.trim()) return;
 
     const newMessage = {
-      id: Date.now(),
-      text: message,
-      sender: 'user' as const
+      id: messages.length + 1,
+      type: 'user' as const,
+      content: message,
+      timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, newMessage]);
+    setMessages([...messages, newMessage]);
     setMessage('');
 
     // Simulate AI response
     setTimeout(() => {
       const aiResponse = {
-        id: Date.now() + 1,
-        text: "AI-powered search responses coming soon! I'll help you find the perfect tools and solutions.",
-        sender: 'ai' as const
+        id: messages.length + 2,
+        type: 'ai' as const,
+        content: 'Thanks for your message! I\'m here to help with any questions about AI tools and our platform.',
+        timestamp: new Date()
       };
       setMessages(prev => [...prev, aiResponse]);
     }, 1000);
@@ -62,78 +44,76 @@ const AIChatBot = ({ initialMessage, autoOpen }: AIChatBotProps) => {
 
   return (
     <>
-      {/* Chat Button */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          onClick={() => setIsOpen(!isOpen)}
-          className="w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white shadow-lg transition-all duration-300 hover:scale-105"
-          size="icon"
-        >
-          {isOpen ? <X className="h-6 w-6" /> : <Bot className="h-8 w-8" />}
-        </Button>
-      </div>
+      {/* Chat Toggle Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed bottom-6 right-6 w-14 h-14 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg flex items-center justify-center transition-all duration-300 z-50"
+      >
+        {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+      </button>
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-40 w-80 h-96 animate-slide-up">
-          <Card className="h-full flex flex-col bg-background border shadow-2xl">
-            {/* Header */}
-            <div className="p-4 border-b bg-gradient-primary text-white rounded-t-lg">
-              <div className="flex items-center gap-2">
-                <Bot className="h-5 w-5" />
-                <h3 className="font-semibold">AI Assistant</h3>
+        <div className="fixed bottom-24 right-6 w-80 h-96 bg-white dark:bg-[#091527] border border-border rounded-2xl shadow-2xl flex flex-col z-50">
+          {/* Header */}
+          <div className="p-4 border-b border-border bg-primary/5 rounded-t-2xl">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                <Bot className="h-4 w-4 text-primary-foreground" />
               </div>
-              <p className="text-sm opacity-90">Ask me about AI tools and solutions</p>
+              <div>
+                <h3 className="font-medium text-foreground">AI Assistant</h3>
+                <p className="text-xs text-muted-foreground">Always here to help</p>
+              </div>
             </div>
+          </div>
 
-            {/* Messages */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-3">
-              {messages.length === 0 ? (
-                <div className="text-center text-muted-foreground text-sm">
-                  <Bot className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p>Hi! I'm your AI assistant.</p>
-                  <p>What AI tools are you looking for?</p>
+          {/* Messages */}
+          <div className="flex-1 p-4 overflow-y-auto space-y-3">
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-[80%] p-3 rounded-lg ${
+                    msg.type === 'user'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-foreground'
+                  }`}
+                >
+                  <p className="text-sm">{msg.content}</p>
+                  <p className="text-xs opacity-70 mt-1">
+                    {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
                 </div>
-              ) : (
-                messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`max-w-[80%] p-3 rounded-lg text-sm ${
-                        msg.sender === 'user'
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted text-foreground'
-                      }`}
-                    >
-                      {msg.text}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Input */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Ask about AI tools..."
-                  className="flex-1 px-3 py-2 text-sm border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
-                />
-                <Button type="submit" size="sm" className="px-3">
-                  <Send className="h-4 w-4" />
-                </Button>
               </div>
-            </form>
-          </Card>
+            ))}
+          </div>
+
+          {/* Input */}
+          <div className="p-4 border-t border-border">
+            <div className="flex space-x-2">
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                placeholder="Type your message..."
+                className="flex-1 px-3 py-2 border border-input bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-muted-foreground focus:border-transparent text-sm"
+              />
+              <button
+                onClick={handleSendMessage}
+                className="px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                <Send className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </>
   );
 };
 
-export default AIChatBot;
+export default ChatDock;

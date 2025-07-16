@@ -18,6 +18,7 @@ import NotFound from "./pages/NotFound";
 import About from "./pages/About";
 import Categories from "./pages/Categories";
 import Community from "./pages/Community";
+import CommunityFeatures from "./pages/CommunityFeatures";
 import Blog from "./pages/Blog";
 import ToolDetails from "./pages/ToolDetails";
 import Profile from "./pages/Profile";
@@ -45,12 +46,13 @@ const App = () => (
               <Route path="about" element={<About />} />
               <Route path="blog" element={<Blog />} />
               <Route path="community" element={<Community />} />
+              <Route path="community/features" element={<CommunityFeatures />} />
               <Route path="talent" element={<Talent />} />
               <Route path="jobs" element={<Jobs />} />
               <Route path="profile" element={<Profile />} />
               <Route path="dashboard" element={<EmployerDashboard />} />
               <Route path="employer" element={<EmployerDashboard />} />
-              <Route path="employer/*" element={<EmployerDashboard />} />
+              <Route path="employer/:section" element={<EmployerDashboard />} />
               <Route path="admin" element={<Admin />} />
               <Route path="messages" element={<Messages />} />
             </Route>
