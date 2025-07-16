@@ -399,11 +399,12 @@ button {
   }
 }
 
-/* === DARK-MODE GRADIENT (remove conflicting styles) === */
+/* === DARK-MODE GRADIENT === */
 .dark body {
   background: linear-gradient(
     135deg,
-    #202444 0%,
+    #090a27 0%,
+    #202444 50%,
     #462560 100%
   ) !important;
 }
@@ -424,8 +425,8 @@ html, body {
   box-sizing: border-box;
 }
 
-/* Global background for authenticated users */
-.authenticated-layout {
+/* Global gradient background for all pages */
+.bg-gradient-primary-global {
   background: linear-gradient(
     135deg,
     hsl(var(--light-1)) 0%,
@@ -434,10 +435,11 @@ html, body {
   );
 }
 
-.dark .authenticated-layout {
+.dark .bg-gradient-primary-global {
   background: linear-gradient(
     135deg,
-    #202444 0%,
+    #090a27 0%,
+    #202444 50%,
     #462560 100%
   ) !important;
 }
