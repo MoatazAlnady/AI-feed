@@ -77,6 +77,16 @@ const Index = () => {
               />
             </div>
           </form>
+          
+          {/* Trending Tools Section */}
+          <div className="mt-16">
+            <TrendingTools />
+          </div>
+
+          {/* Top Creators Section - Centered */}
+          <div className="mt-12 text-center">
+            <TopCreators />
+          </div>
         </div>
       </section>
 
@@ -156,12 +166,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      {/* Trending Tools Section */}
-      <TrendingTools />
-
-      {/* Top Creators Section */}
-      <TopCreators />
 
       {/* CTA Section */}
       <section className="py-20 px-6 bg-primary/5">

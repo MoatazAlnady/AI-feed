@@ -45,7 +45,7 @@ export default function TrendingTools() {
   if (error || (!isLoading && !tools?.length)) return null;
 
   return (
-    <section className="mt-12 px-6">
+    <section className="animate-fade-in">
       <div className="container max-w-6xl mx-auto">
         <h3 className="mb-6 text-2xl font-bold text-foreground">Trending AI Tools</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

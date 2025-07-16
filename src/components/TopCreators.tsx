@@ -26,10 +26,11 @@ export default function TopCreators() {
   if (isLoading || !creators?.length) return null;
 
   return (
-    <section className="mt-8 px-6">
+    <section className="animate-fade-in">
       <div className="container max-w-6xl mx-auto">
         <h3 className="mb-4 text-lg font-semibold text-foreground">Top AI Creators</h3>
-        <div className="flex space-x-4 overflow-x-auto pb-4">
+        <div className="flex justify-center">
+          <div className="flex space-x-4 overflow-x-auto pb-4 max-w-4xl">
           {creators.map((creator) => (
             <Link
               key={creator.id}
@@ -67,6 +68,7 @@ export default function TopCreators() {
               </div>
             </Link>
           ))}
+          </div>
         </div>
       </div>
     </section>
