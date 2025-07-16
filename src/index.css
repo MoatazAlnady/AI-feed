@@ -77,14 +77,17 @@
     @apply border-border;
   }
   body {
-    /* Light mode gradient background */
+    @apply text-foreground;
+  }
+  
+  /* Default gradient for non-authenticated users */
+  body:not(.logged-in) {
     background: linear-gradient(
       135deg,
       hsl(var(--light-1)) 0%,
       hsl(var(--light-2)) 50%,
       hsl(var(--light-3)) 100%
     );
-    @apply text-foreground;
   }
 }
 
@@ -399,25 +402,27 @@ button {
   }
 }
 
-/* Global gradient backgrounds for authenticated pages */
-/* Dark theme gradient */
-body.logged-in.dark {
-  background: radial-gradient(
-    circle at 10% 20%,
-    #0b1120 0%,
-    #131c3a 40%,
-    #1c263f 75%
-  ) !important;
-}
+/* Global gradient backgrounds for authenticated pages - using @layer to ensure proper specificity */
+@layer components {
+  /* Dark theme gradient */
+  body.logged-in.dark {
+    background: radial-gradient(
+      circle at 10% 20%,
+      #0b1120 0%,
+      #131c3a 40%,
+      #1c263f 75%
+    ) !important;
+  }
 
-/* Light theme gradient */
-body.logged-in:not(.dark) {
-  background: radial-gradient(
-    circle at 15% 15%,
-    #f5f7ff 0%,
-    #e8effd 35%,
-    #e8e2ff 75%
-  ) !important;
+  /* Light theme gradient */
+  body.logged-in:not(.dark) {
+    background: radial-gradient(
+      circle at 15% 15%,
+      #f5f7ff 0%,
+      #e8effd 35%,
+      #e8e2ff 75%
+    ) !important;
+  }
 }
 
 /* === DARK-MODE GRADIENT (remove conflicting styles) === */
