@@ -16,22 +16,19 @@ const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Newsletter popup logic
+  // Newsletter popup logic - show for unsubscribed users every time
   useEffect(() => {
+    // Always show newsletter popup for unsubscribed users after 3 seconds
     if (!user || (user && !user.user_metadata?.newsletter_subscription)) {
-      const hasShownInSession = sessionStorage.getItem('newsletter_shown');
-      if (!hasShownInSession) {
-        const timer = setTimeout(() => {
-          setShowNewsletterPopup(true);
-        }, 5000);
-        return () => clearTimeout(timer);
-      }
+      const timer = setTimeout(() => {
+        setShowNewsletterPopup(true);
+      }, 3000);
+      return () => clearTimeout(timer);
     }
   }, [user]);
 
   const handleCloseNewsletterPopup = () => {
     setShowNewsletterPopup(false);
-    sessionStorage.setItem('newsletter_shown', 'true');
   };
 
   const handleSearch = (e: React.FormEvent) => {

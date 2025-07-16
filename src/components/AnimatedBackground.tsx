@@ -32,10 +32,10 @@ const AnimatedBackground: React.FC = () => {
       const numberOfCircles = Math.floor((window.innerWidth * window.innerHeight) / 15000);
       
       const colors = [
-        'rgba(59, 130, 246, 0.1)', // blue
-        'rgba(168, 85, 247, 0.1)', // purple
-        'rgba(59, 130, 246, 0.15)', // blue slightly more opaque
-        'rgba(168, 85, 247, 0.15)', // purple slightly more opaque
+        'rgba(59, 130, 246, 0.08)', // blue from design system
+        'rgba(168, 85, 247, 0.08)', // purple from design system
+        'rgba(59, 130, 246, 0.12)', // blue slightly more opaque
+        'rgba(168, 85, 247, 0.12)', // purple slightly more opaque
         'rgba(139, 92, 246, 0.1)', // violet
         'rgba(79, 70, 229, 0.1)', // indigo
       ];
@@ -104,7 +104,7 @@ const AnimatedBackground: React.FC = () => {
     <canvas
       ref={canvasRef}
       className="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none"
-      style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}
+      style={{ background: 'linear-gradient(135deg, hsl(221 83% 53% / 0.02) 0%, hsl(262 83% 58% / 0.02) 100%)' }}
     />
   );
 };
