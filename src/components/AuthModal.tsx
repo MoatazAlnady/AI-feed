@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Mail, Lock, User, Eye, EyeOff, Upload, Camera, MapPin, Calendar, Users, Building, UserCheck, Sparkles, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { InputBase, TextareaBase, SelectBase } from '@/components/ui/InputBase';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -279,21 +280,21 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-overlay">
-      <div className={`bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-content ${isOpen ? 'show' : ''}`}>
+      <div className={`bg-background dark:bg-card rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto modal-content border border-border ${isOpen ? 'show' : ''}`}>
         <div className="p-6">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              {mode === 'signin' ? 'Welcome Back' : 
+          <header className="flex w-full items-center justify-center py-6 relative">
+            <h2 className="text-xl font-semibold text-foreground dark:text-foreground">
+              {mode === 'signin' ? 'Sign in to AI Nexus' : 
                step === 1 ? 'Join AI Nexus' : 'Complete Your Profile'}
             </h2>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="absolute right-0 p-2 hover:bg-muted rounded-lg transition-colors"
             >
-              <X className="h-5 w-5 text-gray-500" />
+              <X className="h-5 w-5 text-muted-foreground" />
             </button>
-          </div>
+          </header>
 
           {/* Progress indicator for signup */}
           {mode === 'signup' && (
@@ -470,12 +471,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       </label>
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <input
+                        <InputBase
                           type="text"
                           id="fullName"
                           value={fullName}
                           onChange={(e) => setFullName(e.target.value)}
-                          className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                          className="pl-10"
                           placeholder="Enter your full name"
                           required
                         />
@@ -489,12 +490,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       </label>
                       <div className="relative">
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <input
+                        <InputBase
                           type="date"
                           id="birthDate"
                           value={birthDate}
                           onChange={(e) => setBirthDate(e.target.value)}
-                          className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                          className="pl-10"
                           required
                           max={new Date(new Date().setFullYear(new Date().getFullYear() - 13)).toISOString().split('T')[0]}
                         />
@@ -509,11 +510,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       </label>
                       <div className="relative">
                         <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <select
+                        <SelectBase
                           id="gender"
                           value={gender}
                           onChange={(e) => setGender(e.target.value)}
-                          className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                          className="pl-10"
                           required
                         >
                           <option value="">Select gender</option>
@@ -522,7 +523,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                               {option}
                             </option>
                           ))}
-                        </select>
+                        </SelectBase>
                       </div>
                     </div>
 
@@ -534,14 +535,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                         </label>
                         <div className="relative">
                           <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                          <select
+                          <SelectBase
                             id="country"
                             value={country}
                             onChange={(e) => {
                               setCountry(e.target.value);
                               setCity(''); // Reset city when country changes
                             }}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                            className="pl-10"
                             required
                           >
                             <option value="">Select country</option>
@@ -550,7 +551,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                                 {countryOption}
                               </option>
                             ))}
-                          </select>
+                          </SelectBase>
                         </div>
                       </div>
                       <div>

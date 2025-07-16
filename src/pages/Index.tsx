@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Zap, Users, Target, Star, Search } from 'lucide-react';
+import { ArrowRight, Zap, FolderOpen, Briefcase, Star, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,8 @@ import { useAuth } from '@/context/AuthContext';
 import NewsletterPopup from '@/components/NewsletterPopup';
 import AuthModal from '@/components/AuthModal';
 import AnimatedBackground from '@/components/AnimatedBackground';
+import TrendingTools from '@/components/TrendingTools';
+import TopCreators from '@/components/TopCreators';
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -86,7 +88,7 @@ const Index = () => {
             <p className="text-xl text-muted-foreground">Discover, connect, and collaborate in the AI ecosystem</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <Card className="group hover:shadow-lg transition-shadow">
               <CardContent className="p-8 text-center">
                 <div className="mb-6 mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
@@ -105,14 +107,29 @@ const Index = () => {
             <Card className="group hover:shadow-lg transition-shadow">
               <CardContent className="p-8 text-center">
                 <div className="mb-6 mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                  <Users className="h-8 w-8 text-primary" />
+                  <FolderOpen className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4">Creators Marketplace</h3>
+                <h3 className="text-xl font-semibold mb-4">AI Categories</h3>
                 <p className="text-muted-foreground mb-6">
-                  Find skilled AI creators and professionals for your next project
+                  Browse tools by domain, from NLP to Vision
+                </p>
+                <Link to="/categories" className="text-primary hover:underline font-medium">
+                  Browse Categories →
+                </Link>
+              </CardContent>
+            </Card>
+            
+            <Card className="group hover:shadow-lg transition-shadow">
+              <CardContent className="p-8 text-center">
+                <div className="mb-6 mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                  <Briefcase className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4">AI Jobs</h3>
+                <p className="text-muted-foreground mb-6">
+                  See live openings from employers
                 </p>
                 <Link to="/talent" className="text-primary hover:underline font-medium">
-                  Find Creators →
+                  View Jobs →
                 </Link>
               </CardContent>
             </Card>
@@ -139,6 +156,12 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Trending Tools Section */}
+      <TrendingTools />
+
+      {/* Top Creators Section */}
+      <TopCreators />
 
       {/* CTA Section */}
       <section className="py-20 px-6 bg-primary/5">
