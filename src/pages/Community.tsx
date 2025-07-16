@@ -185,10 +185,14 @@ const Community: React.FC = () => {
                   <img 
                     src={creator.profile_photo} 
                     alt={creator.full_name || 'User'} 
-                    className="w-12 h-12 rounded-full object-cover"
+                    className="w-12 h-12 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+                    onClick={() => window.location.href = `/user/${creator.id}`}
                   />
                 ) : (
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
+                  <div 
+                    className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+                    onClick={() => window.location.href = `/user/${creator.id}`}
+                  >
                     <span className="text-white font-semibold">
                       {(creator.full_name || 'U').charAt(0).toUpperCase()}
                     </span>
@@ -196,7 +200,10 @@ const Community: React.FC = () => {
                 )}
                 <div className="flex-1">
                   <div className="flex items-center space-x-2">
-                    <h4 className="font-semibold text-gray-900 dark:text-white">
+                    <h4 
+                      className="font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      onClick={() => window.location.href = `/user/${creator.id}`}
+                    >
                       {creator.full_name || 'Anonymous User'}
                     </h4>
                     {creator.verified && (
@@ -216,9 +223,20 @@ const Community: React.FC = () => {
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                 {creator.bio || 'Passionate about AI and technology.'}
               </p>
-              <button className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200">
-                Connect
-              </button>
+              <div className="flex space-x-2">
+                <button 
+                  onClick={() => window.location.href = `/user/${creator.id}`}
+                  className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200"
+                >
+                  View Profile
+                </button>
+                <button 
+                  onClick={() => window.location.href = `/messages?user=${creator.id}`}
+                  className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200"
+                >
+                  Message
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -281,7 +299,7 @@ const Community: React.FC = () => {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`relative flex items-center space-x-2 py-4 px-6 font-medium text-sm transition-all duration-200 ${
                       isActive
-                        ? 'text-cyan-400 bg-gray-700 dark:bg-gray-700 rounded-t-xl border-b-2 border-cyan-400'
+                        ? 'text-blue-600 dark:text-cyan-400 bg-blue-50 dark:bg-gray-700 rounded-t-xl border-b-2 border-blue-600 dark:border-cyan-400'
                         : 'text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-t-xl'
                     }`}
                   >

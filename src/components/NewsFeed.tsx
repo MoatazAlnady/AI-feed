@@ -119,27 +119,62 @@ const NewsFeed: React.FC = () => {
   const fetchPosts = async () => {
     try {
       console.log('Fetching posts...');
-      const { data: postsData, error } = await supabase
+      
+      // Fetch regular posts
+      const { data: postsData, error: postsError } = await supabase
         .from('posts')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(50);
 
-      if (error) {
-        console.error('Error fetching posts:', error);
-        throw error;
+      if (postsError) {
+        console.error('Error fetching posts:', postsError);
       }
 
-      console.log('Posts data:', postsData);
+      // Fetch shared posts
+      const { data: sharedPostsData, error: sharedError } = await supabase
+        .from('shared_posts')
+        .select(`
+          *,
+          original_post:posts!shared_posts_original_post_id_fkey(*)
+        `)
+        .order('created_at', { ascending: false })
+        .limit(50);
 
-      if (!postsData || postsData.length === 0) {
+      if (sharedError) {
+        console.error('Error fetching shared posts:', sharedError);
+      }
+
+      const allPosts = [];
+      if (postsData) allPosts.push(...postsData.map(post => ({ ...post, type: 'original' })));
+      if (sharedPostsData) allPosts.push(...sharedPostsData.map(share => ({ 
+        ...share.original_post, 
+        type: 'shared',
+        shared_by: share.user_id,
+        share_text: share.share_text,
+        shared_at: share.created_at
+      })));
+
+      // Sort all posts by creation time
+      allPosts.sort((a, b) => {
+        const dateA = new Date(a.type === 'shared' ? a.shared_at : a.created_at);
+        const dateB = new Date(b.type === 'shared' ? b.shared_at : b.created_at);
+        return dateB.getTime() - dateA.getTime();
+      });
+
+      console.log('All posts data:', allPosts);
+
+      if (!allPosts || allPosts.length === 0) {
         console.log('No posts found');
         setPosts([]);
         return;
       }
 
           // Fetch user profiles for each post
-      const userIds = [...new Set(postsData.map(post => post.user_id))];
+      const userIds = [...new Set(allPosts.flatMap(post => [
+        post.user_id, 
+        post.type === 'shared' ? post.shared_by : null
+      ]).filter(Boolean))];
       console.log('User IDs from posts:', userIds);
       let userProfiles = [];
       
@@ -162,8 +197,9 @@ const NewsFeed: React.FC = () => {
 
       const profilesMap = new Map(userProfiles.map(profile => [profile.id, profile]));
 
-      const formattedPosts = postsData.map(post => {
+      const formattedPosts = allPosts.map(post => {
         const profile = profilesMap.get(post.user_id);
+        const sharedByProfile = post.type === 'shared' ? profilesMap.get(post.shared_by) : null;
         console.log(`Post ${post.id}: user_id = ${post.user_id}, found profile:`, profile);
         
         // If no profile found, try to get user data from auth context for current user
@@ -202,7 +238,21 @@ const NewsFeed: React.FC = () => {
           bookmarked: false,
           created_at: post.created_at,
           updated_at: post.updated_at,
-          canEdit: user?.id === post.user_id
+          canEdit: user ? post.user_id === user.id : false,
+          // Shared post specific fields
+          type: post.type || 'original',
+          sharedBy: post.type === 'shared' ? {
+            name: sharedByProfile?.full_name || 'Someone',
+            avatar: sharedByProfile?.profile_photo || '',
+            title: sharedByProfile?.job_title || 'AI Enthusiast'
+          } : undefined,
+          shareText: post.share_text || '',
+          sharedAt: post.shared_at ? new Date(post.shared_at).toLocaleDateString() : undefined
+        } as Post & { 
+          type?: 'original' | 'shared';
+          sharedBy?: { name: string; avatar: string; title: string };
+          shareText?: string;
+          sharedAt?: string;
         };
       });
 
@@ -371,8 +421,26 @@ const NewsFeed: React.FC = () => {
         </div>
       )}
 
-      {posts.map((post) => (
+      {posts.map((post: any) => (
         <div key={post.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+          {/* Shared Post Header */}
+          {post.type === 'shared' && (
+            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-l-4 border-blue-500">
+              <div className="flex items-center space-x-2">
+                <Share2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <span className="text-sm text-blue-700 dark:text-blue-300">
+                  <strong>{post.sharedBy?.name || 'Someone'}</strong> shared this post
+                </span>
+                <span className="text-xs text-blue-600 dark:text-blue-400">• {post.sharedAt}</span>
+              </div>
+              {post.shareText && (
+                <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
+                  "{post.shareText}"
+                </p>
+              )}
+            </div>
+          )}
+          
           <div className="flex items-start space-x-4">
             {post.author.avatar ? (
               <img

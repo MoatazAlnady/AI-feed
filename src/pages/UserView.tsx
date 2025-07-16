@@ -21,6 +21,7 @@ import {
   Globe
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../integrations/supabase/client';
 
 interface UserProfile {
   id: string;
@@ -73,72 +74,65 @@ const UserView: React.FC = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        // In real app, fetch from API
-        // const response = await fetch(`/api/admin/users/${userId}`);
-        // const data = await response.json();
-        // setUserProfile(data);
+        console.log('Fetching user profile for ID:', userId);
         
-        // Mock user data for demonstration
-        const mockUser: UserProfile = {
-          id: userId || '1',
-          fullName: 'John Doe',
-          email: 'john.doe@example.com',
-          jobTitle: 'AI Engineer',
-          company: 'TechCorp',
-          location: 'San Francisco, CA',
-          bio: 'Passionate AI engineer with 5+ years of experience in machine learning and deep learning. Love building innovative solutions that make a difference.',
-          profilePhoto: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=200',
-          interests: ['Machine Learning', 'Deep Learning', 'Computer Vision', 'NLP', 'AI Research'],
-          age: 28,
-          gender: 'Male',
-          country: 'United States',
-          city: 'San Francisco',
-          birthDate: '1996-03-15',
-          joinedAt: '2024-01-15T00:00:00Z',
-          lastActive: '2025-01-15T10:30:00Z',
-          accountType: 'user',
-          status: 'active',
-          verified: true,
-          contactVisible: true,
-          phone: '+1 (555) 123-4567',
-          website: 'https://johndoe.dev',
-          linkedin: 'https://linkedin.com/in/johndoe',
-          github: 'https://github.com/johndoe',
-          stats: {
-            toolsSubmitted: 3,
-            articlesWritten: 7,
-            postsCreated: 24,
-            likesReceived: 156,
-            followers: 89,
-            following: 67
-          },
-          recentActivity: [
-            {
-              type: 'post_created',
-              description: 'Created a post about "Latest trends in AI"',
-              timestamp: '2 hours ago'
+        const { data: profile, error } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', userId)
+          .single();
+
+        if (error) {
+          console.error('Error fetching user profile:', error);
+          setUserProfile(null);
+          return;
+        }
+
+        if (profile) {
+          // Convert the real profile data to our UserProfile interface
+          const userProfile: UserProfile = {
+            id: profile.id,
+            fullName: profile.full_name || 'Anonymous User',
+            email: 'Email not available', // Email not stored in user_profiles
+            jobTitle: profile.job_title || '',
+            company: profile.company || '',
+            location: profile.location || 'Location not specified',
+            bio: profile.bio || '',
+            profilePhoto: profile.profile_photo || undefined,
+            interests: profile.interests || [],
+            age: profile.age || 0,
+            gender: profile.gender || 'Not specified',
+            country: profile.country || 'Not specified',
+            city: profile.city || 'Not specified',
+            birthDate: profile.birth_date || '',
+            joinedAt: profile.created_at || new Date().toISOString(),
+            lastActive: profile.updated_at || new Date().toISOString(),
+            accountType: (profile.account_type === 'employer' ? 'employer' : 'user') as 'user' | 'employer',
+            status: 'active', // Default since we don't have this field
+            verified: profile.verified || false,
+            contactVisible: profile.contact_visible || false,
+            phone: profile.phone || undefined,
+            website: profile.website || undefined,
+            linkedin: profile.linkedin || undefined,
+            github: profile.github || undefined,
+            stats: {
+              toolsSubmitted: profile.tools_submitted || 0,
+              articlesWritten: profile.articles_written || 0,
+              postsCreated: 0, // Would need to query posts table
+              likesReceived: 0, // Would need to calculate
+              followers: 0, // Would need to implement follower system
+              following: 0  // Would need to implement follower system
             },
-            {
-              type: 'tool_submitted',
-              description: 'Submitted AI tool "Smart Code Assistant"',
-              timestamp: '1 day ago'
-            },
-            {
-              type: 'article_published',
-              description: 'Published article "Getting Started with PyTorch"',
-              timestamp: '3 days ago'
-            },
-            {
-              type: 'comment_added',
-              description: 'Commented on "Future of AI in Healthcare"',
-              timestamp: '5 days ago'
-            }
-          ]
-        };
-        
-        setUserProfile(mockUser);
+            recentActivity: [] // Would need to implement activity tracking
+          };
+          
+          setUserProfile(userProfile);
+        } else {
+          setUserProfile(null);
+        }
       } catch (error) {
         console.error('Error fetching user profile:', error);
+        setUserProfile(null);
       } finally {
         setLoading(false);
       }
