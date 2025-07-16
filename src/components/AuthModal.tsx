@@ -667,6 +667,40 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                   </>
                 )}
 
+                {mode === 'signup' && (
+                  <div className="animate-slide-up">
+                    <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Phone Number *
+                    </label>
+                    <div className="grid grid-cols-5 gap-2">
+                      <div className="col-span-2">
+                        <select
+                          value={phoneCountryCode}
+                          onChange={(e) => setPhoneCountryCode(e.target.value)}
+                          className="w-full px-3 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                        >
+                          {countriesWithCodes.map((country) => (
+                            <option key={country.code} value={country.code}>
+                              {country.code} ({country.name})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="col-span-3">
+                        <input
+                          type="tel"
+                          id="phoneNumber"
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                          placeholder="Enter phone number"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="animate-slide-up">
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Email Address *
@@ -739,40 +773,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                         Passwords do not match
                       </p>
                     )}
-                  </div>
-                )}
-
-                {mode === 'signup' && (
-                  <div className="animate-slide-up">
-                    <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Phone Number *
-                    </label>
-                    <div className="grid grid-cols-5 gap-2">
-                      <div className="col-span-2">
-                        <select
-                          value={phoneCountryCode}
-                          onChange={(e) => setPhoneCountryCode(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                        >
-                          {countriesWithCodes.map((country) => (
-                            <option key={country.code} value={country.code}>
-                              {country.code} ({country.name})
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="col-span-3">
-                        <input
-                          type="tel"
-                          id="phoneNumber"
-                          value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                          placeholder="Enter phone number"
-                          required
-                        />
-                      </div>
-                    </div>
                   </div>
                 )}
               </>
