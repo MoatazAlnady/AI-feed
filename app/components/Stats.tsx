@@ -1,65 +1,83 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, Users, Star, Zap } from 'lucide-react';
+'use client'
 
-const stats = [
-  {
-    icon: Zap,
-    title: 'AI Tools',
-    value: '500+',
-    description: 'Curated AI tools across all categories',
-    color: 'text-blue-500',
-  },
-  {
-    icon: Users,
-    title: 'Active Users',
-    value: '50k+',
-    description: 'Monthly active users discovering AI tools',
-    color: 'text-green-500',
-  },
-  {
-    icon: Star,
-    title: 'Reviews',
-    value: '10k+',
-    description: 'Authentic reviews from real users',
-    color: 'text-yellow-500',
-  },
-  {
-    icon: TrendingUp,
-    title: 'Growth',
-    value: '250%',
-    description: 'Platform growth in the last year',
-    color: 'text-purple-500',
-  },
-];
+import React, { useState, useEffect } from 'react';
+import { Users, Zap, Star, TrendingUp } from 'lucide-react';
 
-export default function Stats() {
+const Stats: React.FC = () => {
+  const [stats, setStats] = useState({
+    toolsCount: 0,
+    usersCount: 0,
+    rating: 0,
+    newToolsMonthly: 0
+  });
+
+  useEffect(() => {
+    // In real app, fetch actual stats from API
+    // For now, all stats start at 0 until real data is available
+    const fetchStats = async () => {
+      try {
+        // const response = await fetch('/api/stats');
+        // const data = await response.json();
+        // setStats(data);
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  const statsData = [
+    {
+      icon: Zap,
+      number: stats.toolsCount.toLocaleString(),
+      label: 'AI Tools',
+      description: 'Curated and categorized'
+    },
+    {
+      icon: Users,
+      number: stats.usersCount.toLocaleString(),
+      label: 'Active Users',
+      description: 'Growing community'
+    },
+    {
+      icon: Star,
+      number: stats.rating > 0 ? `${stats.rating}/5` : '0/5',
+      label: 'User Rating',
+      description: 'Highly recommended'
+    },
+    {
+      icon: TrendingUp,
+      number: stats.newToolsMonthly.toLocaleString(),
+      label: 'New Tools',
+      description: 'Added monthly'
+    }
+  ];
+
   return (
-    <section className="py-16 bg-secondary/30">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Platform Statistics</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Join thousands of users who trust AI Nexus to discover the best AI tools
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => (
-            <Card key={index} className="text-center hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-4">
-                <div className="flex justify-center mb-2">
-                  <stat.icon className={`w-8 h-8 ${stat.color}`} />
-                </div>
-                <CardTitle className="text-2xl font-bold">{stat.value}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <h3 className="font-semibold mb-2">{stat.title}</h3>
-                <p className="text-sm text-muted-foreground">{stat.description}</p>
-              </CardContent>
-            </Card>
+    <section className="py-16 bg-white dark:bg-gray-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+          {statsData.map((stat, index) => (
+            <div key={index} className="text-center group">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-xl mb-4 group-hover:shadow-lg transition-shadow">
+                <stat.icon className="h-6 w-6 text-white" />
+              </div>
+              <div className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-1">
+                {stat.number}
+              </div>
+              <div className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-1">
+                {stat.label}
+              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                {stat.description}
+              </div>
+            </div>
           ))}
         </div>
       </div>
     </section>
   );
-}
+};
+
+export default Stats;

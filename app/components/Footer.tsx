@@ -1,64 +1,70 @@
-import { Link } from 'react-router-dom';
+'use client'
+
+import React from 'react';
+import Link from 'next/link';
 import { Zap, Twitter, Linkedin, Github, Mail } from 'lucide-react';
 
-export default function Footer() {
+const Footer: React.FC = () => {
   return (
-    <footer className="bg-secondary/50 border-t">
-      <div className="container mx-auto px-4 py-12">
+    <footer className="bg-gray-900 text-white dark:bg-gray-950">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand Section */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Zap className="w-6 h-6 text-primary" />
+          {/* Brand */}
+          <div className="col-span-1 md:col-span-2">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="p-2 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-lg">
+                <Zap className="h-6 w-6 text-white" />
+              </div>
               <span className="text-xl font-bold">AI Nexus</span>
             </div>
-            <p className="text-muted-foreground">
-              Your ultimate destination for discovering and comparing AI tools.
+            <p className="text-gray-300 mb-6 max-w-md">
+              Your ultimate destination for discovering, exploring, and staying updated with the latest AI tools and technologies.
             </p>
             <div className="flex space-x-4">
-              <Twitter className="w-5 h-5 text-muted-foreground hover:text-primary cursor-pointer" />
-              <Linkedin className="w-5 h-5 text-muted-foreground hover:text-primary cursor-pointer" />
-              <Github className="w-5 h-5 text-muted-foreground hover:text-primary cursor-pointer" />
-              <Mail className="w-5 h-5 text-muted-foreground hover:text-primary cursor-pointer" />
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <Twitter className="h-5 w-5" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <Linkedin className="h-5 w-5" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <Github className="h-5 w-5" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <Mail className="h-5 w-5" />
+              </a>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
-            <h4 className="font-semibold">Quick Links</h4>
-            <div className="flex flex-col space-y-2">
-              <Link to="/tools" className="text-muted-foreground hover:text-primary">Browse Tools</Link>
-              <Link to="/categories" className="text-muted-foreground hover:text-primary">Categories</Link>
-              <Link to="/blog" className="text-muted-foreground hover:text-primary">Blog</Link>
-              <Link to="/about" className="text-muted-foreground hover:text-primary">About</Link>
-            </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <ul className="space-y-2">
+              <li><Link href="/tools" className="text-gray-300 hover:text-white transition-colors">Browse Tools</Link></li>
+              <li><Link href="/categories" className="text-gray-300 hover:text-white transition-colors">Categories</Link></li>
+              <li><Link href="/blog" className="text-gray-300 hover:text-white transition-colors">Blog</Link></li>
+              <li><Link href="/about" className="text-gray-300 hover:text-white transition-colors">About</Link></li>
+            </ul>
           </div>
 
           {/* Resources */}
-          <div className="space-y-4">
-            <h4 className="font-semibold">Resources</h4>
-            <div className="flex flex-col space-y-2">
-              <Link to="/api" className="text-muted-foreground hover:text-primary">API Documentation</Link>
-              <Link to="/submit" className="text-muted-foreground hover:text-primary">Submit a Tool</Link>
-              <Link to="/privacy" className="text-muted-foreground hover:text-primary">Privacy Policy</Link>
-              <Link to="/terms" className="text-muted-foreground hover:text-primary">Terms of Service</Link>
-            </div>
-          </div>
-
-          {/* Contact */}
-          <div className="space-y-4">
-            <h4 className="font-semibold">Contact</h4>
-            <div className="text-muted-foreground">
-              <p>support@ainexus.com</p>
-              <p>+1 (555) 123-4567</p>
-            </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Resources</h3>
+            <ul className="space-y-2">
+              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">API Documentation</a></li>
+              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Submit a Tool</a></li>
+              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Privacy Policy</a></li>
+              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Terms of Service</a></li>
+            </ul>
           </div>
         </div>
 
-        <div className="border-t mt-8 pt-8 text-center text-muted-foreground">
-          <p>&copy; 2024 AI Nexus. All rights reserved.</p>
+        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+          <p>&copy; 2025 AI Nexus. All rights reserved.</p>
         </div>
       </div>
     </footer>
   );
-}
+};
+
+export default Footer;

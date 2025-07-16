@@ -1,8 +1,17 @@
-export default function HomePage() {
+import Hero from '@/app/components/Hero'
+import FeaturedTools from '@/app/components/FeaturedTools'
+import CategoriesPreview from '@/app/components/CategoriesPreview'
+import Newsletter from '@/app/components/Newsletter'
+import Stats from '@/app/components/Stats'
+
+export default function Home() {
   return (
-    <div className="min-h-screen bg-background">
-      <h1 className="text-4xl font-bold text-center py-8">Welcome to AI Nexus</h1>
-      <p className="text-center text-muted-foreground">Your AI tools platform</p>
+    <div className="bg-gray-50 dark:bg-gray-900">
+      <Hero />
+      <Stats />
+      <FeaturedTools />
+      <CategoriesPreview />
+      <Newsletter />
     </div>
-  );
+  )
 }
