@@ -3,8 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/providers/ThemeProvider';
-import AuthModal from '@/components/auth/AuthModal';
-import { VerificationBadge } from '@/components/common/VerificationBadge';
+import AuthModal from '@/components/AuthModal';
+import { VerificationBadge } from '@/components/VerificationBadge';
 import { Search, Moon, Sun, User, Settings, LogOut } from 'lucide-react';
 
 const Header = () => {

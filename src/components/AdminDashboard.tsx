@@ -29,7 +29,7 @@ import {
   X
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import CreateUserModal from '@/components/modals/CreateUserModal';
+import CreateUserModal from '@/components/CreateUserModal';
 import { supabase } from '@/integrations/supabase/client';
 
 const AdminDashboard: React.FC = () => {
