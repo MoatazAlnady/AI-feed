@@ -15,6 +15,9 @@ import {
 import TodoSystem from '../components/TodoSystem';
 import EmployerChatDock from '../components/EmployerChatDock';
 import JobsManagement from '../components/JobsManagement';
+import EmployerAnalytics from '../components/EmployerAnalytics';
+import EmployerProjects from '../components/EmployerProjects';
+import EmployerMessages from '../components/EmployerMessages';
 import TalentSearch from './TalentSearch';
 
 const EmployerDashboard = () => {
@@ -158,32 +161,11 @@ const EmployerDashboard = () => {
 
   const JobsPage = () => <JobsManagement />;
 
-  const ProjectsPage = () => (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Project Management</h2>
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-        <p className="text-gray-600 dark:text-gray-400">Project management functionality will be implemented here.</p>
-      </div>
-    </div>
-  );
+  const ProjectsPage = () => <EmployerProjects />;
 
-  const AnalyticsPage = () => (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics & Reports</h2>
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-        <p className="text-gray-600 dark:text-gray-400">Analytics and reporting functionality will be implemented here.</p>
-      </div>
-    </div>
-  );
+  const AnalyticsPage = () => <EmployerAnalytics />;
 
-  const MessagesPage = () => (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Messages</h2>
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-        <p className="text-gray-600 dark:text-gray-400">Messaging functionality will be implemented here.</p>
-      </div>
-    </div>
-  );
+  const MessagesPage = () => <EmployerMessages />;
 
   const SettingsPage = () => (
     <div className="space-y-6">
