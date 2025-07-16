@@ -80,7 +80,7 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="absolute bottom-16 right-0 w-80 h-96 bg-white dark:bg-[hsl(248,32%,18%)] border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl animate-slide-up">
+        <div className="absolute bottom-16 right-0 w-80 h-96 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl animate-slide-up">
           {/* Header */}
            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
              <h3 className="font-semibold text-gray-900 dark:text-white">Messages</h3>
@@ -111,7 +111,7 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
                 {chats.map((chat) => (
                   <div
                     key={chat.id}
-                    className="flex items-center space-x-3 p-3 hover:bg-gray-50 dark:hover:bg-[hsl(248,32%,22%)] cursor-pointer border-b border-gray-200 dark:border-gray-700"
+                    className="flex items-center space-x-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-200 dark:border-gray-700"
                   >
                      <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
                        {chat.isAI ? (
@@ -155,7 +155,7 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
                            className={`max-w-[80%] p-2 rounded-lg text-sm ${
                              msg.sender === 'user'
                                ? 'bg-blue-600 text-white'
-                               : 'bg-gray-200 dark:bg-[hsl(248,32%,22%)] text-gray-900 dark:text-white'
+                               : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
                            }`}
                         >
                           {msg.text}
@@ -173,7 +173,7 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
                        value={message}
                        onChange={(e) => setMessage(e.target.value)}
                        placeholder="Ask AI assistant..."
-                       className="flex-1 px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[hsl(248,32%,22%)] text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                       className="flex-1 px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                      />
                      <button
                        type="submit"

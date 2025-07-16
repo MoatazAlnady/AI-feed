@@ -396,10 +396,10 @@ const NewsFeed: React.FC = () => {
                         <MoreHorizontal className="h-4 w-4" />
                       </button>
                     </DropdownMenuTrigger>
-                     <DropdownMenuContent className="w-48 bg-white dark:bg-[hsl(248,32%,18%)] border-gray-200 dark:border-gray-700 shadow-lg z-50">
+                     <DropdownMenuContent className="w-48 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-lg z-50">
                        <DropdownMenuItem 
                          onClick={() => handleEditPost(post.id)}
-                         className="text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-[hsl(248,32%,22%)]"
+                         className="text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
                        >
                          <Edit3 className="h-4 w-4 mr-2" />
                          Edit Post
@@ -414,7 +414,7 @@ const NewsFeed: React.FC = () => {
                             Delete Post
                           </DropdownMenuItem>
                         </AlertDialogTrigger>
-                        <AlertDialogContent className="bg-white dark:bg-[hsl(248,32%,18%)] border-gray-200 dark:border-gray-700">
+                        <AlertDialogContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                           <AlertDialogHeader>
                              <AlertDialogTitle className="text-gray-900 dark:text-white">
                                Are you sure you want to delete this post?
