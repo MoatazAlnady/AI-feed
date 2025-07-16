@@ -372,28 +372,22 @@ const Header: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Toggle View Button - Only for employers */}
+                  {/* Toggle View Button - Only for employers (hidden in header) */}
                   {(isEmployer || isAdmin) && (
                     <button
                       onClick={toggleEmployerView}
-                      className={`p-2 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg ${
-                        isEmployerView ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30' : 'text-gray-400 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400'
-                      }`}
+                      className="hidden"
                       title={isEmployerView ? "Switch to Creator View" : "Switch to Employer View"}
                     >
                       <Building className="h-5 w-5" />
                     </button>
                   )}
 
-                  {/* Admin Button - Only for admins */}
+                  {/* Admin Button - Only for admins (hidden in header) */}
                   {isAdmin && (
                     <Link
                       to="/admin"
-                      className={`p-2 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg ${
-                        location.pathname.startsWith('/admin')
-                          ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30'
-                          : 'text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100'
-                      }`}
+                      className="hidden"
                       title="Admin Dashboard"
                     >
                       <Settings className="h-5 w-5" />
