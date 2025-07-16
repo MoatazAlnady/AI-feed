@@ -86,14 +86,6 @@
     );
     @apply text-foreground;
   }
-  .dark body {
-    /* Dark mode gradient background */
-    background: linear-gradient(
-      135deg,
-      hsl(var(--dark-1)) 0%,
-      hsl(var(--dark-2)) 100%
-    );
-  }
 }
 
 /* Animated orb keyframes */
@@ -117,10 +109,27 @@
   z-index: -1;
 }
 
-/* Slogan text shadows - removed */
-.slogan,
+/* 3D Slogan effects */
+.slogan {
+  text-shadow: 
+    2px 2px 0px rgba(0, 0, 0, 0.2),
+    4px 4px 0px rgba(0, 0, 0, 0.15),
+    6px 6px 0px rgba(0, 0, 0, 0.1),
+    8px 8px 15px rgba(0, 0, 0, 0.3);
+  transform: perspective(500px) rotateX(15deg);
+  transition: all 0.3s ease;
+}
+
+.slogan:hover {
+  transform: perspective(500px) rotateX(10deg) scale(1.02);
+}
+
 .dark .slogan {
-  text-shadow: none !important;
+  text-shadow: 
+    2px 2px 0px rgba(255, 255, 255, 0.1),
+    4px 4px 0px rgba(255, 255, 255, 0.08),
+    6px 6px 0px rgba(255, 255, 255, 0.05),
+    8px 8px 20px rgba(0, 0, 0, 0.6);
 }
 
 /* Custom gradient utilities */
@@ -284,10 +293,7 @@ button {
 .stagger-item:nth-child(5) { animation-delay: 0.5s; }
 .stagger-item:nth-child(6) { animation-delay: 0.6s; }
 
-/* Dark mode styles */
-.dark body {
-  @apply bg-gray-900 text-white;
-}
+/* Dark mode styles - removed conflicting body background */
 
 .dark .bg-white {
   @apply bg-gray-800;
