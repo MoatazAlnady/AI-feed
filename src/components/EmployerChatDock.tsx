@@ -14,17 +14,8 @@ const EmployerChatDock: React.FC<EmployerChatDockProps> = ({ className = '', onT
   const [aiMessages, setAiMessages] = useState<Array<{id: number, text: string, sender: 'user' | 'ai'}>>([]);
   const { user } = useAuth();
 
-  // Mock chat data for employers
+  // Mock chat data for employers (AI assistant removed from chats)
   const chats = [
-    {
-      id: 1,
-      name: 'Talent Assistant',
-      lastMessage: 'I can help you find talented candidates!',
-      time: 'now',
-      unread: 0,
-      isAI: true,
-      avatar: '🤖'
-    },
     {
       id: 2,
       name: 'Michael Davis',

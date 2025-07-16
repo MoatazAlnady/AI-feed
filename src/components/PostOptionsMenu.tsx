@@ -1,0 +1,200 @@
+import React, { useState } from 'react';
+import { MoreHorizontal, Edit, Trash2, Share, Flag, Copy, BookmarkPlus, Eye, EyeOff } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+import ReportModal from './ReportModal';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../hooks/use-toast';
+
+interface PostOptionsMenuProps {
+  postId: string;
+  authorId?: string;
+  contentType: 'post' | 'tool' | 'article' | 'event';
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onShare?: () => void;
+  isBookmarked?: boolean;
+  onBookmark?: () => void;
+  isHidden?: boolean;
+  onHide?: () => void;
+}
+
+const PostOptionsMenu: React.FC<PostOptionsMenuProps> = ({
+  postId,
+  authorId,
+  contentType,
+  onEdit,
+  onDelete,
+  onShare,
+  isBookmarked = false,
+  onBookmark,
+  isHidden = false,
+  onHide
+}) => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const isOwner = user?.id === authorId;
+
+  const handleCopyLink = async () => {
+    try {
+      const url = `${window.location.origin}/${contentType}s/${postId}`;
+      await navigator.clipboard.writeText(url);
+      toast({
+        title: "Link copied",
+        description: "Content link copied to clipboard"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to copy link",
+        variant: "destructive"
+      });
+    }
+    setIsOpen(false);
+  };
+
+  const handleShare = () => {
+    if (onShare) {
+      onShare();
+    } else {
+      // Default share behavior
+      const url = `${window.location.origin}/${contentType}s/${postId}`;
+      if (navigator.share) {
+        navigator.share({
+          title: `Check out this ${contentType}`,
+          url: url
+        });
+      } else {
+        handleCopyLink();
+      }
+    }
+    setIsOpen(false);
+  };
+
+  const handleReport = () => {
+    setShowReportModal(true);
+    setIsOpen(false);
+  };
+
+  const handleBookmark = () => {
+    if (onBookmark) {
+      onBookmark();
+    }
+    toast({
+      title: isBookmarked ? "Removed from bookmarks" : "Added to bookmarks",
+      description: `${contentType.charAt(0).toUpperCase() + contentType.slice(1)} ${isBookmarked ? 'removed from' : 'added to'} your bookmarks`
+    });
+    setIsOpen(false);
+  };
+
+  const handleHide = () => {
+    if (onHide) {
+      onHide();
+    }
+    toast({
+      title: isHidden ? "Content shown" : "Content hidden",
+      description: `This ${contentType} is now ${isHidden ? 'visible' : 'hidden'} from your feed`
+    });
+    setIsOpen(false);
+  };
+
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit();
+    }
+    setIsOpen(false);
+  };
+
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete();
+    }
+    setIsOpen(false);
+  };
+
+  return (
+    <>
+      <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+        <DropdownMenuTrigger asChild>
+          <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+            <MoreHorizontal className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          {/* Owner actions */}
+          {isOwner && (
+            <>
+              <DropdownMenuItem onClick={handleEdit} className="flex items-center gap-2">
+                <Edit className="h-4 w-4" />
+                Edit {contentType}
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={handleDelete} 
+                className="flex items-center gap-2 text-red-600 dark:text-red-400"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete {contentType}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          )}
+
+          {/* General actions */}
+          <DropdownMenuItem onClick={handleShare} className="flex items-center gap-2">
+            <Share className="h-4 w-4" />
+            Share
+          </DropdownMenuItem>
+
+          <DropdownMenuItem onClick={handleCopyLink} className="flex items-center gap-2">
+            <Copy className="h-4 w-4" />
+            Copy link
+          </DropdownMenuItem>
+
+          {/* Bookmark action */}
+          <DropdownMenuItem onClick={handleBookmark} className="flex items-center gap-2">
+            <BookmarkPlus className="h-4 w-4" />
+            {isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
+          </DropdownMenuItem>
+
+          {/* Hide/Show content */}
+          {!isOwner && (
+            <DropdownMenuItem onClick={handleHide} className="flex items-center gap-2">
+              {isHidden ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+              {isHidden ? 'Show this content' : 'Hide this content'}
+            </DropdownMenuItem>
+          )}
+
+          <DropdownMenuSeparator />
+
+          {/* Report action (for non-owners) */}
+          {!isOwner && (
+            <DropdownMenuItem onClick={handleReport} className="flex items-center gap-2 text-red-600 dark:text-red-400">
+              <Flag className="h-4 w-4" />
+              Report {contentType}
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Report Modal */}
+      {showReportModal && (
+        <ReportModal
+          isOpen={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          type="content"
+          targetId={postId}
+        />
+      )}
+    </>
+  );
+};
+
+export default PostOptionsMenu;

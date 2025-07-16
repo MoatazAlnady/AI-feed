@@ -21,6 +21,7 @@ import { makeHashtagsClickable } from '../utils/hashtagUtils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import PostReactions from './PostReactions';
+import PostOptionsMenu from './PostOptionsMenu';
 
 interface Post {
   id: string;
@@ -543,9 +544,16 @@ const NewsFeed: React.FC = () => {
                   >
                     <Bookmark className={`h-4 w-4 ${post.bookmarked ? 'fill-current' : ''}`} />
                   </button>
-                  <button className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
+                  <PostOptionsMenu
+                    postId={post.id}
+                    authorId={post.user_id}
+                    contentType="post"
+                    onEdit={() => handleEditPost(post.id)}
+                    onDelete={() => handleDeletePost(post.id)}
+                    onShare={() => handleShare(post.id)}
+                    isBookmarked={post.bookmarked}
+                    onBookmark={() => handleBookmark(post.id)}
+                  />
                 </div>
               </div>
 

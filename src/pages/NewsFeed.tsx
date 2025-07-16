@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Plus, 
   MessageCircle, 
@@ -15,6 +15,7 @@ import CreatePostModal from '../components/CreatePostModal';
 import CreateEventModal from '../components/CreateEventModal';
 import HashtagSystem from '../components/HashtagSystem';
 import ChatDock from '../components/ChatDockProvider';
+import NewsletterPopup from '../components/NewsletterPopup';
 import { useAuth } from '../context/AuthContext';
 
 const Newsfeed: React.FC = () => {
@@ -22,8 +23,26 @@ const Newsfeed: React.FC = () => {
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [showCreateMenu, setShowCreateMenu] = useState(false);
+  const [showNewsletterPopup, setShowNewsletterPopup] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
   const [trendingTools, setTrendingTools] = useState<any[]>([]);
+
+  // Check if user should see newsletter popup
+  useEffect(() => {
+    const checkNewsletterSubscription = () => {
+      if (user && !user.user_metadata?.newsletter_subscription) {
+        // Show newsletter popup for registered but unsubscribed users
+        const hasSeenPopup = sessionStorage.getItem('newsletter_popup_shown_this_session');
+        if (!hasSeenPopup) {
+          setShowNewsletterPopup(true);
+          sessionStorage.setItem('newsletter_popup_shown_this_session', 'true');
+        }
+      }
+    };
+
+    // Check on component mount and when user changes
+    checkNewsletterSubscription();
+  }, [user]);
 
   const handlePostCreated = (newPost: any) => {
     setPosts([newPost, ...posts]);
@@ -231,6 +250,11 @@ const Newsfeed: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Newsletter Popup */}
+      {showNewsletterPopup && (
+        <NewsletterPopup onClose={() => setShowNewsletterPopup(false)} />
+      )}
 
       {/* Chat Dock */}
       <ChatDock />

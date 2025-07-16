@@ -13,17 +13,8 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
   const [aiMessages, setAiMessages] = useState<Array<{id: number, text: string, sender: 'user' | 'ai'}>>([]);
   const { user } = useAuth();
 
-  // Mock chat data
+  // Mock chat data (AI assistant removed from chats)
   const chats = [
-    {
-      id: 1,
-      name: 'AI Assistant',
-      lastMessage: 'How can I help you today?',
-      time: 'now',
-      unread: 0,
-      isAI: true,
-      avatar: '🤖'
-    },
     {
       id: 2,
       name: 'Sarah Johnson',
@@ -80,7 +71,7 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="absolute bottom-16 right-0 w-80 h-96 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl animate-slide-up">
+        <div className="absolute bottom-16 right-0 w-80 h-96 bg-white dark:bg-[#091527] border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl animate-slide-up">
           {/* Header */}
            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
              <h3 className="font-semibold text-gray-900 dark:text-white">Messages</h3>

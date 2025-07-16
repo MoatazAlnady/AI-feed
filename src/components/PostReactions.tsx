@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, ThumbsUp, Laugh, Angry, Frown, Plus } from 'lucide-react';
+import { Heart, ThumbsUp, Laugh, Lightbulb, Trophy, Handshake, ThumbsDown, Smile } from 'lucide-react';
 
 interface PostReactionsProps {
   postId: string;
@@ -23,10 +23,13 @@ const PostReactions: React.FC<PostReactionsProps> = ({
 
   const reactionTypes = [
     { type: 'like', icon: ThumbsUp, label: 'Like', color: 'text-blue-500', emoji: '👍' },
-    { type: 'insightful', icon: Heart, label: 'Insightful', color: 'text-orange-500', emoji: '💡' },
-    { type: 'celebrate', icon: Laugh, label: 'Celebrate', color: 'text-green-500', emoji: '🎉' },
-    { type: 'support', icon: Heart, label: 'Support', color: 'text-purple-500', emoji: '❤️' },
-    { type: 'funny', icon: Laugh, label: 'Funny', color: 'text-yellow-500', emoji: '😂' }
+    { type: 'love', icon: Heart, label: 'Love', color: 'text-red-500', emoji: '❤️' },
+    { type: 'insightful', icon: Lightbulb, label: 'Insightful', color: 'text-orange-500', emoji: '💡' },
+    { type: 'smart', icon: Lightbulb, label: 'Smart', color: 'text-purple-500', emoji: '🧠' },
+    { type: 'bravo', icon: Trophy, label: 'Bravo', color: 'text-yellow-500', emoji: '👏' },
+    { type: 'support', icon: Handshake, label: 'Support', color: 'text-green-500', emoji: '🤝' },
+    { type: 'funny', icon: Laugh, label: 'Funny', color: 'text-pink-500', emoji: '😂' },
+    { type: 'unlike', icon: ThumbsDown, label: 'Unlike', color: 'text-gray-500', emoji: '👎' }
   ];
 
   const totalReactions = Object.values(reactions).reduce((sum, reaction) => sum + reaction.count, 0);

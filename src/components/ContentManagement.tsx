@@ -12,6 +12,7 @@ import { Settings, FileText, Layout, BarChart, Users, Wrench, Mail, Building } f
 import AdminToolRequests from './AdminToolRequests';
 import AdvancedUserManagement from './AdvancedUserManagement';
 import NewsletterManagement from './NewsletterManagement';
+import InterestManagement from './InterestManagement';
 import PricingManagement from './PricingManagement';
 
 interface ContentItem {
@@ -194,7 +195,7 @@ const ContentManagement = () => {
       </div>
 
       <Tabs defaultValue="hero" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
+        <TabsList className="grid w-full grid-cols-5 lg:grid-cols-9">
           <TabsTrigger value="hero" className="flex items-center gap-2">
             <Layout className="h-4 w-4" />
             <span className="hidden sm:inline">Hero</span>
@@ -210,6 +211,10 @@ const ContentManagement = () => {
           <TabsTrigger value="cta" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
             <span className="hidden sm:inline">CTA</span>
+          </TabsTrigger>
+          <TabsTrigger value="interests" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            <span className="hidden sm:inline">Interests</span>
           </TabsTrigger>
           <TabsTrigger value="tools" className="flex items-center gap-2">
             <Wrench className="h-4 w-4" />
@@ -303,6 +308,10 @@ const ContentManagement = () => {
               ))}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="interests" className="space-y-4">
+          <InterestManagement mode="admin" />
         </TabsContent>
 
         <TabsContent value="tools" className="space-y-4">
