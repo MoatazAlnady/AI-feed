@@ -427,12 +427,7 @@ html, body {
 
 /* Global gradient background for all pages */
 .bg-gradient-primary-global {
-  background: linear-gradient(
-    135deg,
-    hsl(var(--light-1)) 0%,
-    hsl(var(--light-2)) 50%,
-    hsl(var(--light-3)) 100%
-  );
+  background: hsl(var(--background));
 }
 
 .dark .bg-gradient-primary-global {
