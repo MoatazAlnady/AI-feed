@@ -35,7 +35,7 @@ export default function TopCreators() {
             <Link
               key={creator.id}
               to={`/user/${creator.id}`}
-              className="flex-shrink-0 text-center group"
+              className="flex flex-col items-center justify-start gap-2 w-28 group"
             >
               <div className="relative">
                 <Avatar className="w-16 h-16 border-2 border-muted group-hover:border-primary transition-colors">
@@ -56,16 +56,9 @@ export default function TopCreators() {
                   </div>
                 )}
               </div>
-              <div className="mt-2 max-w-[80px] text-center">
-                <p className="text-xs font-medium text-foreground break-words">
-                  {creator.full_name}
-                </p>
-                {creator.job_title && (
-                  <p className="text-xs text-muted-foreground truncate">
-                    {creator.job_title}
-                  </p>
-                )}
-              </div>
+              <p className="text-center text-sm leading-tight font-bold text-foreground break-words">
+                {creator.full_name}
+              </p>
             </Link>
           ))}
           </div>
