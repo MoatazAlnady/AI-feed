@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Image, Video, Link as LinkIcon, Send, User, Plus, Hash, Calendar, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -25,50 +26,70 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onPo
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim()) return;
+    if (!content.trim() || !user) return;
 
     setIsSubmitting(true);
 
-    // Create new post object
-    const newPost = {
-      id: Date.now(),
-      author: {
-        name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Anonymous',
-        avatar: user?.user_metadata?.profile_photo || '',
-        title: user?.user_metadata?.job_title || 'AI Enthusiast',
-        verified: user?.user_metadata?.verified || false,
-        topVoice: user?.user_metadata?.ai_nexus_top_voice || false
-      },
-      content,
-      timestamp: 'Just now',
-      likes: 0,
-      comments: [],
-      shares: 0,
-      tags: tags.map(tag => tag.startsWith('#') ? tag : `#${tag}`),
-      liked: false,
-      bookmarked: false,
-      image: image ? URL.createObjectURL(image) : undefined,
-      video: videoUrl || undefined,
-      link: linkUrl || undefined
-    };
+    try {
+      // Create post in Supabase
+      const { data: newPostData, error } = await supabase
+        .from('posts')
+        .insert({
+          user_id: user.id,
+          content,
+          image_url: image ? URL.createObjectURL(image) : null,
+          video_url: videoUrl || null,
+          link_url: linkUrl || null
+        })
+        .select()
+        .single();
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+      if (error) throw error;
 
-    onPostCreated(newPost);
-    setContent('');
-    setTags([]);
-    setNewTag('');
-    setImage(null);
-    setVideoUrl('');
-    setLinkUrl('');
-    setShowVideoInput(false);
-    setShowLinkInput(false);
-    setScheduleDate('');
-    setScheduleTime('');
-    setIsScheduled(false);
-    setIsSubmitting(false);
-    onClose();
+      // Create formatted post object for immediate display
+      const newPost = {
+        id: parseInt(newPostData.id),
+        author: {
+          name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Anonymous',
+          avatar: user?.user_metadata?.profile_photo || '',
+          title: user?.user_metadata?.job_title || 'AI Enthusiast',
+          verified: user?.user_metadata?.verified || false,
+          topVoice: user?.user_metadata?.ai_nexus_top_voice || false
+        },
+        content,
+        timestamp: 'Just now',
+        likes: 0,
+        comments: [],
+        shares: 0,
+        tags: tags.map(tag => tag.startsWith('#') ? tag : `#${tag}`),
+        liked: false,
+        bookmarked: false,
+        image: image ? URL.createObjectURL(image) : undefined,
+        video: videoUrl || undefined,
+        link: linkUrl || undefined
+      };
+
+      onPostCreated(newPost);
+
+      // Reset form
+      setContent('');
+      setTags([]);
+      setNewTag('');
+      setImage(null);
+      setVideoUrl('');
+      setLinkUrl('');
+      setShowVideoInput(false);
+      setShowLinkInput(false);
+      setScheduleDate('');
+      setScheduleTime('');
+      setIsScheduled(false);
+      onClose();
+    } catch (error) {
+      console.error('Error creating post:', error);
+      alert('Failed to create post. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {

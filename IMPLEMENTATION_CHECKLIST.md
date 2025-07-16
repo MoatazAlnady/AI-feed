@@ -62,11 +62,11 @@
   - [x] Messages system with conversation management
 
 ### Content Management
-- [ ] **Newsfeed post visibility** - Posts created don't appear in newsfeed
-- [ ] **Tool reviews and ratings** - Allow creators to comment and rate tools
+- [x] **Newsfeed post visibility** - Posts now appear in newsfeed with real Supabase integration
+- [x] **Tool reviews and ratings** - Complete review system with pros/cons, helpful votes, and moderation
 - [ ] **Chat window integration** - Opening chat with specific person
 
-### Advanced Admin Features
+### Advanced Admin Features  
 - [ ] **User management interface** - Complete user administration
 - [ ] **Organization management** - Employer organization controls
 - [ ] **Newsletter content management** - Newsletter creation and management

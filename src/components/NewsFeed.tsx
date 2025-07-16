@@ -12,7 +12,9 @@ import {
   User
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 import { makeHashtagsClickable } from '../utils/hashtagUtils';
+import PostReactions from './PostReactions';
 
 interface Post {
   id: number;
@@ -56,10 +58,78 @@ const NewsFeed: React.FC = () => {
   const userInterests = user?.user_metadata?.interests || [];
 
   useEffect(() => {
-    // Only show posts if there are any - remove dummy data
-    // In real app, this would fetch posts from API based on user's network and interests
-    setPosts([]);
-  }, [userInterests]);
+    fetchPosts();
+  }, [user]);
+
+  const fetchPosts = async () => {
+    try {
+      const { data: postsData, error } = await supabase
+        .from('posts')
+        .select(`
+          *,
+          user_profiles!posts_user_id_fkey(
+            full_name,
+            profile_photo,
+            job_title,
+            verified,
+            ai_nexus_top_voice
+          ),
+          post_reactions(
+            reaction_type,
+            user_id
+          ),
+          post_comments(
+            id,
+            content,
+            created_at,
+            user_profiles!post_comments_user_id_fkey(
+              full_name,
+              profile_photo
+            )
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+
+      const formattedPosts = postsData?.map(post => ({
+        id: parseInt(post.id),
+        author: {
+          name: post.user_profiles?.full_name || 'Anonymous User',
+          avatar: post.user_profiles?.profile_photo || '',
+          title: post.user_profiles?.job_title || 'AI Enthusiast',
+          verified: post.user_profiles?.verified || false,
+          topVoice: post.user_profiles?.ai_nexus_top_voice || false
+        },
+        content: post.content,
+        timestamp: new Date(post.created_at).toLocaleDateString(),
+        likes: post.likes || 0,
+        comments: post.post_comments?.map(comment => ({
+          id: parseInt(comment.id),
+          author: {
+            name: comment.user_profiles?.full_name || 'Anonymous',
+            avatar: comment.user_profiles?.profile_photo || ''
+          },
+          content: comment.content,
+          timestamp: new Date(comment.created_at).toLocaleDateString(),
+          likes: 0
+        })) || [],
+        shares: post.shares || 0,
+        image: post.image_url,
+        video: post.video_url,
+        link: post.link_url,
+        tags: [],
+        liked: post.post_reactions?.some(r => r.user_id === user?.id && r.reaction_type === 'like') || false,
+        bookmarked: false
+      })) || [];
+
+      setPosts(formattedPosts);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      setPosts([]);
+    }
+  };
 
   const handleHashtagClick = (hashtag: string) => {
     // Navigate to search with hashtag
