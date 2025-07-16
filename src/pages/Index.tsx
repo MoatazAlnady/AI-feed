@@ -49,7 +49,7 @@ const Index = () => {
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gradient">
               Welcome to AI Nexus
             </h1>
-            <p className="text-xl md:text-2xl font-bold font-playfair text-gradient max-w-3xl mx-auto mb-8 leading-relaxed">
+            <p className="text-xl md:text-2xl font-bold text-gradient max-w-3xl mx-auto mb-8 leading-relaxed">
               The unified SaaS platform connecting AI-skilled creators
             </p>
           </div>
