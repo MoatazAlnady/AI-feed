@@ -36,7 +36,7 @@ const Hero: React.FC = () => {
               <input
                 type="text"
                 placeholder="Search AI tools, categories, or use cases..."
-                className="w-full pl-12 pr-4 py-4 text-lg border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent shadow-lg dark:shadow-gray-800/30 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                className="w-full pl-12 pr-4 py-4 text-lg border border-gray-200 dark:border-blue-600 rounded-2xl focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent shadow-lg dark:shadow-gray-800/30 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               />
               <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-shadow">
                 Search
