@@ -58,10 +58,10 @@ const NotificationSettings: React.FC = () => {
         throw error;
       }
 
-      if (data?.notification_preferences) {
+      if (data && (data as any).notification_preferences) {
         setPreferences(prev => ({
           ...prev,
-          ...data.notification_preferences
+          ...(data as any).notification_preferences
         }));
       }
     } catch (error) {

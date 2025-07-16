@@ -874,6 +874,7 @@ export type Database = {
           linkedin: string | null
           location: string | null
           newsletter_subscription: boolean | null
+          notification_preferences: Json | null
           organization_id: string | null
           phone: string | null
           phone_country_code: string | null
@@ -909,6 +910,7 @@ export type Database = {
           linkedin?: string | null
           location?: string | null
           newsletter_subscription?: boolean | null
+          notification_preferences?: Json | null
           organization_id?: string | null
           phone?: string | null
           phone_country_code?: string | null
@@ -944,6 +946,7 @@ export type Database = {
           linkedin?: string | null
           location?: string | null
           newsletter_subscription?: boolean | null
+          notification_preferences?: Json | null
           organization_id?: string | null
           phone?: string | null
           phone_country_code?: string | null
