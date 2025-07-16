@@ -29,8 +29,11 @@ const Index = () => {
   const statsAnimation = useScrollAnimation(0.1);
   const ctaAnimation = useScrollAnimation(0.1);
 
-  // Redirect authenticated users to newsfeed
+  // Redirect authenticated users to newsfeed and remove logged-in class for landing page
   useEffect(() => {
+    // Remove logged-in class for public landing page
+    document.body.classList.remove('logged-in');
+    
     if (user && window.location.pathname === '/') {
       navigate('/newsfeed', { replace: true });
       return;

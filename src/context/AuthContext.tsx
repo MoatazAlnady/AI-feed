@@ -34,6 +34,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      
+      // Add/remove logged-in class based on initial session
+      if (session?.user) {
+        document.body.classList.add('logged-in');
+      } else {
+        document.body.classList.remove('logged-in');
+      }
     });
 
     // Listen for auth changes
@@ -43,6 +50,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      
+      // Add/remove logged-in class based on auth state
+      if (session?.user) {
+        document.body.classList.add('logged-in');
+      } else {
+        document.body.classList.remove('logged-in');
+      }
     });
 
     return () => subscription.unsubscribe();

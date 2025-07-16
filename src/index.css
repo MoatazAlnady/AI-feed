@@ -399,8 +399,29 @@ button {
   }
 }
 
+/* Global gradient backgrounds for authenticated pages */
+/* Dark theme gradient */
+body.logged-in.dark {
+  background: radial-gradient(
+    circle at 10% 20%,
+    #0b1120 0%,
+    #131c3a 40%,
+    #1c263f 75%
+  );
+}
+
+/* Light theme gradient */
+body.logged-in:not(.dark) {
+  background: radial-gradient(
+    circle at 15% 15%,
+    #f5f7ff 0%,
+    #e8effd 35%,
+    #e8e2ff 75%
+  );
+}
+
 /* === DARK-MODE GRADIENT (remove conflicting styles) === */
-.dark body {
+.dark body:not(.logged-in) {
   background: linear-gradient(
     135deg,
     #202444 0%,
