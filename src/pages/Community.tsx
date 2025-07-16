@@ -8,9 +8,9 @@ const Community: React.FC = () => {
 
   const renderFeed = () => (
       <div className="space-y-6">
-        <div className="bg-background rounded-lg border border-border p-6">
-          <h3 className="text-xl font-semibold mb-4 text-foreground">Community Feed</h3>
-          <p className="text-muted-foreground">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+          <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Community Feed</h3>
+          <p className="text-gray-600 dark:text-gray-400">
             Connect with other creators, share insights, and discover new opportunities.
           </p>
         </div>
@@ -20,36 +20,36 @@ const Community: React.FC = () => {
   const renderEvents = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-foreground">Community Events</h3>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Community Events</h3>
+        <button className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200">
           <Plus className="h-4 w-4" />
           <span>Create Event</span>
         </button>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-background rounded-lg border border-border p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-center space-x-2 mb-3">
-            <Calendar className="h-5 w-5 text-primary" />
-            <span className="text-sm text-muted-foreground">Tomorrow, 2:00 PM</span>
+            <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+            <span className="text-sm text-gray-500 dark:text-gray-500">Tomorrow, 2:00 PM</span>
           </div>
-          <h4 className="font-semibold text-foreground mb-2">AI Tools Showcase</h4>
-          <p className="text-sm text-muted-foreground mb-4">
+          <h4 className="font-semibold text-gray-900 dark:text-white mb-2">AI Tools Showcase</h4>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Discover the latest AI tools and their real-world applications.
           </p>
-          <button className="text-primary hover:underline text-sm">Join Event →</button>
+          <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Event →</button>
         </div>
         
-        <div className="bg-background rounded-lg border border-border p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-center space-x-2 mb-3">
-            <Calendar className="h-5 w-5 text-primary" />
-            <span className="text-sm text-muted-foreground">Friday, 5:00 PM</span>
+            <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+            <span className="text-sm text-gray-500 dark:text-gray-500">Friday, 5:00 PM</span>
           </div>
-          <h4 className="font-semibold text-foreground mb-2">Networking Mixer</h4>
-          <p className="text-sm text-muted-foreground mb-4">
+          <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Networking Mixer</h4>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Connect with fellow AI enthusiasts and industry professionals.
           </p>
-          <button className="text-primary hover:underline text-sm">RSVP →</button>
+          <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">RSVP →</button>
         </div>
       </div>
     </div>
@@ -58,53 +58,53 @@ const Community: React.FC = () => {
   const renderGroups = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-foreground">Discussion Groups</h3>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Discussion Groups</h3>
+        <button className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200">
           <Plus className="h-4 w-4" />
           <span>Create Group</span>
         </button>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-background rounded-lg border border-border p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-center space-x-2 mb-3">
-            <Hash className="h-5 w-5 text-primary" />
-            <span className="font-semibold text-foreground">Machine Learning</span>
+            <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+            <span className="font-semibold text-gray-900 dark:text-white">Machine Learning</span>
           </div>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Discuss ML algorithms, techniques, and latest research.
           </p>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">2.4k members</span>
-            <button className="text-primary hover:underline text-sm">Join Discussion →</button>
+            <span className="text-sm text-gray-500 dark:text-gray-500">2.4k members</span>
+            <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Discussion →</button>
           </div>
         </div>
         
-        <div className="bg-background rounded-lg border border-border p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-center space-x-2 mb-3">
-            <Hash className="h-5 w-5 text-primary" />
-            <span className="font-semibold text-foreground">AI Tools</span>
+            <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+            <span className="font-semibold text-gray-900 dark:text-white">AI Tools</span>
           </div>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Share and discover new AI tools and platforms.
           </p>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">5.1k members</span>
-            <button className="text-primary hover:underline text-sm">Join Discussion →</button>
+            <span className="text-sm text-gray-500 dark:text-gray-500">5.1k members</span>
+            <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Discussion →</button>
           </div>
         </div>
         
-        <div className="bg-background rounded-lg border border-border p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-center space-x-2 mb-3">
-            <Hash className="h-5 w-5 text-primary" />
-            <span className="font-semibold text-foreground">Startups & AI</span>
+            <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+            <span className="font-semibold text-gray-900 dark:text-white">Startups & AI</span>
           </div>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Connect with AI startup founders and innovators.
           </p>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">1.8k members</span>
-            <button className="text-primary hover:underline text-sm">Join Discussion →</button>
+            <span className="text-sm text-gray-500 dark:text-gray-500">1.8k members</span>
+            <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Discussion →</button>
           </div>
         </div>
       </div>
@@ -114,52 +114,52 @@ const Community: React.FC = () => {
   const renderNetworking = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-foreground">Find Creators</h3>
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Find Creators</h3>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
             type="text"
             placeholder="Search creators..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+            className="pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
           />
         </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-background rounded-lg border border-border p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-center space-x-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
               <span className="text-white font-semibold">JD</span>
             </div>
             <div>
-              <h4 className="font-semibold text-foreground">John Doe</h4>
-              <p className="text-sm text-muted-foreground">AI Researcher</p>
+              <h4 className="font-semibold text-gray-900 dark:text-white">John Doe</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">AI Researcher</p>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Passionate about ML and NLP. Published 20+ research papers.
           </p>
-          <button className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+          <button className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200">
             Connect
           </button>
         </div>
         
-        <div className="bg-background rounded-lg border border-border p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-center space-x-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-secondary to-primary rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
               <span className="text-white font-semibold">SM</span>
             </div>
             <div>
-              <h4 className="font-semibold text-foreground">Sarah Miller</h4>
-              <p className="text-sm text-muted-foreground">Product Manager</p>
+              <h4 className="font-semibold text-gray-900 dark:text-white">Sarah Miller</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Product Manager</p>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Building AI-powered products. Love to share insights and tools.
           </p>
-          <button className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+          <button className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200">
             Connect
           </button>
         </div>
@@ -168,52 +168,46 @@ const Community: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <section className="py-16 px-6">
-        <div className="container max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
+    <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
             AI Nexus Community
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-400">
             Connect with like-minded AI enthusiasts, share knowledge, and build the future together.
           </p>
         </div>
-      </section>
 
-      {/* Community Stats */}
-      <section className="py-8 px-6">
-        <div className="container max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="text-center p-6 bg-background rounded-lg border border-border">
-              <Users className="h-8 w-8 text-primary mx-auto mb-2" />
-              <div className="text-2xl font-bold text-foreground">10K+</div>
-              <div className="text-sm text-muted-foreground">Active Members</div>
-            </div>
-            <div className="text-center p-6 bg-background rounded-lg border border-border">
-              <MessageSquare className="h-8 w-8 text-primary mx-auto mb-2" />
-              <div className="text-2xl font-bold text-foreground">50K+</div>
-              <div className="text-sm text-muted-foreground">Discussions</div>
-            </div>
-            <div className="text-center p-6 bg-background rounded-lg border border-border">
-              <Lightbulb className="h-8 w-8 text-primary mx-auto mb-2" />
-              <div className="text-2xl font-bold text-foreground">500+</div>
-              <div className="text-sm text-muted-foreground">Shared Projects</div>
-            </div>
-            <div className="text-center p-6 bg-background rounded-lg border border-border">
-              <TrendingUp className="h-8 w-8 text-primary mx-auto mb-2" />
-              <div className="text-2xl font-bold text-foreground">95%</div>
-              <div className="text-sm text-muted-foreground">Success Rate</div>
-            </div>
+        {/* Community Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
+            <Users className="h-8 w-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">10K+</div>
+            <div className="text-sm text-gray-500 dark:text-gray-500">Active Members</div>
+          </div>
+          <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
+            <MessageSquare className="h-8 w-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">50K+</div>
+            <div className="text-sm text-gray-500 dark:text-gray-500">Discussions</div>
+          </div>
+          <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
+            <Lightbulb className="h-8 w-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">500+</div>
+            <div className="text-sm text-gray-500 dark:text-gray-500">Shared Projects</div>
+          </div>
+          <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
+            <TrendingUp className="h-8 w-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">95%</div>
+            <div className="text-sm text-gray-500 dark:text-gray-500">Success Rate</div>
           </div>
         </div>
-      </section>
 
-      {/* Navigation Tabs */}
-      <section className="px-6">
-        <div className="container max-w-6xl mx-auto">
-          <div className="border-b border-border">
-            <nav className="-mb-px flex space-x-8">
+        {/* Navigation Tabs */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm mb-8">
+          <div className="border-b border-gray-200 dark:border-gray-700">
+            <nav className="-mb-px flex space-x-8 px-6">
               {[
                 { id: 'networking', label: 'Networking', icon: Users },
                 { id: 'feed', label: 'Feed', icon: MessageSquare },
@@ -228,8 +222,8 @@ const Community: React.FC = () => {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-all duration-200 ${
                       isActive
-                        ? 'border-primary text-primary bg-primary/5 rounded-t-lg'
-                        : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                        ? 'border-primary-500 text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 rounded-t-lg'
+                        : 'border-transparent text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white hover:border-gray-200 dark:hover:border-gray-700'
                     }`}
                   >
                     <Icon className="h-5 w-5" />
@@ -240,17 +234,15 @@ const Community: React.FC = () => {
             </nav>
           </div>
         </div>
-      </section>
 
-      {/* Content */}
-      <section className="py-8 px-6">
-        <div className="container max-w-6xl mx-auto">
+        {/* Content */}
+        <div>
           {activeTab === 'feed' && renderFeed()}
           {activeTab === 'events' && renderEvents()}
           {activeTab === 'groups' && renderGroups()}
           {activeTab === 'networking' && renderNetworking()}
         </div>
-      </section>
+      </div>
 
       {/* Chat Dock */}
       <ChatDock />
