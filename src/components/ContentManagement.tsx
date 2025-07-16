@@ -12,6 +12,7 @@ import { Settings, FileText, Layout, BarChart, Users, Wrench, Mail, Building } f
 import AdminToolRequests from './AdminToolRequests';
 import AdvancedUserManagement from './AdvancedUserManagement';
 import NewsletterManagement from './NewsletterManagement';
+import PricingManagement from './PricingManagement';
 
 interface ContentItem {
   id: string;

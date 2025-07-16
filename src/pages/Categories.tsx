@@ -94,7 +94,7 @@ const Categories: React.FC = () => {
                   to={`/tools?category=${category.name.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`}
                   className="group"
                 >
-                  <div className="bg-card rounded-xl border p-6 hover:shadow-lg transition-all duration-300 group-hover:border-primary/20">
+                  <div className="bg-background rounded-xl border p-6 hover:shadow-lg transition-all duration-300 group-hover:border-primary/20">
                     <div className="flex items-start space-x-4">
                       <div className={`${category.color} p-3 rounded-lg text-white flex-shrink-0`}>
                         <Icon className="h-6 w-6" />

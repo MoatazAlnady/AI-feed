@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Briefcase, MapPin, DollarSign, Clock, ExternalLink, Building, Target } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import PromoteContentModal from './PromoteContentModal';
+import ProjectConversionModal from './ProjectConversionModal';
 
 interface CreateJobModalProps {
   isOpen: boolean;
@@ -26,7 +26,7 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
     slots: 1
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPromoteModal, setShowPromoteModal] = useState(false);
+  const [showConversionModal, setShowConversionModal] = useState(false);
   const [createdJob, setCreatedJob] = useState<any>(null);
 
   const jobTypes = ['full-time', 'part-time', 'contract', 'freelance', 'internship'];
@@ -106,8 +106,8 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
       setCreatedJob(newJob);
       onJobCreated(newJob);
       
-      // Ask if user wants to promote the job
-      setShowPromoteModal(true);
+      // Show conversion modal with options
+      setShowConversionModal(true);
     } catch (error) {
       console.error('Error creating job:', error);
       alert('Error creating job. Please try again.');
@@ -116,8 +116,8 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
     }
   };
 
-  const handlePromoteClose = () => {
-    setShowPromoteModal(false);
+  const handleConversionClose = () => {
+    setShowConversionModal(false);
     onClose();
     // Reset form
     setFormData({
@@ -135,6 +135,11 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
       slots: 1
     });
     setCreatedJob(null);
+  };
+
+  const handleProjectCreated = (project: any) => {
+    console.log('Project created:', project);
+    // You can add navigation to projects page or show success message
   };
 
   if (!isOpen) return null;
@@ -431,14 +436,20 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
         </div>
       </div>
 
-      {/* Promote Job Modal */}
-      {showPromoteModal && createdJob && (
-        <PromoteContentModal
-          isOpen={showPromoteModal}
-          onClose={handlePromoteClose}
-          contentType="job"
-          contentId={createdJob.id}
-          contentTitle={createdJob.title}
+      {/* Project Conversion Modal */}
+      {showConversionModal && createdJob && (
+        <ProjectConversionModal
+          isOpen={showConversionModal}
+          onClose={handleConversionClose}
+          jobData={{
+            title: createdJob.title,
+            company: createdJob.company,
+            description: createdJob.description,
+            requirements: createdJob.requirements,
+            location: createdJob.location,
+            experience: createdJob.experience
+          }}
+          onProjectCreated={handleProjectCreated}
         />
       )}
     </>

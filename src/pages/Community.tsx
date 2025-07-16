@@ -6,14 +6,14 @@ const Community: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'feed' | 'events' | 'groups' | 'networking'>('feed');
 
   const renderFeed = () => (
-    <div className="space-y-6">
-      <div className="bg-card rounded-lg border border-border p-6">
-        <h3 className="text-xl font-semibold mb-4 text-foreground">Community Feed</h3>
-        <p className="text-muted-foreground">
-          Connect with other creators, share insights, and discover new opportunities.
-        </p>
+      <div className="space-y-6">
+        <div className="bg-background rounded-lg border border-border p-6">
+          <h3 className="text-xl font-semibold mb-4 text-foreground">Community Feed</h3>
+          <p className="text-muted-foreground">
+            Connect with other creators, share insights, and discover new opportunities.
+          </p>
+        </div>
       </div>
-    </div>
   );
 
   const renderEvents = () => (
@@ -27,7 +27,7 @@ const Community: React.FC = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-card rounded-lg border border-border p-6">
+        <div className="bg-background rounded-lg border border-border p-6">
           <div className="flex items-center space-x-2 mb-3">
             <Calendar className="h-5 w-5 text-primary" />
             <span className="text-sm text-muted-foreground">Tomorrow, 2:00 PM</span>
@@ -39,7 +39,7 @@ const Community: React.FC = () => {
           <button className="text-primary hover:underline text-sm">Join Event →</button>
         </div>
         
-        <div className="bg-card rounded-lg border border-border p-6">
+        <div className="bg-background rounded-lg border border-border p-6">
           <div className="flex items-center space-x-2 mb-3">
             <Calendar className="h-5 w-5 text-primary" />
             <span className="text-sm text-muted-foreground">Friday, 5:00 PM</span>
@@ -65,7 +65,7 @@ const Community: React.FC = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-card rounded-lg border border-border p-6">
+        <div className="bg-background rounded-lg border border-border p-6">
           <div className="flex items-center space-x-2 mb-3">
             <Hash className="h-5 w-5 text-primary" />
             <span className="font-semibold text-foreground">Machine Learning</span>
@@ -79,7 +79,7 @@ const Community: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-card rounded-lg border border-border p-6">
+        <div className="bg-background rounded-lg border border-border p-6">
           <div className="flex items-center space-x-2 mb-3">
             <Hash className="h-5 w-5 text-primary" />
             <span className="font-semibold text-foreground">AI Tools</span>
@@ -93,7 +93,7 @@ const Community: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-card rounded-lg border border-border p-6">
+        <div className="bg-background rounded-lg border border-border p-6">
           <div className="flex items-center space-x-2 mb-3">
             <Hash className="h-5 w-5 text-primary" />
             <span className="font-semibold text-foreground">Startups & AI</span>
@@ -125,7 +125,7 @@ const Community: React.FC = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-card rounded-lg border border-border p-6">
+        <div className="bg-background rounded-lg border border-border p-6">
           <div className="flex items-center space-x-3 mb-4">
             <div className="w-12 h-12 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
               <span className="text-white font-semibold">JD</span>
@@ -143,7 +143,7 @@ const Community: React.FC = () => {
           </button>
         </div>
         
-        <div className="bg-card rounded-lg border border-border p-6">
+        <div className="bg-background rounded-lg border border-border p-6">
           <div className="flex items-center space-x-3 mb-4">
             <div className="w-12 h-12 bg-gradient-to-r from-secondary to-primary rounded-full flex items-center justify-center">
               <span className="text-white font-semibold">SM</span>
@@ -182,22 +182,22 @@ const Community: React.FC = () => {
       <section className="py-8 px-6">
         <div className="container max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="text-center p-6 bg-card rounded-lg border border-border">
+            <div className="text-center p-6 bg-background rounded-lg border border-border">
               <Users className="h-8 w-8 text-primary mx-auto mb-2" />
               <div className="text-2xl font-bold text-foreground">10K+</div>
               <div className="text-sm text-muted-foreground">Active Members</div>
             </div>
-            <div className="text-center p-6 bg-card rounded-lg border border-border">
+            <div className="text-center p-6 bg-background rounded-lg border border-border">
               <MessageSquare className="h-8 w-8 text-primary mx-auto mb-2" />
               <div className="text-2xl font-bold text-foreground">50K+</div>
               <div className="text-sm text-muted-foreground">Discussions</div>
             </div>
-            <div className="text-center p-6 bg-card rounded-lg border border-border">
+            <div className="text-center p-6 bg-background rounded-lg border border-border">
               <Lightbulb className="h-8 w-8 text-primary mx-auto mb-2" />
               <div className="text-2xl font-bold text-foreground">500+</div>
               <div className="text-sm text-muted-foreground">Shared Projects</div>
             </div>
-            <div className="text-center p-6 bg-card rounded-lg border border-border">
+            <div className="text-center p-6 bg-background rounded-lg border border-border">
               <TrendingUp className="h-8 w-8 text-primary mx-auto mb-2" />
               <div className="text-2xl font-bold text-foreground">95%</div>
               <div className="text-sm text-muted-foreground">Success Rate</div>

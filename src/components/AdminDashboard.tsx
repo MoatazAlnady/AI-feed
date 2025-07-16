@@ -4,9 +4,9 @@ import {
   Users, 
   Wrench, 
   FileText, 
-  Settings, 
-  Shield, 
-  Bell, 
+  Settings,
+  Shield,
+  Bell,
   Search, 
   Plus, 
   Edit,
@@ -173,7 +173,7 @@ const AdminDashboard: React.FC = () => {
                 <span className="text-sm text-green-600 dark:text-green-400 ml-1">0%</span>
               </div>
             </div>
-            <Wrench className="h-8 w-8 text-purple-500 dark:text-purple-400" />
+            <Settings className="h-8 w-8 text-purple-500 dark:text-purple-400" />
           </div>
         </div>
         

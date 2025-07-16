@@ -52,19 +52,19 @@ const Jobs: React.FC = () => {
 
         {/* Filters */}
         <div className="mb-8 flex flex-wrap gap-4">
-          <select className="bg-card border border-border rounded-lg px-4 py-2 text-foreground">
+          <select className="bg-background border border-border rounded-lg px-4 py-2 text-foreground">
             <option>All Locations</option>
             <option>Remote</option>
             <option>San Francisco</option>
             <option>New York</option>
           </select>
-          <select className="bg-card border border-border rounded-lg px-4 py-2 text-foreground">
+          <select className="bg-background border border-border rounded-lg px-4 py-2 text-foreground">
             <option>All Types</option>
             <option>Full-time</option>
             <option>Part-time</option>
             <option>Contract</option>
           </select>
-          <select className="bg-card border border-border rounded-lg px-4 py-2 text-foreground">
+          <select className="bg-background border border-border rounded-lg px-4 py-2 text-foreground">
             <option>All Experience Levels</option>
             <option>Entry Level</option>
             <option>Mid Level</option>
@@ -75,7 +75,7 @@ const Jobs: React.FC = () => {
         {/* Jobs List */}
         <div className="space-y-6">
           {jobs.map((job) => (
-            <div key={job.id} className="bg-card rounded-lg p-6 border border-border hover:border-primary/20 transition-colors">
+            <div key={job.id} className="bg-background rounded-lg p-6 border border-border hover:border-primary/20 transition-colors">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold mb-2 text-foreground">{job.title}</h3>
@@ -113,7 +113,7 @@ const Jobs: React.FC = () => {
 
         {/* Load More */}
         <div className="text-center mt-8">
-          <button className="bg-card border border-border text-foreground px-6 py-3 rounded-lg hover:bg-muted transition-colors">
+          <button className="bg-background border border-border text-foreground px-6 py-3 rounded-lg hover:bg-muted transition-colors">
             Load More Jobs
           </button>
         </div>

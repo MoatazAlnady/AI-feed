@@ -63,68 +63,65 @@ const NewsFeed: React.FC = () => {
 
   const fetchPosts = async () => {
     try {
+      console.log('Fetching posts...');
       const { data: postsData, error } = await supabase
         .from('posts')
-        .select(`
-          *,
-          user_profiles(
-            full_name,
-            profile_photo,
-            job_title,
-            verified,
-            ai_nexus_top_voice
-          ),
-          post_reactions(
-            reaction_type,
-            user_id
-          ),
-          post_comments(
-            id,
-            content,
-            created_at,
-            user_id,
-            user_profiles(
-              full_name,
-              profile_photo
-            )
-          )
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(50);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching posts:', error);
+        throw error;
+      }
 
-      const formattedPosts = postsData?.map(post => ({
-        id: parseInt(post.id),
-        author: {
-          name: post.user_profiles?.full_name || 'Anonymous User',
-          avatar: post.user_profiles?.profile_photo || '',
-          title: post.user_profiles?.job_title || 'AI Enthusiast',
-          verified: post.user_profiles?.verified || false,
-          topVoice: post.user_profiles?.ai_nexus_top_voice || false
-        },
-        content: post.content,
-        timestamp: new Date(post.created_at).toLocaleDateString(),
-        likes: post.likes || 0,
-        comments: post.post_comments?.map(comment => ({
-          id: parseInt(comment.id),
+      console.log('Posts data:', postsData);
+
+      if (!postsData || postsData.length === 0) {
+        console.log('No posts found');
+        setPosts([]);
+        return;
+      }
+
+      // Fetch user profiles for each post
+      const userIds = [...new Set(postsData.map(post => post.user_id))];
+      const { data: userProfiles, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('id, full_name, profile_photo, job_title, verified, ai_nexus_top_voice')
+        .in('id', userIds);
+
+      if (profileError) {
+        console.error('Error fetching user profiles:', profileError);
+      }
+
+      const profilesMap = new Map(userProfiles?.map(profile => [profile.id, profile]) || []);
+
+      const formattedPosts = postsData.map(post => {
+        const profile = profilesMap.get(post.user_id);
+        return {
+          id: parseInt(post.id),
           author: {
-            name: comment.user_profiles?.full_name || 'Anonymous',
-            avatar: comment.user_profiles?.profile_photo || ''
+            name: profile?.full_name || 'Anonymous User',
+            avatar: profile?.profile_photo || '',
+            title: profile?.job_title || 'AI Enthusiast',
+            verified: profile?.verified || false,
+            topVoice: profile?.ai_nexus_top_voice || false
           },
-          content: comment.content,
-          timestamp: new Date(comment.created_at).toLocaleDateString(),
-          likes: 0
-        })) || [],
-        shares: post.shares || 0,
-        image: post.image_url,
-        video: post.video_url,
-        link: post.link_url,
-        tags: [],
-        liked: post.post_reactions?.some(r => r.user_id === user?.id && r.reaction_type === 'like') || false,
-        bookmarked: false
-      })) || [];
+          content: post.content,
+          timestamp: new Date(post.created_at).toLocaleDateString(),
+          likes: post.likes || 0,
+          comments: [],
+          shares: post.shares || 0,
+          image: post.image_url,
+          video: post.video_url,
+          link: post.link_url,
+          tags: [],
+          liked: false,
+          bookmarked: false
+        };
+      });
 
+      console.log('Formatted posts:', formattedPosts);
       setPosts(formattedPosts);
     } catch (error) {
       console.error('Error fetching posts:', error);

@@ -351,7 +351,7 @@ const JobsManagement: React.FC = () => {
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
+                    className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
                     required
                   >
                     <option value="full-time">Full-time</option>
@@ -365,7 +365,7 @@ const JobsManagement: React.FC = () => {
                   <select
                     value={formData.work_mode}
                     onChange={(e) => setFormData(prev => ({ ...prev, work_mode: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
+                    className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
                     required
                   >
                     <option value="remote">Remote</option>
@@ -378,7 +378,7 @@ const JobsManagement: React.FC = () => {
                   <select
                     value={formData.experience}
                     onChange={(e) => setFormData(prev => ({ ...prev, experience: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
+                    className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
                     required
                   >
                     <option value="entry">Entry Level</option>
