@@ -424,26 +424,52 @@ button {
     ) !important;
   }
   
-  /* Aggressive override: Make ALL main containers transparent for logged-in users */
+  /* Ultra-specific overrides for authenticated page patterns */
+  body.logged-in .py-8.bg-gray-50.dark\:bg-gray-900.min-h-screen,
+  body.logged-in .py-8.bg-gray-50.min-h-screen,
+  body.logged-in .bg-gray-50.dark\:bg-gray-900.min-h-screen,
+  body.logged-in .bg-gray-50.min-h-screen,
+  body.logged-in .dark\:bg-gray-900.min-h-screen {
+    background: transparent !important;
+  }
+  
+  /* Target specific Tailwind utility combinations */
+  body.logged-in [class*="bg-gray-50"][class*="min-h-screen"],
+  body.logged-in [class*="bg-gray-100"][class*="min-h-screen"],
+  body.logged-in [class*="py-8"][class*="bg-gray-50"],
+  body.logged-in [class*="py-8"][class*="bg-gray-100"] {
+    background: transparent !important;
+  }
+  
+  /* Dark mode specific overrides */
+  .dark body.logged-in [class*="dark:bg-gray-900"][class*="min-h-screen"],
+  .dark body.logged-in [class*="dark:bg-gray-800"][class*="min-h-screen"],
+  .dark body.logged-in [class*="py-8"][class*="dark:bg-gray-900"],
+  .dark body.logged-in [class*="py-8"][class*="dark:bg-gray-800"] {
+    background: transparent !important;
+  }
+  
+  /* Fallback: Override any background on main page containers */
   body.logged-in .min-h-screen,
   body.logged-in main,
   body.logged-in .container,
   body.logged-in .max-w-6xl,
   body.logged-in .max-w-4xl,
-  body.logged-in .max-w-7xl,
-  body.logged-in > div,
-  body.logged-in #root,
-  body.logged-in [data-theme] {
+  body.logged-in .max-w-7xl {
     background: transparent !important;
   }
   
-  /* Override common page background classes for logged-in users */
-  body.logged-in .bg-white,
+  /* Override individual utility classes with higher specificity */
   body.logged-in .bg-gray-50,
   body.logged-in .bg-gray-100,
-  body.logged-in .dark\:bg-gray-900,
-  body.logged-in .dark\:bg-gray-800 {
-    background: transparent !important;
+  body.logged-in .bg-white {
+    background-color: transparent !important;
+  }
+  
+  .dark body.logged-in .dark\:bg-gray-900,
+  .dark body.logged-in .dark\:bg-gray-800,
+  .dark body.logged-in .dark\:bg-gray-700 {
+    background-color: transparent !important;
   }
 }
 
