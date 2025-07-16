@@ -129,9 +129,9 @@ const Header: React.FC = () => {
   return (
     <>
       <header className="w-full bg-white dark:bg-[#091527] shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 backdrop-blur-sm bg-white/95 dark:bg-[#091527]/95">
-        <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 h-16 gap-x-6">
-          {/* Left: Logo + Navigation */}
-          <div className="flex items-center gap-x-6">
+        <div className="mx-auto flex max-w-[1440px] items-center px-4 h-16">
+          {/* Col 1 - Left: Logo */}
+          <div className="flex items-center gap-x-2">
             <Link to={isEmployerView ? "/employer" : "/"} className="flex items-center space-x-3 group flex-shrink-0">
               <div className="p-2 bg-gradient-primary rounded-lg group-hover:shadow-lg transition-all duration-300 transform group-hover:scale-105">
                 <Zap className="h-6 w-6 text-white" />
@@ -140,91 +140,91 @@ const Header: React.FC = () => {
                 AI Nexus
               </span>
             </Link>
-
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-4">
-              {!isEmployerView && filteredNavigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
-                    isActive(item.href)
-                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                  } ${item.protected && !user ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  onClick={(e) => {
-                    if (item.protected && !user) {
-                      e.preventDefault();
-                      openAuthModal('signin');
-                    }
-                  }}
-                >
-                  {item.name}
-                  {item.protected && !user && (
-                    <span className="ml-1 text-xs text-primary-500 dark:text-primary-400">*</span>
-                  )}
-                </Link>
-              ))}
-              
-              {isEmployerView && (
-                <>
-                  <Link
-                    to="/employer"
-                    className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
-                      isActive('/employer')
-                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
-                        : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    Dashboard
-                  </Link>
-                  <Link
-                    to="/employer/talents"
-                    className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
-                      location.pathname.includes('/employer/talents')
-                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
-                        : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    Talents
-                  </Link>
-                  <Link
-                    to="/employer/jobs"
-                    className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
-                      location.pathname.includes('/employer/jobs')
-                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
-                        : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    Jobs
-                  </Link>
-                  <Link
-                    to="/employer/projects"
-                    className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
-                      location.pathname.includes('/employer/projects')
-                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
-                        : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    Projects
-                  </Link>
-                  <Link
-                    to="/employer/analytics"
-                    className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
-                      location.pathname.includes('/employer/analytics')
-                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
-                        : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    Analytics
-                  </Link>
-                </>
-              )}
-            </div>
           </div>
 
-          {/* Right Side Actions */}
-          <div className="flex items-center gap-x-3 flex-shrink-0">
+          {/* Col 2 - Center: Navigation Links */}
+          <nav className="flex flex-1 justify-center gap-x-10 max-lg:hidden">
+            {!isEmployerView && filteredNavigation.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
+                  isActive(item.href)
+                    ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                } ${item.protected && !user ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={(e) => {
+                  if (item.protected && !user) {
+                    e.preventDefault();
+                    openAuthModal('signin');
+                  }
+                }}
+              >
+                {item.name}
+                {item.protected && !user && (
+                  <span className="ml-1 text-xs text-primary-500 dark:text-primary-400">*</span>
+                )}
+              </Link>
+            ))}
+            
+            {isEmployerView && (
+              <>
+                <Link
+                  to="/employer"
+                  className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
+                    isActive('/employer')
+                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  to="/employer/talents"
+                  className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
+                    location.pathname.includes('/employer/talents')
+                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  Talents
+                </Link>
+                <Link
+                  to="/employer/jobs"
+                  className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
+                    location.pathname.includes('/employer/jobs')
+                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  Jobs
+                </Link>
+                <Link
+                  to="/employer/projects"
+                  className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
+                    location.pathname.includes('/employer/projects')
+                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  Projects
+                </Link>
+                <Link
+                  to="/employer/analytics"
+                  className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
+                    location.pathname.includes('/employer/analytics')
+                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  Analytics
+                </Link>
+              </>
+            )}
+          </nav>
+
+          {/* Col 3 - Right: Theme, Search, User Actions */}
+          <div className="flex items-center gap-x-4">
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
