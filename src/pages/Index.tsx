@@ -10,6 +10,7 @@ import AuthModal from '@/components/AuthModal';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import TrendingTools from '@/components/TrendingTools';
 import TopCreators from '@/components/TopCreators';
+import ChatDock from '@/components/ChatDock';
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -89,13 +90,6 @@ const Index = () => {
             </div>
           </form>
           
-          {/* AI Chat Panel - Coming Soon */}
-          <div className="max-w-4xl mx-auto mt-4 bg-background/80 border border-input rounded-2xl p-4 backdrop-blur-sm">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-              AI-powered search responses coming soon - Get instant recommendations for tools, categories, and solutions
-            </div>
-          </div>
           
           {/* Trending Tools Section */}
           <div className="mt-16">
@@ -212,6 +206,9 @@ const Index = () => {
           initialMode="signin"
         />
       )}
+
+      {/* Chat Dock */}
+      <ChatDock />
     </div>
   );
 };
