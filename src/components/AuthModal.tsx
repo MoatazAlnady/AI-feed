@@ -14,6 +14,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
   const [step, setStep] = useState(1); // For multi-step signup
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [jobTitle, setJobTitle] = useState('');
   const [company, setCompany] = useState('');
@@ -275,8 +276,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
       } else {
         if (step === 1) {
           // Basic info validation
-          if (!fullName || !email || !password || !birthDate || !gender || !country || !city || !accountType || !phoneNumber) {
-            throw new Error('Please fill in all required fields including phone number');
+          if (!fullName || !email || !password || !confirmPassword || !birthDate || !gender || !country || !city || !accountType || !phoneNumber) {
+            throw new Error('Please fill in all required fields including phone number and password confirmation');
+          }
+          
+          // Password confirmation validation
+          if (password !== confirmPassword) {
+            throw new Error('Passwords do not match');
           }
           
           // Age validation (must be 13+)
@@ -557,12 +563,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       </label>
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <InputBase
+                        <input
                           type="text"
                           id="fullName"
                           value={fullName}
                           onChange={(e) => setFullName(e.target.value)}
-                          className="pl-10"
+                          className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                           placeholder="Enter your full name"
                           required
                         />
@@ -576,12 +582,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       </label>
                       <div className="relative">
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <InputBase
+                        <input
                           type="date"
                           id="birthDate"
                           value={birthDate}
                           onChange={(e) => setBirthDate(e.target.value)}
-                          className="pl-10"
+                          className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                           required
                           max={new Date(new Date().setFullYear(new Date().getFullYear() - 13)).toISOString().split('T')[0]}
                         />
@@ -596,11 +602,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       </label>
                       <div className="relative">
                         <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <SelectBase
+                        <select
                           id="gender"
                           value={gender}
                           onChange={(e) => setGender(e.target.value)}
-                          className="pl-10"
+                          className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                           required
                         >
                           <option value="">Select gender</option>
@@ -609,7 +615,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                               {option}
                             </option>
                           ))}
-                        </SelectBase>
+                        </select>
                       </div>
                     </div>
 
@@ -621,14 +627,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                         </label>
                         <div className="relative">
                           <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                          <SelectBase
+                          <select
                             id="country"
                             value={country}
-                            onChange={(e) => {
-                              setCountry(e.target.value);
-                              setCity(''); // Reset city when country changes
-                            }}
-                            className="pl-10"
+                            onChange={(e) => handleCountryChange(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                             required
                           >
                             <option value="">Select country</option>
@@ -637,7 +640,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                                 {countryOption}
                               </option>
                             ))}
-                          </SelectBase>
+                          </select>
                         </div>
                       </div>
                       <div>
@@ -712,6 +715,66 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                     </p>
                   )}
                 </div>
+
+                {mode === 'signup' && (
+                  <div className="animate-slide-up">
+                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Confirm Password *
+                    </label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        id="confirmPassword"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                        placeholder="Confirm your password"
+                        required
+                        minLength={6}
+                      />
+                    </div>
+                    {password && confirmPassword && password !== confirmPassword && (
+                      <p className="text-xs text-red-500 mt-1">
+                        Passwords do not match
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {mode === 'signup' && (
+                  <div className="animate-slide-up">
+                    <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Phone Number *
+                    </label>
+                    <div className="grid grid-cols-5 gap-2">
+                      <div className="col-span-2">
+                        <select
+                          value={phoneCountryCode}
+                          onChange={(e) => setPhoneCountryCode(e.target.value)}
+                          className="w-full px-3 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                        >
+                          {countriesWithCodes.map((country) => (
+                            <option key={country.code} value={country.code}>
+                              {country.code} ({country.name})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="col-span-3">
+                        <input
+                          type="tel"
+                          id="phoneNumber"
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                          placeholder="Enter phone number"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </>
             ) : (
               /* Step 2: Profile & Interests */
