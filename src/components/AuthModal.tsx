@@ -370,15 +370,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                 {mode === 'signup' && (
                   <>
                     {/* Account Type - PROMINENTLY DISPLAYED */}
-                    <div className="animate-slide-up bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-xl border-2 border-blue-200">
-                      <label className="block text-lg font-bold text-gray-900 mb-4 text-center">
+                    <div className="animate-slide-up bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 p-6 rounded-xl border-2 border-blue-200 dark:border-gray-600">
+                      <label className="block text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">
                         🚀 Choose Your Account Type
                       </label>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <label className={`group flex flex-col items-center p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
                           accountType === 'creator' 
-                            ? 'border-blue-500 bg-blue-50 shadow-lg' 
-                            : 'border-gray-300 bg-white hover:border-blue-300 hover:shadow-md'
+                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-400 shadow-lg' 
+                            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-blue-300 dark:hover:border-blue-400 hover:shadow-md'
                         }`}>
                           <input
                             type="radio"
@@ -394,8 +394,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                             <Sparkles className="h-8 w-8 text-white" />
                           </div>
                           <div className="text-center">
-                            <div className="font-bold text-gray-900 text-lg mb-2">Creator</div>
-                            <div className="text-sm text-gray-600">
+                            <div className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-2">Creator</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-300">
                               • Access all AI tools
                               <br />
                               • Join community discussions
@@ -409,8 +409,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                         
                         <label className={`group flex flex-col items-center p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
                           accountType === 'employer' 
-                            ? 'border-purple-500 bg-purple-50 shadow-lg' 
-                            : 'border-gray-300 bg-white hover:border-purple-300 hover:shadow-md'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 dark:border-purple-400 shadow-lg' 
+                            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-purple-300 dark:hover:border-purple-400 hover:shadow-md'
                         }`}>
                           <input
                             type="radio"
@@ -426,8 +426,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                             <Building className="h-8 w-8 text-white" />
                           </div>
                           <div className="text-center">
-                            <div className="font-bold text-gray-900 text-lg mb-2">Employer</div>
-                            <div className="text-sm text-gray-600">
+                            <div className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-2">Employer</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-300">
                               • Post job opportunities
                               <br />
                               • Search talent database
@@ -466,7 +466,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                     </div>
 
                     <div className="animate-slide-up">
-                      <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Full Name *
                       </label>
                       <div className="relative">
@@ -485,7 +485,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
 
                     {/* Birth Date */}
                     <div className="animate-slide-up">
-                      <label htmlFor="birthDate" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="birthDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Date of Birth *
                       </label>
                       <div className="relative">
@@ -505,7 +505,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
 
                     {/* Gender - Limited to Male and Female */}
                     <div className="animate-slide-up">
-                      <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor="gender" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Gender *
                       </label>
                       <div className="relative">
@@ -530,7 +530,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                     {/* Location - Fixed city selection */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-slide-up">
                       <div>
-                        <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="country" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                           Country *
                         </label>
                         <div className="relative">
@@ -555,14 +555,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                         </div>
                       </div>
                       <div>
-                        <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="city" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                           City *
                         </label>
                         <select
                           id="city"
                           value={city}
                           onChange={(e) => setCity(e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                          className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                           required
                           disabled={!country}
                         >
@@ -579,7 +579,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                 )}
 
                 <div className="animate-slide-up">
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Email Address *
                   </label>
                   <div className="relative">
@@ -589,7 +589,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       id="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                       placeholder="Enter your email"
                       required
                     />
@@ -597,7 +597,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                 </div>
 
                 <div className="animate-slide-up">
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Password *
                   </label>
                   <div className="relative">
@@ -607,7 +607,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       id="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                      className="w-full pl-10 pr-12 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                       placeholder="Enter your password"
                       required
                       minLength={6}
