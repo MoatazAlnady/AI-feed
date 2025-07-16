@@ -86,14 +86,6 @@
     );
     @apply text-foreground;
   }
-  .dark body {
-    /* Dark mode gradient background */
-    background: linear-gradient(
-      135deg,
-      #202444 0%,
-      #462560 100%
-    ) !important;
-  }
 }
 
 /* Animated orb keyframes */

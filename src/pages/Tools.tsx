@@ -168,12 +168,12 @@ const Tools: React.FC = () => {
               <p className="text-gray-600 mb-6">
                 Be the first to submit an AI tool to our directory! Tools will appear here once they are submitted and approved.
               </p>
-              <a
-                href="/auth"
+              <Link
+                to="/tools/create"
                 className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-semibold rounded-xl hover:shadow-lg transition-shadow"
               >
                 Submit Your Tool
-              </a>
+              </Link>
             </div>
           ) : filteredTools.length === 0 ? (
             <div className="text-center py-20">
