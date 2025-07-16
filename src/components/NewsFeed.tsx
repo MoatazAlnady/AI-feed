@@ -341,28 +341,41 @@ const NewsFeed: React.FC = () => {
                         <MoreHorizontal className="h-4 w-4" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-48">
-                      <DropdownMenuItem onClick={() => handleEditPost(post.id)}>
+                    <DropdownMenuContent className="w-48 bg-white dark:bg-[hsl(var(--dark-1))] border-gray-200 dark:border-[hsl(var(--c-indigo))] shadow-lg">
+                      <DropdownMenuItem 
+                        onClick={() => handleEditPost(post.id)}
+                        className="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[hsl(var(--c-indigo))]"
+                      >
                         <Edit3 className="h-4 w-4 mr-2" />
                         Edit Post
                       </DropdownMenuItem>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                            <Trash2 className="h-4 w-4 mr-2 text-red-500" />
-                            <span className="text-red-500">Delete Post</span>
+                          <DropdownMenuItem 
+                            onSelect={(e) => e.preventDefault()}
+                            className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete Post
                           </DropdownMenuItem>
                         </AlertDialogTrigger>
-                        <AlertDialogContent>
+                        <AlertDialogContent className="bg-white dark:bg-[hsl(var(--dark-1))] border-gray-200 dark:border-[hsl(var(--c-indigo))]">
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure you want to delete this post?</AlertDialogTitle>
-                            <AlertDialogDescription>
+                            <AlertDialogTitle className="text-gray-900 dark:text-white">
+                              Are you sure you want to delete this post?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="text-gray-600 dark:text-gray-300">
                               This action cannot be undone. This will permanently delete your post and remove it from the feed.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDeletePost(post.id)} className="bg-red-500 hover:bg-red-600">
+                            <AlertDialogCancel className="bg-gray-100 dark:bg-[hsl(var(--c-indigo))] text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-[hsl(var(--c-violet))] border-gray-300 dark:border-[hsl(var(--c-indigo))]">
+                              Cancel
+                            </AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={() => handleDeletePost(post.id)} 
+                              className="bg-red-500 hover:bg-red-600 text-white"
+                            >
                               Delete
                             </AlertDialogAction>
                           </AlertDialogFooter>

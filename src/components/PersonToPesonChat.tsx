@@ -335,10 +335,10 @@ const PersonToPersonChat = () => {
   }
 
   return (
-    <div className="flex h-[600px] bg-background border rounded-lg overflow-hidden">
+    <div className="flex h-[600px] bg-white dark:bg-[hsl(var(--dark-1))] border border-gray-200 dark:border-[hsl(var(--c-indigo))] rounded-lg overflow-hidden">
       {/* Conversations Sidebar */}
-      <div className="w-1/3 border-r flex flex-col">
-        <div className="p-4 border-b">
+      <div className="w-1/3 border-r border-gray-200 dark:border-[hsl(var(--c-indigo))] flex flex-col">
+        <div className="p-4 border-b border-gray-200 dark:border-[hsl(var(--c-indigo))]">
           <div className="flex items-center gap-2 mb-4">
             <MessageCircle className="h-5 w-5" />
             <h2 className="font-semibold">Messages</h2>
@@ -350,18 +350,18 @@ const PersonToPersonChat = () => {
               placeholder="Search people..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-white dark:bg-[hsl(var(--c-indigo))] border-gray-200 dark:border-[hsl(var(--c-violet))]"
             />
           </div>
 
           {/* Search Results */}
           {searchResults.length > 0 && (
-            <div className="mt-2 bg-background border rounded-md shadow-lg max-h-48 overflow-y-auto">
+            <div className="mt-2 bg-white dark:bg-[hsl(var(--dark-1))] border border-gray-200 dark:border-[hsl(var(--c-indigo))] rounded-md shadow-lg max-h-48 overflow-y-auto">
               {searchResults.map(user => (
                 <button
                   key={user.id}
                   onClick={() => startConversation(user.id)}
-                  className="w-full p-3 text-left hover:bg-muted flex items-center gap-3"
+                  className="w-full p-3 text-left hover:bg-gray-50 dark:hover:bg-[hsl(var(--c-indigo))] flex items-center gap-3"
                 >
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user.profile_photo} />
@@ -398,8 +398,8 @@ const PersonToPersonChat = () => {
                     setActiveConversation(conversation);
                     fetchMessages(conversation.id);
                   }}
-                  className={`w-full p-4 text-left hover:bg-muted flex items-center gap-3 border-b transition-colors ${
-                    activeConversation?.id === conversation.id ? 'bg-muted' : ''
+                  className={`w-full p-4 text-left hover:bg-gray-50 dark:hover:bg-[hsl(var(--c-indigo))] flex items-center gap-3 border-b border-gray-200 dark:border-[hsl(var(--c-indigo))] transition-colors ${
+                    activeConversation?.id === conversation.id ? 'bg-gray-50 dark:bg-[hsl(var(--c-indigo))]' : ''
                   }`}
                 >
                   <Avatar className="h-10 w-10">
@@ -427,7 +427,7 @@ const PersonToPersonChat = () => {
         {activeConversation ? (
           <>
             {/* Chat Header */}
-            <div className="p-4 border-b flex items-center justify-between">
+            <div className="p-4 border-b border-gray-200 dark:border-[hsl(var(--c-indigo))] flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={getOtherParticipant(activeConversation)?.profile_photo} />
@@ -439,13 +439,13 @@ const PersonToPersonChat = () => {
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline">
+                <Button size="sm" variant="outline" className="border-gray-200 dark:border-[hsl(var(--c-indigo))] hover:bg-gray-50 dark:hover:bg-[hsl(var(--c-indigo))]">
                   <Phone className="h-4 w-4" />
                 </Button>
-                <Button size="sm" variant="outline">
+                <Button size="sm" variant="outline" className="border-gray-200 dark:border-[hsl(var(--c-indigo))] hover:bg-gray-50 dark:hover:bg-[hsl(var(--c-indigo))]">
                   <Video className="h-4 w-4" />
                 </Button>
-                <Button size="sm" variant="outline">
+                <Button size="sm" variant="outline" className="border-gray-200 dark:border-[hsl(var(--c-indigo))] hover:bg-gray-50 dark:hover:bg-[hsl(var(--c-indigo))]">
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </div>
@@ -461,7 +461,7 @@ const PersonToPersonChat = () => {
                       <div className={`p-3 rounded-lg ${
                         isOwn 
                           ? 'bg-primary text-primary-foreground ml-4' 
-                          : 'bg-muted mr-4'
+                          : 'bg-gray-100 dark:bg-[hsl(var(--c-indigo))] mr-4'
                       }`}>
                         <p className="text-sm">{message.content}</p>
                         <div className={`flex items-center gap-1 mt-1 ${isOwn ? 'justify-end' : 'justify-start'}`}>
@@ -483,7 +483,7 @@ const PersonToPersonChat = () => {
             </div>
 
             {/* Message Input */}
-            <div className="p-4 border-t">
+            <div className="p-4 border-t border-gray-200 dark:border-[hsl(var(--c-indigo))]">
               <div className="flex gap-2">
                 <Input
                   value={newMessage}
@@ -491,6 +491,7 @@ const PersonToPersonChat = () => {
                   placeholder="Type a message..."
                   onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                   disabled={sending}
+                  className="bg-white dark:bg-[hsl(var(--c-indigo))] border-gray-200 dark:border-[hsl(var(--c-violet))]"
                 />
                 <Button onClick={sendMessage} disabled={sending || !newMessage.trim()}>
                   <Send className="h-4 w-4" />
