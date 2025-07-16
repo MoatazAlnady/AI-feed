@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import NewsletterPopup from '@/components/NewsletterPopup';
 import AuthModal from '@/components/AuthModal';
+import AnimatedBackground from '@/components/AnimatedBackground';
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -42,7 +43,8 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      <AnimatedBackground />
       {/* Hero Section */}
       <section className="py-20 px-6">
         <div className="container max-w-6xl mx-auto text-center">
