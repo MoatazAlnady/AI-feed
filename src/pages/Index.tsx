@@ -57,10 +57,8 @@ const Index = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Button size="lg" className="text-lg px-8" asChild>
-              <Link to="/tools">
-                Explore AI Tools <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
+            <Button size="lg" className="text-lg px-8" onClick={() => setShowNewsletterPopup(true)}>
+              Subscribe to AI Newsletter <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
           
