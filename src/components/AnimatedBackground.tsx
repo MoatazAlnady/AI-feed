@@ -32,12 +32,14 @@ const AnimatedBackground: React.FC = () => {
       const numberOfCircles = Math.floor((window.innerWidth * window.innerHeight) / 15000);
       
       const colors = [
-        'rgba(59, 130, 246, 0.15)', // blue more visible
-        'rgba(168, 85, 247, 0.15)', // purple more visible  
-        'rgba(59, 130, 246, 0.2)', // blue even more visible
-        'rgba(168, 85, 247, 0.2)', // purple even more visible
-        'rgba(139, 92, 246, 0.18)', // violet
-        'rgba(79, 70, 229, 0.18)', // indigo
+        'rgba(59, 130, 246, 0.25)', // blue much more visible
+        'rgba(168, 85, 247, 0.25)', // purple much more visible  
+        'rgba(59, 130, 246, 0.3)', // blue even more visible
+        'rgba(168, 85, 247, 0.3)', // purple even more visible
+        'rgba(139, 92, 246, 0.28)', // violet
+        'rgba(79, 70, 229, 0.28)', // indigo
+        'rgba(147, 51, 234, 0.25)', // purple variant
+        'rgba(37, 99, 235, 0.25)', // blue variant
       ];
 
       for (let i = 0; i < numberOfCircles; i++) {
@@ -80,8 +82,8 @@ const AnimatedBackground: React.FC = () => {
           circle.x, circle.y, 0,
           circle.x, circle.y, circle.radius
         );
-        gradient.addColorStop(0, circle.color.replace('0.15', '0.25').replace('0.2', '0.3').replace('0.18', '0.28'));
-        gradient.addColorStop(1, circle.color.replace('0.15', '0.05').replace('0.2', '0.05').replace('0.18', '0.05'));
+        gradient.addColorStop(0, circle.color.replace(/0\.\d+/, '0.4')); // Center more opaque
+        gradient.addColorStop(1, circle.color.replace(/0\.\d+/, '0.05')); // Edge less opaque
         
         ctx.fillStyle = gradient;
         ctx.fill();
@@ -113,7 +115,7 @@ const AnimatedBackground: React.FC = () => {
     <canvas
       ref={canvasRef}
       className="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none"
-      style={{ background: 'linear-gradient(135deg, hsl(221 83% 53% / 0.03) 0%, hsl(262 83% 58% / 0.03) 50%, hsl(221 83% 53% / 0.02) 100%)' }}
+      style={{ background: 'linear-gradient(135deg, hsl(221 83% 53% / 0.08) 0%, hsl(262 83% 58% / 0.12) 50%, hsl(221 83% 53% / 0.06) 100%)' }}
     />
   );
 };

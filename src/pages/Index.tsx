@@ -46,10 +46,10 @@ const Index = () => {
       <section className="py-20 px-6">
         <div className="container max-w-6xl mx-auto text-center">
           <div className="mb-8">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gradient font-playfair">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gradient">
               Welcome to AI Nexus
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8">
+            <p className="text-xl md:text-2xl font-bold font-playfair text-gradient max-w-3xl mx-auto mb-8 leading-relaxed">
               The unified SaaS platform connecting AI-skilled creators
             </p>
           </div>
