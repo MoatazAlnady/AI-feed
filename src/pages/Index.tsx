@@ -254,8 +254,7 @@ const Index = () => {
         />
       )}
 
-      {/* Chat Dock */}
-      <AIChatBot initialMessage={chatMessage} autoOpen={autoOpenChat} />
+      {/* Chat Dock is now in AppLayout */}
     </div>
   );
 };

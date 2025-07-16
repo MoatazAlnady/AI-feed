@@ -519,6 +519,7 @@ const EmployerDashboard: React.FC = () => {
       <SubscriptionModal
         isOpen={showSubscriptionModal}
         onClose={() => setShowSubscriptionModal(false)}
+        onSubscriptionSuccess={handleSubscriptionSuccess}
       />
     </div>
   );
