@@ -59,14 +59,16 @@ const Index = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Button 
               size="lg" 
-              className="text-lg px-8 bg-gradient-primary text-white border-0 hover:opacity-90 transition-opacity"
+              variant="gradient"
+              className="text-lg px-8"
               onClick={() => setShowNewsletterPopup(true)}
             >
               Subscribe to AI Newsletter <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button 
               size="lg" 
-              className="text-lg px-8 bg-gradient-primary text-white border-0 hover:opacity-90 transition-opacity"
+              variant="gradient"
+              className="text-lg px-8"
               onClick={() => setShowAuthModal(true)}
             >
               Get Started Free <Star className="ml-2 h-5 w-5" />
@@ -74,18 +76,26 @@ const Index = () => {
           </div>
           
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <form onSubmit={handleSearch} className="max-w-4xl mx-auto">
+            <div className="relative bg-background border border-input rounded-2xl shadow-lg p-2">
+              <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="What do you want AI to do? What tools do you need? Search with keywords, fields, categories..."
-                className="w-full pl-12 pr-4 py-4 text-lg border border-input rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground placeholder:text-muted-foreground"
+                className="w-full pl-14 pr-4 py-4 text-lg border-0 rounded-xl focus:ring-0 focus:outline-none bg-transparent text-foreground placeholder:text-muted-foreground"
               />
             </div>
           </form>
+          
+          {/* AI Chat Panel - Coming Soon */}
+          <div className="max-w-4xl mx-auto mt-4 bg-background/80 border border-input rounded-2xl p-4 backdrop-blur-sm">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+              AI-powered search responses coming soon - Get instant recommendations for tools, categories, and solutions
+            </div>
+          </div>
           
           {/* Trending Tools Section */}
           <div className="mt-16">
