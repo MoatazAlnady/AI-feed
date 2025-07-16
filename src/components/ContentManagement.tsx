@@ -10,6 +10,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Settings, FileText, Layout, BarChart, Users, Wrench, Mail, Building } from 'lucide-react';
 import AdminToolRequests from './AdminToolRequests';
+import AdvancedUserManagement from './AdvancedUserManagement';
+import NewsletterManagement from './NewsletterManagement';
 
 interface ContentItem {
   id: string;
@@ -307,48 +309,15 @@ const ContentManagement = () => {
         </TabsContent>
 
         <TabsContent value="users" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>User Management</CardTitle>
-              <CardDescription>
-                Manage users, their roles, and access levels.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-center py-8">
-              <Users className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-              <p className="text-muted-foreground">User management features coming soon.</p>
-            </CardContent>
-          </Card>
+          <AdvancedUserManagement />
         </TabsContent>
 
         <TabsContent value="orgs" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Organization Management</CardTitle>
-              <CardDescription>
-                Manage employer organizations, their members, and features.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-center py-8">
-              <Building className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-              <p className="text-muted-foreground">Organization management features coming soon.</p>
-            </CardContent>
-          </Card>
+          <AdvancedUserManagement />
         </TabsContent>
 
         <TabsContent value="newsletter" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Newsletter Management</CardTitle>
-              <CardDescription>
-                Manage newsletter content and subscribers.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-center py-8">
-              <Mail className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-              <p className="text-muted-foreground">Newsletter management features coming soon.</p>
-            </CardContent>
-          </Card>
+          <NewsletterManagement />
         </TabsContent>
       </Tabs>
     </div>

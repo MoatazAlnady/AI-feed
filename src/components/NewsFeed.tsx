@@ -67,7 +67,7 @@ const NewsFeed: React.FC = () => {
         .from('posts')
         .select(`
           *,
-          user_profiles!posts_user_id_fkey(
+          user_profiles(
             full_name,
             profile_photo,
             job_title,
@@ -82,7 +82,8 @@ const NewsFeed: React.FC = () => {
             id,
             content,
             created_at,
-            user_profiles!post_comments_user_id_fkey(
+            user_id,
+            user_profiles(
               full_name,
               profile_photo
             )
