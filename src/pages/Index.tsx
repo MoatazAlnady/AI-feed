@@ -57,8 +57,19 @@ const Index = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Button size="lg" className="text-lg px-8" onClick={() => setShowNewsletterPopup(true)}>
+            <Button 
+              size="lg" 
+              className="text-lg px-8 bg-gradient-primary text-white border-0 hover:opacity-90 transition-opacity"
+              onClick={() => setShowNewsletterPopup(true)}
+            >
               Subscribe to AI Newsletter <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            <Button 
+              size="lg" 
+              className="text-lg px-8 bg-gradient-primary text-white border-0 hover:opacity-90 transition-opacity"
+              onClick={() => setShowAuthModal(true)}
+            >
+              Get Started Free <Star className="ml-2 h-5 w-5" />
             </Button>
           </div>
           
@@ -70,7 +81,7 @@ const Index = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search for AI tools, categories, or features..."
+                placeholder="What do you want AI to do? What tools do you need? Search with keywords, fields, categories..."
                 className="w-full pl-12 pr-4 py-4 text-lg border border-input rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground placeholder:text-muted-foreground"
               />
             </div>
