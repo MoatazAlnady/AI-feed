@@ -58,7 +58,7 @@ export default function TrendingTools() {
                 </div>
               ))
             : tools?.map((tool) => (
-                <div key={tool.id} className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow">
+                <div key={tool.id} className="bg-white dark:bg-[#091527] border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-lg transition-shadow">
                   <div className="space-y-4">
                     <div className="flex items-start justify-between">
                       <h4 className="font-semibold text-lg text-foreground">{tool.name}</h4>
