@@ -149,7 +149,7 @@ const AdminDashboard: React.FC = () => {
   const renderOverview = () => (
     <div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white dark:bg-[#091527] rounded-2xl shadow-sm p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Users</p>
@@ -163,7 +163,7 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-white dark:bg-[#091527] rounded-2xl shadow-sm p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Tools</p>
@@ -177,7 +177,7 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-white dark:bg-[#091527] rounded-2xl shadow-sm p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Articles</p>
@@ -191,7 +191,7 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-white dark:bg-[#091527] rounded-2xl shadow-sm p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Edit Requests</p>

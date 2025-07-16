@@ -147,11 +147,11 @@ const Header: React.FC = () => {
                 <Link
                   key={item.name}
                   to={item.href}
-                    className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
-                      isActive(item.href)
-                        ? 'text-primary-600 dark:text-primary-400 bg-sky-100 dark:bg-sky-900/30 active'
-                        : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                    } ${item.protected && !user ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
+                    isActive(item.href)
+                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  } ${item.protected && !user ? 'opacity-50 cursor-not-allowed' : ''}`}
                   onClick={(e) => {
                     if (item.protected && !user) {
                       e.preventDefault();
@@ -172,7 +172,7 @@ const Header: React.FC = () => {
                     to="/employer"
                     className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
                       isActive('/employer')
-                        ? 'text-primary-600 dark:text-primary-400 bg-sky-100 dark:bg-sky-900/30 active'
+                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
                         : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                     }`}
                   >
@@ -182,7 +182,7 @@ const Header: React.FC = () => {
                     to="/employer/talents"
                     className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
                       location.pathname.includes('/employer/talents')
-                        ? 'text-primary-600 dark:text-primary-400 bg-sky-100 dark:bg-sky-900/30 active'
+                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
                         : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                     }`}
                   >
@@ -192,7 +192,7 @@ const Header: React.FC = () => {
                     to="/employer/jobs"
                     className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
                       location.pathname.includes('/employer/jobs')
-                        ? 'text-primary-600 dark:text-primary-400 bg-sky-100 dark:bg-sky-900/30 active'
+                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
                         : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                     }`}
                   >
@@ -202,7 +202,7 @@ const Header: React.FC = () => {
                     to="/employer/projects"
                     className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
                       location.pathname.includes('/employer/projects')
-                        ? 'text-primary-600 dark:text-primary-400 bg-sky-100 dark:bg-sky-900/30 active'
+                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
                         : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                     }`}
                   >
@@ -212,7 +212,7 @@ const Header: React.FC = () => {
                     to="/employer/analytics"
                     className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
                       location.pathname.includes('/employer/analytics')
-                        ? 'text-primary-600 dark:text-primary-400 bg-sky-100 dark:bg-sky-900/30 active'
+                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
                         : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                     }`}
                   >
