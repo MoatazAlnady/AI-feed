@@ -3,7 +3,7 @@ import { MessageSquare, Users, Lightbulb, TrendingUp, Star, Calendar, Plus, Sear
 import ChatDock from '../components/ChatDockProvider';
 
 const Community: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'feed' | 'events' | 'groups' | 'networking'>('networking');
+  const [activeTab, setActiveTab] = useState<'networking' | 'feed' | 'events' | 'groups'>('networking');
   const [searchTerm, setSearchTerm] = useState('');
 
   const renderFeed = () => (
@@ -122,7 +122,7 @@ const Community: React.FC = () => {
             placeholder="Search creators..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+            className="pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
           />
         </div>
       </div>

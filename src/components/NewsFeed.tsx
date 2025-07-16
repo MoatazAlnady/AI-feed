@@ -396,7 +396,7 @@ const NewsFeed: React.FC = () => {
                         <MoreHorizontal className="h-4 w-4" />
                       </button>
                     </DropdownMenuTrigger>
-                     <DropdownMenuContent className="w-48 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-lg z-50">
+                     <DropdownMenuContent className="w-48 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-lg z-[9999]">
                        <DropdownMenuItem 
                          onClick={() => handleEditPost(post.id)}
                          className="text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
