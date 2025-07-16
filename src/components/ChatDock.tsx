@@ -3,10 +3,38 @@ import { X, Send, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
-const AIChatBot = () => {
-  const [isOpen, setIsOpen] = useState(false);
+interface AIChatBotProps {
+  initialMessage?: string;
+  autoOpen?: boolean;
+}
+
+const AIChatBot = ({ initialMessage, autoOpen }: AIChatBotProps) => {
+  const [isOpen, setIsOpen] = useState(autoOpen || false);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Array<{id: number, text: string, sender: 'user' | 'ai'}>>([]);
+
+  // Handle initial message from search
+  React.useEffect(() => {
+    if (initialMessage && initialMessage.trim()) {
+      const newMessage = {
+        id: Date.now(),
+        text: initialMessage,
+        sender: 'user' as const
+      };
+      setMessages([newMessage]);
+      setIsOpen(true);
+      
+      // Simulate AI response
+      setTimeout(() => {
+        const aiResponse = {
+          id: Date.now() + 1,
+          text: `I understand you're looking for: "${initialMessage}". AI-powered search responses coming soon! I'll help you find the perfect tools and solutions.`,
+          sender: 'ai' as const
+        };
+        setMessages(prev => [...prev, aiResponse]);
+      }, 1000);
+    }
+  }, [initialMessage]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +69,7 @@ const AIChatBot = () => {
           className="w-14 h-14 rounded-full bg-gradient-primary text-white hover:opacity-90 shadow-lg transition-all duration-300 hover:scale-105"
           size="icon"
         >
-          {isOpen ? <X className="h-6 w-6" /> : <Bot className="h-6 w-6" />}
+          {isOpen ? <X className="h-8 w-8" /> : <Bot className="h-10 w-10" />}
         </Button>
       </div>
 

@@ -288,3 +288,21 @@ button {
 .dark .border-secondary-200 {
   @apply border-secondary;
 }
+
+/* Dark mode input fields fix */
+.dark input,
+.dark textarea,
+.dark select {
+  @apply bg-gray-800 text-white border-gray-600;
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  @apply bg-gray-800 text-white border-primary;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  @apply text-gray-400;
+}

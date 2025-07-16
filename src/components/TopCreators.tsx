@@ -56,7 +56,7 @@ export default function TopCreators() {
                   </div>
                 )}
               </div>
-              <div className="mt-2 max-w-[80px]">
+              <div className="mt-2 max-w-[80px] text-center">
                 <p className="text-xs font-medium text-foreground truncate">
                   {creator.full_name}
                 </p>

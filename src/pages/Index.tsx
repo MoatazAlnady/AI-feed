@@ -16,19 +16,19 @@ const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showNewsletterPopup, setShowNewsletterPopup] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [chatMessage, setChatMessage] = useState('');
+  const [autoOpenChat, setAutoOpenChat] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
 
   // Newsletter popup logic - show for unsubscribed users every time
   useEffect(() => {
     // Always show newsletter popup for unsubscribed users after 3 seconds
-    if (!user || (user && !user.user_metadata?.newsletter_subscription)) {
-      const timer = setTimeout(() => {
-        setShowNewsletterPopup(true);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [user]);
+    const timer = setTimeout(() => {
+      setShowNewsletterPopup(true);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleCloseNewsletterPopup = () => {
     setShowNewsletterPopup(false);
@@ -37,6 +37,10 @@ const Index = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim()) {
+      // Set the search term to be displayed in the chat
+      setChatMessage(searchTerm.trim());
+      setAutoOpenChat(true);
+      // Still navigate to tools page
       navigate(`/tools?search=${encodeURIComponent(searchTerm.trim())}`);
       setSearchTerm('');
     }
@@ -208,7 +212,7 @@ const Index = () => {
       )}
 
       {/* Chat Dock */}
-      <AIChatBot />
+      <AIChatBot initialMessage={chatMessage} autoOpen={autoOpenChat} />
     </div>
   );
 };
