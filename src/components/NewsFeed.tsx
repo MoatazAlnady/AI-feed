@@ -396,10 +396,10 @@ const NewsFeed: React.FC = () => {
                         <MoreHorizontal className="h-4 w-4" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-48 bg-white dark:bg-[hsl(248,32%,18%)] border-gray-200 dark:border-[hsl(252,88%,29%)] shadow-lg z-50">
+                    <DropdownMenuContent className="w-48 bg-popover border-border shadow-lg z-50">
                       <DropdownMenuItem 
                         onClick={() => handleEditPost(post.id)}
-                        className="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[hsl(252,88%,35%)]"
+                        className="text-foreground hover:bg-accent"
                       >
                         <Edit3 className="h-4 w-4 mr-2" />
                         Edit Post
@@ -414,12 +414,12 @@ const NewsFeed: React.FC = () => {
                             Delete Post
                           </DropdownMenuItem>
                         </AlertDialogTrigger>
-                        <AlertDialogContent className="bg-white dark:bg-[hsl(248,32%,18%)] border-gray-200 dark:border-[hsl(252,88%,29%)]">
+                        <AlertDialogContent className="bg-card border-border">
                           <AlertDialogHeader>
-                            <AlertDialogTitle className="text-gray-900 dark:text-white">
+                            <AlertDialogTitle className="text-foreground">
                               Are you sure you want to delete this post?
                             </AlertDialogTitle>
-                            <AlertDialogDescription className="text-gray-600 dark:text-gray-300">
+                            <AlertDialogDescription className="text-muted-foreground">
                               This action cannot be undone. This will permanently delete your post and remove it from the feed.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
