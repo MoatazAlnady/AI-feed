@@ -28,20 +28,14 @@
     /* Custom gradients */
     --gradient-primary: linear-gradient(135deg, #3b82f6, #a855f7);
     --gradient-secondary: linear-gradient(135deg, #a855f7, #3b82f6);
-    
-    /* Brand colors */
-    --brand-dark: 31 41% 22%;
-    --brand-primary: 245 58% 64%;
-    --brand-accent: 188 95% 42%;
-    --brand-warm: 43 96% 56%;
   }
 
   .dark {
-    --background: 31 41% 22%;
+    --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
-    --card: 31 41% 22%;
+    --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
-    --popover: 31 41% 22%;
+    --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
     --primary: 221 83% 53%;
     --primary-foreground: 210 40% 98%;
@@ -293,56 +287,4 @@ button {
 
 .dark .border-secondary-200 {
   @apply border-secondary;
-}
-
-/* Global background with decorative canvas */
-body {
-  @apply bg-white dark:bg-[color:var(--brand-dark)];
-}
-
-.bg-canvas::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(400px at 10% 20%, hsl(var(--brand-accent)) 0%, transparent 70%),
-    radial-gradient(300px at 80% 10%, hsl(var(--brand-primary)) 0%, transparent 70%),
-    radial-gradient(250px at 30% 80%, hsl(var(--brand-warm)) 0%, transparent 70%);
-  opacity: 0.12;
-  filter: blur(40px);
-}
-
-/* Scale animation for modals */
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.animate-scale-in {
-  animation: scaleIn 0.3s ease-out;
-}
-
-/* Dark mode input field fixes */
-.dark input[type="text"],
-.dark input[type="email"],
-.dark input[type="password"],
-.dark textarea,
-.dark select {
-  @apply bg-muted border-border text-foreground;
-}
-
-.dark input[type="text"]:focus,
-.dark input[type="email"]:focus,
-.dark input[type="password"]:focus,
-.dark textarea:focus,
-.dark select:focus {
-  @apply bg-background border-primary ring-primary/20;
 }

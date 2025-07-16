@@ -1,42 +1,12 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState } from 'react';
 import { X, Send, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
-interface AIChatBotProps {
-  isOpen?: boolean;
-  setIsOpen?: (open: boolean) => void;
-}
-
-const AIChatBot = forwardRef<any, AIChatBotProps>(({ isOpen: externalIsOpen, setIsOpen: externalSetIsOpen }, ref) => {
-  const [internalIsOpen, setInternalIsOpen] = useState(false);
+const AIChatBot = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Array<{id: number, text: string, sender: 'user' | 'ai'}>>([]);
-
-  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
-  const setIsOpen = externalSetIsOpen || setInternalIsOpen;
-
-  useImperativeHandle(ref, () => ({
-    openWithMessage: (searchQuery: string) => {
-      setIsOpen(true);
-      const newMessage = {
-        id: Date.now(),
-        text: searchQuery,
-        sender: 'user' as const
-      };
-      setMessages([newMessage]);
-      
-      // Simulate AI response
-      setTimeout(() => {
-        const aiResponse = {
-          id: Date.now() + 1,
-          text: `I found some AI tools related to "${searchQuery}". Here are some recommendations from our platform...`,
-          sender: 'ai' as const
-        };
-        setMessages(prev => [...prev, aiResponse]);
-      }, 1000);
-    }
-  }));
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +41,7 @@ const AIChatBot = forwardRef<any, AIChatBotProps>(({ isOpen: externalIsOpen, set
           className="w-14 h-14 rounded-full bg-gradient-primary text-white hover:opacity-90 shadow-lg transition-all duration-300 hover:scale-105"
           size="icon"
         >
-          {isOpen ? <X className="h-7 w-7" /> : <Bot className="h-8 w-8" />}
+          {isOpen ? <X className="h-6 w-6" /> : <Bot className="h-6 w-6" />}
         </Button>
       </div>
 
@@ -136,8 +106,6 @@ const AIChatBot = forwardRef<any, AIChatBotProps>(({ isOpen: externalIsOpen, set
       )}
     </>
   );
-});
-
-AIChatBot.displayName = 'AIChatBot';
+};
 
 export default AIChatBot;
