@@ -47,8 +47,8 @@
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
-    --border: 211 32% 28%; /* Petroleum border */
-    --input: 211 32% 24%; /* Petroleum input background */
+    --border: 220 91% 15%; /* Dark blue border */
+    --input: 211 32% 18%; /* Darker petroleum input background */
     --ring: 221 83% 53%;
     
     /* Custom gradients for dark mode */
