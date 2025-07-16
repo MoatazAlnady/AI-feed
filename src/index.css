@@ -413,3 +413,17 @@ button {
     transform: translate(-20px, 20px) scale(0.9); 
   }
 }
+
+/* === DARK-MODE GRADIENT (highest specificity wins) === */
+.dark body {
+  background: linear-gradient(
+    135deg,
+    var(--dark-1, #212140) 0%,
+    var(--dark-2, #751984) 100%
+  ) !important;
+}
+
+/* hide light orbs when dark (belt-&-braces) */
+.dark .orb.light-only { display: none !important; }
+/* show dark orbs */
+.dark .orb.dark-only  { display: block !important; }
