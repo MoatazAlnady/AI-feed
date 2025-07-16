@@ -1,51 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
-    </linearGradient>
-    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#ef4444;stop-opacity:1" />
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A855F7;stop-opacity:1" />
     </linearGradient>
   </defs>
-  
-  <!-- Background circle -->
-  <circle cx="100" cy="100" r="95" fill="url(#gradient1)" stroke="none"/>
-  
-  <!-- Neural network nodes -->
-  <circle cx="60" cy="70" r="8" fill="white" opacity="0.9"/>
-  <circle cx="100" cy="50" r="8" fill="white" opacity="0.9"/>
-  <circle cx="140" cy="70" r="8" fill="white" opacity="0.9"/>
-  <circle cx="70" cy="120" r="8" fill="white" opacity="0.9"/>
-  <circle cx="130" cy="120" r="8" fill="white" opacity="0.9"/>
-  <circle cx="100" cy="150" r="8" fill="white" opacity="0.9"/>
-  
-  <!-- Connections -->
-  <line x1="60" y1="70" x2="100" y2="50" stroke="white" stroke-width="2" opacity="0.7"/>
-  <line x1="100" y1="50" x2="140" y2="70" stroke="white" stroke-width="2" opacity="0.7"/>
-  <line x1="60" y1="70" x2="70" y2="120" stroke="white" stroke-width="2" opacity="0.7"/>
-  <line x1="140" y1="70" x2="130" y2="120" stroke="white" stroke-width="2" opacity="0.7"/>
-  <line x1="70" y1="120" x2="100" y2="150" stroke="white" stroke-width="2" opacity="0.7"/>
-  <line x1="130" y1="120" x2="100" y2="150" stroke="white" stroke-width="2" opacity="0.7"/>
-  <line x1="100" y1="50" x2="70" y2="120" stroke="white" stroke-width="1" opacity="0.5"/>
-  <line x1="100" y1="50" x2="130" y2="120" stroke="white" stroke-width="1" opacity="0.5"/>
-  
-  <!-- Central AI symbol -->
-  <circle cx="100" cy="100" r="20" fill="url(#gradient2)" stroke="white" stroke-width="2"/>
-  <text x="100" y="107" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="16" font-weight="bold">AI</text>
-  
-  <!-- Orbiting elements -->
-  <circle cx="100" cy="35" r="3" fill="white" opacity="0.8">
-    <animateTransform attributeName="transform" type="rotate" values="0 100 100;360 100 100" dur="10s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="165" cy="100" r="3" fill="white" opacity="0.8">
-    <animateTransform attributeName="transform" type="rotate" values="0 100 100;360 100 100" dur="8s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="100" cy="165" r="3" fill="white" opacity="0.8">
-    <animateTransform attributeName="transform" type="rotate" values="0 100 100;360 100 100" dur="12s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="35" cy="100" r="3" fill="white" opacity="0.8">
-    <animateTransform attributeName="transform" type="rotate" values="0 100 100;360 100 100" dur="9s" repeatCount="indefinite"/>
-  </circle>
+  <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+  <path d="M8 16L16 8L24 16L16 24L8 16Z" fill="white" opacity="0.9"/>
+  <path d="M12 16L16 12L20 16L16 20L12 16Z" fill="white"/>
 </svg>
