@@ -312,11 +312,12 @@ const Profile: React.FC = () => {
             ))}
           </div>
 
-          {/* Tabs */}
+           {/* Tabs */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm mb-8">
             <div className="flex border-b border-gray-200 dark:border-gray-700">
               {[
                 { key: 'overview', label: 'Overview' },
+                { key: 'about', label: 'About' },
                 { key: 'posts', label: 'My Content' },
                 { key: 'saved', label: 'Saved Items' },
                 { key: 'interests', label: 'My Interests' }

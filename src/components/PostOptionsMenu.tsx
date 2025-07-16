@@ -147,11 +147,8 @@ const PostOptionsMenu: React.FC<PostOptionsMenuProps> = ({
             </>
           )}
 
-          {/* General actions */}
-          <DropdownMenuItem onClick={handleShare} className="flex items-center gap-2">
-            <Share className="h-4 w-4" />
-            Share
-          </DropdownMenuItem>
+          {/* Note: Share option removed from menu as per user request */}
+          {/* Sharing is now handled by a separate share button on posts */}
 
           <DropdownMenuItem onClick={handleCopyLink} className="flex items-center gap-2">
             <Copy className="h-4 w-4" />

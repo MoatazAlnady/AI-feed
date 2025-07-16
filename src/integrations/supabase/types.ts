@@ -582,6 +582,48 @@ export type Database = {
         }
         Relationships: []
       }
+      pricing_plans: {
+        Row: {
+          billing_interval: string
+          created_at: string
+          currency: string
+          description: string | null
+          features: Json
+          id: string
+          is_active: boolean
+          max_users: number | null
+          name: string
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          billing_interval?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean
+          max_users?: number | null
+          name: string
+          price: number
+          updated_at?: string
+        }
+        Update: {
+          billing_interval?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean
+          max_users?: number | null
+          name?: string
+          price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       project_candidates: {
         Row: {
           candidate_id: string
@@ -655,6 +697,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      shared_posts: {
+        Row: {
+          created_at: string
+          id: string
+          original_post_id: string
+          share_text: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          original_post_id: string
+          share_text?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          original_post_id?: string
+          share_text?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       site_content: {
         Row: {
