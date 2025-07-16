@@ -11,6 +11,7 @@ import AnimatedBackground from '@/components/AnimatedBackground';
 import TrendingTools from '@/components/TrendingTools';
 import TopCreators from '@/components/TopCreators';
 import AIChatBot from '@/components/ChatDock';
+import NewsFeedPage from '@/pages/NewsFeed';
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -21,14 +22,24 @@ const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  // Redirect authenticated users to newsfeed
+  useEffect(() => {
+    if (user && window.location.pathname === '/') {
+      navigate('/newsfeed', { replace: true });
+      return;
+    }
+  }, [user, navigate]);
+
   // Newsletter popup logic - show for unsubscribed users every time
   useEffect(() => {
-    // Always show newsletter popup for unsubscribed users after 3 seconds
-    const timer = setTimeout(() => {
-      setShowNewsletterPopup(true);
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, []);
+    // Only show for non-authenticated users
+    if (!user) {
+      const timer = setTimeout(() => {
+        setShowNewsletterPopup(true);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [user]);
 
   const handleCloseNewsletterPopup = () => {
     setShowNewsletterPopup(false);
@@ -45,6 +56,11 @@ const Index = () => {
       setSearchTerm('');
     }
   };
+
+  // If user is authenticated, show newsfeed content instead
+  if (user) {
+    return <NewsFeedPage />;
+  }
 
   return (
     <div className="min-h-screen relative">

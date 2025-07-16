@@ -12,7 +12,8 @@ import Talent from "./pages/Talent";
 import EmployerDashboard from "./pages/EmployerDashboard";
 import Admin from "./pages/Admin";
 import Messages from "./pages/Messages";
-
+import SubmitTool from "./pages/SubmitTool";
+import SubmitArticle from "./pages/SubmitArticle";
 import NotFound from "./pages/NotFound";
 import About from "./pages/About";
 import Categories from "./pages/Categories";
@@ -33,8 +34,11 @@ const App = () => (
           <Routes>
             <Route path="/" element={<AppLayout />}>
               <Route index element={<Index />} />
+              <Route path="newsfeed" element={<Index />} />
               <Route path="tools" element={<Tools />} />
+              <Route path="tools/create" element={<SubmitTool />} />
               <Route path="tools/:id" element={<ToolDetails />} />
+              <Route path="articles/create" element={<SubmitArticle />} />
               <Route path="categories" element={<Categories />} />
               <Route path="about" element={<About />} />
               <Route path="blog" element={<Blog />} />

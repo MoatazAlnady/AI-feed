@@ -407,7 +407,7 @@ button {
   }
 }
 
-/* === DARK-MODE GRADIENT (highest specificity wins) === */
+/* === DARK-MODE GRADIENT (remove conflicting styles) === */
 .dark body {
   background: linear-gradient(
     135deg,
