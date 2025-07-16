@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, User, Send, ThumbsUp, Flag, MoreHorizontal } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { VerificationBadge } from '@/components/VerificationBadge';
+import VerificationBadge from '@/components/VerificationBadge';
 
 interface Comment {
   id: number;

@@ -28,7 +28,7 @@ import {
   Database,
   X
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import CreateUserModal from '../components/CreateUserModal';
 import { supabase } from '../lib/supabase';
 

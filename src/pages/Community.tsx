@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import CreateGroupModal from '../components/CreateGroupModal';
 import CreateEventModal from '../components/CreateEventModal';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 const Community: React.FC = () => {
   const { user } = useAuth();

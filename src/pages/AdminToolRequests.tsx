@@ -13,7 +13,7 @@ import {
   ThumbsDown,
   MessageSquare
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 
 interface EditRequest {
