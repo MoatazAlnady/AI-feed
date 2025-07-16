@@ -14,7 +14,7 @@ import NewsFeedComponent from '../components/NewsFeed';
 import CreatePostModal from '../components/CreatePostModal';
 import CreateEventModal from '../components/CreateEventModal';
 import HashtagSystem from '../components/HashtagSystem';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 const Newsfeed: React.FC = () => {
   const { user } = useAuth();

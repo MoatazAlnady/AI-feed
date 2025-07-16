@@ -4,7 +4,7 @@ import { Star, ExternalLink, Bookmark, Share2, GitCompare, Check, Minus, ArrowLe
 import ToolComparisonModal from '../components/ToolComparisonModal';
 import ToolReviewSystem from '../components/ToolReviewSystem';
 import EditToolModal from '../components/EditToolModal';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 
 interface Tool {
@@ -332,7 +332,7 @@ const ToolDetail: React.FC = () => {
               
               {/* Reviews Section */}
               <div className="mt-8">
-                <ToolReviewSystem toolId={parseInt(tool.id)} toolName={tool.name} />
+                <ToolReviewSystem toolId={parseInt(tool.id) || 0} toolName={tool.name} />
               </div>
             </div>
 
@@ -428,7 +428,10 @@ const ToolDetail: React.FC = () => {
       <ToolComparisonModal
         isOpen={showComparison}
         onClose={() => setShowComparison(false)}
-        initialTool={tool}
+        initialTool={{
+          ...tool,
+          id: parseInt(tool.id) || 0
+        }}
       />
 
       {/* Edit Tool Modal */}

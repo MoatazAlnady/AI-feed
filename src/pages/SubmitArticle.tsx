@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, Tag, FileText, Send, Video, Image } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 const SubmitArticle: React.FC = () => {
   const { user } = useAuth();

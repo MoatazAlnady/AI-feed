@@ -2,9 +2,9 @@ import React, { useState, useRef } from 'react';
 import { 
   User, Mail, Calendar, Heart, Bookmark, MessageSquare, Upload, 
   Briefcase, MapPin, Edit, Camera, Target, TrendingUp, ExternalLink,
-  Plus, Code, FileText, Users, Star
+  Plus, Code, FileText, Users, Star, Zap
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import PromoteContentModal from '../components/PromoteContentModal';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';

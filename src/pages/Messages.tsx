@@ -10,7 +10,7 @@ import {
   User,
   MessageCircle
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 interface Message {
   id: number;

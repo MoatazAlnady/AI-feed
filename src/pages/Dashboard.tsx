@@ -17,7 +17,7 @@ import {
   Download,
   Globe
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import CreateJobModal from '../components/CreateJobModal';
 import SubscriptionModal from '../components/SubscriptionModal';
 import { supabase } from '../lib/supabase';

@@ -14,7 +14,7 @@ import {
   Globe,
   User
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import TalentSearchFilters from '../components/TalentSearchFilters';
 import { supabase } from '../lib/supabase';
 
@@ -74,7 +74,27 @@ const TalentSearch: React.FC = () => {
       
       if (error) throw error;
       
-      setTalents(data || []);
+      // Transform data to match Talent interface
+      const transformedData: Talent[] = (data || []).map(profile => ({
+        id: profile.id,
+        full_name: profile.full_name || '',
+        job_title: profile.job_title,
+        company: profile.company,
+        location: profile.location,
+        country: profile.country,
+        city: profile.city,
+        bio: profile.bio,
+        skills: typeof profile.interests === 'string' ? JSON.parse(profile.interests || '[]') : profile.interests || [],
+        experience: '',
+        languages: profile.languages as Array<{language: string, level: number}> || [],
+        profile_photo: profile.profile_photo,
+        verified: profile.verified,
+        contact_visible: profile.contact_visible,
+        email: '',
+        phone: profile.phone
+      }));
+      
+      setTalents(transformedData);
       setTotalTalents(count || 0);
     } catch (error) {
       console.error('Error fetching talents:', error);
