@@ -184,11 +184,11 @@ button {
 }
 
 .dark .bg-primary-50 {
-  @apply bg-primary-900/20;
+  @apply bg-primary-900 bg-opacity-20;
 }
 
 .dark .bg-secondary-50 {
-  @apply bg-secondary-900/20;
+  @apply bg-secondary-900 bg-opacity-20;
 }
 
 .dark .text-primary-600 {
