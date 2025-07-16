@@ -12,6 +12,7 @@ import {
   Settings,
   Building
 } from 'lucide-react';
+import TodoSystem from '../components/TodoSystem';
 
 const EmployerDashboard = () => {
   const navigate = useNavigate();
@@ -108,25 +109,38 @@ const EmployerDashboard = () => {
         </div>
 
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Upcoming Interviews</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Analytics</h3>
           <div className="space-y-4">
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <Calendar className="h-5 w-5 text-blue-500" />
-              <div className="flex-1">
-                <p className="font-medium text-gray-900 dark:text-white">Interview with Sarah Johnson</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Tomorrow at 2:00 PM</p>
+            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                  <TrendingUp className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">This Week</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Job views</p>
+                </div>
               </div>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">2.4k</span>
             </div>
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <Calendar className="h-5 w-5 text-green-500" />
-              <div className="flex-1">
-                <p className="font-medium text-gray-900 dark:text-white">Interview with Mike Chen</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Friday at 10:00 AM</p>
+            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                  <Users className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">Applications</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">This month</p>
+                </div>
               </div>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">67</span>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Todo System */}
+      <TodoSystem className="mt-6" />
     </div>
   );
 
