@@ -16,7 +16,7 @@ import SubmitTool from '../pages/SubmitTool';
 import SubmitArticle from '../pages/SubmitArticle';
 import Admin from '../pages/Admin';
 import AdminToolRequests from '../pages/AdminToolRequests';
-import Dashboard from '../pages/Dashboard';
+import EmployerDashboard from '../pages/EmployerDashboard';
 import ProjectsPage from '../pages/ProjectsPage';
 import Profile from '../pages/Profile';
 import Messages from '../pages/Messages';
@@ -111,17 +111,17 @@ const AnimatedRoutes: React.FC = () => {
             {/* Employer Dashboard - Protected Route for Employers */}
             <Route path="/employer" element={
               <ProtectedRoute>
-                <Dashboard />
+                <EmployerDashboard />
               </ProtectedRoute>
             } />
             <Route path="/employer/talents" element={
               <ProtectedRoute>
-                <Dashboard />
+                <EmployerDashboard />
               </ProtectedRoute>
             } />
             <Route path="/employer/jobs" element={
               <ProtectedRoute>
-                <Dashboard />
+                <EmployerDashboard />
               </ProtectedRoute>
             } />
             <Route path="/employer/projects" element={

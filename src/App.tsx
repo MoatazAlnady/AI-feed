@@ -9,7 +9,7 @@ import { AppLayout } from "@/components/AppLayout";
 import Index from "./pages/Index";
 import Tools from "./pages/Tools";
 import Talent from "./pages/Talent";
-import Dashboard from "./pages/Dashboard";
+import EmployerDashboard from "./pages/EmployerDashboard";
 import Admin from "./pages/Admin";
 import Messages from "./pages/Messages";
 import Auth from "./pages/Auth";
@@ -31,7 +31,7 @@ const App = () => (
               <Route index element={<Index />} />
               <Route path="tools" element={<Tools />} />
               <Route path="talent" element={<Talent />} />
-              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="dashboard" element={<EmployerDashboard />} />
               <Route path="admin" element={<Admin />} />
               <Route path="messages" element={<Messages />} />
             </Route>
