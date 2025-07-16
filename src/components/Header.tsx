@@ -516,7 +516,7 @@ const Header: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => openAuthModal('signin')}
-                    className="px-4 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-black dark:text-white text-sm font-medium rounded-lg hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                    className="px-4 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-gray-600 dark:text-gray-300 text-sm font-medium rounded-lg hover:shadow-lg transition-all duration-200 transform hover:scale-105"
                     id="signupBtn"
                   >
                     Sign In
@@ -777,7 +777,7 @@ const Header: React.FC = () => {
                         openAuthModal('signin');
                         setIsMenuOpen(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-base font-medium bg-gradient-to-r from-primary-500 to-secondary-500 text-black dark:text-white rounded-md transition-colors"
+                      className="w-full text-left px-3 py-2 text-base font-medium bg-gradient-to-r from-primary-500 to-secondary-500 text-gray-600 dark:text-gray-300 rounded-md transition-colors"
                       id="signupBtn"
                     >
                       Sign In
