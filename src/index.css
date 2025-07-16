@@ -90,9 +90,9 @@
     /* Dark mode gradient background */
     background: linear-gradient(
       135deg,
-      hsl(var(--dark-1)) 0%,
-      hsl(var(--dark-2)) 100%
-    );
+      #202444 0%,
+      #462560 100%
+    ) !important;
   }
 }
 
