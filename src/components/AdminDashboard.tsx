@@ -251,7 +251,7 @@ const AdminDashboard: React.FC = () => {
             <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
               <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
             </div>
-            <span className="font-medium text-gray-900 dark:text-white">Create User</span>
+            <span className="font-medium text-gray-900 dark:text-white">{t('admin.createUser')}</span>
           </button>
           
           <button
@@ -261,7 +261,7 @@ const AdminDashboard: React.FC = () => {
             <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
               <Edit className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <span className="font-medium text-gray-900 dark:text-white">Tool Edit Requests</span>
+            <span className="font-medium text-gray-900 dark:text-white">{t('admin.toolEditRequests')}</span>
             {pendingEditRequests > 0 && (
               <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full text-xs">
                 {pendingEditRequests}
