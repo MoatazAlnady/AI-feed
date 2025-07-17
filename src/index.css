@@ -402,7 +402,7 @@ button {
   }
 }
 
-/* Enhanced Global gradient backgrounds for authenticated pages - Selective Transparency */
+/* Enhanced Global gradient backgrounds for authenticated pages - Balanced Approach */
 @layer components {
   /* Dark theme gradient */
   body.logged-in.dark {
@@ -419,21 +419,19 @@ button {
     background: hsl(var(--background)) !important;
   }
   
-  /* SELECTIVE OVERRIDES - Only target main page wrapper elements, not content cards */
+  /* Only make the outermost page containers transparent to show gradient */
   body.logged-in > #root,
-  body.logged-in > #root > div:first-child,
-  body.logged-in .min-h-screen:not([class*="rounded"]):not([class*="shadow"]):not([class*="border"]),
-  body.logged-in main:not([class*="rounded"]):not([class*="shadow"]):not([class*="border"]) {
+  body.logged-in > #root > div:first-child:not([class*="bg-"]):not([class*="dark:bg-"]) {
     background: transparent !important;
     background-color: transparent !important;
     background-image: none !important;
   }
   
-  /* Only override page-level gray backgrounds, not component backgrounds */
-  body.logged-in .bg-gray-50.min-h-screen,
-  body.logged-in .bg-gray-100.min-h-screen,
-  .dark body.logged-in .dark\:bg-gray-900.min-h-screen,
-  .dark body.logged-in .dark\:bg-gray-800.min-h-screen {
+  /* Allow main page backgrounds to show, but make full-screen wrappers transparent */
+  body.logged-in .min-h-screen.bg-gray-50,
+  body.logged-in .min-h-screen.bg-gray-100,
+  .dark body.logged-in .min-h-screen.dark\:bg-gray-900,
+  .dark body.logged-in .min-h-screen.dark\:bg-gray-800 {
     background: transparent !important;
     background-color: transparent !important;
   }
