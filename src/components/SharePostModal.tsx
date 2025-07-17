@@ -16,6 +16,7 @@ interface SharePostModalProps {
     image_url?: string;
     video_url?: string;
     link_url?: string;
+    shares?: number;
   };
   onShare?: () => void;
 }
@@ -77,7 +78,8 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
     setIsSharing(true);
 
     try {
-      const { error } = await supabase
+      // Insert into shared_posts table
+      const { error: shareError } = await supabase
         .from('shared_posts')
         .insert({
           user_id: user.id,
@@ -85,7 +87,27 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
           share_text: shareText.trim() || null,
         });
 
-      if (error) throw error;
+      if (shareError) throw shareError;
+
+      // Get current share count and increment it
+      const { data: currentPost, error: fetchError } = await supabase
+        .from('posts')
+        .select('shares')
+        .eq('id', post.id)
+        .single();
+
+      if (!fetchError && currentPost) {
+        const { error: updateError } = await supabase
+          .from('posts')
+          .update({ 
+            shares: (currentPost.shares || 0) + 1 
+          })
+          .eq('id', post.id);
+
+        if (updateError) {
+          console.warn('Error updating share count:', updateError);
+        }
+      }
 
       toast({
         title: "Post shared!",

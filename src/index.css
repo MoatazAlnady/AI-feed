@@ -58,7 +58,7 @@
     --secondary-foreground: 210 40% 98%;
     --muted: 248 32% 22%;
     --muted-foreground: 240 5% 64.9%;
-    --accent: 248 32% 22%;
+    --accent: 220 40% 20%; /* Changed from dark blue to neutral gray for dark mode */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
