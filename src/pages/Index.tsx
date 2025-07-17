@@ -21,7 +21,7 @@ const Index = () => {
   const [chatMessage, setChatMessage] = useState('');
   const [autoOpenChat, setAutoOpenChat] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
   // Scroll animations
   const heroAnimation = useScrollAnimation(0.1);
@@ -29,16 +29,18 @@ const Index = () => {
   const statsAnimation = useScrollAnimation(0.1);
   const ctaAnimation = useScrollAnimation(0.1);
 
-  // Redirect authenticated users to newsfeed and remove logged-in class for landing page
+  // Redirect authenticated users to newsfeed and manage logged-in class appropriately
   useEffect(() => {
-    // Remove logged-in class for public landing page
-    document.body.classList.remove('logged-in');
-    
     if (user && window.location.pathname === '/') {
       navigate('/newsfeed', { replace: true });
       return;
     }
-  }, [user, navigate]);
+    
+    // Only remove logged-in class if user is actually not logged in
+    if (!user && !loading) {
+      document.body.classList.remove('logged-in');
+    }
+  }, [user, navigate, loading]);
 
   // Newsletter popup logic - show for unsubscribed users every time
   useEffect(() => {
