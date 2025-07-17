@@ -63,7 +63,7 @@ const PostReactions: React.FC<PostReactionsProps> = ({
           onClick={() => handleReactionClick(userReaction || 'like')}
           onMouseEnter={() => setShowReactionPicker(true)}
           onMouseLeave={() => setShowReactionPicker(false)}
-          className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+          className={`flex items-center space-x-1 px-2 py-1 rounded-lg transition-colors ${
             userReaction 
               ? 'bg-blue-50 dark:bg-blue-900/20' 
               : 'hover:bg-gray-50 dark:hover:bg-gray-700'
@@ -72,19 +72,12 @@ const PostReactions: React.FC<PostReactionsProps> = ({
           {React.createElement(getUserReactionIcon(), {
             className: `h-5 w-5 ${getUserReactionColor()}`
           })}
-          <span className={`text-sm font-medium ${
-            userReaction 
-              ? getUserReactionColor()
-              : 'text-gray-700 dark:text-gray-300'
-          }`}>
-            {userReaction ? reactionTypes.find(r => r.type === userReaction)?.label : 'Like'}
-          </span>
         </button>
 
         {/* Reaction picker */}
         {showReactionPicker && (
           <div 
-            className="absolute bottom-full left-0 mb-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3 grid grid-cols-4 gap-2 z-[9999]"
+            className="absolute bottom-full left-0 mb-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-2 flex space-x-1 z-[9999]"
             onMouseEnter={() => setShowReactionPicker(true)}
             onMouseLeave={() => setShowReactionPicker(false)}
           >
@@ -92,13 +85,10 @@ const PostReactions: React.FC<PostReactionsProps> = ({
               <button
                 key={reaction.type}
                 onClick={() => handleReactionClick(reaction.type)}
-                className="flex flex-col items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors group"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors group"
                 title={reaction.label}
               >
-                <reaction.icon className={`h-6 w-6 mb-1 ${reaction.color} group-hover:scale-110 transition-transform`} />
-                <span className="text-xs text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200">
-                  {reaction.label}
-                </span>
+                <reaction.icon className={`h-6 w-6 ${reaction.color} group-hover:scale-110 transition-transform`} />
               </button>
             ))}
           </div>
