@@ -137,7 +137,7 @@ const PostOptionsMenu: React.FC<PostOptionsMenuProps> = ({
             <MoreHorizontal className="h-4 w-4 text-gray-500 dark:text-gray-400" />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuContent align="end" className="w-48 bg-white dark:bg-[#0f172a]">
           {/* Owner actions */}
           {isOwner && (
             <>
