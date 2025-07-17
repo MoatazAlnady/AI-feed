@@ -82,6 +82,60 @@ const NewsFeed: React.FC = () => {
     }
     ensureUserProfile();
     fetchPosts();
+
+    // Set up real-time subscriptions
+    let postsChannel: any;
+    let sharedPostsChannel: any;
+    let refreshInterval: NodeJS.Timeout;
+
+    if (user) {
+      // Subscribe to new posts
+      postsChannel = supabase
+        .channel('posts_changes')
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'posts'
+        }, (payload) => {
+          console.log('New post detected:', payload);
+          // Fetch posts again to include the new post
+          fetchPosts();
+        })
+        .subscribe();
+
+      // Subscribe to new shared posts
+      sharedPostsChannel = supabase
+        .channel('shared_posts_changes')
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'shared_posts'
+        }, (payload) => {
+          console.log('New shared post detected:', payload);
+          // Fetch posts again to include the new shared post
+          fetchPosts();
+        })
+        .subscribe();
+
+      // Set up automatic refresh every 15 minutes
+      refreshInterval = setInterval(() => {
+        console.log('Auto-refreshing newsfeed...');
+        fetchPosts();
+      }, 15 * 60 * 1000); // 15 minutes
+    }
+
+    return () => {
+      // Clean up subscriptions and interval
+      if (postsChannel) {
+        supabase.removeChannel(postsChannel);
+      }
+      if (sharedPostsChannel) {
+        supabase.removeChannel(sharedPostsChannel);
+      }
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+    };
   }, [user]);
 
   const ensureUserProfile = async () => {
