@@ -56,6 +56,13 @@ const Header: React.FC = () => {
     : navigation.filter(item => item.name === 'Home' || item.name === 'About' || item.name === 'Tools' || item.name === 'Categories' || item.name === 'Jobs' || item.name === 'Blog');
 
   useEffect(() => {
+    // Restore preferred locale on page load
+    const preferredLocale = localStorage.getItem('preferredLocale');
+    if (preferredLocale && preferredLocale !== 'en') {
+      // Set app locale logic would go here when i18n is fully implemented
+      console.log('Preferred locale:', preferredLocale);
+    }
+    
     // Fetch real notification and message counts from API
     const fetchCounts = async () => {
       if (user) {
@@ -223,8 +230,30 @@ const Header: React.FC = () => {
             )}
           </nav>
 
-          {/* Col 3 - Right: Theme, Search, User Actions */}
+          {/* Col 3 - Right: Language, Theme, Search, User Actions */}
           <div className="flex items-center gap-x-4">
+            {/* Language Picker */}
+            <div className="relative">
+              <select
+                defaultValue={localStorage.getItem('preferredLocale') || 'en'}
+                onChange={(e) => {
+                  localStorage.setItem('preferredLocale', e.target.value);
+                  window.location.reload();
+                }}
+                className="px-3 py-1 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              >
+                <option value="en">English</option>
+                <option value="ar">العربية</option>
+                <option value="de">Deutsch</option>
+                <option value="fr">Français</option>
+                <option value="es">Español</option>
+                <option value="fa">فارسی</option>
+                <option value="ru">Русский</option>
+                <option value="zh">中文</option>
+                <option value="ja">日本語</option>
+              </select>
+            </div>
+            
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}

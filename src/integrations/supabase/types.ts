@@ -899,7 +899,11 @@ export type Database = {
           description: string
           features: string[] | null
           id: string
+          is_dark_logo: boolean | null
+          is_light_logo: boolean | null
+          link_ci: string | null
           name: string
+          name_ci: string | null
           pricing: string
           pros: string[] | null
           status: string | null
@@ -916,7 +920,11 @@ export type Database = {
           description: string
           features?: string[] | null
           id?: string
+          is_dark_logo?: boolean | null
+          is_light_logo?: boolean | null
+          link_ci?: string | null
           name: string
+          name_ci?: string | null
           pricing?: string
           pros?: string[] | null
           status?: string | null
@@ -933,7 +941,11 @@ export type Database = {
           description?: string
           features?: string[] | null
           id?: string
+          is_dark_logo?: boolean | null
+          is_light_logo?: boolean | null
+          link_ci?: string | null
           name?: string
+          name_ci?: string | null
           pricing?: string
           pros?: string[] | null
           status?: string | null

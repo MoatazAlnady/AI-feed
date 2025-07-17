@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Upload, Link, Tag, DollarSign, Star, Send, Plus, Minus, Download, FileText } from 'lucide-react';
+import { Upload, Link, Tag, DollarSign, Star, Send, Plus, Minus, Download, FileText, AlertCircle } from 'lucide-react';
 import { generateCSVTemplate } from '../utils/csvTemplate';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const SubmitTool: React.FC = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [submissionMode, setSubmissionMode] = useState<'form' | 'csv'>('form');
   const [formData, setFormData] = useState({
     name: '',
@@ -18,7 +21,9 @@ const SubmitTool: React.FC = () => {
     features: '',
     logo: null as File | null,
     pros: [''],
-    cons: ['']
+    cons: [''],
+    is_light_logo: false,
+    is_dark_logo: false
   });
 
   // CSV upload state
@@ -107,24 +112,77 @@ const SubmitTool: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Filter out empty pros and cons
-    const filteredPros = formData.pros.filter(pro => pro.trim());
-    const filteredCons = formData.cons.filter(con => con.trim());
-    
-    const submissionData = {
-      ...formData,
-      pros: filteredPros,
-      cons: filteredCons,
-      submittedBy: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Anonymous'
-    };
-    
-    console.log('Submitting tool:', submissionData);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      // Check for duplicates first
+      const { count } = await supabase
+        .from('tools')
+        .select('id', { count: 'exact', head: true })
+        .ilike('name', formData.name)
+        .ilike('website', formData.website);
+
+      if (count && count > 0) {
+        toast({
+          title: "Duplicate Tool Detected",
+          description: "A tool with this name and website already exists in our database.",
+          variant: "destructive"
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Filter out empty pros and cons
+      const filteredPros = formData.pros.filter(pro => pro.trim());
+      const filteredCons = formData.cons.filter(con => con.trim());
+      const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(Boolean);
+      const featuresArray = formData.features.split(',').map(feature => feature.trim()).filter(Boolean);
+      
+      const submissionData = {
+        name: formData.name,
+        description: formData.description,
+        website: formData.website,
+        pricing: formData.pricing,
+        subcategory: formData.subcategory,
+        pros: filteredPros,
+        cons: filteredCons,
+        tags: tagsArray,
+        features: featuresArray,
+        is_light_logo: formData.is_light_logo,
+        is_dark_logo: formData.is_dark_logo,
+        user_id: user?.id,
+        status: 'pending'
+      };
+      
+      const { error } = await supabase
+        .from('tools')
+        .insert(submissionData);
+
+      if (error) {
+        console.error('Error submitting tool:', error);
+        toast({
+          title: "Submission Error",
+          description: "There was an error submitting your tool. Please try again.",
+          variant: "destructive"
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      toast({
+        title: "Tool Submitted Successfully!",
+        description: "Your tool has been submitted for review and will be published once approved."
+      });
+      
+      setSubmitted(true);
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Submission Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
+    }
     
     setIsSubmitting(false);
-    setSubmitted(true);
   };
 
   const handleCsvSubmit = async () => {
@@ -163,7 +221,9 @@ const SubmitTool: React.FC = () => {
       features: '',
       logo: null,
       pros: [''],
-      cons: ['']
+      cons: [''],
+      is_light_logo: false,
+      is_dark_logo: false
     });
     setCsvFile(null);
     setCsvData([]);
@@ -501,7 +561,7 @@ const SubmitTool: React.FC = () => {
             </div>
 
             {/* Logo Upload */}
-            <div className="mb-8">
+            <div className="mb-6">
               <label htmlFor="logo" className="block text-sm font-medium text-gray-700 mb-2">
                 Tool Logo/Screenshot
               </label>
@@ -532,6 +592,43 @@ const SubmitTool: React.FC = () => {
                   </p>
                 )}
               </div>
+            </div>
+
+            {/* Logo Detection Options */}
+            <div className="mb-8">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Logo Characteristics (for dark/light theme compatibility)
+              </label>
+              <div className="space-y-3">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="is_light_logo"
+                    checked={formData.is_light_logo}
+                    onChange={(e) => setFormData(prev => ({ ...prev, is_light_logo: e.target.checked }))}
+                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="is_light_logo" className="ml-2 text-sm text-gray-600">
+                    Logo is primarily light/white (will be inverted in dark mode)
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="is_dark_logo"
+                    checked={formData.is_dark_logo}
+                    onChange={(e) => setFormData(prev => ({ ...prev, is_dark_logo: e.target.checked }))}
+                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="is_dark_logo" className="ml-2 text-sm text-gray-600">
+                    Logo is primarily dark/black (will be inverted in light mode)
+                  </label>
+                </div>
+              </div>
+              <p className="mt-2 text-xs text-gray-500">
+                <AlertCircle className="h-3 w-3 inline mr-1" />
+                Check the appropriate option to ensure your logo displays correctly in both light and dark themes
+              </p>
             </div>
 
             {/* Submit Button */}
