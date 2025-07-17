@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Target, DollarSign, Users, Calendar, TrendingUp, MapPin, Sparkles, Bot } from 'lucide-react';
+import { X, Target, DollarSign, Users, Calendar, TrendingUp, MapPin, Sparkles, Bot, ChevronDown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface PromoteContentModalProps {
@@ -23,8 +23,10 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
     budget: '50',
     duration: '7',
     targetAudience: [] as string[],
-    ageRange: '25-45',
-    locations: [] as string[],
+    ageFrom: '18',
+    ageTo: '65',
+    selectedCountries: [] as string[],
+    selectedCities: [] as string[],
     interests: [] as string[],
     gender: 'all',
     objective: 'awareness'
@@ -32,6 +34,51 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
   const [aiPrompt, setAiPrompt] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGeneratingTargeting, setIsGeneratingTargeting] = useState(false);
+
+  // Countries and cities data (from AuthModal)
+  const countriesWithCodes = [
+    { name: 'United States', code: '+1' },
+    { name: 'Canada', code: '+1' },
+    { name: 'United Kingdom', code: '+44' },
+    { name: 'Germany', code: '+49' },
+    { name: 'France', code: '+33' },
+    { name: 'Spain', code: '+34' },
+    { name: 'Italy', code: '+39' },
+    { name: 'Netherlands', code: '+31' },
+    { name: 'Sweden', code: '+46' },
+    { name: 'Norway', code: '+47' },
+    { name: 'Denmark', code: '+45' },
+    { name: 'Australia', code: '+61' },
+    { name: 'New Zealand', code: '+64' },
+    { name: 'Japan', code: '+81' },
+    { name: 'South Korea', code: '+82' },
+    { name: 'Singapore', code: '+65' },
+    { name: 'India', code: '+91' },
+    { name: 'Brazil', code: '+55' }
+  ];
+
+  const countries = countriesWithCodes.map(c => c.name);
+
+  const cities = {
+    'United States': ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose', 'Austin', 'Jacksonville', 'Fort Worth', 'Columbus', 'Charlotte', 'San Francisco', 'Indianapolis', 'Seattle', 'Denver', 'Washington DC', 'Boston', 'Nashville', 'Baltimore', 'Oklahoma City', 'Louisville', 'Portland', 'Las Vegas', 'Milwaukee', 'Albuquerque', 'Tucson', 'Fresno', 'Sacramento', 'Kansas City', 'Mesa', 'Atlanta', 'Omaha', 'Colorado Springs', 'Raleigh', 'Virginia Beach', 'Long Beach', 'Miami', 'Oakland', 'Minneapolis', 'Tulsa', 'Bakersfield', 'Wichita', 'Arlington'],
+    'Canada': ['Toronto', 'Montreal', 'Vancouver', 'Calgary', 'Edmonton', 'Ottawa', 'Winnipeg', 'Quebec City', 'Hamilton', 'Kitchener', 'London', 'Victoria', 'Halifax', 'Oshawa', 'Windsor', 'Saskatoon', 'St. Catharines', 'Regina', 'Sherbrooke', 'Kelowna', 'Barrie', 'Guelph', 'Kanata', 'Abbotsford', 'Trois-Rivières'],
+    'United Kingdom': ['London', 'Birmingham', 'Glasgow', 'Liverpool', 'Bristol', 'Manchester', 'Sheffield', 'Leeds', 'Edinburgh', 'Leicester', 'Wakefield', 'Coventry', 'Hull', 'Bradford', 'Cardiff', 'Belfast', 'Stoke-on-Trent', 'Wolverhampton', 'Plymouth', 'Derby', 'Swansea', 'Southampton', 'Salford', 'Aberdeen', 'Westminster', 'Portsmouth', 'York', 'Peterborough', 'Dundee', 'Lancaster', 'Oxford', 'Newport', 'Preston', 'St Albans', 'Norwich', 'Chester', 'Cambridge', 'Salisbury', 'Exeter', 'Gloucester', 'Lisburn', 'Chichester', 'Winchester', 'Londonderry', 'Carlisle', 'Worcester', 'Bath', 'Durham', 'Lincoln', 'Hereford', 'Armagh', 'Inverness', 'Stirling', 'Canterbury', 'Lichfield', 'Newry', 'Ripon', 'Bangor', 'Truro', 'Ely', 'Wells', 'St Davids'],
+    'Germany': ['Berlin', 'Hamburg', 'Munich', 'Cologne', 'Frankfurt', 'Stuttgart', 'Düsseldorf', 'Dortmund', 'Essen', 'Leipzig', 'Bremen', 'Dresden', 'Hanover', 'Nuremberg', 'Duisburg', 'Bochum', 'Wuppertal', 'Bielefeld', 'Bonn', 'Münster'],
+    'France': ['Paris', 'Marseille', 'Lyon', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille', 'Rennes', 'Reims', 'Le Havre', 'Saint-Étienne', 'Toulon', 'Angers', 'Grenoble', 'Dijon', 'Nîmes', 'Aix-en-Provence'],
+    'Spain': ['Madrid', 'Barcelona', 'Valencia', 'Seville', 'Zaragoza', 'Málaga', 'Murcia', 'Palma', 'Las Palmas', 'Bilbao', 'Alicante', 'Córdoba', 'Valladolid', 'Vigo', 'Gijón', 'Hospitalet de Llobregat', 'A Coruña', 'Vitoria-Gasteiz', 'Granada', 'Elche'],
+    'Italy': ['Rome', 'Milan', 'Naples', 'Turin', 'Palermo', 'Genoa', 'Bologna', 'Florence', 'Bari', 'Catania', 'Venice', 'Verona', 'Messina', 'Padua', 'Trieste', 'Taranto', 'Brescia', 'Prato', 'Parma', 'Modena'],
+    'Netherlands': ['Amsterdam', 'Rotterdam', 'The Hague', 'Utrecht', 'Eindhoven', 'Tilburg', 'Groningen', 'Almere', 'Breda', 'Nijmegen', 'Enschede', 'Haarlem', 'Arnhem', 'Zaanstad', 'Amersfoort', 'Apeldoorn', 'Maastricht', 'Dordrecht', 's-Hertogenbosch', 'Leiden'],
+    'Sweden': ['Stockholm', 'Gothenburg', 'Malmö', 'Uppsala', 'Västerås', 'Örebro', 'Linköping', 'Helsingborg', 'Jönköping', 'Norrköping', 'Lund', 'Umeå', 'Gävle', 'Borås', 'Södertälje', 'Eskilstuna', 'Halmstad', 'Växjö', 'Karlstad', 'Sundsvall'],
+    'Norway': ['Oslo', 'Bergen', 'Stavanger', 'Trondheim', 'Drammen', 'Fredrikstad', 'Kristiansand', 'Sandnes', 'Tromsø', 'Sarpsborg', 'Skien', 'Ålesund', 'Sandefjord', 'Haugesund', 'Tønsberg', 'Moss', 'Bodø', 'Arendal', 'Hamar', 'Ytrebygda'],
+    'Denmark': ['Copenhagen', 'Aarhus', 'Odense', 'Aalborg', 'Esbjerg', 'Randers', 'Kolding', 'Horsens', 'Vejle', 'Roskilde', 'Herning', 'Hørsholm', 'Helsingør', 'Silkeborg', 'Næstved', 'Fredericia', 'Viborg', 'Køge', 'Holstebro', 'Taastrup'],
+    'Australia': ['Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide', 'Gold Coast', 'Newcastle', 'Canberra', 'Sunshine Coast', 'Wollongong', 'Geelong', 'Hobart', 'Townsville', 'Cairns', 'Darwin', 'Toowoomba', 'Ballarat', 'Bendigo', 'Albury', 'Launceston'],
+    'New Zealand': ['Auckland', 'Wellington', 'Christchurch', 'Hamilton', 'Tauranga', 'Napier-Hastings', 'Dunedin', 'Palmerston North', 'Nelson', 'Rotorua', 'New Plymouth', 'Whangarei', 'Invercargill', 'Wanganui', 'Gisborne', 'Timaru', 'Oamaru', 'Greymouth', 'Westport'],
+    'Japan': ['Tokyo', 'Yokohama', 'Osaka', 'Nagoya', 'Sapporo', 'Fukuoka', 'Kobe', 'Kawasaki', 'Kyoto', 'Saitama', 'Hiroshima', 'Sendai', 'Kitakyushu', 'Chiba', 'Sakai', 'Niigata', 'Hamamatsu', 'Okayama', 'Sagamihara', 'Kumamoto'],
+    'South Korea': ['Seoul', 'Busan', 'Incheon', 'Daegu', 'Daejeon', 'Gwangju', 'Suwon', 'Ulsan', 'Changwon', 'Goyang', 'Yongin', 'Seongnam', 'Bucheon', 'Cheongju', 'Ansan', 'Jeonju', 'Anyang', 'Pohang', 'Uijeongbu', 'Pyeongtaek'],
+    'Singapore': ['Singapore'],
+    'India': ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Ahmedabad', 'Chennai', 'Kolkata', 'Surat', 'Pune', 'Jaipur', 'Lucknow', 'Kanpur', 'Nagpur', 'Indore', 'Thane', 'Bhopal', 'Visakhapatnam', 'Pimpri & Chinchwad', 'Patna', 'Vadodara'],
+    'Brazil': ['São Paulo', 'Rio de Janeiro', 'Brasília', 'Salvador', 'Fortaleza', 'Belo Horizonte', 'Manaus', 'Curitiba', 'Recife', 'Goiânia', 'Belém', 'Porto Alegre', 'Guarulhos', 'Campinas', 'São Luís', 'São Gonçalo', 'Maceió', 'Duque de Caxias', 'Nova Iguaçu', 'Teresina']
+  } as Record<string, string[]>;
 
   const availableInterests = [
     'Machine Learning', 'Deep Learning', 'AI Research', 'Data Science',
@@ -45,12 +92,6 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
     'AI Researchers', 'Data Scientists', 'Software Engineers', 'Product Managers',
     'Entrepreneurs', 'Students', 'Tech Enthusiasts', 'Business Leaders',
     'Developers', 'Designers', 'Marketers', 'Consultants', 'Freelancers'
-  ];
-
-  const locationOptions = [
-    'United States', 'Canada', 'United Kingdom', 'Germany', 'France', 'Spain',
-    'Italy', 'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Australia',
-    'New Zealand', 'Japan', 'South Korea', 'Singapore', 'India', 'Brazil'
   ];
 
   const objectives = [
@@ -95,8 +136,10 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
       const mockTargeting = {
         targetAudience: ['AI Researchers', 'Data Scientists', 'Tech Enthusiasts'],
         interests: ['Machine Learning', 'AI Research', 'Data Science'],
-        locations: ['United States', 'Canada', 'United Kingdom'],
-        ageRange: '25-45',
+        selectedCountries: ['United States', 'Canada', 'United Kingdom'],
+        selectedCities: ['New York', 'Toronto', 'London'],
+        ageFrom: '25',
+        ageTo: '45',
         gender: 'all'
       };
       
@@ -129,13 +172,16 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
     if (formData.targetAudience.length > 0) {
       availableCreators *= (1 - formData.targetAudience.length * 0.05); // 5% reduction per audience
     }
-    if (formData.locations.length > 0 && formData.locations.length < 10) {
-      availableCreators *= (1 - formData.locations.length * 0.03); // 3% reduction per location when specific
+    const totalLocations = formData.selectedCountries.length + formData.selectedCities.length;
+    if (totalLocations > 0 && totalLocations < 10) {
+      availableCreators *= (1 - totalLocations * 0.03); // 3% reduction per location when specific
     }
     if (formData.interests.length > 0) {
       availableCreators *= (1 - formData.interests.length * 0.02); // 2% reduction per interest
     }
-    if (formData.ageRange !== '18+') {
+    const ageFrom = parseInt(formData.ageFrom);
+    const ageTo = parseInt(formData.ageTo);
+    if (ageFrom !== 18 || ageTo !== 65) {
       availableCreators *= 0.9; // 10% reduction for age targeting
     }
     if (formData.gender !== 'all') {
@@ -370,22 +416,38 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
             {/* Demographics */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label htmlFor="ageRange" className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Age Range
                 </label>
-                <select
-                  id="ageRange"
-                  name="ageRange"
-                  value={formData.ageRange}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                >
-                  {ageRanges.map((range) => (
-                    <option key={range} value={range}>
-                      {range}
-                    </option>
-                  ))}
-                </select>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label htmlFor="ageFrom" className="block text-xs text-gray-500 mb-1">From</label>
+                    <input
+                      type="number"
+                      id="ageFrom"
+                      name="ageFrom"
+                      value={formData.ageFrom}
+                      onChange={handleInputChange}
+                      min="18"
+                      max="100"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="ageTo" className="block text-xs text-gray-500 mb-1">To</label>
+                    <input
+                      type="number"
+                      id="ageTo"
+                      name="ageTo"
+                      value={formData.ageTo}
+                      onChange={handleInputChange}
+                      min="18"
+                      max="100"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Age range: {formData.ageFrom} - {formData.ageTo} years</p>
               </div>
               <div>
                 <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-2">
@@ -412,25 +474,56 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Location Targeting
               </label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto">
-                {locationOptions.map((location) => (
-                  <button
-                    key={location}
-                    type="button"
-                    onClick={() => handleArrayToggle(formData.locations, location, 'locations')}
-                    className={`p-2 text-sm rounded-lg border transition-colors ${
-                      formData.locations.includes(location)
-                        ? 'bg-green-500 text-white border-green-500'
-                        : 'bg-white text-gray-700 border-gray-200 hover:border-green-300'
-                    }`}
-                  >
-                    {location}
-                  </button>
-                ))}
+              
+              {/* Countries Selection */}
+              <div className="mb-4">
+                <h4 className="text-sm font-medium text-gray-600 mb-2">Countries</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto p-2 border border-gray-200 rounded-lg">
+                  {countries.map((country) => (
+                    <label key={country} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={formData.selectedCountries.includes(country)}
+                        onChange={() => handleArrayToggle(formData.selectedCountries, country, 'selectedCountries')}
+                        className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      />
+                      <span className="text-sm text-gray-700">{country}</span>
+                    </label>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Selected: {formData.selectedCountries.length} countr{formData.selectedCountries.length !== 1 ? 'ies' : 'y'}
+                </p>
               </div>
-              <p className="text-sm text-gray-500 mt-2">
-                Selected: {formData.locations.length} location{formData.locations.length !== 1 ? 's' : ''}
-              </p>
+
+              {/* Cities Selection */}
+              <div>
+                <h4 className="text-sm font-medium text-gray-600 mb-2">Cities</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-40 overflow-y-auto p-2 border border-gray-200 rounded-lg">
+                  {formData.selectedCountries.length > 0 ? (
+                    formData.selectedCountries.flatMap(country => 
+                      cities[country]?.map(city => (
+                        <label key={`${country}-${city}`} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                          <input
+                            type="checkbox"
+                            checked={formData.selectedCities.includes(`${country}: ${city}`)}
+                            onChange={() => handleArrayToggle(formData.selectedCities, `${country}: ${city}`, 'selectedCities')}
+                            className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                          />
+                          <span className="text-sm text-gray-700">{city} ({country})</span>
+                        </label>
+                      )) || []
+                    )
+                  ) : (
+                    <p className="text-sm text-gray-500 col-span-full p-4 text-center">
+                      Select countries first to choose specific cities
+                    </p>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Selected: {formData.selectedCities.length} cit{formData.selectedCities.length !== 1 ? 'ies' : 'y'}
+                </p>
+              </div>
             </div>
 
             {/* Interest Targeting */}
@@ -486,7 +579,7 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-primary-600">
-                    {formData.targetAudience.length + formData.locations.length + formData.interests.length}
+                    {formData.targetAudience.length + formData.selectedCountries.length + formData.selectedCities.length + formData.interests.length}
                   </div>
                   <div className="text-sm text-gray-600">Targeting Criteria</div>
                 </div>
