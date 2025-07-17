@@ -538,43 +538,39 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
               </div>
 
               {/* Demographics */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 md:gap-x-6 gap-y-4 md:gap-y-0 items-start">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mt-6">
-                    Age Range
+                  <label htmlFor="ageFrom" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Age From
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label htmlFor="ageFrom" className="block text-xs text-gray-500 dark:text-gray-400 mb-1">From</label>
-                      <input
-                        type="number"
-                        id="ageFrom"
-                        name="ageFrom"
-                        value={formData.ageFrom}
-                        onChange={handleInputChange}
-                        min="18"
-                        max="100"
-                        className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="ageTo" className="block text-xs text-gray-500 dark:text-gray-400 mb-1">To</label>
-                      <input
-                        type="number"
-                        id="ageTo"
-                        name="ageTo"
-                        value={formData.ageTo}
-                        onChange={handleInputChange}
-                        min="18"
-                        max="100"
-                        className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white"
-                      />
-                    </div>
-                  </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Age range: {formData.ageFrom} - {formData.ageTo} years</p>
+                  <input
+                    type="number"
+                    id="ageFrom"
+                    name="ageFrom"
+                    value={formData.ageFrom}
+                    onChange={handleInputChange}
+                    min="18"
+                    max="100"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white"
+                  />
                 </div>
-                <div className="md:block max-md:mt-4">
-                  <label htmlFor="gender" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mt-6">
+                <div>
+                  <label htmlFor="ageTo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Age To
+                  </label>
+                  <input
+                    type="number"
+                    id="ageTo"
+                    name="ageTo"
+                    value={formData.ageTo}
+                    onChange={handleInputChange}
+                    min="18"
+                    max="100"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="gender" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Gender
                   </label>
                   <select
@@ -599,134 +595,136 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                   Location Targeting
                 </label>
                 
-                {/* Countries Multi-Select Dropdown */}
-                <div className="mb-4">
-                  <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Countries</h4>
-                  <Popover open={openCountriesDropdown} onOpenChange={setOpenCountriesDropdown}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={openCountriesDropdown}
-                        className="w-full justify-between h-12 px-4 bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-800"
-                      >
-                        {formData.selectedCountries.length > 0
-                          ? `${formData.selectedCountries.length} countr${formData.selectedCountries.length !== 1 ? 'ies' : 'y'} selected`
-                          : "Select countries..."}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0 promo-command-content">
-                      <Command className="bg-slate-900">
-                        <CommandInput placeholder="Search countries..." className="h-9 promo-command-input dark:text-white" />
-                        <CommandList className="promo-command-list">
-                          <CommandEmpty className="dark:text-gray-400">No countries found.</CommandEmpty>
-                          <CommandGroup>
-                            {countries.map((country) => (
-                              <CommandItem
-                                key={country}
-                                value={country}
-                                onSelect={() => {
-                                  const isSelected = formData.selectedCountries.includes(country);
-                                  setFormData(prev => ({
-                                    ...prev,
-                                    selectedCountries: isSelected
-                                      ? prev.selectedCountries.filter(c => c !== country)
-                                      : [...prev.selectedCountries, country],
-                                    selectedCities: isSelected && prev.selectedCountries.length === 1 
-                                      ? [] 
-                                      : prev.selectedCities
-                                  }));
-                                }}
-                                className="flex items-center space-x-2 cursor-pointer promo-command-item dark:text-white hover:bg-slate-800"
-                                data-selected={formData.selectedCountries.includes(country)}
-                              >
-                                <Checkbox
-                                  checked={formData.selectedCountries.includes(country)}
-                                  className="data-[state=checked]:bg-teal-500 data-[state=checked]:border-teal-500"
-                                />
-                                <span>{country}</span>
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Selected: {formData.selectedCountries.length} countr{formData.selectedCountries.length !== 1 ? 'ies' : 'y'}
-                  </p>
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Countries Multi-Select Dropdown */}
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Countries</h4>
+                    <Popover open={openCountriesDropdown} onOpenChange={setOpenCountriesDropdown}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={openCountriesDropdown}
+                          className="w-full justify-between h-12 px-4 bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-800"
+                        >
+                          {formData.selectedCountries.length > 0
+                            ? `${formData.selectedCountries.length} countr${formData.selectedCountries.length !== 1 ? 'ies' : 'y'} selected`
+                            : "Select countries..."}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0 promo-command-content">
+                        <Command className="bg-slate-900">
+                          <CommandInput placeholder="Search countries..." className="h-9 promo-command-input dark:text-white" />
+                          <CommandList className="promo-command-list">
+                            <CommandEmpty className="dark:text-gray-400">No countries found.</CommandEmpty>
+                            <CommandGroup>
+                              {countries.map((country) => (
+                                <CommandItem
+                                  key={country}
+                                  value={country}
+                                  onSelect={() => {
+                                    const isSelected = formData.selectedCountries.includes(country);
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      selectedCountries: isSelected
+                                        ? prev.selectedCountries.filter(c => c !== country)
+                                        : [...prev.selectedCountries, country],
+                                      selectedCities: isSelected && prev.selectedCountries.length === 1 
+                                        ? [] 
+                                        : prev.selectedCities
+                                    }));
+                                  }}
+                                  className="flex items-center space-x-2 cursor-pointer promo-command-item dark:text-white hover:bg-slate-800"
+                                  data-selected={formData.selectedCountries.includes(country)}
+                                >
+                                  <Checkbox
+                                    checked={formData.selectedCountries.includes(country)}
+                                    className="data-[state=checked]:bg-teal-500 data-[state=checked]:border-teal-500"
+                                  />
+                                  <span>{country}</span>
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Selected: {formData.selectedCountries.length} countr{formData.selectedCountries.length !== 1 ? 'ies' : 'y'}
+                    </p>
+                  </div>
 
-                {/* Cities Multi-Select Dropdown */}
-                <div>
-                  <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Cities</h4>
-                  {formData.selectedCountries.length > 0 ? (
-                    <>
-                      <Popover open={openCitiesDropdown} onOpenChange={setOpenCitiesDropdown}>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            aria-expanded={openCitiesDropdown}
-                            className="w-full justify-between h-12 px-4 bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-800"
-                          >
-                            {formData.selectedCities.length > 0
-                              ? `${formData.selectedCities.length} cit${formData.selectedCities.length !== 1 ? 'ies' : 'y'} selected`
-                              : "Select cities..."}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-0 promo-command-content">
-                          <Command className="bg-slate-900">
-                            <CommandInput placeholder="Search cities..." className="h-9 promo-command-input dark:text-white" />
-                            <CommandList className="promo-command-list">
-                              <CommandEmpty className="dark:text-gray-400">No cities found.</CommandEmpty>
-                              <CommandGroup>
-                                {formData.selectedCountries.flatMap(country => 
-                                  cities[country]?.map(city => {
-                                    const cityValue = `${country}: ${city}`;
-                                    return (
-                                      <CommandItem
-                                        key={`${country}-${city}`}
-                                        value={cityValue}
-                                        onSelect={() => {
-                                          const isSelected = formData.selectedCities.includes(cityValue);
-                                          setFormData(prev => ({
-                                            ...prev,
-                                            selectedCities: isSelected
-                                              ? prev.selectedCities.filter(c => c !== cityValue)
-                                              : [...prev.selectedCities, cityValue]
-                                          }));
-                                        }}
-                                        className="flex items-center space-x-2 cursor-pointer promo-command-item dark:text-white hover:bg-slate-800"
-                                        data-selected={formData.selectedCities.includes(cityValue)}
-                                      >
-                                        <Checkbox
-                                          checked={formData.selectedCities.includes(cityValue)}
-                                          className="data-[state=checked]:bg-teal-500 data-[state=checked]:border-teal-500"
-                                        />
-                                        <span>{city} ({country})</span>
-                                      </CommandItem>
-                                    );
-                                  }) || []
-                                )}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Selected: {formData.selectedCities.length} cit{formData.selectedCities.length !== 1 ? 'ies' : 'y'}
-                      </p>
-                    </>
-                  ) : (
-                    <div className="w-full px-4 py-8 border border-gray-200 dark:border-slate-600 rounded-xl bg-gray-50 dark:bg-slate-800 text-center">
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Select countries first to choose specific cities
-                      </p>
-                    </div>
-                  )}
+                  {/* Cities Multi-Select Dropdown */}
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Cities</h4>
+                    {formData.selectedCountries.length > 0 ? (
+                      <>
+                        <Popover open={openCitiesDropdown} onOpenChange={setOpenCitiesDropdown}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={openCitiesDropdown}
+                              className="w-full justify-between h-12 px-4 bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-800"
+                            >
+                              {formData.selectedCities.length > 0
+                                ? `${formData.selectedCities.length} cit${formData.selectedCities.length !== 1 ? 'ies' : 'y'} selected`
+                                : "Select cities..."}
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0 promo-command-content">
+                            <Command className="bg-slate-900">
+                              <CommandInput placeholder="Search cities..." className="h-9 promo-command-input dark:text-white" />
+                              <CommandList className="promo-command-list">
+                                <CommandEmpty className="dark:text-gray-400">No cities found.</CommandEmpty>
+                                <CommandGroup>
+                                  {formData.selectedCountries.flatMap(country => 
+                                    cities[country]?.map(city => {
+                                      const cityValue = `${country}: ${city}`;
+                                      return (
+                                        <CommandItem
+                                          key={`${country}-${city}`}
+                                          value={cityValue}
+                                          onSelect={() => {
+                                            const isSelected = formData.selectedCities.includes(cityValue);
+                                            setFormData(prev => ({
+                                              ...prev,
+                                              selectedCities: isSelected
+                                                ? prev.selectedCities.filter(c => c !== cityValue)
+                                                : [...prev.selectedCities, cityValue]
+                                            }));
+                                          }}
+                                          className="flex items-center space-x-2 cursor-pointer promo-command-item dark:text-white hover:bg-slate-800"
+                                          data-selected={formData.selectedCities.includes(cityValue)}
+                                        >
+                                          <Checkbox
+                                            checked={formData.selectedCities.includes(cityValue)}
+                                            className="data-[state=checked]:bg-teal-500 data-[state=checked]:border-teal-500"
+                                          />
+                                          <span>{city} ({country})</span>
+                                        </CommandItem>
+                                      );
+                                    }) || []
+                                  )}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          Selected: {formData.selectedCities.length} cit{formData.selectedCities.length !== 1 ? 'ies' : 'y'}
+                        </p>
+                      </>
+                    ) : (
+                      <div className="w-full px-4 py-8 border border-gray-200 dark:border-slate-600 rounded-xl bg-gray-50 dark:bg-slate-800 text-center">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Select countries first to choose specific cities
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
