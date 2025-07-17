@@ -25,7 +25,7 @@ const Header: React.FC = () => {
 
   // Navigation items for different user types
   const navigation = [
-    { name: 'Home', href: '/', hideWhenLoggedIn: true },
+    { name: t('nav.home'), href: '/', hideWhenLoggedIn: true },
     { name: t('nav.about'), href: '/about', hideWhenLoggedIn: true },
     { name: t('nav.newsfeed'), href: '/newsfeed', protected: true },
     { name: t('nav.tools'), href: '/tools' },
