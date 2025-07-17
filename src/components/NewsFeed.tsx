@@ -14,7 +14,8 @@ import {
   Trash2,
   Check,
   X,
-  RefreshCw
+  RefreshCw,
+  Eye
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -50,6 +51,8 @@ interface Post {
   created_at: string;
   updated_at: string;
   canEdit: boolean;
+  view_count?: number;
+  reach_score?: number;
 }
 
 interface Comment {
@@ -181,10 +184,11 @@ const NewsFeed: React.FC = () => {
     try {
       console.log('Fetching posts...');
       
-      // Fetch regular posts
+      // Fetch regular posts with reach score and view count
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
-        .select('*')
+        .select('*, reach_score, view_count')
+        .order('reach_score', { ascending: false })
         .order('created_at', { ascending: false })
         .limit(50);
 
@@ -326,6 +330,8 @@ const NewsFeed: React.FC = () => {
           created_at: post.created_at,
           updated_at: post.updated_at,
           canEdit: user ? post.user_id === user.id : false,
+          view_count: post.view_count || 0,
+          reach_score: post.reach_score || 0,
           // Shared post specific fields
           type: post.type || 'original',
           sharedBy: post.type === 'shared' ? {
@@ -591,6 +597,50 @@ const NewsFeed: React.FC = () => {
     }
   };
 
+  const trackPostView = async (postId: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase.rpc('track_post_view', {
+        post_id_param: postId,
+        user_id_param: user.id,
+        ip_address_param: null,
+        user_agent_param: navigator.userAgent
+      });
+
+      if (error) {
+        console.error('Error tracking post view:', error);
+      }
+    } catch (error) {
+      console.error('Error tracking post view:', error);
+    }
+  };
+
+  // Track view when post comes into view
+  const postRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const postId = entry.target.getAttribute('data-post-id');
+            if (postId) {
+              trackPostView(postId);
+            }
+          }
+        });
+      },
+      { threshold: 0.5 } // Track when 50% of post is visible
+    );
+
+    Object.values(postRefs.current).forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => observer.disconnect();
+  }, [posts, user]);
+
   if (posts.length === 0) {
     return (
       <div className="space-y-6">
@@ -644,7 +694,12 @@ const NewsFeed: React.FC = () => {
       )}
 
       {posts.map((post: any) => (
-        <div key={post.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+        <div 
+          key={post.id} 
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6"
+          ref={(el) => { postRefs.current[post.id] = el; }}
+          data-post-id={post.id}
+        >
           {/* Shared Post Header */}
           {post.type === 'shared' && (
             <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-l-4 border-blue-500">
@@ -691,7 +746,16 @@ const NewsFeed: React.FC = () => {
                 )}
               </div>
               <div className="flex items-center justify-between mb-3">
-                <p className="text-sm text-gray-500 dark:text-gray-400">{post.author.title} • {post.timestamp}</p>
+                <div className="flex items-center space-x-3">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{post.author.title} • {post.timestamp}</p>
+                  {/* Show view count only to post author */}
+                  {user && post.user_id === user.id && post.view_count !== undefined && (
+                    <div className="flex items-center space-x-1 text-xs text-gray-400 dark:text-gray-500">
+                      <Eye className="h-3 w-3" />
+                      <span>{post.view_count} views</span>
+                    </div>
+                  )}
+                </div>
                 <PostOptionsMenu
                   postId={post.id}
                   authorId={post.user_id}

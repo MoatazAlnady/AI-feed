@@ -543,6 +543,33 @@ export type Database = {
           },
         ]
       }
+      post_views: {
+        Row: {
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          post_id: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          post_id: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          post_id?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           content: string
@@ -551,10 +578,12 @@ export type Database = {
           image_url: string | null
           likes: number | null
           link_url: string | null
+          reach_score: number | null
           shares: number | null
           updated_at: string | null
           user_id: string
           video_url: string | null
+          view_count: number | null
         }
         Insert: {
           content: string
@@ -563,10 +592,12 @@ export type Database = {
           image_url?: string | null
           likes?: number | null
           link_url?: string | null
+          reach_score?: number | null
           shares?: number | null
           updated_at?: string | null
           user_id: string
           video_url?: string | null
+          view_count?: number | null
         }
         Update: {
           content?: string
@@ -575,10 +606,12 @@ export type Database = {
           image_url?: string | null
           likes?: number | null
           link_url?: string | null
+          reach_score?: number | null
           shares?: number | null
           updated_at?: string | null
           user_id?: string
           video_url?: string | null
+          view_count?: number | null
         }
         Relationships: []
       }
@@ -1055,6 +1088,10 @@ export type Database = {
         Args: { request_id_param: string; admin_notes_param?: string }
         Returns: undefined
       }
+      calculate_post_reach_score: {
+        Args: { post_id_param: string }
+        Returns: number
+      }
       create_tool_edit_request: {
         Args: {
           tool_id_param: string
@@ -1096,6 +1133,15 @@ export type Database = {
       reject_tool_edit_request: {
         Args: { request_id_param: string; admin_notes_param: string }
         Returns: undefined
+      }
+      track_post_view: {
+        Args: {
+          post_id_param: string
+          user_id_param?: string
+          ip_address_param?: unknown
+          user_agent_param?: string
+        }
+        Returns: boolean
       }
       update_trending_tools: {
         Args: Record<PropertyKey, never>
