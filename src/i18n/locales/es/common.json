@@ -83,5 +83,15 @@
     "runSystemHealthCheck": "",
     "clearCache": "",
     "tryAsking": ""
+  },
+  "blog": {
+    "title": "Blog de Perspectivas de IA",
+    "subtitle": "Mantente informado con las últimas tendencias, tutoriales y perspectivas del mundo de la inteligencia artificial.",
+    "noArticles": "Aún no hay artículos",
+    "beFirstToShare": "¡Sé el primero en compartir tus perspectivas de IA! Los artículos aparecerán aquí una vez que sean enviados y aprobados.",
+    "writeArticle": "Escribir un artículo",
+    "loadMore": "Cargar más artículos",
+    "featured": "Destacado",
+    "readMore": "Leer más"
   }
 }

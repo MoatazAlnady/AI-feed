@@ -83,5 +83,15 @@
     "runSystemHealthCheck": "",
     "clearCache": "",
     "tryAsking": ""
+  },
+  "blog": {
+    "title": "Blog d'Insights IA",
+    "subtitle": "Restez informé des dernières tendances, tutoriels et insights du monde de l'intelligence artificielle.",
+    "noArticles": "Pas encore d'articles",
+    "beFirstToShare": "Soyez le premier à partager vos insights IA ! Les articles apparaîtront ici une fois soumis et approuvés.",
+    "writeArticle": "Écrire un article",
+    "loadMore": "Charger plus d'articles",
+    "featured": "À la une",
+    "readMore": "Lire la suite"
   }
 }

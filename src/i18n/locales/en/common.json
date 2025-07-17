@@ -190,5 +190,15 @@
   "chat": {
     "messages": "Messages",
     "connectAndChat": "Connect and chat with other members of the community"
+  },
+  "blog": {
+    "title": "AI Insights Blog",
+    "subtitle": "Stay informed with the latest trends, tutorials, and insights from the world of artificial intelligence.",
+    "noArticles": "No Articles Yet",
+    "beFirstToShare": "Be the first to share your AI insights! Articles will appear here once they are submitted and approved.",
+    "writeArticle": "Write an Article",
+    "loadMore": "Load More Articles",
+    "featured": "Featured",
+    "readMore": "Read More"
   }
 }

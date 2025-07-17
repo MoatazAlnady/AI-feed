@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, User, ArrowRight, Video, FileText, Edit } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface BlogPost {
   id: number;
@@ -14,6 +15,7 @@ interface BlogPost {
 }
 
 const Blog: React.FC = () => {
+  const { t } = useTranslation();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -52,10 +54,10 @@ const Blog: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            AI Insights Blog
+            {t('blog.title')}
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Stay informed with the latest trends, tutorials, and insights from the world of artificial intelligence.
+            {t('blog.subtitle')}
           </p>
         </div>
 
@@ -63,17 +65,17 @@ const Blog: React.FC = () => {
           <div className="text-center py-20">
             <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              No Articles Yet
+              {t('blog.noArticles')}
             </h3>
             <p className="text-gray-600 mb-6">
-              Be the first to share your AI insights! Articles will appear here once they are submitted and approved.
+              {t('blog.beFirstToShare')}
             </p>
             <a
               href="/auth"
               className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-semibold rounded-xl hover:shadow-lg transition-shadow"
             >
               <Edit className="h-5 w-5 mr-2" />
-              Write an Article
+              {t('blog.writeArticle')}
             </a>
           </div>
         ) : (
@@ -92,7 +94,7 @@ const Blog: React.FC = () => {
                   <div className="lg:w-1/2 p-8 lg:p-12">
                     <div className="flex items-center space-x-2 mb-4">
                       <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium">
-                        Featured
+                        {t('blog.featured')}
                       </span>
                       <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
                         {posts[0].category}
@@ -117,7 +119,7 @@ const Blog: React.FC = () => {
                         <span>{posts[0].readTime}</span>
                       </div>
                       <button className="flex items-center text-primary-600 font-medium hover:text-primary-700">
-                        Read More
+                        {t('blog.readMore')}
                         <ArrowRight className="ml-1 h-4 w-4" />
                       </button>
                     </div>
@@ -185,7 +187,7 @@ const Blog: React.FC = () => {
             {/* Load More */}
             <div className="text-center mt-12">
               <button className="px-8 py-3 border-2 border-primary-200 text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition-colors">
-                Load More Articles
+                {t('blog.loadMore')}
               </button>
             </div>
           </>

@@ -83,5 +83,15 @@
     "runSystemHealthCheck": "",
     "clearCache": "",
     "tryAsking": ""
+  },
+  "blog": {
+    "title": "KI-Erkenntnisse Blog",
+    "subtitle": "Bleiben Sie informiert über die neuesten Trends, Tutorials und Erkenntnisse aus der Welt der künstlichen Intelligenz.",
+    "noArticles": "Noch keine Artikel",
+    "beFirstToShare": "Seien Sie der Erste, der Ihre KI-Erkenntnisse teilt! Artikel erscheinen hier, sobald sie eingereicht und genehmigt wurden.",
+    "writeArticle": "Artikel schreiben",
+    "loadMore": "Weitere Artikel laden",
+    "featured": "Hervorgehoben",
+    "readMore": "Mehr lesen"
   }
 }

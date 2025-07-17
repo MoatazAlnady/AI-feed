@@ -83,5 +83,15 @@
     "runSystemHealthCheck": "",
     "clearCache": "",
     "tryAsking": ""
+  },
+  "blog": {
+    "title": "AI洞察博客",
+    "subtitle": "了解人工智能世界的最新趋势、教程和洞察。",
+    "noArticles": "暂无文章",
+    "beFirstToShare": "成为第一个分享AI洞察的人！文章提交并获得批准后将在此处显示。",
+    "writeArticle": "撰写文章",
+    "loadMore": "加载更多文章",
+    "featured": "精选",
+    "readMore": "阅读更多"
   }
 }

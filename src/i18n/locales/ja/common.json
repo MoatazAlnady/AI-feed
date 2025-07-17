@@ -83,5 +83,15 @@
     "runSystemHealthCheck": "",
     "clearCache": "",
     "tryAsking": ""
+  },
+  "blog": {
+    "title": "AIインサイトブログ",
+    "subtitle": "人工知能の世界から最新のトレンド、チュートリアル、インサイトをお届けします。",
+    "noArticles": "まだ記事がありません",
+    "beFirstToShare": "AIインサイトを共有する最初の人になりましょう！記事は投稿・承認されるとここに表示されます。",
+    "writeArticle": "記事を書く",
+    "loadMore": "さらに記事を読み込む",
+    "featured": "注目",
+    "readMore": "続きを読む"
   }
 }
