@@ -299,7 +299,7 @@ const Community: React.FC = () => {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`relative flex items-center space-x-2 py-4 px-6 font-medium text-sm transition-all duration-200 ${
                       isActive
-                        ? 'text-blue-600 dark:text-cyan-400 bg-blue-50 dark:bg-gray-700 rounded-t-xl border-b-2 border-blue-600 dark:border-cyan-400'
+                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-gray-700 rounded-t-xl border-b-2 border-primary-600 dark:border-primary-400'
                         : 'text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-t-xl'
                     }`}
                   >

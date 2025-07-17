@@ -144,7 +144,7 @@ const Newsfeed: React.FC = () => {
                       className="flex flex-col items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-800/20 transition-colors"
                     >
                       <MessageCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mb-1" />
-                      <span className="text-xs font-medium text-blue-700 dark:text-blue-300">Post</span>
+                      <span className="text-xs font-medium text-blue-700 dark:text-blue-300 dark:text-white">Post</span>
                     </button>
                     <button
                       onClick={() => window.location.href = '/tools/create'}

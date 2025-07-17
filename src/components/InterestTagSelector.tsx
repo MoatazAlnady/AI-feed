@@ -108,7 +108,7 @@ const InterestTagSelector: React.FC<InterestTagSelectorProps> = ({
           {selectedTags.map((tag, index) => (
               <Badge
                 key={index}
-                className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 flex items-center gap-1"
+                className="bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 flex items-center gap-1"
               >
                 #{tag}
               <button
@@ -140,8 +140,8 @@ const InterestTagSelector: React.FC<InterestTagSelectorProps> = ({
                     onClick={() => toggleTag(interest.name)}
                     className={`px-3 py-1 text-sm rounded-full border transition-all ${
                       selectedTags.includes(interest.name)
-                        ? 'bg-blue-500 text-white border-blue-500'
-                        : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-600'
+                        ? 'bg-primary-500 text-white border-primary-500'
+                        : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-600'
                     }`}
                   >
                     #{interest.name}

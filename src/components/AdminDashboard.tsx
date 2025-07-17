@@ -26,16 +26,18 @@ import {
   Map,
   Layers,
   Database,
-  X
+  X,
+  CreditCard
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import CreateUserModal from '../components/CreateUserModal';
+import PricingManagement from '../components/PricingManagement';
 import { supabase } from '../lib/supabase';
 
 const AdminDashboard: React.FC = () => {
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'tools' | 'content' | 'settings' | 'configuration'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'tools' | 'content' | 'settings' | 'configuration' | 'pricing'>('overview');
   const [showCreateUser, setShowCreateUser] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState<any[]>([]);
@@ -971,6 +973,17 @@ const AdminDashboard: React.FC = () => {
                 <span>Configuration</span>
               </button>
               <button
+                onClick={() => setActiveTab('pricing')}
+                className={`flex items-center space-x-2 px-6 py-4 font-medium transition-colors ${
+                  activeTab === 'pricing'
+                    ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
+                }`}
+              >
+                <CreditCard className="h-5 w-5" />
+                <span>Pricing Plans</span>
+              </button>
+              <button
                 onClick={() => setActiveTab('settings')}
                 className={`flex items-center space-x-2 px-6 py-4 font-medium transition-colors ${
                   activeTab === 'settings'
@@ -990,6 +1003,7 @@ const AdminDashboard: React.FC = () => {
           {activeTab === 'tools' && renderTools()}
           {activeTab === 'content' && renderContent()}
           {activeTab === 'configuration' && renderConfiguration()}
+          {activeTab === 'pricing' && <PricingManagement />}
           {activeTab === 'settings' && renderSettings()}
         </div>
       </div>

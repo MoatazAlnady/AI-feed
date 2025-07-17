@@ -387,7 +387,7 @@ const Header: React.FC = () => {
                         className="w-8 h-8 rounded-full object-cover"
                       />
                     ) : (
-                      <span className="text-white text-sm font-medium">
+                      <span className="text-white dark:text-white text-sm font-medium">
                         {((user?.user_metadata?.full_name || user?.email || 'User')[0] || 'U').toUpperCase()}
                       </span>
                     )}

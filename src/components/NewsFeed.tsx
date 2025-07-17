@@ -22,6 +22,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import PostReactions from './PostReactions';
 import PostOptionsMenu from './PostOptionsMenu';
+import SharePostModal from './SharePostModal';
 
 interface Post {
   id: string;
@@ -290,12 +291,10 @@ const NewsFeed: React.FC = () => {
   };
 
   const handleShare = (postId: string) => {
-    setPosts(posts.map(post => 
-      post.id === postId 
-        ? { ...post, shares: post.shares + 1 }
-        : post
-    ));
-    alert('Post shared!');
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+      setShareModalPost(post);
+    }
   };
 
   const handleEditPost = (postId: string) => {
@@ -657,6 +656,19 @@ const NewsFeed: React.FC = () => {
           </div>
         </div>
       ))}
+
+      {/* Share Modal */}
+      {shareModalPost && (
+        <SharePostModal
+          isOpen={!!shareModalPost}
+          onClose={() => setShareModalPost(null)}
+          post={shareModalPost}
+          onShare={() => {
+            fetchPosts(); // Refresh posts to show the shared post
+            setShareModalPost(null);
+          }}
+        />
+      )}
     </div>
   );
 };
