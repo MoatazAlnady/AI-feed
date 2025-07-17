@@ -35,7 +35,7 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGeneratingTargeting, setIsGeneratingTargeting] = useState(false);
 
-  // Countries and cities data (from AuthModal)
+  // Complete countries and cities data (from AuthModal)
   const countriesWithCodes = [
     { name: 'United States', code: '+1' },
     { name: 'Canada', code: '+1' },
@@ -48,23 +48,110 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
     { name: 'Sweden', code: '+46' },
     { name: 'Norway', code: '+47' },
     { name: 'Denmark', code: '+45' },
+    { name: 'Finland', code: '+358' },
     { name: 'Australia', code: '+61' },
     { name: 'New Zealand', code: '+64' },
     { name: 'Japan', code: '+81' },
     { name: 'South Korea', code: '+82' },
     { name: 'Singapore', code: '+65' },
     { name: 'India', code: '+91' },
-    { name: 'Brazil', code: '+55' }
+    { name: 'China', code: '+86' },
+    { name: 'Brazil', code: '+55' },
+    { name: 'Mexico', code: '+52' },
+    { name: 'Argentina', code: '+54' },
+    { name: 'Chile', code: '+56' },
+    { name: 'South Africa', code: '+27' },
+    { name: 'Palestine', code: '+970' },
+    { name: 'UAE', code: '+971' },
+    { name: 'Switzerland', code: '+41' },
+    { name: 'Austria', code: '+43' },
+    { name: 'Belgium', code: '+32' },
+    { name: 'Ireland', code: '+353' },
+    { name: 'Portugal', code: '+351' },
+    { name: 'Poland', code: '+48' },
+    { name: 'Czech Republic', code: '+420' },
+    { name: 'Hungary', code: '+36' },
+    { name: 'Romania', code: '+40' },
+    { name: 'Russia', code: '+7' },
+    { name: 'Turkey', code: '+90' },
+    { name: 'Greece', code: '+30' },
+    { name: 'Croatia', code: '+385' },
+    { name: 'Bulgaria', code: '+359' },
+    { name: 'Serbia', code: '+381' },
+    { name: 'Slovenia', code: '+386' },
+    { name: 'Slovakia', code: '+421' },
+    { name: 'Estonia', code: '+372' },
+    { name: 'Latvia', code: '+371' },
+    { name: 'Lithuania', code: '+370' },
+    { name: 'Malta', code: '+356' },
+    { name: 'Cyprus', code: '+357' },
+    { name: 'Luxembourg', code: '+352' },
+    { name: 'Iceland', code: '+354' },
+    { name: 'Thailand', code: '+66' },
+    { name: 'Vietnam', code: '+84' },
+    { name: 'Philippines', code: '+63' },
+    { name: 'Indonesia', code: '+62' },
+    { name: 'Malaysia', code: '+60' },
+    { name: 'Bangladesh', code: '+880' },
+    { name: 'Pakistan', code: '+92' },
+    { name: 'Sri Lanka', code: '+94' },
+    { name: 'Nepal', code: '+977' },
+    { name: 'Myanmar', code: '+95' },
+    { name: 'Cambodia', code: '+855' },
+    { name: 'Laos', code: '+856' },
+    { name: 'Saudi Arabia', code: '+966' },
+    { name: 'Egypt', code: '+20' },
+    { name: 'Iraq', code: '+964' },
+    { name: 'Jordan', code: '+962' },
+    { name: 'Lebanon', code: '+961' },
+    { name: 'Syria', code: '+963' },
+    { name: 'Yemen', code: '+967' },
+    { name: 'Kuwait', code: '+965' },
+    { name: 'Qatar', code: '+974' },
+    { name: 'Bahrain', code: '+973' },
+    { name: 'Oman', code: '+968' },
+    { name: 'Libya', code: '+218' },
+    { name: 'Tunisia', code: '+216' },
+    { name: 'Algeria', code: '+213' },
+    { name: 'Morocco', code: '+212' },
+    { name: 'Sudan', code: '+249' },
+    { name: 'Somalia', code: '+252' },
+    { name: 'Djibouti', code: '+253' },
+    { name: 'Comoros', code: '+269' },
+    { name: 'Mauritania', code: '+222' }
   ];
 
   const countries = countriesWithCodes.map(c => c.name);
 
   const cities = {
     'United States': ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose', 'Austin', 'Jacksonville', 'Fort Worth', 'Columbus', 'Charlotte', 'San Francisco', 'Indianapolis', 'Seattle', 'Denver', 'Washington DC', 'Boston', 'Nashville', 'Baltimore', 'Oklahoma City', 'Louisville', 'Portland', 'Las Vegas', 'Milwaukee', 'Albuquerque', 'Tucson', 'Fresno', 'Sacramento', 'Kansas City', 'Mesa', 'Atlanta', 'Omaha', 'Colorado Springs', 'Raleigh', 'Virginia Beach', 'Long Beach', 'Miami', 'Oakland', 'Minneapolis', 'Tulsa', 'Bakersfield', 'Wichita', 'Arlington'],
-    'Canada': ['Toronto', 'Montreal', 'Vancouver', 'Calgary', 'Edmonton', 'Ottawa', 'Winnipeg', 'Quebec City', 'Hamilton', 'Kitchener', 'London', 'Victoria', 'Halifax', 'Oshawa', 'Windsor', 'Saskatoon', 'St. Catharines', 'Regina', 'Sherbrooke', 'Kelowna', 'Barrie', 'Guelph', 'Kanata', 'Abbotsford', 'Trois-Rivières'],
-    'United Kingdom': ['London', 'Birmingham', 'Glasgow', 'Liverpool', 'Bristol', 'Manchester', 'Sheffield', 'Leeds', 'Edinburgh', 'Leicester', 'Wakefield', 'Coventry', 'Hull', 'Bradford', 'Cardiff', 'Belfast', 'Stoke-on-Trent', 'Wolverhampton', 'Plymouth', 'Derby', 'Swansea', 'Southampton', 'Salford', 'Aberdeen', 'Westminster', 'Portsmouth', 'York', 'Peterborough', 'Dundee', 'Lancaster', 'Oxford', 'Newport', 'Preston', 'St Albans', 'Norwich', 'Chester', 'Cambridge', 'Salisbury', 'Exeter', 'Gloucester', 'Lisburn', 'Chichester', 'Winchester', 'Londonderry', 'Carlisle', 'Worcester', 'Bath', 'Durham', 'Lincoln', 'Hereford', 'Armagh', 'Inverness', 'Stirling', 'Canterbury', 'Lichfield', 'Newry', 'Ripon', 'Bangor', 'Truro', 'Ely', 'Wells', 'St Davids'],
-    'Germany': ['Berlin', 'Hamburg', 'Munich', 'Cologne', 'Frankfurt', 'Stuttgart', 'Düsseldorf', 'Dortmund', 'Essen', 'Leipzig', 'Bremen', 'Dresden', 'Hanover', 'Nuremberg', 'Duisburg', 'Bochum', 'Wuppertal', 'Bielefeld', 'Bonn', 'Münster'],
-    'France': ['Paris', 'Marseille', 'Lyon', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille', 'Rennes', 'Reims', 'Le Havre', 'Saint-Étienne', 'Toulon', 'Angers', 'Grenoble', 'Dijon', 'Nîmes', 'Aix-en-Provence'],
+    'Canada': ['Toronto', 'Montreal', 'Vancouver', 'Calgary', 'Edmonton', 'Ottawa', 'Winnipeg', 'Quebec City', 'Hamilton', 'Kitchener', 'London', 'Victoria', 'Halifax', 'Oshawa', 'Windsor', 'Saskatoon', 'St. Catharines', 'Regina', 'Sherbrooke', 'Barrie', 'Kelowna', 'Abbotsford', 'Kingston', 'Sudbury', 'Saguenay', 'Trois-Rivières', 'Guelph', 'Cambridge', 'Whitby', 'Brantford'],
+    'United Kingdom': ['London', 'Birmingham', 'Manchester', 'Glasgow', 'Liverpool', 'Leeds', 'Sheffield', 'Edinburgh', 'Bristol', 'Cardiff', 'Leicester', 'Coventry', 'Bradford', 'Belfast', 'Nottingham', 'Hull', 'Newcastle', 'Stoke-on-Trent', 'Southampton', 'Derby', 'Portsmouth', 'Brighton', 'Plymouth', 'Northampton', 'Reading', 'Luton', 'Wolverhampton', 'Bolton', 'Bournemouth', 'Norwich'],
+    'Germany': ['Berlin', 'Hamburg', 'Munich', 'Cologne', 'Frankfurt', 'Stuttgart', 'Düsseldorf', 'Dortmund', 'Essen', 'Leipzig', 'Bremen', 'Dresden', 'Hanover', 'Nuremberg', 'Duisburg', 'Bochum', 'Wuppertal', 'Bielefeld', 'Bonn', 'Münster', 'Karlsruhe', 'Mannheim', 'Augsburg', 'Wiesbaden', 'Gelsenkirchen', 'Mönchengladbach', 'Braunschweig', 'Chemnitz', 'Kiel', 'Aachen'],
+    'France': ['Paris', 'Marseille', 'Lyon', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille', 'Rennes', 'Reims', 'Le Havre', 'Saint-Étienne', 'Toulon', 'Grenoble', 'Dijon', 'Angers', 'Nîmes', 'Villeurbanne', 'Saint-Denis', 'Le Mans', 'Aix-en-Provence', 'Clermont-Ferrand', 'Brest', 'Limoges', 'Tours', 'Amiens', 'Perpignan', 'Metz'],
+    'Palestine': ['Gaza', 'Ramallah', 'Hebron', 'Nablus', 'Bethlehem', 'Jenin', 'Tulkarm', 'Qalqilya', 'Salfit', 'Jericho', 'Tubas', 'Khan Yunis', 'Rafah', 'Deir al-Balah', 'Beit Lahia', 'Beit Hanoun', 'Jabalya'],
+    'Saudi Arabia': ['Riyadh', 'Jeddah', 'Mecca', 'Medina', 'Dammam', 'Khobar', 'Dhahran', 'Taif', 'Buraidah', 'Tabuk', 'Hail', 'Khamis Mushait', 'Najran', 'Jizan', 'Yanbu', 'Al Jubail', 'Abha', 'Arar', 'Sakaka', 'Al Qatif'],
+    'Egypt': ['Cairo', 'Alexandria', 'Giza', 'Shubra El Kheima', 'Port Said', 'Suez', 'Luxor', 'Mansoura', 'El Mahalla El Kubra', 'Tanta', 'Asyut', 'Ismailia', 'Fayyum', 'Zagazig', 'Aswan', 'Damietta', 'Damanhur', 'Minya', 'Beni Suef', 'Hurghada'],
+    'Iraq': ['Baghdad', 'Basra', 'Mosul', 'Erbil', 'Sulaymaniyah', 'Najaf', 'Karbala', 'Kirkuk', 'Nasiriyah', 'Amarah', 'Diwaniyah', 'Kut', 'Ramadi', 'Fallujah', 'Samarra', 'Baqubah', 'Tikrit', 'Hilla', 'Dohuk', 'Zakho'],
+    'Jordan': ['Amman', 'Zarqa', 'Irbid', 'Russeifa', 'Wadi as-Sir', 'Aqaba', 'Madaba', 'As-Salt', 'Mafraq', 'Jerash', 'Karak', 'Tafilah', 'Maan', 'Ajloun', 'Sahab', 'Fuheis', 'Ain al-Basha', 'Qadisiyah', 'Kufranja', 'Jubeiha'],
+    'Lebanon': ['Beirut', 'Tripoli', 'Sidon', 'Tyre', 'Nabatieh', 'Jounieh', 'Zahle', 'Baalbek', 'Byblos', 'Aley', 'Bint Jbeil', 'Marjayoun', 'Jezzine', 'Halba', 'Chekka', 'Anjar', 'Rashaya', 'Hermel', 'Qbayyat', 'Minieh'],
+    'Syria': ['Damascus', 'Aleppo', 'Homs', 'Latakia', 'Hama', 'Deir ez-Zor', 'Raqqa', 'Daraa', 'Al-Hasakah', 'Qamishli', 'Tartus', 'Idlib', 'Douma', 'As-Suwayda', 'Quneitra', 'Palmyra', 'Manbij', 'Afrin', 'Azaz', 'Jarablus'],
+    'Yemen': ['Sanaa', 'Aden', 'Taiz', 'Hodeidah', 'Ibb', 'Dhamar', 'Mukalla', 'Saada', 'Zinjibar', 'Sayyan', 'Zabid', 'Hajjah', 'Sadah', 'Amran', 'Yarim', 'Marib', 'Bayhan', 'Lawdar', 'Ataq', 'Shibam'],
+    'Kuwait': ['Kuwait City', 'Hawalli', 'As Salimiyah', 'Sabah as Salim', 'Al Farwaniyah', 'Al Ahmadi', 'Ar Riqqah', 'Ar Rabiyah', 'Al Fahahil', 'Salwa', 'Jaber Al-Ali', 'Mangaf', 'Mahboula', 'Abu Halifa', 'Fintas', 'Fahaheel', 'Al Wafra', 'Kaifan', 'Khaitan', 'Abraq Khaitan'],
+    'Qatar': ['Doha', 'Al Rayyan', 'Umm Salal', 'Al Wakrah', 'Al Khor', 'Madinat ash Shamal', 'Al Daayen', 'Al Shamal', 'Lusail', 'Mesaieed', 'Dukhan', 'Al Shahaniya', 'Al Thakhira', 'Al Kharrara', 'Simaisma', 'Al Ghuwariyah', 'Fuwayrit', 'Al Jumayliyah', 'Umm Bab', 'Zekreet'],
+    'Bahrain': ['Manama', 'Riffa', 'Muharraq', 'Hamad Town', 'A\'ali', 'Isa Town', 'Sitra', 'Budaiya', 'Jidhafs', 'Al-Malikiyah', 'Sanabis', 'Tubli', 'Barbar', 'Galali', 'Malkiya', 'Karzakan', 'Samaheej', 'Karbabad', 'Duraz', 'Bani Jamra'],
+    'Oman': ['Muscat', 'Seeb', 'Salalah', 'Bawshar', 'Sohar', 'As Suwayq', 'Ibri', 'Saham', 'Barka', 'Rustaq', 'Burka', 'Nizwa', 'Sur', 'Bahla', 'Khasab', 'Shinas', 'Izki', 'Jabrin', 'Manah', 'Ibra'],
+    'Libya': ['Tripoli', 'Benghazi', 'Misrata', 'Tarhuna', 'Al Bayda', 'Zawiya', 'Zliten', 'Ajdabiya', 'Tobruk', 'Sabha', 'Derna', 'Sirte', 'Gharyan', 'Kufra', 'Marj', 'Bani Walid', 'Sabratha', 'Sorman', 'Zuwara', 'Murzuq'],
+    'Tunisia': ['Tunis', 'Sfax', 'Sousse', 'Ettadhamen', 'Kairouan', 'Bizerte', 'Gabès', 'Ariana', 'Gafsa', 'Monastir', 'Ben Arous', 'Kasserine', 'Médenine', 'Nabeul', 'Tataouine', 'Béja', 'Jendouba', 'Mahdia', 'Siliana', 'Manouba'],
+    'Algeria': ['Algiers', 'Oran', 'Constantine', 'Annaba', 'Blida', 'Batna', 'Djelfa', 'Sétif', 'Sidi Bel Abbès', 'Biskra', 'Tébessa', 'El Oued', 'Skikda', 'Tiaret', 'Béjaïa', 'Tlemcen', 'Ouargla', 'Béchar', 'Mostaganem', 'Bordj Bou Arréridj'],
+    'Morocco': ['Casablanca', 'Rabat', 'Fez', 'Marrakech', 'Agadir', 'Tangier', 'Meknes', 'Oujda', 'Kenitra', 'Tetouan', 'Safi', 'Mohammedia', 'Khouribga', 'El Jadida', 'Beni Mellal', 'Nador', 'Taza', 'Settat', 'Berrechid', 'Khemisset'],
+    'Sudan': ['Khartoum', 'Omdurman', 'Khartoum North', 'Nyala', 'Port Sudan', 'Kassala', 'Al-Ubayyid', 'Kosti', 'Wad Madani', 'El Fasher', 'Atbara', 'Dongola', 'Malakal', 'El Geneina', 'Rabak', 'Geneina', 'Kadugli', 'El Daein', 'Sennar', 'Zalingei'],
+    'UAE': ['Dubai', 'Abu Dhabi', 'Sharjah', 'Al Ain', 'Ajman', 'Ras Al Khaimah', 'Fujairah', 'Umm Al Quwain', 'Khor Fakkan', 'Kalba', 'Dibba Al-Fujairah', 'Dibba Al-Hisn', 'Madinat Zayed', 'Liwa Oasis', 'Ghayathi', 'Ruwais', 'Jebel Ali', 'Al Dhafra', 'Hatta', 'Masafi'],
+    'Somalia': ['Mogadishu', 'Hargeisa', 'Bosaso', 'Kismayo', 'Merca', 'Galcaio', 'Baidoa', 'Garowe', 'Berbera', 'Burao', 'Las Anod', 'Erigavo', 'Galkayo', 'Beledweyne', 'Jowhar', 'Luuq', 'Hudur', 'Qardho', 'Borama', 'Zeila'],
+    'Djibouti': ['Djibouti City', 'Ali Sabieh', 'Dikhil', 'Tadjourah', 'Obock', 'Arta', 'Holhol', 'Yoboki', 'As Eyla', 'Balho', 'Galafi', 'Loyada', 'Randa', 'Sagallou', 'Khor Angar', 'Dorale', 'Damerjog', 'Airolaf', 'Assamo', 'Gobaad'],
+    'Comoros': ['Moroni', 'Mutsamudu', 'Fomboni', 'Domoni', 'Sima', 'Mitsoudje', 'Ouani', 'Adda-Douéni', 'Tsémbéhou', 'Koni-Djodjo', 'Mirontsy', 'Nioumachoua', 'Mbéni', 'Iconi', 'Mitsamiouli', 'Foumbouni', 'Salamani', 'Chindini', 'Vouvouni', 'Bandamadji'],
+    'Mauritania': ['Nouakchott', 'Nouadhibou', 'Néma', 'Kaédi', 'Zouérat', 'Rosso', 'Atar', 'Adel Bagrou', 'Aleg', 'Boutilimit', 'Tidjikja', 'Akjoujt', 'Kiffa', 'Sélibaby', 'Aioun', 'Bogué', 'Chinguetti', 'Ouadane', 'Tichitt', 'Oualata'],
+    // Additional countries with major cities
     'Spain': ['Madrid', 'Barcelona', 'Valencia', 'Seville', 'Zaragoza', 'Málaga', 'Murcia', 'Palma', 'Las Palmas', 'Bilbao', 'Alicante', 'Córdoba', 'Valladolid', 'Vigo', 'Gijón', 'Hospitalet de Llobregat', 'A Coruña', 'Vitoria-Gasteiz', 'Granada', 'Elche'],
     'Italy': ['Rome', 'Milan', 'Naples', 'Turin', 'Palermo', 'Genoa', 'Bologna', 'Florence', 'Bari', 'Catania', 'Venice', 'Verona', 'Messina', 'Padua', 'Trieste', 'Taranto', 'Brescia', 'Prato', 'Parma', 'Modena'],
     'Netherlands': ['Amsterdam', 'Rotterdam', 'The Hague', 'Utrecht', 'Eindhoven', 'Tilburg', 'Groningen', 'Almere', 'Breda', 'Nijmegen', 'Enschede', 'Haarlem', 'Arnhem', 'Zaanstad', 'Amersfoort', 'Apeldoorn', 'Maastricht', 'Dordrecht', 's-Hertogenbosch', 'Leiden'],
@@ -475,54 +562,64 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                 Location Targeting
               </label>
               
-              {/* Countries Selection */}
+              {/* Countries Multi-Select Dropdown */}
               <div className="mb-4">
                 <h4 className="text-sm font-medium text-gray-600 mb-2">Countries</h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto p-2 border border-gray-200 rounded-lg">
+                <select
+                  multiple
+                  value={formData.selectedCountries}
+                  onChange={(e) => {
+                    const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+                    setFormData(prev => ({ ...prev, selectedCountries: selectedOptions, selectedCities: [] }));
+                  }}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent min-h-[120px]"
+                  size={6}
+                >
                   {countries.map((country) => (
-                    <label key={country} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
-                      <input
-                        type="checkbox"
-                        checked={formData.selectedCountries.includes(country)}
-                        onChange={() => handleArrayToggle(formData.selectedCountries, country, 'selectedCountries')}
-                        className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                      />
-                      <span className="text-sm text-gray-700">{country}</span>
-                    </label>
+                    <option key={country} value={country} className="py-1">
+                      {country}
+                    </option>
                   ))}
-                </div>
+                </select>
                 <p className="text-xs text-gray-500 mt-1">
-                  Selected: {formData.selectedCountries.length} countr{formData.selectedCountries.length !== 1 ? 'ies' : 'y'}
+                  Hold Ctrl (Windows) or Cmd (Mac) to select multiple countries • Selected: {formData.selectedCountries.length} countr{formData.selectedCountries.length !== 1 ? 'ies' : 'y'}
                 </p>
               </div>
 
-              {/* Cities Selection */}
+              {/* Cities Multi-Select Dropdown */}
               <div>
                 <h4 className="text-sm font-medium text-gray-600 mb-2">Cities</h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-40 overflow-y-auto p-2 border border-gray-200 rounded-lg">
-                  {formData.selectedCountries.length > 0 ? (
-                    formData.selectedCountries.flatMap(country => 
-                      cities[country]?.map(city => (
-                        <label key={`${country}-${city}`} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
-                          <input
-                            type="checkbox"
-                            checked={formData.selectedCities.includes(`${country}: ${city}`)}
-                            onChange={() => handleArrayToggle(formData.selectedCities, `${country}: ${city}`, 'selectedCities')}
-                            className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                          />
-                          <span className="text-sm text-gray-700">{city} ({country})</span>
-                        </label>
-                      )) || []
-                    )
-                  ) : (
-                    <p className="text-sm text-gray-500 col-span-full p-4 text-center">
+                {formData.selectedCountries.length > 0 ? (
+                  <>
+                    <select
+                      multiple
+                      value={formData.selectedCities}
+                      onChange={(e) => {
+                        const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+                        setFormData(prev => ({ ...prev, selectedCities: selectedOptions }));
+                      }}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent min-h-[140px]"
+                      size={7}
+                    >
+                      {formData.selectedCountries.flatMap(country => 
+                        cities[country]?.map(city => (
+                          <option key={`${country}-${city}`} value={`${country}: ${city}`} className="py-1">
+                            {city} ({country})
+                          </option>
+                        )) || []
+                      )}
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Hold Ctrl (Windows) or Cmd (Mac) to select multiple cities • Selected: {formData.selectedCities.length} cit{formData.selectedCities.length !== 1 ? 'ies' : 'y'}
+                    </p>
+                  </>
+                ) : (
+                  <div className="w-full px-4 py-8 border border-gray-200 rounded-xl bg-gray-50 text-center">
+                    <p className="text-sm text-gray-500">
                       Select countries first to choose specific cities
                     </p>
-                  )}
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Selected: {formData.selectedCities.length} cit{formData.selectedCities.length !== 1 ? 'ies' : 'y'}
-                </p>
+                  </div>
+                )}
               </div>
             </div>
 
