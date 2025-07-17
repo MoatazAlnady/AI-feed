@@ -402,7 +402,7 @@ button {
   }
 }
 
-/* Enhanced Global gradient backgrounds for authenticated pages - Balanced Approach */
+/* Enhanced Global gradient backgrounds for authenticated pages - Restore Solid Backgrounds */
 @layer components {
   /* Dark theme gradient */
   body.logged-in.dark {
@@ -419,21 +419,11 @@ button {
     background: hsl(var(--background)) !important;
   }
   
-  /* Only make the outermost page containers transparent to show gradient */
-  body.logged-in > #root,
-  body.logged-in > #root > div:first-child:not([class*="bg-"]):not([class*="dark:bg-"]) {
+  /* MINIMAL OVERRIDES - Only make the outermost root transparent to show gradient */
+  body.logged-in > #root {
     background: transparent !important;
     background-color: transparent !important;
     background-image: none !important;
-  }
-  
-  /* Allow main page backgrounds to show, but make full-screen wrappers transparent */
-  body.logged-in .min-h-screen.bg-gray-50,
-  body.logged-in .min-h-screen.bg-gray-100,
-  .dark body.logged-in .min-h-screen.dark\:bg-gray-900,
-  .dark body.logged-in .min-h-screen.dark\:bg-gray-800 {
-    background: transparent !important;
-    background-color: transparent !important;
   }
 }
 
