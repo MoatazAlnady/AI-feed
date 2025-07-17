@@ -401,12 +401,28 @@ const NewsFeed: React.FC = () => {
   };
 
   const handleShareComplete = (postId: string) => {
-    // Update share count when a post is actually shared
-    setPosts(posts.map(post => 
-      post.id === postId 
-        ? { ...post, shares: (post.shares || 0) + 1 }
-        : post
-    ));
+    // Fetch updated share count from database to ensure accuracy
+    const fetchUpdatedShareCount = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('posts')
+          .select('shares')
+          .eq('id', postId)
+          .single();
+        
+        if (!error && data) {
+          setPosts(posts.map(post => 
+            post.id === postId 
+              ? { ...post, shares: data.shares || 0 }
+              : post
+          ));
+        }
+      } catch (error) {
+        console.error('Error fetching updated share count:', error);
+      }
+    };
+    
+    fetchUpdatedShareCount();
   };
 
   const handleEditPost = (postId: string) => {
@@ -864,8 +880,15 @@ const NewsFeed: React.FC = () => {
                     className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400 transition-colors"
                   >
                     <Share2 className="h-5 w-5" />
-                    <span>{post.shares}</span>
+                    <span>{post.shares || 0}</span>
                   </button>
+                  {/* Show view count to the left of bookmark */}
+                  {user && post.user_id === user.id && post.view_count !== undefined && (
+                    <div className="flex items-center space-x-1 text-gray-500 dark:text-gray-400">
+                      <Eye className="h-4 w-4" />
+                      <span>{post.view_count}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="flex space-x-2">
                   <button 
