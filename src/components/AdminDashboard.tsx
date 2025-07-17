@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   Users, 
   Wrench, 
@@ -33,8 +34,12 @@ import { useAuth } from '../context/AuthContext';
 import CreateUserModal from '../components/CreateUserModal';
 import PricingManagement from '../components/PricingManagement';
 import { supabase } from '../lib/supabase';
+import useI18nGuard from '../hooks/useI18nGuard';
 
 const AdminDashboard: React.FC = () => {
+  const { t } = useTranslation();
+  useI18nGuard();
+  
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'tools' | 'content' | 'settings' | 'configuration' | 'pricing'>('overview');
@@ -154,7 +159,7 @@ const AdminDashboard: React.FC = () => {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Users</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{t('auto.totalUsers')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{users.length}</p>
               <div className="flex items-center mt-1">
                 <TrendingUp className="h-4 w-4 text-green-500 dark:text-green-400" />
@@ -168,7 +173,7 @@ const AdminDashboard: React.FC = () => {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Tools</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{t('auto.totalTools')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{tools.length}</p>
               <div className="flex items-center mt-1">
                 <TrendingUp className="h-4 w-4 text-green-500 dark:text-green-400" />
@@ -182,7 +187,7 @@ const AdminDashboard: React.FC = () => {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Articles</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{t('auto.totalArticles')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{articles.length}</p>
               <div className="flex items-center mt-1">
                 <TrendingUp className="h-4 w-4 text-green-500 dark:text-green-400" />
@@ -196,7 +201,7 @@ const AdminDashboard: React.FC = () => {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Edit Requests</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{t('auto.editRequests')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{pendingEditRequests}</p>
               {pendingEditRequests > 0 && (
                 <button
@@ -215,7 +220,7 @@ const AdminDashboard: React.FC = () => {
       {/* Analytics Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">User Growth</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('auto.userGrowth')}</h3>
           <div className="h-64 flex items-center justify-center">
             <BarChart3 className="h-16 w-16 text-gray-300 dark:text-gray-600" />
           </div>
@@ -225,7 +230,7 @@ const AdminDashboard: React.FC = () => {
         </div>
         
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Content Distribution</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('auto.contentDistribution')}</h3>
           <div className="h-64 flex items-center justify-center">
             <PieChart className="h-16 w-16 text-gray-300 dark:text-gray-600" />
           </div>
@@ -237,7 +242,7 @@ const AdminDashboard: React.FC = () => {
 
       {/* Quick Actions */}
       <div className="mt-8">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('auto.quickActions')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <button
             onClick={() => setShowCreateUser(true)}

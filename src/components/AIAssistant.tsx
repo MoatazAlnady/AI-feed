@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, X, Maximize2, Minimize2, ChevronDown, ChevronUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import useI18nGuard from '../hooks/useI18nGuard';
 
 interface Message {
   id: string;
@@ -15,6 +17,9 @@ interface AIAssistantProps {
 }
 
 const AIAssistant: React.FC<AIAssistantProps> = ({ mode, className = '' }) => {
+  const { t } = useTranslation();
+  useI18nGuard();
+  
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -333,7 +338,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ mode, className = '' }) => {
               {/* Quick Suggestions */}
               {messages.length <= 2 && (
                 <div className="px-4 mb-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Try asking:</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{t('auto.tryAsking')}</p>
                   <div className="flex flex-wrap gap-2">
                     {suggestions.map((suggestion, index) => (
                       <button
