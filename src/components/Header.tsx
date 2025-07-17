@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../providers/ThemeProvider';
 import AuthModal from './AuthModal';
 import VerificationBadge from './VerificationBadge';
+import LanguageSelector from './LanguageSelector';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -232,27 +233,12 @@ const Header: React.FC = () => {
 
           {/* Col 3 - Right: Language, Theme, Search, User Actions */}
           <div className="flex items-center gap-x-4">
-            {/* Language Picker */}
-            <div className="relative">
-              <select
-                defaultValue={localStorage.getItem('preferredLocale') || 'en'}
-                onChange={(e) => {
-                  localStorage.setItem('preferredLocale', e.target.value);
-                  window.location.reload();
-                }}
-                className="px-3 py-1 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              >
-                <option value="en">English</option>
-                <option value="ar">العربية</option>
-                <option value="de">Deutsch</option>
-                <option value="fr">Français</option>
-                <option value="es">Español</option>
-                <option value="fa">فارسی</option>
-                <option value="ru">Русский</option>
-                <option value="zh">中文</option>
-                <option value="ja">日本語</option>
-              </select>
-            </div>
+            {/* Language Picker - Only show for non-authenticated users */}
+            {!user && (
+              <div className="relative">
+                <LanguageSelector variant="header" />
+              </div>
+            )}
             
             {/* Theme Toggle */}
             <button
@@ -462,6 +448,20 @@ const Header: React.FC = () => {
                           >
                             Profile
                           </Link>
+                          <Link
+                            to="/settings"
+                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                            onClick={() => setShowUserMenu(false)}
+                          >
+                            <div className="flex items-center">
+                              <Settings className="h-4 w-4 mr-2" />
+                              Settings
+                            </div>
+                          </Link>
+                          <LanguageSelector 
+                            variant="menu" 
+                            onLocaleChange={() => setShowUserMenu(false)} 
+                          />
                           {isCreator && (
                             <Link
                               to="/analytics"
