@@ -702,9 +702,9 @@ const NewsFeed: React.FC = () => {
         </div>
       )}
 
-      {posts.map((post: any) => (
+      {posts.map((post: any, index: number) => (
         <div 
-          key={post.id} 
+          key={post.type === 'shared' ? `shared-${post.id}-${index}` : post.id}
           className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6"
           ref={(el) => { postRefs.current[post.id] = el; }}
           data-post-id={post.id}

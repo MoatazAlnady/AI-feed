@@ -18,6 +18,9 @@
     "signUp": "Регистрация",
     "signOut": "Выйти"
   },
+  "auth": {
+    "signOut": "Выйти"
+  },
   "common": {
     "search": "Поиск",
     "submit": "Отправить",

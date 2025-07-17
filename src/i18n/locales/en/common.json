@@ -18,6 +18,9 @@
     "signUp": "Sign Up",
     "signOut": "Sign Out"
   },
+  "auth": {
+    "signOut": "Sign out"
+  },
   "common": {
     "search": "Search",
     "submit": "Submit",

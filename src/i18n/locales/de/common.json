@@ -18,6 +18,9 @@
     "signUp": "Registrieren",
     "signOut": "Abmelden"
   },
+  "auth": {
+    "signOut": "Abmelden"
+  },
   "common": {
     "search": "Suchen",
     "submit": "Absenden",

@@ -18,6 +18,9 @@
     "signUp": "サインアップ",
     "signOut": "ログアウト"
   },
+  "auth": {
+    "signOut": "ログアウト"
+  },
   "common": {
     "search": "検索",
     "submit": "送信",

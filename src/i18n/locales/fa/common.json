@@ -18,6 +18,9 @@
     "signUp": "ثبت‌نام",
     "signOut": "خروج"
   },
+  "auth": {
+    "signOut": "خروج"
+  },
   "common": {
     "search": "جستجو",
     "submit": "ارسال",

@@ -18,6 +18,9 @@
     "signUp": "Registrarse",
     "signOut": "Cerrar sesión"
   },
+  "auth": {
+    "signOut": "Cerrar sesión"
+  },
   "common": {
     "search": "Buscar",
     "submit": "Enviar",

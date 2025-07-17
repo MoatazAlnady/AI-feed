@@ -18,6 +18,9 @@
     "signUp": "注册",
     "signOut": "退出"
   },
+  "auth": {
+    "signOut": "退出"
+  },
   "common": {
     "search": "搜索",
     "submit": "提交",

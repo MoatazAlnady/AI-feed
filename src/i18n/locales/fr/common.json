@@ -18,6 +18,9 @@
     "signUp": "S'inscrire",
     "signOut": "Se déconnecter"
   },
+  "auth": {
+    "signOut": "Se déconnecter"
+  },
   "common": {
     "search": "Rechercher",
     "submit": "Soumettre",

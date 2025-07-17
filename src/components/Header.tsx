@@ -187,7 +187,7 @@ const Header: React.FC = () => {
                       : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
-                  Dashboard
+                   {t('nav.dashboard')}
                 </Link>
                 <Link
                   to="/employer/talents"
@@ -197,7 +197,7 @@ const Header: React.FC = () => {
                       : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
-                  Talents
+                  {t('nav.talent')}
                 </Link>
                 <Link
                   to="/employer/jobs"
@@ -207,7 +207,7 @@ const Header: React.FC = () => {
                       : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
-                  Jobs
+                  {t('nav.jobs')}
                 </Link>
                 <Link
                   to="/employer/projects"
@@ -217,7 +217,7 @@ const Header: React.FC = () => {
                       : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
-                  Projects
+                  {t('dashboard.projects')}
                 </Link>
                 <Link
                   to="/employer/analytics"
@@ -227,7 +227,7 @@ const Header: React.FC = () => {
                       : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
-                  Analytics
+                  {t('dashboard.analytics')}
                 </Link>
               </>
             )}
@@ -438,8 +438,12 @@ const Header: React.FC = () => {
                             className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                             onClick={() => setShowUserMenu(false)}
                           >
-                            Profile
+                            {t('nav.profile')}
                           </Link>
+                          <LanguageSelector 
+                            variant="menu" 
+                            onLocaleChange={() => setShowUserMenu(false)} 
+                          />
                         </>
                       ) : (
                         <>
@@ -448,7 +452,7 @@ const Header: React.FC = () => {
                             className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                             onClick={() => setShowUserMenu(false)}
                           >
-                            Profile
+                            {t('nav.profile')}
                           </Link>
                           <Link
                             to="/settings"
@@ -457,7 +461,7 @@ const Header: React.FC = () => {
                           >
                             <div className="flex items-center">
                               <Settings className="h-4 w-4 mr-2" />
-                              Settings
+                            {t('nav.settings')}
                             </div>
                           </Link>
                           <LanguageSelector 
@@ -507,7 +511,7 @@ const Header: React.FC = () => {
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center"
                       >
                         <LogOut className="h-4 w-4 mr-2" />
-                        {t('nav.signOut')}
+                        {t('auth.signOut')}
                       </button>
                     </div>
                   )}
@@ -594,7 +598,7 @@ const Header: React.FC = () => {
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Dashboard
+                    {t('nav.dashboard')}
                   </Link>
                   <Link
                     to="/employer/talents"
@@ -605,7 +609,7 @@ const Header: React.FC = () => {
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Talents
+                    {t('nav.talent')}
                   </Link>
                   <Link
                     to="/employer/jobs"
@@ -616,7 +620,7 @@ const Header: React.FC = () => {
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Jobs
+                    {t('nav.jobs')}
                   </Link>
                   <Link
                     to="/employer/projects"
@@ -627,7 +631,7 @@ const Header: React.FC = () => {
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Projects
+                    {t('dashboard.projects')}
                   </Link>
                   <Link
                     to="/employer/analytics"
@@ -638,7 +642,7 @@ const Header: React.FC = () => {
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Analytics
+                    {t('dashboard.analytics')}
                   </Link>
                 </>
               )}
@@ -754,7 +758,7 @@ const Header: React.FC = () => {
                       className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Profile
+                    {t('nav.profile')}
                     </Link>
                   ) : (
                     <Link
@@ -769,7 +773,7 @@ const Header: React.FC = () => {
                     onClick={handleSignOut}
                     className="w-full text-left px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
                   >
-                    {t('nav.signOut')}
+                    {t('auth.signOut')}
                   </button>
                 </div>
               ) : (
