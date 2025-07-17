@@ -72,7 +72,7 @@ const NewsletterPopup: React.FC<NewsletterPopupProps> = ({ onClose }) => {
         </button>
 
         {/* Colorful top banner */}
-        <div className="h-3 bg-gradient-to-r from-primary-500 to-secondary-500"></div>
+        <div className="h-3 bg-gradient-primary"></div>
 
         <div className="p-8">
           {isSuccess ? (
@@ -86,7 +86,7 @@ const NewsletterPopup: React.FC<NewsletterPopupProps> = ({ onClose }) => {
               </p>
               <button
                 onClick={onClose}
-                className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                className="px-6 py-2 bg-gradient-primary text-white rounded-lg hover:shadow-md transition-all"
               >
                 Continue Browsing
               </button>
@@ -147,7 +147,7 @@ const NewsletterPopup: React.FC<NewsletterPopupProps> = ({ onClose }) => {
                 <button
                   type="submit"
                   disabled={isSubmitting || !email}
-                  className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-3 rounded-xl font-medium hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-gradient-primary text-white py-3 rounded-xl font-medium hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? 'Subscribing...' : 'Subscribe Now'}
                 </button>
