@@ -400,6 +400,15 @@ const NewsFeed: React.FC = () => {
     }
   };
 
+  const handleShareComplete = (postId: string) => {
+    // Update share count when a post is actually shared
+    setPosts(posts.map(post => 
+      post.id === postId 
+        ? { ...post, shares: (post.shares || 0) + 1 }
+        : post
+    ));
+  };
+
   const handleEditPost = (postId: string) => {
     const post = posts.find(p => p.id === postId);
     if (post) {
@@ -760,6 +769,7 @@ const NewsFeed: React.FC = () => {
                   postId={post.id}
                   authorId={post.user_id}
                   contentType="post"
+                  contentTitle={post.content.substring(0, 50) + (post.content.length > 50 ? '...' : '')}
                   onEdit={() => handleEditPost(post.id)}
                   onDelete={() => handleDeletePost(post.id)}
                   onShare={() => handleShare(post.id)}
@@ -956,6 +966,7 @@ const NewsFeed: React.FC = () => {
           onClose={() => setShareModalPost(null)}
           post={shareModalPost}
           onShare={() => {
+            handleShareComplete(shareModalPost.id); // Update share count
             fetchPosts(); // Refresh posts to show the shared post
             setShareModalPost(null);
           }}
