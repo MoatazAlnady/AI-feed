@@ -10,9 +10,6 @@
     --c-violet: 270 75% 34%;  /* #57139b */
     --c-amber: 41 63% 67%;    /* #ebb966 */
 
-    /* Dark menu surface */
-    --color-surface-menu-dark: 15 23% 16%;  /* #0f172a */
-
     /* Light gradient stops */
     --light-1: 48 100% 69%;   /* #ffd863 */
     --light-2: 175 100% 69%;  /* #63fff1 */
@@ -529,12 +526,4 @@ button {
 
 .dark .nav-link.active {
   background-color: hsl(220 14% 91% / 0.1);
-}
-
-/* Global safeguard - unify dark-mode menus to chat surface color */
-.dark .dropdown,
-.dark .menu-panel {
-  background: var(--color-surface-menu-dark) !important;
-  --tw-gradient-from: var(--color-surface-menu-dark);
-  --tw-gradient-to: var(--color-surface-menu-dark);
 }
