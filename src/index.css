@@ -10,10 +10,10 @@
     --c-violet: 270 75% 34%;  /* #57139b */
     --c-amber: 41 63% 67%;    /* #ebb966 */
 
-    /* Light gradient stops */
-    --light-1: 48 100% 69%;   /* #ffd863 */
-    --light-2: 175 100% 69%;  /* #63fff1 */
-    --light-3: 197 100% 69%;  /* #5dd3ff */
+    /* Light gradient stops - neutral/blue tones only */
+    --light-1: 220 40% 95%;   /* Light gray-blue */
+    --light-2: 210 40% 96%;   /* Very light blue */
+    --light-3: 220 60% 97%;   /* Almost white blue */
 
     /* Dark gradient stops */
     --dark-1: 248 32% 18%;    /* #212140 */
@@ -414,14 +414,9 @@ button {
     ) !important;
   }
 
-  /* Light theme gradient */
+  /* Light theme gradient - clean neutral background */
   body.logged-in:not(.dark) {
-    background: radial-gradient(
-      circle at 15% 15%,
-      #f5f7ff 0%,
-      #e8effd 35%,
-      #e8e2ff 75%
-    ) !important;
+    background: hsl(var(--background)) !important;
   }
   
   /* AGGRESSIVE OVERRIDES - Target all possible page wrapper combinations */
