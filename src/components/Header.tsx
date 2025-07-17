@@ -377,7 +377,7 @@ const Header: React.FC = () => {
                 <div className="relative ml-6">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:shadow-md transition-all duration-200"
+                    className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-primary hover:shadow-md transition-all duration-200"
                     title={user?.user_metadata?.full_name || user?.email || 'User'}
                   >
                     {user?.user_metadata?.profile_photo ? (

@@ -448,7 +448,7 @@ const NewsFeed: React.FC = () => {
                 className="w-12 h-12 rounded-full object-cover"
               />
             ) : (
-              <div className="w-12 h-12 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
                 <User className="h-6 w-6 text-white" />
               </div>
             )}
