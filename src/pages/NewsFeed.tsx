@@ -108,7 +108,7 @@ const Newsfeed: React.FC = () => {
                   <h3 className="font-semibold text-gray-900 dark:text-white">Create Something</h3>
                   <button
                     onClick={() => setShowCreateMenu(!showCreateMenu)}
-                    className="p-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                    className="p-2 bg-gradient-primary text-white rounded-lg hover:shadow-md transition-all"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
@@ -180,7 +180,7 @@ const Newsfeed: React.FC = () => {
               {/* Create Post Quick Access */}
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 mb-6">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
                     <User className="h-6 w-6 text-white" />
                   </div>
                   <button
@@ -191,7 +191,7 @@ const Newsfeed: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setShowCreatePost(true)}
-                    className="bg-primary-500 text-white px-6 py-3 rounded-xl font-medium hover:bg-primary-600 transition-colors flex items-center space-x-2"
+                    className="bg-gradient-primary text-white px-6 py-3 rounded-xl font-medium hover:shadow-md transition-all flex items-center space-x-2"
                   >
                     <Plus className="h-4 w-4" />
                     <span>Post</span>
@@ -215,7 +215,7 @@ const Newsfeed: React.FC = () => {
                         className="flex-shrink-0 w-64 p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-primary-300 dark:hover:border-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all"
                       >
                         <div className="flex items-center space-x-3 mb-3">
-                          <div className="w-10 h-10 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center text-white font-bold">
+                          <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center text-white font-bold">
                             {tool.name.charAt(0)}
                           </div>
                           <div>
