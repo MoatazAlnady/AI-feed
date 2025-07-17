@@ -17,15 +17,15 @@ import {
   RefreshCw,
   Eye
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { supabase } from '../lib/supabase';
-import { makeHashtagsClickable } from '../utils/hashtagUtils';
+import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { makeHashtagsClickable } from '@/utils/hashtagUtils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Link } from 'react-router-dom';
 import PostReactions from './PostReactions';
 import PostOptionsMenu from './PostOptionsMenu';
 import SharePostModal from './SharePostModal';
-import { Link } from 'react-router-dom';
 
 interface Post {
   id: string;
@@ -42,6 +42,7 @@ interface Post {
   likes: number;
   comments: Comment[];
   shares: number;
+  share_count?: number;
   image?: string;
   video?: string;
   link?: string;
@@ -184,10 +185,10 @@ const NewsFeed: React.FC = () => {
     try {
       console.log('Fetching posts...');
       
-      // Fetch regular posts with reach score and view count
+      // Fetch regular posts with reach score, view count, and share count
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
-        .select('*, reach_score, view_count')
+        .select('*, reach_score, view_count, share_count')
         .order('reach_score', { ascending: false })
         .order('created_at', { ascending: false })
         .limit(50);
@@ -321,6 +322,7 @@ const NewsFeed: React.FC = () => {
           likes: post.likes || 0,
           comments: [],
           shares: post.shares || 0,
+          share_count: post.share_count || 0,
           image: post.image_url,
           video: post.video_url,
           link: post.link_url,
@@ -401,10 +403,10 @@ const NewsFeed: React.FC = () => {
   };
 
   const handleShareComplete = (postId: string) => {
-    // Update the post shares count immediately in local state
+    // Update the post share_count immediately in local state
     setPosts(prevPosts => prevPosts.map(post => 
       post.id === postId 
-        ? { ...post, shares: (post.shares || 0) + 1 }
+        ? { ...post, share_count: (post.share_count || 0) + 1 }
         : post
     ));
   };
@@ -864,7 +866,7 @@ const NewsFeed: React.FC = () => {
                     className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400 transition-colors"
                   >
                     <Share2 className="h-5 w-5" />
-                    <span>{post.shares || 0}</span>
+                    <span>{post.share_count || 0}</span>
                   </button>
                   {/* Show view count to the left of bookmark */}
                   {user && post.user_id === user.id && post.view_count !== undefined && (

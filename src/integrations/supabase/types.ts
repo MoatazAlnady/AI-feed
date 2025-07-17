@@ -25,6 +25,7 @@ export type Database = {
           featured_image_url: string | null
           id: string
           published_at: string | null
+          share_count: number | null
           status: string | null
           tags: string[] | null
           title: string
@@ -44,6 +45,7 @@ export type Database = {
           featured_image_url?: string | null
           id?: string
           published_at?: string | null
+          share_count?: number | null
           status?: string | null
           tags?: string[] | null
           title: string
@@ -63,6 +65,7 @@ export type Database = {
           featured_image_url?: string | null
           id?: string
           published_at?: string | null
+          share_count?: number | null
           status?: string | null
           tags?: string[] | null
           title?: string
@@ -233,6 +236,7 @@ export type Database = {
           location: string
           requirements: string
           salary: string | null
+          share_count: number | null
           slots: number
           title: string
           type: string
@@ -253,6 +257,7 @@ export type Database = {
           location: string
           requirements: string
           salary?: string | null
+          share_count?: number | null
           slots?: number
           title: string
           type: string
@@ -273,6 +278,7 @@ export type Database = {
           location?: string
           requirements?: string
           salary?: string | null
+          share_count?: number | null
           slots?: number
           title?: string
           type?: string
@@ -579,6 +585,7 @@ export type Database = {
           likes: number | null
           link_url: string | null
           reach_score: number | null
+          share_count: number | null
           shares: number | null
           updated_at: string | null
           user_id: string
@@ -593,6 +600,7 @@ export type Database = {
           likes?: number | null
           link_url?: string | null
           reach_score?: number | null
+          share_count?: number | null
           shares?: number | null
           updated_at?: string | null
           user_id: string
@@ -607,6 +615,7 @@ export type Database = {
           likes?: number | null
           link_url?: string | null
           reach_score?: number | null
+          share_count?: number | null
           shares?: number | null
           updated_at?: string | null
           user_id?: string
@@ -766,6 +775,30 @@ export type Database = {
           },
         ]
       }
+      shares: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       site_content: {
         Row: {
           content_key: string
@@ -906,6 +939,7 @@ export type Database = {
           name_ci: string | null
           pricing: string
           pros: string[] | null
+          share_count: number | null
           status: string | null
           subcategory: string | null
           tags: string[] | null
@@ -927,6 +961,7 @@ export type Database = {
           name_ci?: string | null
           pricing?: string
           pros?: string[] | null
+          share_count?: number | null
           status?: string | null
           subcategory?: string | null
           tags?: string[] | null
@@ -948,6 +983,7 @@ export type Database = {
           name_ci?: string | null
           pricing?: string
           pros?: string[] | null
+          share_count?: number | null
           status?: string | null
           subcategory?: string | null
           tags?: string[] | null

@@ -78,7 +78,20 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
     setIsSharing(true);
 
     try {
-      // Insert into shared_posts table
+      // Insert into universal shares table
+      const { error: sharesError } = await supabase
+        .from('shares')
+        .insert({
+          user_id: user.id,
+          content_type: 'post',
+          content_id: post.id
+        });
+
+      if (sharesError && !sharesError.message.includes('duplicate')) {
+        throw sharesError;
+      }
+
+      // Also insert into shared_posts for the feed display
       const { error: shareError } = await supabase
         .from('shared_posts')
         .insert({
@@ -88,26 +101,6 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
         });
 
       if (shareError) throw shareError;
-
-      // Get current share count and increment it
-      const { data: currentPost, error: fetchError } = await supabase
-        .from('posts')
-        .select('shares')
-        .eq('id', post.id)
-        .single();
-
-      if (!fetchError && currentPost) {
-        const { error: updateError } = await supabase
-          .from('posts')
-          .update({ 
-            shares: (currentPost.shares || 0) + 1 
-          })
-          .eq('id', post.id);
-
-        if (updateError) {
-          console.warn('Error updating share count:', updateError);
-        }
-      }
 
       toast({
         title: "Post shared!",

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ExternalLink, Star, Users, TrendingUp } from 'lucide-react';
 import { useTheme } from '@/providers/ThemeProvider';
+import { ShareButton } from './ShareButton';
 
 interface ToolCardProps {
   tool: {
@@ -21,6 +22,7 @@ interface ToolCardProps {
     cons?: string[];
     created_at?: string;
     user_id?: string;
+    share_count?: number;
   };
   className?: string;
 }
@@ -145,6 +147,12 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
           </div>
           
           <div className="flex items-center space-x-2">
+            <ShareButton
+              contentType="tool"
+              contentId={tool.id}
+              shareCount={tool.share_count || 0}
+              className="text-xs"
+            />
             <Link
               to={`/tools/${tool.id}`}
               className="px-3 py-1.5 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
