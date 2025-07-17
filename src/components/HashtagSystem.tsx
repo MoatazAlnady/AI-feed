@@ -104,7 +104,7 @@ const HashtagSystem: React.FC<HashtagSystemProps> = ({ onHashtagClick, className
                     <Badge
                       key={interest.id}
                       onClick={() => handleInterestClick(interest.name)}
-                      className="cursor-pointer bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-primary-100 dark:hover:bg-primary-900/30 hover:text-primary-700 dark:hover:text-primary-400 transition-colors"
+                      className="cursor-pointer bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
                     >
                       #{interest.name}
                     </Badge>
