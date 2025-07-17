@@ -174,6 +174,7 @@ const InterestTagSelector: React.FC<InterestTagSelectorProps> = ({
               onClick={addCustomTag}
               disabled={!customTag.trim()}
               size="sm"
+              variant="secondary"
             >
               Add
             </Button>
@@ -193,7 +194,7 @@ const InterestTagSelector: React.FC<InterestTagSelectorProps> = ({
           <Button
             type="button"
             onClick={() => setShowCustomInput(true)}
-            variant="outline"
+            variant="secondary"
             size="sm"
             className="w-full"
           >
