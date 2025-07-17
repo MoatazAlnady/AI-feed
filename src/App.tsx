@@ -21,6 +21,7 @@ import Community from "./pages/Community";
 import Blog from "./pages/Blog";
 import ToolDetails from "./pages/ToolDetails";
 import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import Jobs from "./pages/Jobs";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ const App = () => (
               <Route path="talent" element={<Talent />} />
               <Route path="jobs" element={<Jobs />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="settings" element={<Settings />} />
               <Route path="user-view/:userId" element={<Profile />} />
               <Route path="dashboard" element={<EmployerDashboard />} />
               <Route path="employer/*" element={<EmployerDashboard />} />
