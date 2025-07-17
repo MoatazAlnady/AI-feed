@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Globe, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 interface LanguageSelectorProps {
@@ -23,27 +24,29 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   variant = 'header',
   onLocaleChange 
 }) => {
+  const { i18n, t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
-  const currentLocale = localStorage.getItem('preferredLocale') || 'en';
+  const currentLocale = i18n.language || 'en';
   const currentLanguage = languages.find(lang => lang.code === currentLocale) || languages[0];
 
-  const handleLanguageChange = (languageCode: string) => {
-    // Set app locale (placeholder for when i18n is fully implemented)
-    console.log('Setting locale to:', languageCode);
-    
-    // Store in localStorage
-    localStorage.setItem('preferredLocale', languageCode);
-    
-    // Close popover
-    setIsOpen(false);
-    
-    // Call callback if provided
-    if (onLocaleChange) {
-      onLocaleChange();
+  const handleLanguageChange = async (languageCode: string) => {
+    try {
+      // Change i18n language
+      await i18n.changeLanguage(languageCode);
+      
+      // Store in localStorage
+      localStorage.setItem('preferredLocale', languageCode);
+      
+      // Close popover
+      setIsOpen(false);
+      
+      // Call callback if provided
+      if (onLocaleChange) {
+        onLocaleChange();
+      }
+    } catch (error) {
+      console.error('Error changing language:', error);
     }
-    
-    // Reload page
-    window.location.reload();
   };
 
   if (variant === 'menu') {
@@ -55,7 +58,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
           >
             <div className="flex items-center">
               <Globe className="h-4 w-4 mr-2" />
-              Language
+              {t('common.language')}
             </div>
             <span className="text-xs text-gray-500 dark:text-gray-400">
               {currentLanguage.nativeName}

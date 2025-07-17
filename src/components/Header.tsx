@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Search, Zap, Plus, Settings, User, LogOut, Bell, MessageCircle, Building, BarChart3, Moon, Sun, Briefcase } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../providers/ThemeProvider';
 import AuthModal from './AuthModal';
@@ -8,6 +9,7 @@ import VerificationBadge from './VerificationBadge';
 import LanguageSelector from './LanguageSelector';
 
 const Header: React.FC = () => {
+  const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showCreateMenu, setShowCreateMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -24,13 +26,13 @@ const Header: React.FC = () => {
   // Navigation items for different user types
   const navigation = [
     { name: 'Home', href: '/', hideWhenLoggedIn: true },
-    { name: 'About', href: '/about', hideWhenLoggedIn: true },
+    { name: t('nav.about'), href: '/about', hideWhenLoggedIn: true },
     { name: 'Newsfeed', href: '/newsfeed', protected: true },
-    { name: 'Tools', href: '/tools' },
+    { name: t('nav.tools'), href: '/tools' },
     { name: 'Categories', href: '/categories' },
-    { name: 'Jobs', href: '/jobs' },
-    { name: 'Community', href: '/community', protected: true },
-    { name: 'Blog', href: '/blog' },
+    { name: t('nav.jobs'), href: '/jobs' },
+    { name: t('nav.community'), href: '/community', protected: true },
+    { name: t('nav.blog'), href: '/blog' },
   ];
 
   // Check if user is employer
@@ -54,7 +56,7 @@ const Header: React.FC = () => {
   // Filter navigation items based on authentication status
   const filteredNavigation = user 
     ? navigation.filter(item => !item.hideWhenLoggedIn)
-    : navigation.filter(item => item.name === 'Home' || item.name === 'About' || item.name === 'Tools' || item.name === 'Categories' || item.name === 'Jobs' || item.name === 'Blog');
+    : navigation.filter(item => item.name === 'Home' || item.name === t('nav.about') || item.name === t('nav.tools') || item.name === 'Categories' || item.name === t('nav.jobs') || item.name === t('nav.blog'));
 
   useEffect(() => {
     // Restore preferred locale on page load
@@ -505,7 +507,7 @@ const Header: React.FC = () => {
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center"
                       >
                         <LogOut className="h-4 w-4 mr-2" />
-                        Sign Out
+                        {t('nav.signOut')}
                       </button>
                     </div>
                   )}
@@ -519,7 +521,7 @@ const Header: React.FC = () => {
                   className="px-4 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-gray-600 dark:text-gray-300 text-sm font-medium rounded-lg hover:shadow-lg transition-all duration-200 transform hover:scale-105"
                   id="signupBtn"
                 >
-                  Sign In
+                  {t('nav.signIn')}
                 </button>
               </div>
             )}
@@ -767,7 +769,7 @@ const Header: React.FC = () => {
                     onClick={handleSignOut}
                     className="w-full text-left px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
                   >
-                    Sign Out
+                    {t('nav.signOut')}
                   </button>
                 </div>
               ) : (
@@ -780,7 +782,7 @@ const Header: React.FC = () => {
                     className="w-full text-left px-3 py-2 text-base font-medium bg-gradient-to-r from-primary-500 to-secondary-500 text-gray-600 dark:text-gray-300 rounded-md transition-colors"
                     id="signupBtn"
                   >
-                    Sign In
+                    {t('nav.signIn')}
                   </button>
                 </div>
               )}

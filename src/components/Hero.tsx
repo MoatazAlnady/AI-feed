@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Search, ArrowRight, Sparkles } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Hero: React.FC = () => {
+  const { t } = useTranslation();
+  
   return (
     <section className="relative bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 py-20 lg:py-28">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -17,16 +20,12 @@ const Hero: React.FC = () => {
 
           {/* Main Heading */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-            Your Gateway to the
-            <span className="block bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
-              AI Revolution
-            </span>
+            {t('hero.title')}
           </h1>
 
           {/* Subtitle */}
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Discover, explore, and master the most powerful AI tools available today. 
-            Find the perfect AI solution for your needs.
+            {t('hero.subtitle')}
           </p>
 
           {/* Search Bar */}
@@ -35,11 +34,11 @@ const Hero: React.FC = () => {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
-                placeholder="Search AI tools, categories, or use cases..."
+                placeholder={t('common.search') + ' AI tools, categories, or use cases...'}
                 className="w-full pl-12 pr-4 py-4 text-lg border border-gray-200 dark:border-blue-600 rounded-2xl focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent shadow-lg dark:shadow-gray-800/30 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               />
               <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-shadow">
-                Search
+                {t('common.search')}
               </button>
             </div>
           </div>
@@ -50,7 +49,7 @@ const Hero: React.FC = () => {
               to="/tools"
               className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-semibold rounded-xl hover:shadow-lg transition-shadow group"
             >
-              Browse All Tools
+              {t('hero.cta')}
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link

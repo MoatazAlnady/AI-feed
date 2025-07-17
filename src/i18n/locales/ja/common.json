@@ -1,0 +1,40 @@
+{
+  "nav": {
+    "tools": "ツール",
+    "talent": "タレント",
+    "jobs": "求人",
+    "community": "コミュニティ",
+    "blog": "ブログ",
+    "about": "について",
+    "dashboard": "ダッシュボード",
+    "profile": "プロフィール",
+    "settings": "設定",
+    "messages": "メッセージ",
+    "notifications": "通知",
+    "admin": "管理者",
+    "signIn": "ログイン",
+    "signUp": "サインアップ",
+    "signOut": "ログアウト"
+  },
+  "common": {
+    "search": "検索",
+    "submit": "送信",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "edit": "編集",
+    "delete": "削除",
+    "loading": "読み込み中...",
+    "language": "言語",
+    "theme": "テーマ",
+    "create": "作成",
+    "share": "共有",
+    "like": "いいね",
+    "comment": "コメント",
+    "view": "表示"
+  },
+  "hero": {
+    "title": "あなたの仕事を変革するAIツールを発見",
+    "subtitle": "最先端のAIツールを発見、共有、活用してワークフローに革命を起こす何千もの専門家に参加しましょう。",
+    "cta": "ツールを探索"
+  }
+}

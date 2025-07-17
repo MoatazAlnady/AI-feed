@@ -1,0 +1,40 @@
+{
+  "nav": {
+    "tools": "Werkzeuge",
+    "talent": "Talent",
+    "jobs": "Jobs",
+    "community": "Community",
+    "blog": "Blog",
+    "about": "Über uns",
+    "dashboard": "Dashboard",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "messages": "Nachrichten",
+    "notifications": "Benachrichtigungen",
+    "admin": "Admin",
+    "signIn": "Anmelden",
+    "signUp": "Registrieren",
+    "signOut": "Abmelden"
+  },
+  "common": {
+    "search": "Suchen",
+    "submit": "Absenden",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "loading": "Lädt...",
+    "language": "Sprache",
+    "theme": "Design",
+    "create": "Erstellen",
+    "share": "Teilen",
+    "like": "Gefällt mir",
+    "comment": "Kommentar",
+    "view": "Ansehen"
+  },
+  "hero": {
+    "title": "Entdecken Sie KI-Tools, die Ihre Arbeit transformieren",
+    "subtitle": "Schließen Sie sich Tausenden von Fachleuten an, die modernste KI-Tools entdecken, teilen und nutzen, um ihre Arbeitsabläufe zu revolutionieren.",
+    "cta": "Tools erkunden"
+  }
+}

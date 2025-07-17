@@ -1,0 +1,40 @@
+{
+  "nav": {
+    "tools": "Tools",
+    "talent": "Talent",
+    "jobs": "Jobs",
+    "community": "Community",
+    "blog": "Blog",
+    "about": "About",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "settings": "Settings",
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "admin": "Admin",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out"
+  },
+  "common": {
+    "search": "Search",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "loading": "Loading...",
+    "language": "Language",
+    "theme": "Theme",
+    "create": "Create",
+    "share": "Share",
+    "like": "Like",
+    "comment": "Comment",
+    "view": "View"
+  },
+  "hero": {
+    "title": "Discover AI Tools That Transform Your Work",
+    "subtitle": "Join thousands of professionals discovering, sharing, and leveraging cutting-edge AI tools to revolutionize their workflows.",
+    "cta": "Explore Tools"
+  }
+}

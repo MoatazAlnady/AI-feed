@@ -1,0 +1,40 @@
+{
+  "nav": {
+    "tools": "Outils",
+    "talent": "Talent",
+    "jobs": "Emplois",
+    "community": "Communauté",
+    "blog": "Blog",
+    "about": "À propos",
+    "dashboard": "Tableau de bord",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "admin": "Admin",
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "signOut": "Se déconnecter"
+  },
+  "common": {
+    "search": "Rechercher",
+    "submit": "Soumettre",
+    "cancel": "Annuler",
+    "save": "Sauvegarder",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "loading": "Chargement...",
+    "language": "Langue",
+    "theme": "Thème",
+    "create": "Créer",
+    "share": "Partager",
+    "like": "J'aime",
+    "comment": "Commentaire",
+    "view": "Voir"
+  },
+  "hero": {
+    "title": "Découvrez les outils IA qui transforment votre travail",
+    "subtitle": "Rejoignez des milliers de professionnels qui découvrent, partagent et exploitent des outils IA de pointe pour révolutionner leurs flux de travail.",
+    "cta": "Explorer les outils"
+  }
+}

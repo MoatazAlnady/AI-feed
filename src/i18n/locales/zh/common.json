@@ -1,0 +1,40 @@
+{
+  "nav": {
+    "tools": "工具",
+    "talent": "人才",
+    "jobs": "工作",
+    "community": "社区",
+    "blog": "博客",
+    "about": "关于",
+    "dashboard": "仪表板",
+    "profile": "个人资料",
+    "settings": "设置",
+    "messages": "消息",
+    "notifications": "通知",
+    "admin": "管理员",
+    "signIn": "登录",
+    "signUp": "注册",
+    "signOut": "退出"
+  },
+  "common": {
+    "search": "搜索",
+    "submit": "提交",
+    "cancel": "取消",
+    "save": "保存",
+    "edit": "编辑",
+    "delete": "删除",
+    "loading": "加载中...",
+    "language": "语言",
+    "theme": "主题",
+    "create": "创建",
+    "share": "分享",
+    "like": "喜欢",
+    "comment": "评论",
+    "view": "查看"
+  },
+  "hero": {
+    "title": "发现能够改变您工作的AI工具",
+    "subtitle": "加入成千上万的专业人士，发现、分享并利用尖端AI工具来革新他们的工作流程。",
+    "cta": "探索工具"
+  }
+}
