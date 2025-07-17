@@ -115,13 +115,34 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
   };
 
   const calculateEstimatedReach = () => {
-    const baseReach = parseInt(formData.budget) * 20; // Base multiplier
-    const durationMultiplier = parseInt(formData.duration) / 7;
-    const audienceMultiplier = formData.targetAudience.length * 0.1 + 1;
-    const locationMultiplier = formData.locations.length * 0.05 + 1;
-    const interestMultiplier = formData.interests.length * 0.03 + 1;
+    const budget = parseInt(formData.budget);
+    const duration = parseInt(formData.duration);
     
-    return Math.round(baseReach * durationMultiplier * audienceMultiplier * locationMultiplier * interestMultiplier);
+    // $1 = 10 new creators per day
+    const creatorsPerDay = budget * 10;
+    const totalCreators = creatorsPerDay * duration;
+    
+    // Apply targeting filters - more specific targeting means fewer available creators
+    let availableCreators = totalCreators;
+    
+    // Reduce available creators based on targeting specificity
+    if (formData.targetAudience.length > 0) {
+      availableCreators *= (1 - formData.targetAudience.length * 0.05); // 5% reduction per audience
+    }
+    if (formData.locations.length > 0 && formData.locations.length < 10) {
+      availableCreators *= (1 - formData.locations.length * 0.03); // 3% reduction per location when specific
+    }
+    if (formData.interests.length > 0) {
+      availableCreators *= (1 - formData.interests.length * 0.02); // 2% reduction per interest
+    }
+    if (formData.ageRange !== '18+') {
+      availableCreators *= 0.9; // 10% reduction for age targeting
+    }
+    if (formData.gender !== 'all') {
+      availableCreators *= 0.85; // 15% reduction for gender targeting
+    }
+    
+    return Math.max(Math.round(availableCreators), budget * 5); // Minimum 5 creators per dollar
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -290,13 +311,13 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                     name="budget"
                     value={formData.budget}
                     onChange={handleInputChange}
-                    min="10"
+                    min="1"
                     max="1000"
                     required
                     className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
                 </div>
-                <p className="text-sm text-gray-500 mt-1">Minimum $10/day</p>
+                <p className="text-sm text-gray-500 mt-1">$1 = 10 new creators daily • Minimum $1/day</p>
               </div>
               <div>
                 <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-2">

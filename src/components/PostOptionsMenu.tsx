@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MoreHorizontal, Edit, Trash2, Share, Flag, Copy, BookmarkPlus, Eye, EyeOff } from 'lucide-react';
+import { MoreHorizontal, Edit, Trash2, Share, Flag, Copy, BookmarkPlus, Eye, EyeOff, TrendingUp } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,13 +8,15 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import ReportModal from './ReportModal';
+import PromoteContentModal from './PromoteContentModal';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../hooks/use-toast';
 
 interface PostOptionsMenuProps {
   postId: string;
   authorId?: string;
-  contentType: 'post' | 'tool' | 'article' | 'event';
+  contentType: 'post' | 'tool' | 'article' | 'event' | 'job';
+  contentTitle?: string;
   onEdit?: () => void;
   onDelete?: () => void;
   onShare?: () => void;
@@ -28,6 +30,7 @@ const PostOptionsMenu: React.FC<PostOptionsMenuProps> = ({
   postId,
   authorId,
   contentType,
+  contentTitle = 'Content',
   onEdit,
   onDelete,
   onShare,
@@ -39,6 +42,7 @@ const PostOptionsMenu: React.FC<PostOptionsMenuProps> = ({
   const { user } = useAuth();
   const { toast } = useToast();
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showPromoteModal, setShowPromoteModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const isOwner = user?.id === authorId;
@@ -120,6 +124,11 @@ const PostOptionsMenu: React.FC<PostOptionsMenuProps> = ({
     setIsOpen(false);
   };
 
+  const handlePromote = () => {
+    setShowPromoteModal(true);
+    setIsOpen(false);
+  };
+
   return (
     <>
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -135,6 +144,10 @@ const PostOptionsMenu: React.FC<PostOptionsMenuProps> = ({
               <DropdownMenuItem onClick={handleEdit} className="flex items-center gap-2">
                 <Edit className="h-4 w-4" />
                 Edit {contentType}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handlePromote} className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                <TrendingUp className="h-4 w-4" />
+                Promote {contentType}
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={handleDelete} 
@@ -188,6 +201,17 @@ const PostOptionsMenu: React.FC<PostOptionsMenuProps> = ({
           onClose={() => setShowReportModal(false)}
           type="content"
           targetId={postId}
+        />
+      )}
+
+      {/* Promote Modal */}
+      {showPromoteModal && (
+        <PromoteContentModal
+          isOpen={showPromoteModal}
+          onClose={() => setShowPromoteModal(false)}
+          contentType={contentType}
+          contentId={parseInt(postId)}
+          contentTitle={contentTitle}
         />
       )}
     </>

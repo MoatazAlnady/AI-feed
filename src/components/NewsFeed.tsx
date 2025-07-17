@@ -872,6 +872,7 @@ const NewsFeed: React.FC = () => {
                     postId={post.id}
                     authorId={post.user_id}
                     contentType="post"
+                    contentTitle={post.content.substring(0, 50) + (post.content.length > 50 ? '...' : '')}
                     onEdit={() => handleEditPost(post.id)}
                     onDelete={() => handleDeletePost(post.id)}
                     onShare={() => handleShare(post.id)}

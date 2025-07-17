@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, Grid, List, GitCompare, Star, ExternalLink, Bookmark, Zap, Plus } from 'lucide-react';
+import { Search, Filter, Grid, List, GitCompare, Star, ExternalLink, Bookmark, Zap, Plus, TrendingUp, MoreHorizontal } from 'lucide-react';
 import ToolComparisonModal from '../components/ToolComparisonModal';
+import PromoteContentModal from '../components/PromoteContentModal';
+import { useAuth } from '../context/AuthContext';
 
 interface Tool {
   id: number;
@@ -17,10 +19,13 @@ interface Tool {
 }
 
 const Tools: React.FC = () => {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showComparison, setShowComparison] = useState(false);
+  const [showPromoteModal, setShowPromoteModal] = useState(false);
+  const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
   const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -264,6 +269,16 @@ const Tools: React.FC = () => {
                             Learn More
                           </Link>
                           <button 
+                            onClick={() => {
+                              setSelectedTool(tool);
+                              setShowPromoteModal(true);
+                            }}
+                            className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                            title="Promote Tool"
+                          >
+                            <TrendingUp className="h-4 w-4 text-blue-600" />
+                          </button>
+                          <button 
                             onClick={() => setShowComparison(true)}
                             className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                             title="Compare"
@@ -337,6 +352,16 @@ const Tools: React.FC = () => {
                                 Learn More
                               </Link>
                               <button 
+                                onClick={() => {
+                                  setSelectedTool(tool);
+                                  setShowPromoteModal(true);
+                                }}
+                                className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                                title="Promote Tool"
+                              >
+                                <TrendingUp className="h-4 w-4 text-blue-600" />
+                              </button>
+                              <button 
                                 onClick={() => setShowComparison(true)}
                                 className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                                 title="Compare"
@@ -370,6 +395,17 @@ const Tools: React.FC = () => {
         isOpen={showComparison}
         onClose={() => setShowComparison(false)}
       />
+
+      {/* Promote Modal */}
+      {showPromoteModal && selectedTool && (
+        <PromoteContentModal
+          isOpen={showPromoteModal}
+          onClose={() => setShowPromoteModal(false)}
+          contentType="tool"
+          contentId={selectedTool.id}
+          contentTitle={selectedTool.name}
+        />
+      )}
     </>
   );
 };
