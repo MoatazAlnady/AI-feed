@@ -402,7 +402,7 @@ button {
   }
 }
 
-/* Enhanced Global gradient backgrounds for authenticated pages - Maximum Specificity */
+/* Enhanced Global gradient backgrounds for authenticated pages - Selective Transparency */
 @layer components {
   /* Dark theme gradient */
   body.logged-in.dark {
@@ -419,84 +419,23 @@ button {
     background: hsl(var(--background)) !important;
   }
   
-  /* AGGRESSIVE OVERRIDES - Target all possible page wrapper combinations */
-  body.logged-in div[class*="py-8"][class*="bg-gray-50"],
-  body.logged-in div[class*="py-8"][class*="bg-gray-100"],
-  body.logged-in div[class*="py-8"][class*="dark:bg-gray-900"],
-  body.logged-in div[class*="py-8"][class*="dark:bg-gray-800"],
-  body.logged-in div[class*="min-h-screen"][class*="bg-gray-50"],
-  body.logged-in div[class*="min-h-screen"][class*="bg-gray-100"],
-  body.logged-in div[class*="min-h-screen"][class*="dark:bg-gray-900"],
-  body.logged-in div[class*="min-h-screen"][class*="dark:bg-gray-800"],
-  body.logged-in .py-8.bg-gray-50.dark\:bg-gray-900.min-h-screen,
-  body.logged-in .py-8.bg-gray-50.min-h-screen,
-  body.logged-in .bg-gray-50.dark\:bg-gray-900.min-h-screen,
-  body.logged-in .bg-gray-50.min-h-screen,
-  body.logged-in .dark\:bg-gray-900.min-h-screen {
+  /* SELECTIVE OVERRIDES - Only target main page wrapper elements, not content cards */
+  body.logged-in > #root,
+  body.logged-in > #root > div:first-child,
+  body.logged-in .min-h-screen:not([class*="rounded"]):not([class*="shadow"]):not([class*="border"]),
+  body.logged-in main:not([class*="rounded"]):not([class*="shadow"]):not([class*="border"]) {
     background: transparent !important;
     background-color: transparent !important;
     background-image: none !important;
   }
   
-  /* Target specific Tailwind utility combinations with more specificity */
-  body.logged-in [class*="bg-gray-50"][class*="min-h-screen"],
-  body.logged-in [class*="bg-gray-100"][class*="min-h-screen"],
-  body.logged-in [class*="py-8"][class*="bg-gray-50"],
-  body.logged-in [class*="py-8"][class*="bg-gray-100"] {
+  /* Only override page-level gray backgrounds, not component backgrounds */
+  body.logged-in .bg-gray-50.min-h-screen,
+  body.logged-in .bg-gray-100.min-h-screen,
+  .dark body.logged-in .dark\:bg-gray-900.min-h-screen,
+  .dark body.logged-in .dark\:bg-gray-800.min-h-screen {
     background: transparent !important;
     background-color: transparent !important;
-  }
-  
-  /* Dark mode specific overrides with maximum specificity */
-  .dark body.logged-in [class*="dark:bg-gray-900"][class*="min-h-screen"],
-  .dark body.logged-in [class*="dark:bg-gray-800"][class*="min-h-screen"],
-  .dark body.logged-in [class*="py-8"][class*="dark:bg-gray-900"],
-  .dark body.logged-in [class*="py-8"][class*="dark:bg-gray-800"],
-  .dark body.logged-in div[class*="dark:bg-gray-900"],
-  .dark body.logged-in div[class*="dark:bg-gray-800"] {
-    background: transparent !important;
-    background-color: transparent !important;
-  }
-  
-  /* Nuclear option: Override ANY gray background in authenticated pages */
-  body.logged-in *[class*="bg-gray-50"]:not([class*="rounded"]):not([class*="shadow"]),
-  body.logged-in *[class*="bg-gray-100"]:not([class*="rounded"]):not([class*="shadow"]) {
-    background: transparent !important;
-    background-color: transparent !important;
-  }
-  
-  .dark body.logged-in *[class*="dark:bg-gray-900"]:not([class*="rounded"]):not([class*="shadow"]),
-  .dark body.logged-in *[class*="dark:bg-gray-800"]:not([class*="rounded"]):not([class*="shadow"]) {
-    background: transparent !important;
-    background-color: transparent !important;
-  }
-  
-  /* Fallback: Override any background on main page containers */
-  body.logged-in .min-h-screen,
-  body.logged-in main,
-  body.logged-in .container,
-  body.logged-in .max-w-6xl,
-  body.logged-in .max-w-4xl,
-  body.logged-in .max-w-7xl {
-    background: transparent !important;
-  }
-  
-  /* Override individual utility classes with higher specificity */
-  body.logged-in .bg-gray-50,
-  body.logged-in .bg-gray-100 {
-    background-color: transparent !important;
-  }
-  
-  .dark body.logged-in .dark\:bg-gray-900,
-  .dark body.logged-in .dark\:bg-gray-800,
-  .dark body.logged-in .dark\:bg-gray-700 {
-    background-color: transparent !important;
-  }
-
-  /* Ensure root elements are transparent */
-  body.logged-in > #root,
-  body.logged-in > #root > div {
-    background: transparent !important;
   }
 }
 
