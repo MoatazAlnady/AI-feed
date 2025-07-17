@@ -84,6 +84,9 @@ const UserView: React.FC = () => {
 
         if (error) {
           console.error('Error fetching user profile:', error);
+          if (error.code === 'PGRST116') {
+            console.log('User profile not found for ID:', userId);
+          }
           setUserProfile(null);
           return;
         }

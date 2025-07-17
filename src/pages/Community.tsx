@@ -225,7 +225,7 @@ const Community: React.FC = () => {
               </p>
               <div className="flex space-x-2">
                 <button 
-                  onClick={() => window.location.href = `/user/${creator.id}`}
+                  onClick={() => window.location.href = `/user-view/${creator.id}`}
                   className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200"
                 >
                   View Profile
