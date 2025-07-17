@@ -7,7 +7,7 @@ import {
   MoreHorizontal,
   Image,
   Video,
-  Link,
+  Link as LinkIcon,
   Send,
   User,
   Edit3,
@@ -24,6 +24,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import PostReactions from './PostReactions';
 import PostOptionsMenu from './PostOptionsMenu';
 import SharePostModal from './SharePostModal';
+import { Link } from 'react-router-dom';
 
 interface Post {
   id: string;
@@ -72,6 +73,8 @@ const NewsFeed: React.FC = () => {
   const [shareModalPost, setShareModalPost] = useState<Post | null>(null);
   const [showNewsletterPopup, setShowNewsletterPopup] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [postReactions, setPostReactions] = useState<{ [key: string]: { [key: string]: { count: number; users: string[] } } }>({});
+  const [userReactions, setUserReactions] = useState<{ [key: string]: string }>({});
 
   // Get user interests for personalized feed
   const userInterests = user?.user_metadata?.interests || [];
@@ -342,6 +345,15 @@ const NewsFeed: React.FC = () => {
 
       console.log('Formatted posts:', formattedPosts);
       setPosts(formattedPosts);
+
+      // Fetch reactions for all posts
+      formattedPosts.forEach(post => {
+        fetchPostReactions(post.id);
+        // Check user's existing reactions
+        if (user) {
+          fetchUserReaction(post.id);
+        }
+      });
     } catch (error) {
       console.error('Error fetching posts:', error);
       setPosts([]);
@@ -461,6 +473,124 @@ const NewsFeed: React.FC = () => {
     setShowComments({ ...showComments, [postId]: !showComments[postId] });
   };
 
+  const handleReaction = async (postId: string, reactionType: string) => {
+    if (!user) return;
+
+    try {
+      // Check if user already has a reaction on this post
+      const { data: existingReaction, error: fetchError } = await supabase
+        .from('post_reactions')
+        .select('*')
+        .eq('post_id', postId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        console.error('Error fetching existing reaction:', fetchError);
+        return;
+      }
+
+      if (existingReaction) {
+        if (existingReaction.reaction_type === reactionType) {
+          // Remove reaction if clicking the same type
+          const { error: deleteError } = await supabase
+            .from('post_reactions')
+            .delete()
+            .eq('id', existingReaction.id);
+
+          if (deleteError) throw deleteError;
+
+          // Update local state
+          setUserReactions(prev => {
+            const newState = { ...prev };
+            delete newState[postId];
+            return newState;
+          });
+        } else {
+          // Update reaction type
+          const { error: updateError } = await supabase
+            .from('post_reactions')
+            .update({ reaction_type: reactionType })
+            .eq('id', existingReaction.id);
+
+          if (updateError) throw updateError;
+
+          // Update local state
+          setUserReactions(prev => ({ ...prev, [postId]: reactionType }));
+        }
+      } else {
+        // Create new reaction
+        const { error: insertError } = await supabase
+          .from('post_reactions')
+          .insert({
+            post_id: postId,
+            user_id: user.id,
+            reaction_type: reactionType
+          });
+
+        if (insertError) throw insertError;
+
+        // Update local state
+        setUserReactions(prev => ({ ...prev, [postId]: reactionType }));
+      }
+
+      // Refresh post reactions
+      fetchPostReactions(postId);
+    } catch (error) {
+      console.error('Error handling reaction:', error);
+    }
+  };
+
+  const fetchPostReactions = async (postId: string) => {
+    try {
+      const { data: reactions, error } = await supabase
+        .from('post_reactions')
+        .select('reaction_type, user_id')
+        .eq('post_id', postId);
+
+      if (error) throw error;
+
+      // Group reactions by type
+      const groupedReactions: { [key: string]: { count: number; users: string[] } } = {};
+      
+      reactions?.forEach(reaction => {
+        if (!groupedReactions[reaction.reaction_type]) {
+          groupedReactions[reaction.reaction_type] = { count: 0, users: [] };
+        }
+        groupedReactions[reaction.reaction_type].count++;
+        groupedReactions[reaction.reaction_type].users.push(reaction.user_id);
+      });
+
+      setPostReactions(prev => ({ ...prev, [postId]: groupedReactions }));
+    } catch (error) {
+      console.error('Error fetching post reactions:', error);
+    }
+  };
+
+  const fetchUserReaction = async (postId: string) => {
+    if (!user) return;
+
+    try {
+      const { data: reaction, error } = await supabase
+        .from('post_reactions')
+        .select('reaction_type')
+        .eq('post_id', postId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching user reaction:', error);
+        return;
+      }
+
+      if (reaction) {
+        setUserReactions(prev => ({ ...prev, [postId]: reaction.reaction_type }));
+      }
+    } catch (error) {
+      console.error('Error fetching user reaction:', error);
+    }
+  };
+
   if (posts.length === 0) {
     return (
       <div className="space-y-6">
@@ -534,20 +664,26 @@ const NewsFeed: React.FC = () => {
           )}
           
           <div className="flex items-start space-x-4">
-            {post.author.avatar ? (
-              <img
-                src={post.author.avatar}
-                alt={post.author.name}
-                className="w-12 h-12 rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
-                <User className="h-6 w-6 text-white" />
-              </div>
-            )}
+            {/* Clickable Avatar */}
+            <Link to={`/profile/${post.user_id}`} className="flex-shrink-0">
+              {post.author.avatar ? (
+                <img
+                  src={post.author.avatar}
+                  alt={post.author.name}
+                  className="w-12 h-12 rounded-full object-cover hover:ring-2 hover:ring-primary-500 transition-all"
+                />
+              ) : (
+                <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center hover:ring-2 hover:ring-primary-500 transition-all">
+                  <User className="h-6 w-6 text-white" />
+                </div>
+              )}
+            </Link>
             <div className="flex-1">
               <div className="flex items-center space-x-2 mb-1">
-                <h3 className="font-semibold text-gray-900 dark:text-white">{post.author.name}</h3>
+                {/* Clickable Author Name */}
+                <Link to={`/profile/${post.user_id}`} className="hover:underline">
+                  <h3 className="font-semibold text-gray-900 dark:text-white">{post.author.name}</h3>
+                </Link>
                 {post.author.verified && (
                   <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
                     <div className="w-2 h-2 bg-white rounded-full"></div>
@@ -627,7 +763,7 @@ const NewsFeed: React.FC = () => {
                   className="block border border-gray-200 dark:border-gray-700 rounded-xl p-4 mb-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <div className="flex items-center space-x-2 text-primary-600 dark:text-primary-400">
-                    <Link className="h-4 w-4" />
+                    <LinkIcon className="h-4 w-4" />
                     <span className="text-sm font-medium truncate">{post.link}</span>
                   </div>
                 </a>
@@ -635,15 +771,13 @@ const NewsFeed: React.FC = () => {
               
               <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                 <div className="flex space-x-6">
-                  <button 
-                    onClick={() => handleLike(post.id)}
-                    className={`flex items-center space-x-2 transition-colors ${
-                      post.liked ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400'
-                    }`}
-                  >
-                    <Heart className={`h-5 w-5 ${post.liked ? 'fill-current' : ''}`} />
-                    <span>{post.likes}</span>
-                  </button>
+                  {/* Post Reactions */}
+                  <PostReactions
+                    postId={post.id}
+                    reactions={postReactions[post.id] || {}}
+                    userReaction={userReactions[post.id]}
+                    onReact={handleReaction}
+                  />
                   <button 
                     onClick={() => toggleComments(post.id)}
                     className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
