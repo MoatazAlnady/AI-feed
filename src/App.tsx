@@ -15,6 +15,7 @@ import Messages from "./pages/Messages";
 import SubmitTool from "./pages/SubmitTool";
 import SubmitArticle from "./pages/SubmitArticle";
 import NotFound from "./pages/NotFound";
+import CreatePost from "./pages/CreatePost";
 import About from "./pages/About";
 import Categories from "./pages/Categories";
 import Community from "./pages/Community";
@@ -45,6 +46,7 @@ const App = () => (
                 </div>
               } />
               <Route path="tools/:id" element={<ToolDetails />} />
+              <Route path="posts/create" element={<CreatePost />} />
               <Route path="articles/create" element={<SubmitArticle />} />
               <Route path="categories" element={<Categories />} />
               <Route path="about" element={<About />} />
