@@ -198,8 +198,7 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
   const genderOptions = [
     { value: 'all', label: 'All Genders' },
     { value: 'male', label: 'Male' },
-    { value: 'female', label: 'Female' },
-    { value: 'non-binary', label: 'Non-binary' }
+    { value: 'female', label: 'Female' }
   ];
 
   const ageRanges = [
