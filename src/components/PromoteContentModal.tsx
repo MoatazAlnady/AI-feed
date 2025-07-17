@@ -256,33 +256,32 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
     const duration = parseInt(formData.duration);
     
     // $1 = 10 new creators per day
-    const creatorsPerDay = budget * 10;
-    const totalCreators = creatorsPerDay * duration;
+    const baseReach = budget * 10 * duration;
     
-    // Apply targeting filters - more specific targeting means fewer available creators
-    let availableCreators = totalCreators;
+    // Adjust based on targeting specificity
+    let multiplier = 1;
     
-    // Reduce available creators based on targeting specificity
-    if (formData.targetAudience.length > 0) {
-      availableCreators *= (1 - formData.targetAudience.length * 0.05); // 5% reduction per audience
-    }
-    const totalLocations = formData.selectedCountries.length + formData.selectedCities.length;
-    if (totalLocations > 0 && totalLocations < 10) {
-      availableCreators *= (1 - totalLocations * 0.03); // 3% reduction per location when specific
-    }
-    if (formData.interests.length > 0) {
-      availableCreators *= (1 - formData.interests.length * 0.02); // 2% reduction per interest
-    }
-    const ageFrom = parseInt(formData.ageFrom);
-    const ageTo = parseInt(formData.ageTo);
-    if (ageFrom !== 18 || ageTo !== 65) {
-      availableCreators *= 0.9; // 10% reduction for age targeting
-    }
-    if (formData.gender !== 'all') {
-      availableCreators *= 0.85; // 15% reduction for gender targeting
-    }
+    // Age targeting adjustment
+    const ageRange = parseInt(formData.ageTo) - parseInt(formData.ageFrom);
+    if (ageRange < 20) multiplier *= 0.8;
+    else if (ageRange > 40) multiplier *= 1.2;
     
-    return Math.max(Math.round(availableCreators), budget * 5); // Minimum 5 creators per dollar
+    // Location targeting adjustment
+    const countryCount = formData.selectedCountries.length;
+    if (countryCount === 0) multiplier *= 1.5; // Global reach
+    else if (countryCount <= 3) multiplier *= 0.9;
+    else if (countryCount > 10) multiplier *= 1.1;
+    
+    // Interest targeting adjustment
+    const interestCount = formData.interests.length;
+    if (interestCount === 0) multiplier *= 1.2; // Broad targeting
+    else if (interestCount <= 3) multiplier *= 0.8;
+    else multiplier *= 0.9;
+    
+    // Gender targeting adjustment
+    if (formData.gender !== 'all') multiplier *= 0.85;
+    
+    return Math.round(baseReach * multiplier);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -316,474 +315,517 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Promote Your {contentType}</h2>
-              <p className="text-gray-600 mt-1">"{contentTitle}"</p>
-            </div>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <X className="h-5 w-5 text-gray-500" />
-            </button>
-          </div>
-
-          <form onSubmit={handleSubmit}>
-            {/* Targeting Mode Selection */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Targeting Method
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <label className="flex items-start space-x-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-primary-300 transition-colors">
-                  <input
-                    type="radio"
-                    name="targetingMode"
-                    value="manual"
-                    checked={targetingMode === 'manual'}
-                    onChange={(e) => setTargetingMode(e.target.value as 'manual' | 'ai')}
-                    className="mt-1"
-                  />
-                  <div>
-                    <div className="font-medium text-gray-900 flex items-center">
-                      <Target className="h-4 w-4 mr-2" />
-                      Manual Targeting
-                    </div>
-                    <div className="text-sm text-gray-600">Choose specific criteria manually</div>
-                  </div>
-                </label>
-                <label className="flex items-start space-x-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-primary-300 transition-colors">
-                  <input
-                    type="radio"
-                    name="targetingMode"
-                    value="ai"
-                    checked={targetingMode === 'ai'}
-                    onChange={(e) => setTargetingMode(e.target.value as 'manual' | 'ai')}
-                    className="mt-1"
-                  />
-                  <div>
-                    <div className="font-medium text-gray-900 flex items-center">
-                      <Bot className="h-4 w-4 mr-2" />
-                      AI-Powered Targeting
-                    </div>
-                    <div className="text-sm text-gray-600">Let AI generate targeting based on your description</div>
-                  </div>
-                </label>
+    <>
+      <style>
+        {`
+          .dark ::-webkit-scrollbar-thumb { 
+            background: #475569; 
+            border-radius: 4px; 
+          }
+          .dark ::-webkit-scrollbar-track { 
+            background: #1e293b; 
+          }
+          .promo-command-list {
+            max-height: 220px;
+            overflow-y: auto;
+          }
+          .promo-command-content {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+          }
+          .promo-command-input {
+            background: #0f172a;
+            border: 1px solid #334155;
+          }
+          .promo-command-item:hover {
+            background: #1e293b;
+          }
+          .promo-command-item[data-selected="true"] {
+            background: #1c2743;
+          }
+        `}
+      </style>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="p-6">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Promote Your {contentType}</h2>
+                <p className="text-gray-600 dark:text-gray-300 mt-1">"{contentTitle}"</p>
               </div>
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+              </button>
             </div>
 
-            {/* AI Targeting Prompt */}
-            {targetingMode === 'ai' && (
-              <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-700 rounded-xl border border-blue-200 dark:border-gray-600">
-                <div className="flex items-center mb-3">
-                  <Sparkles className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" />
-                  <h3 className="font-medium text-gray-900">AI Targeting Assistant</h3>
+            <form onSubmit={handleSubmit}>
+              {/* Targeting Mode Selection */}
+              <div className="mb-8">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  Targeting Method
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <label className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-slate-700 rounded-xl cursor-pointer hover:border-primary-300 dark:hover:border-primary-600 transition-colors">
+                    <input
+                      type="radio"
+                      name="targetingMode"
+                      value="manual"
+                      checked={targetingMode === 'manual'}
+                      onChange={(e) => setTargetingMode(e.target.value as 'manual' | 'ai')}
+                      className="mt-1"
+                    />
+                    <div>
+                      <div className="font-medium text-gray-900 dark:text-white flex items-center">
+                        <Target className="h-4 w-4 mr-2" />
+                        Manual Targeting
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Choose specific criteria manually</div>
+                    </div>
+                  </label>
+                  <label className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-slate-700 rounded-xl cursor-pointer hover:border-primary-300 dark:hover:border-primary-600 transition-colors">
+                    <input
+                      type="radio"
+                      name="targetingMode"
+                      value="ai"
+                      checked={targetingMode === 'ai'}
+                      onChange={(e) => setTargetingMode(e.target.value as 'manual' | 'ai')}
+                      className="mt-1"
+                    />
+                    <div>
+                      <div className="font-medium text-gray-900 dark:text-white flex items-center">
+                        <Bot className="h-4 w-4 mr-2" />
+                        AI-Powered Targeting
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Let AI generate targeting based on your description</div>
+                    </div>
+                  </label>
                 </div>
-                <textarea
-                  value={aiPrompt}
-                  onChange={(e) => setAiPrompt(e.target.value)}
-                  rows={3}
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                  placeholder="Describe your target audience in natural language. For example: 'Target AI researchers and data scientists in North America who are interested in machine learning and work at tech companies or universities, aged 25-45'"
-                />
+              </div>
+
+              {/* AI Targeting Prompt */}
+              {targetingMode === 'ai' && (
+                <div className="mb-8 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-slate-800 dark:to-slate-700 rounded-xl border border-blue-200 dark:border-slate-600">
+                  <div className="flex items-center mb-3">
+                    <Sparkles className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" />
+                    <h3 className="font-medium text-gray-900 dark:text-white">AI Targeting Assistant</h3>
+                  </div>
+                  <textarea
+                    value={aiPrompt}
+                    onChange={(e) => setAiPrompt(e.target.value)}
+                    rows={3}
+                    className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none dark:text-white"
+                    placeholder="Describe your target audience in natural language. For example: 'Target AI researchers and data scientists in North America who are interested in machine learning and work at tech companies or universities, aged 25-45'"
+                  />
+                  <button
+                    type="button"
+                    onClick={generateAITargeting}
+                    disabled={isGeneratingTargeting || !aiPrompt.trim()}
+                    className="mt-3 flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isGeneratingTargeting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <span>Generating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Bot className="h-4 w-4" />
+                        <span>Generate Targeting</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+
+              {/* Campaign Objective */}
+              <div className="mb-8">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  Campaign Objective *
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {objectives.map((objective) => (
+                    <label key={objective.value} className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-slate-700 rounded-xl cursor-pointer hover:border-primary-300 dark:hover:border-primary-600 transition-colors">
+                      <input
+                        type="radio"
+                        name="objective"
+                        value={objective.value}
+                        checked={formData.objective === objective.value}
+                        onChange={handleInputChange}
+                        className="mt-1"
+                      />
+                      <div>
+                        <div className="font-medium text-gray-900 dark:text-white">{objective.label}</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">{objective.description}</div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Budget and Duration */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                  <label htmlFor="budget" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Daily Budget (USD) *
+                  </label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="number"
+                      id="budget"
+                      name="budget"
+                      value={formData.budget}
+                      onChange={handleInputChange}
+                      min="1"
+                      max="1000"
+                      required
+                      className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white"
+                    />
+                  </div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">$1 = 10 new creators daily • Minimum $1/day</p>
+                </div>
+                <div>
+                  <label htmlFor="duration" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Campaign Duration (days) *
+                  </label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="number"
+                      id="duration"
+                      name="duration"
+                      value={formData.duration}
+                      onChange={handleInputChange}
+                      min="1"
+                      max="30"
+                      required
+                      className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white"
+                    />
+                  </div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">1-30 days</p>
+                </div>
+              </div>
+
+              {/* Target Audience */}
+              <div className="mb-8">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  Target Audience *
+                </label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {audienceOptions.map((audience) => (
+                    <button
+                      key={audience}
+                      type="button"
+                      onClick={() => handleArrayToggle(formData.targetAudience, audience, 'targetAudience')}
+                      className={`p-3 text-sm rounded-lg border transition-colors ${
+                        formData.targetAudience.includes(audience)
+                          ? 'bg-primary-500 text-white border-primary-500'
+                          : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:border-primary-300 dark:hover:border-primary-600'
+                      }`}
+                    >
+                      {audience}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                  Selected: {formData.targetAudience.length} audience{formData.targetAudience.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+
+              {/* Demographics */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 md:gap-x-6 gap-y-4 md:gap-y-0 items-start">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mt-6">
+                    Age Range
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label htmlFor="ageFrom" className="block text-xs text-gray-500 dark:text-gray-400 mb-1">From</label>
+                      <input
+                        type="number"
+                        id="ageFrom"
+                        name="ageFrom"
+                        value={formData.ageFrom}
+                        onChange={handleInputChange}
+                        min="18"
+                        max="100"
+                        className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="ageTo" className="block text-xs text-gray-500 dark:text-gray-400 mb-1">To</label>
+                      <input
+                        type="number"
+                        id="ageTo"
+                        name="ageTo"
+                        value={formData.ageTo}
+                        onChange={handleInputChange}
+                        min="18"
+                        max="100"
+                        className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Age range: {formData.ageFrom} - {formData.ageTo} years</p>
+                </div>
+                <div className="md:block max-md:mt-4">
+                  <label htmlFor="gender" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mt-6">
+                    Gender
+                  </label>
+                  <select
+                    id="gender"
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white"
+                  >
+                    {genderOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Location Targeting */}
+              <div className="mb-8">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-6 mt-6">
+                  Location Targeting
+                </label>
+                
+                {/* Countries Multi-Select Dropdown */}
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Countries</h4>
+                  <Popover open={openCountriesDropdown} onOpenChange={setOpenCountriesDropdown}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={openCountriesDropdown}
+                        className="w-full justify-between h-12 px-4 bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-800"
+                      >
+                        {formData.selectedCountries.length > 0
+                          ? `${formData.selectedCountries.length} countr${formData.selectedCountries.length !== 1 ? 'ies' : 'y'} selected`
+                          : "Select countries..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0 promo-command-content">
+                      <Command className="bg-slate-900">
+                        <CommandInput placeholder="Search countries..." className="h-9 promo-command-input dark:text-white" />
+                        <CommandList className="promo-command-list">
+                          <CommandEmpty className="dark:text-gray-400">No countries found.</CommandEmpty>
+                          <CommandGroup>
+                            {countries.map((country) => (
+                              <CommandItem
+                                key={country}
+                                value={country}
+                                onSelect={() => {
+                                  const isSelected = formData.selectedCountries.includes(country);
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    selectedCountries: isSelected
+                                      ? prev.selectedCountries.filter(c => c !== country)
+                                      : [...prev.selectedCountries, country],
+                                    selectedCities: isSelected && prev.selectedCountries.length === 1 
+                                      ? [] 
+                                      : prev.selectedCities
+                                  }));
+                                }}
+                                className="flex items-center space-x-2 cursor-pointer promo-command-item dark:text-white hover:bg-slate-800"
+                                data-selected={formData.selectedCountries.includes(country)}
+                              >
+                                <Checkbox
+                                  checked={formData.selectedCountries.includes(country)}
+                                  className="data-[state=checked]:bg-teal-500 data-[state=checked]:border-teal-500"
+                                />
+                                <span>{country}</span>
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Selected: {formData.selectedCountries.length} countr{formData.selectedCountries.length !== 1 ? 'ies' : 'y'}
+                  </p>
+                </div>
+
+                {/* Cities Multi-Select Dropdown */}
+                <div>
+                  <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Cities</h4>
+                  {formData.selectedCountries.length > 0 ? (
+                    <>
+                      <Popover open={openCitiesDropdown} onOpenChange={setOpenCitiesDropdown}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={openCitiesDropdown}
+                            className="w-full justify-between h-12 px-4 bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-800"
+                          >
+                            {formData.selectedCities.length > 0
+                              ? `${formData.selectedCities.length} cit${formData.selectedCities.length !== 1 ? 'ies' : 'y'} selected`
+                              : "Select cities..."}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0 promo-command-content">
+                          <Command className="bg-slate-900">
+                            <CommandInput placeholder="Search cities..." className="h-9 promo-command-input dark:text-white" />
+                            <CommandList className="promo-command-list">
+                              <CommandEmpty className="dark:text-gray-400">No cities found.</CommandEmpty>
+                              <CommandGroup>
+                                {formData.selectedCountries.flatMap(country => 
+                                  cities[country]?.map(city => {
+                                    const cityValue = `${country}: ${city}`;
+                                    return (
+                                      <CommandItem
+                                        key={`${country}-${city}`}
+                                        value={cityValue}
+                                        onSelect={() => {
+                                          const isSelected = formData.selectedCities.includes(cityValue);
+                                          setFormData(prev => ({
+                                            ...prev,
+                                            selectedCities: isSelected
+                                              ? prev.selectedCities.filter(c => c !== cityValue)
+                                              : [...prev.selectedCities, cityValue]
+                                          }));
+                                        }}
+                                        className="flex items-center space-x-2 cursor-pointer promo-command-item dark:text-white hover:bg-slate-800"
+                                        data-selected={formData.selectedCities.includes(cityValue)}
+                                      >
+                                        <Checkbox
+                                          checked={formData.selectedCities.includes(cityValue)}
+                                          className="data-[state=checked]:bg-teal-500 data-[state=checked]:border-teal-500"
+                                        />
+                                        <span>{city} ({country})</span>
+                                      </CommandItem>
+                                    );
+                                  }) || []
+                                )}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Selected: {formData.selectedCities.length} cit{formData.selectedCities.length !== 1 ? 'ies' : 'y'}
+                      </p>
+                    </>
+                  ) : (
+                    <div className="w-full px-4 py-8 border border-gray-200 dark:border-slate-600 rounded-xl bg-gray-50 dark:bg-slate-800 text-center">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Select countries first to choose specific cities
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Interest Targeting */}
+              <div className="mb-8">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-6 mt-6">
+                  Interest Targeting
+                </label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto">
+                  {availableInterests.map((interest) => (
+                    <button
+                      key={interest}
+                      type="button"
+                      onClick={() => handleArrayToggle(formData.interests, interest, 'interests')}
+                      className={`p-2 text-sm rounded-lg border transition-colors ${
+                        formData.interests.includes(interest)
+                          ? 'bg-blue-500 text-white border-blue-500'
+                          : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-600'
+                      }`}
+                    >
+                      {interest}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                  Selected: {formData.interests.length} interest{formData.interests.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+
+              {/* Campaign Summary */}
+              <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-6 mb-6">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <TrendingUp className="h-5 w-5 mr-2" />
+                  Campaign Summary
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                  <div>
+                    <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">
+                      ${parseInt(formData.budget) * parseInt(formData.duration)}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Total Budget</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">
+                      {formData.duration}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Days</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">
+                      {calculateEstimatedReach().toLocaleString()}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Est. Reach</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">
+                      {formData.targetAudience.length + formData.selectedCountries.length + formData.selectedCities.length + formData.interests.length}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Targeting Criteria</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Submit Buttons */}
+              <div className="flex justify-end gap-x-4">
                 <button
                   type="button"
-                  onClick={generateAITargeting}
-                  disabled={isGeneratingTargeting || !aiPrompt.trim()}
-                  className="mt-3 flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={onClose}
+                  className="px-6 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
                 >
-                  {isGeneratingTargeting ? (
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting || formData.targetAudience.length === 0}
+                  className="bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-3 px-6 rounded-xl font-semibold hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                >
+                  {isSubmitting ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      <span>Generating...</span>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      <span>Creating Campaign...</span>
                     </>
                   ) : (
                     <>
-                      <Bot className="h-4 w-4" />
-                      <span>Generate Targeting</span>
+                      <Target className="h-5 w-5" />
+                      <span>Launch Campaign (${parseInt(formData.budget) * parseInt(formData.duration)})</span>
                     </>
                   )}
                 </button>
               </div>
-            )}
 
-            {/* Campaign Objective */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Campaign Objective *
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {objectives.map((objective) => (
-                  <label key={objective.value} className="flex items-start space-x-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-primary-300 transition-colors">
-                    <input
-                      type="radio"
-                      name="objective"
-                      value={objective.value}
-                      checked={formData.objective === objective.value}
-                      onChange={handleInputChange}
-                      className="mt-1"
-                    />
-                    <div>
-                      <div className="font-medium text-gray-900">{objective.label}</div>
-                      <div className="text-sm text-gray-600">{objective.description}</div>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Budget and Duration */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-2">
-                  Daily Budget (USD) *
-                </label>
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <input
-                    type="number"
-                    id="budget"
-                    name="budget"
-                    value={formData.budget}
-                    onChange={handleInputChange}
-                    min="1"
-                    max="1000"
-                    required
-                    className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-                <p className="text-sm text-gray-500 mt-1">$1 = 10 new creators daily • Minimum $1/day</p>
-              </div>
-              <div>
-                <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-2">
-                  Campaign Duration (days) *
-                </label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <input
-                    type="number"
-                    id="duration"
-                    name="duration"
-                    value={formData.duration}
-                    onChange={handleInputChange}
-                    min="1"
-                    max="30"
-                    required
-                    className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
-                <p className="text-sm text-gray-500 mt-1">1-30 days</p>
-              </div>
-            </div>
-
-            {/* Target Audience */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Target Audience *
-              </label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {audienceOptions.map((audience) => (
-                  <button
-                    key={audience}
-                    type="button"
-                    onClick={() => handleArrayToggle(formData.targetAudience, audience, 'targetAudience')}
-                    className={`p-3 text-sm rounded-lg border transition-colors ${
-                      formData.targetAudience.includes(audience)
-                        ? 'bg-primary-500 text-white border-primary-500'
-                        : 'bg-white text-gray-700 border-gray-200 hover:border-primary-300'
-                    }`}
-                  >
-                    {audience}
-                  </button>
-                ))}
-              </div>
-              <p className="text-sm text-gray-500 mt-2">
-                Selected: {formData.targetAudience.length} audience{formData.targetAudience.length !== 1 ? 's' : ''}
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-4">
+                Your campaign will be reviewed and activated within 24 hours.
               </p>
-            </div>
-
-            {/* Demographics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Age Range
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label htmlFor="ageFrom" className="block text-xs text-gray-500 mb-1">From</label>
-                    <input
-                      type="number"
-                      id="ageFrom"
-                      name="ageFrom"
-                      value={formData.ageFrom}
-                      onChange={handleInputChange}
-                      min="18"
-                      max="100"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="ageTo" className="block text-xs text-gray-500 mb-1">To</label>
-                    <input
-                      type="number"
-                      id="ageTo"
-                      name="ageTo"
-                      value={formData.ageTo}
-                      onChange={handleInputChange}
-                      min="18"
-                      max="100"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Age range: {formData.ageFrom} - {formData.ageTo} years</p>
-              </div>
-              <div>
-                <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-2">
-                  Gender
-                </label>
-                <select
-                  id="gender"
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                >
-                  {genderOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Location Targeting */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Location Targeting
-              </label>
-              
-              {/* Countries Multi-Select Dropdown */}
-              <div className="mb-4">
-                <h4 className="text-sm font-medium text-gray-600 mb-2">Countries</h4>
-                <Popover open={openCountriesDropdown} onOpenChange={setOpenCountriesDropdown}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={openCountriesDropdown}
-                      className="w-full justify-between h-12 px-4"
-                    >
-                      {formData.selectedCountries.length > 0
-                        ? `${formData.selectedCountries.length} countr${formData.selectedCountries.length !== 1 ? 'ies' : 'y'} selected`
-                        : "Select countries..."}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-full p-0">
-                    <Command>
-                      <CommandInput placeholder="Search countries..." className="h-9" />
-                      <CommandList>
-                        <CommandEmpty>No countries found.</CommandEmpty>
-                        <CommandGroup className="max-h-64 overflow-auto">
-                          {countries.map((country) => (
-                            <CommandItem
-                              key={country}
-                              value={country}
-                              onSelect={() => {
-                                const isSelected = formData.selectedCountries.includes(country);
-                                setFormData(prev => ({
-                                  ...prev,
-                                  selectedCountries: isSelected
-                                    ? prev.selectedCountries.filter(c => c !== country)
-                                    : [...prev.selectedCountries, country],
-                                  selectedCities: isSelected && prev.selectedCountries.length === 1 
-                                    ? [] 
-                                    : prev.selectedCities
-                                }));
-                              }}
-                              className="flex items-center space-x-2 cursor-pointer"
-                            >
-                              <Checkbox
-                                checked={formData.selectedCountries.includes(country)}
-                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                              />
-                              <span>{country}</span>
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-                <p className="text-xs text-gray-500 mt-1">
-                  Selected: {formData.selectedCountries.length} countr{formData.selectedCountries.length !== 1 ? 'ies' : 'y'}
-                </p>
-              </div>
-
-              {/* Cities Multi-Select Dropdown */}
-              <div>
-                <h4 className="text-sm font-medium text-gray-600 mb-2">Cities</h4>
-                {formData.selectedCountries.length > 0 ? (
-                  <>
-                    <Popover open={openCitiesDropdown} onOpenChange={setOpenCitiesDropdown}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={openCitiesDropdown}
-                          className="w-full justify-between h-12 px-4"
-                        >
-                          {formData.selectedCities.length > 0
-                            ? `${formData.selectedCities.length} cit${formData.selectedCities.length !== 1 ? 'ies' : 'y'} selected`
-                            : "Select cities..."}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-0">
-                        <Command>
-                          <CommandInput placeholder="Search cities..." className="h-9" />
-                          <CommandList>
-                            <CommandEmpty>No cities found.</CommandEmpty>
-                            <CommandGroup className="max-h-64 overflow-auto">
-                              {formData.selectedCountries.flatMap(country => 
-                                cities[country]?.map(city => {
-                                  const cityValue = `${country}: ${city}`;
-                                  return (
-                                    <CommandItem
-                                      key={`${country}-${city}`}
-                                      value={cityValue}
-                                      onSelect={() => {
-                                        const isSelected = formData.selectedCities.includes(cityValue);
-                                        setFormData(prev => ({
-                                          ...prev,
-                                          selectedCities: isSelected
-                                            ? prev.selectedCities.filter(c => c !== cityValue)
-                                            : [...prev.selectedCities, cityValue]
-                                        }));
-                                      }}
-                                      className="flex items-center space-x-2 cursor-pointer"
-                                    >
-                                      <Checkbox
-                                        checked={formData.selectedCities.includes(cityValue)}
-                                        className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                                      />
-                                      <span>{city} ({country})</span>
-                                    </CommandItem>
-                                  );
-                                }) || []
-                              )}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Selected: {formData.selectedCities.length} cit{formData.selectedCities.length !== 1 ? 'ies' : 'y'}
-                    </p>
-                  </>
-                ) : (
-                  <div className="w-full px-4 py-8 border border-gray-200 rounded-xl bg-gray-50 text-center">
-                    <p className="text-sm text-gray-500">
-                      Select countries first to choose specific cities
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Interest Targeting */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Interest Targeting
-              </label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto">
-                {availableInterests.map((interest) => (
-                  <button
-                    key={interest}
-                    type="button"
-                    onClick={() => handleArrayToggle(formData.interests, interest, 'interests')}
-                    className={`p-2 text-sm rounded-lg border transition-colors ${
-                      formData.interests.includes(interest)
-                        ? 'bg-blue-500 text-white border-blue-500'
-                        : 'bg-white text-gray-700 border-gray-200 hover:border-blue-300'
-                    }`}
-                  >
-                    {interest}
-                  </button>
-                ))}
-              </div>
-              <p className="text-sm text-gray-500 mt-2">
-                Selected: {formData.interests.length} interest{formData.interests.length !== 1 ? 's' : ''}
-              </p>
-            </div>
-
-            {/* Campaign Summary */}
-            <div className="bg-gray-50 rounded-xl p-6 mb-6">
-              <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
-                <TrendingUp className="h-5 w-5 mr-2" />
-                Campaign Summary
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div>
-                  <div className="text-2xl font-bold text-primary-600">
-                    ${parseInt(formData.budget) * parseInt(formData.duration)}
-                  </div>
-                  <div className="text-sm text-gray-600">Total Budget</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-primary-600">
-                    {formData.duration}
-                  </div>
-                  <div className="text-sm text-gray-600">Days</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-primary-600">
-                    {calculateEstimatedReach().toLocaleString()}
-                  </div>
-                  <div className="text-sm text-gray-600">Est. Reach</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-primary-600">
-                    {formData.targetAudience.length + formData.selectedCountries.length + formData.selectedCities.length + formData.interests.length}
-                  </div>
-                  <div className="text-sm text-gray-600">Targeting Criteria</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isSubmitting || formData.targetAudience.length === 0}
-              className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  <span>Creating Campaign...</span>
-                </>
-              ) : (
-                <>
-                  <Target className="h-5 w-5" />
-                  <span>Launch Campaign (${parseInt(formData.budget) * parseInt(formData.duration)})</span>
-                </>
-              )}
-            </button>
-
-            <p className="text-sm text-gray-500 text-center mt-4">
-              Your campaign will be reviewed and activated within 24 hours.
-            </p>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
