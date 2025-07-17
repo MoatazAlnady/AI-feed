@@ -25,7 +25,7 @@ const PostReactions: React.FC<PostReactionsProps> = ({
     { type: 'like', icon: ThumbsUp, label: 'Like', color: 'text-blue-500', emoji: '👍' },
     { type: 'love', icon: Heart, label: 'Love', color: 'text-red-500', emoji: '❤️' },
     { type: 'insightful', icon: Lightbulb, label: 'Insightful', color: 'text-orange-500', emoji: '💡' },
-    { type: 'smart', icon: Brain, label: 'Smart', color: 'text-purple-500', emoji: '🧠' },
+    { type: 'smart', icon: Brain, label: 'Smart', color: 'text-blue-500', emoji: '🧠' },
     { type: 'bravo', icon: Trophy, label: 'Bravo', color: 'text-yellow-500', emoji: '👏' },
     { type: 'support', icon: Handshake, label: 'Support', color: 'text-green-500', emoji: '🤝' },
     { type: 'funny', icon: Laugh, label: 'Funny', color: 'text-pink-500', emoji: '😂' },

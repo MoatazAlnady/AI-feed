@@ -30,7 +30,7 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
         <div className={`${sizeClasses[size]} bg-blue-500 rounded-full flex items-center justify-center`}>
           <Check className={`w-${iconSize[size]} h-${iconSize[size]} text-white`} style={{ width: iconSize[size], height: iconSize[size] }} />
         </div>
-        <div className={`${sizeClasses[size]} bg-purple-500 rounded-full flex items-center justify-center`}>
+        <div className={`${sizeClasses[size]} bg-blue-500 rounded-full flex items-center justify-center`}>
           <Star className={`w-${iconSize[size]} h-${iconSize[size]} text-white`} style={{ width: iconSize[size], height: iconSize[size] }} />
         </div>
       </div>
@@ -39,7 +39,7 @@ const VerificationBadge: React.FC<VerificationBadgeProps> = ({
 
   if (type === 'top-voice') {
     return (
-      <div className={`${sizeClasses[size]} bg-purple-500 rounded-full flex items-center justify-center ${className}`}>
+      <div className={`${sizeClasses[size]} bg-blue-500 rounded-full flex items-center justify-center ${className}`}>
         <Star className={`w-${iconSize[size]} h-${iconSize[size]} text-white`} style={{ width: iconSize[size], height: iconSize[size] }} />
       </div>
     );

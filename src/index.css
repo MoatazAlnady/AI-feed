@@ -54,7 +54,7 @@
     --popover-foreground: 0 0% 98%;
     --primary: var(--c-cyan);
     --primary-foreground: 210 40% 98%;
-    --secondary: var(--c-violet);
+    --secondary: 210 40% 20%; /* Changed from violet to dark gray */
     --secondary-foreground: 210 40% 98%;
     --muted: 248 32% 22%;
     --muted-foreground: 240 5% 64.9%;
@@ -66,9 +66,9 @@
     --input: var(--c-indigo);
     --ring: 220 14% 91%; /* Grey instead of cyan in dark mode */
     
-    /* Custom gradients for dark mode */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--c-cyan)), hsl(var(--c-violet)));
-    --gradient-secondary: linear-gradient(135deg, hsl(var(--c-violet)), hsl(var(--c-indigo)));
+    /* Custom gradients for dark mode - no more violet */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--c-cyan)), hsl(var(--c-indigo)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--c-indigo)), hsl(var(--dark-1)));
   }
 }
 

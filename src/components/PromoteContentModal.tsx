@@ -239,23 +239,23 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
 
             {/* AI Targeting Prompt */}
             {targetingMode === 'ai' && (
-              <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border border-purple-200">
+              <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-700 rounded-xl border border-blue-200 dark:border-gray-600">
                 <div className="flex items-center mb-3">
-                  <Sparkles className="h-5 w-5 text-purple-600 mr-2" />
+                  <Sparkles className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" />
                   <h3 className="font-medium text-gray-900">AI Targeting Assistant</h3>
                 </div>
                 <textarea
                   value={aiPrompt}
                   onChange={(e) => setAiPrompt(e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                   placeholder="Describe your target audience in natural language. For example: 'Target AI researchers and data scientists in North America who are interested in machine learning and work at tech companies or universities, aged 25-45'"
                 />
                 <button
                   type="button"
                   onClick={generateAITargeting}
                   disabled={isGeneratingTargeting || !aiPrompt.trim()}
-                  className="mt-3 flex items-center space-x-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="mt-3 flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isGeneratingTargeting ? (
                     <>
