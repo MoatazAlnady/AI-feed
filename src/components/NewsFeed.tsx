@@ -401,26 +401,12 @@ const NewsFeed: React.FC = () => {
   };
 
   const handleShareComplete = (postId: string) => {
-    // Add a delay to ensure the database update has completed
-    setTimeout(async () => {
-      try {
-        const { data, error } = await supabase
-          .from('posts')
-          .select('shares')
-          .eq('id', postId)
-          .single();
-        
-        if (!error && data) {
-          setPosts(prevPosts => prevPosts.map(post => 
-            post.id === postId 
-              ? { ...post, shares: data.shares || 0 }
-              : post
-          ));
-        }
-      } catch (error) {
-        console.error('Error fetching updated share count:', error);
-      }
-    }, 500); // 500ms delay to ensure database update completes
+    // Update the post shares count immediately in local state
+    setPosts(prevPosts => prevPosts.map(post => 
+      post.id === postId 
+        ? { ...post, shares: (post.shares || 0) + 1 }
+        : post
+    ));
   };
 
   const handleEditPost = (postId: string) => {

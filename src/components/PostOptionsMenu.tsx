@@ -133,7 +133,7 @@ const PostOptionsMenu: React.FC<PostOptionsMenuProps> = ({
     <>
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
-          <button className="p-1 hover:bg-gray-100 dark:hover:bg-[hsl(var(--c-indigo))] rounded-full transition-colors">
+          <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
             <MoreHorizontal className="h-4 w-4 text-gray-500 dark:text-gray-400" />
           </button>
         </DropdownMenuTrigger>
