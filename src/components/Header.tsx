@@ -27,9 +27,9 @@ const Header: React.FC = () => {
   const navigation = [
     { name: 'Home', href: '/', hideWhenLoggedIn: true },
     { name: t('nav.about'), href: '/about', hideWhenLoggedIn: true },
-    { name: 'Newsfeed', href: '/newsfeed', protected: true },
+    { name: t('nav.newsfeed'), href: '/newsfeed', protected: true },
     { name: t('nav.tools'), href: '/tools' },
-    { name: 'Categories', href: '/categories' },
+    { name: t('nav.categories'), href: '/categories' },
     { name: t('nav.jobs'), href: '/jobs' },
     { name: t('nav.community'), href: '/community', protected: true },
     { name: t('nav.blog'), href: '/blog' },
@@ -56,7 +56,7 @@ const Header: React.FC = () => {
   // Filter navigation items based on authentication status
   const filteredNavigation = user 
     ? navigation.filter(item => !item.hideWhenLoggedIn)
-    : navigation.filter(item => item.name === 'Home' || item.name === t('nav.about') || item.name === t('nav.tools') || item.name === 'Categories' || item.name === t('nav.jobs') || item.name === t('nav.blog'));
+    : navigation.filter(item => item.href === '/' || item.href === '/about' || item.href === '/tools' || item.href === '/categories' || item.href === '/jobs' || item.href === '/blog');
 
   useEffect(() => {
     // Restore preferred locale on page load

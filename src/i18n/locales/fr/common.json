@@ -1,8 +1,10 @@
 {
   "nav": {
     "tools": "Outils",
+    "categories": "Catégories",
     "talent": "Talent",
     "jobs": "Emplois",
+    "newsfeed": "Fil d'actualité",
     "community": "Communauté",
     "blog": "Blog",
     "about": "À propos",
@@ -31,6 +33,12 @@
     "like": "J'aime",
     "comment": "Commentaire",
     "view": "Voir"
+  },
+  "dashboard": {
+    "talentPool": "Réservoir de talents",
+    "projects": "Projets",
+    "analytics": "Analyses",
+    "createJob": "Créer un emploi"
   },
   "hero": {
     "title": "Découvrez les outils IA qui transforment votre travail",

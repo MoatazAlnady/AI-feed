@@ -1,8 +1,10 @@
 {
   "nav": {
     "tools": "工具",
+    "categories": "分类",
     "talent": "人才",
     "jobs": "工作",
+    "newsfeed": "新闻动态",
     "community": "社区",
     "blog": "博客",
     "about": "关于",
@@ -31,6 +33,12 @@
     "like": "喜欢",
     "comment": "评论",
     "view": "查看"
+  },
+  "dashboard": {
+    "talentPool": "人才库",
+    "projects": "项目",
+    "analytics": "分析",
+    "createJob": "创建工作"
   },
   "hero": {
     "title": "发现能够改变您工作的AI工具",

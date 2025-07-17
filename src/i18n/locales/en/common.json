@@ -1,8 +1,10 @@
 {
   "nav": {
     "tools": "Tools",
+    "categories": "Categories",
     "talent": "Talent",
     "jobs": "Jobs",
+    "newsfeed": "Newsfeed",
     "community": "Community",
     "blog": "Blog",
     "about": "About",
@@ -31,6 +33,12 @@
     "like": "Like",
     "comment": "Comment",
     "view": "View"
+  },
+  "dashboard": {
+    "talentPool": "Talent Pool",
+    "projects": "Projects",
+    "analytics": "Analytics",
+    "createJob": "Create Job"
   },
   "hero": {
     "title": "Discover AI Tools That Transform Your Work",

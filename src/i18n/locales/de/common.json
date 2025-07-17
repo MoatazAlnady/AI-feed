@@ -1,8 +1,10 @@
 {
   "nav": {
     "tools": "Werkzeuge",
+    "categories": "Kategorien",
     "talent": "Talent",
     "jobs": "Jobs",
+    "newsfeed": "Newsfeed",
     "community": "Community",
     "blog": "Blog",
     "about": "Über uns",
@@ -31,6 +33,12 @@
     "like": "Gefällt mir",
     "comment": "Kommentar",
     "view": "Ansehen"
+  },
+  "dashboard": {
+    "talentPool": "Talent-Pool",
+    "projects": "Projekte",
+    "analytics": "Analysen",
+    "createJob": "Job erstellen"
   },
   "hero": {
     "title": "Entdecken Sie KI-Tools, die Ihre Arbeit transformieren",

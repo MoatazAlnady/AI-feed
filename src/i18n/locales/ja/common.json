@@ -1,8 +1,10 @@
 {
   "nav": {
     "tools": "ツール",
+    "categories": "カテゴリー",
     "talent": "タレント",
     "jobs": "求人",
+    "newsfeed": "ニュースフィード",
     "community": "コミュニティ",
     "blog": "ブログ",
     "about": "について",
@@ -31,6 +33,12 @@
     "like": "いいね",
     "comment": "コメント",
     "view": "表示"
+  },
+  "dashboard": {
+    "talentPool": "タレントプール",
+    "projects": "プロジェクト",
+    "analytics": "分析",
+    "createJob": "求人作成"
   },
   "hero": {
     "title": "あなたの仕事を変革するAIツールを発見",

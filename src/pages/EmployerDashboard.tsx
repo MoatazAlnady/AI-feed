@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   BarChart3, 
   Users, 
@@ -21,6 +22,7 @@ import EmployerMessages from '../components/EmployerMessages';
 import TalentSearch from './TalentSearch';
 
 const EmployerDashboard = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState(() => {
@@ -29,13 +31,13 @@ const EmployerDashboard = () => {
   });
 
   const tabs = [
-    { id: 'overview', label: 'Dashboard', icon: BarChart3, path: '/employer' },
-    { id: 'talents', label: 'Talents', icon: Users, path: '/employer/talents' },
-    { id: 'jobs', label: 'Jobs', icon: Briefcase, path: '/employer/jobs' },
-    { id: 'projects', label: 'Projects', icon: FileText, path: '/employer/projects' },
-    { id: 'analytics', label: 'Analytics', icon: TrendingUp, path: '/employer/analytics' },
-    { id: 'messages', label: 'Messages', icon: MessageSquare, path: '/employer/messages' },
-    { id: 'settings', label: 'Settings', icon: Settings, path: '/employer/settings' }
+    { id: 'overview', label: t('nav.dashboard'), icon: BarChart3, path: '/employer' },
+    { id: 'talents', label: t('nav.talent'), icon: Users, path: '/employer/talents' },
+    { id: 'jobs', label: t('nav.jobs'), icon: Briefcase, path: '/employer/jobs' },
+    { id: 'projects', label: t('dashboard.projects'), icon: FileText, path: '/employer/projects' },
+    { id: 'analytics', label: t('dashboard.analytics'), icon: TrendingUp, path: '/employer/analytics' },
+    { id: 'messages', label: t('nav.messages'), icon: MessageSquare, path: '/employer/messages' },
+    { id: 'settings', label: t('nav.settings'), icon: Settings, path: '/employer/settings' }
   ];
 
   const handleTabClick = (tab: any) => {
@@ -186,7 +188,7 @@ const EmployerDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Employer Dashboard</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('nav.dashboard')}</h1>
           </div>
           
         </div>
