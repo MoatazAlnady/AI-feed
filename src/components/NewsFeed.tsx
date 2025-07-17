@@ -13,7 +13,8 @@ import {
   Edit3,
   Trash2,
   Check,
-  X
+  X,
+  RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -70,6 +71,7 @@ const NewsFeed: React.FC = () => {
   const [editContent, setEditContent] = useState<string>('');
   const [shareModalPost, setShareModalPost] = useState<Post | null>(null);
   const [showNewsletterPopup, setShowNewsletterPopup] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Get user interests for personalized feed
   const userInterests = user?.user_metadata?.interests || [];
@@ -172,6 +174,7 @@ const NewsFeed: React.FC = () => {
   };
 
   const fetchPosts = async () => {
+    setIsRefreshing(true);
     try {
       console.log('Fetching posts...');
       
@@ -186,7 +189,7 @@ const NewsFeed: React.FC = () => {
         console.error('Error fetching posts:', postsError);
       }
 
-      // Fetch shared posts
+      // Fetch shared posts with original post data
       const { data: sharedPostsData, error: sharedError } = await supabase
         .from('shared_posts')
         .select(`
@@ -225,7 +228,7 @@ const NewsFeed: React.FC = () => {
         return;
       }
 
-          // Fetch user profiles for each post
+      // Fetch user profiles for each post
       const userIds = [...new Set(allPosts.flatMap(post => [
         post.user_id, 
         post.type === 'shared' ? post.shared_by : null
@@ -237,7 +240,7 @@ const NewsFeed: React.FC = () => {
         console.log('Querying user_profiles for IDs:', userIds);
         const { data: profiles, error: profileError } = await supabase
           .from('user_profiles')
-          .select('id, full_name, profile_photo, job_title, verified, ai_nexus_top_voice')
+          .select('id, full_name, profile_photo, job_title, verified, ai_nexus_top_voice, interests')
           .in('id', userIds);
 
         console.log('Profile query result:', { profiles, profileError });
@@ -252,7 +255,33 @@ const NewsFeed: React.FC = () => {
 
       const profilesMap = new Map(userProfiles.map(profile => [profile.id, profile]));
 
-      const formattedPosts = allPosts.map(post => {
+      // Filter posts based on user interests if user has interests
+      let filteredPosts = allPosts;
+      if (userInterests.length > 0) {
+        filteredPosts = allPosts.filter(post => {
+          // Always show user's own posts
+          if (user && (post.user_id === user.id || post.shared_by === user.id)) {
+            return true;
+          }
+
+          // Check if post content matches user interests
+          const postContent = post.content.toLowerCase();
+          const matchesInterests = userInterests.some(interest => 
+            postContent.includes(interest.toLowerCase())
+          );
+
+          // Check if post author has similar interests
+          const authorProfile = profilesMap.get(post.user_id);
+          const authorInterests = authorProfile?.interests || [];
+          const hasCommonInterests = userInterests.some(interest =>
+            authorInterests.includes(interest)
+          );
+
+          return matchesInterests || hasCommonInterests;
+        });
+      }
+
+      const formattedPosts = filteredPosts.map(post => {
         const profile = profilesMap.get(post.user_id);
         const sharedByProfile = post.type === 'shared' ? profilesMap.get(post.shared_by) : null;
         console.log(`Post ${post.id}: user_id = ${post.user_id}, found profile:`, profile);
@@ -316,6 +345,8 @@ const NewsFeed: React.FC = () => {
     } catch (error) {
       console.error('Error fetching posts:', error);
       setPosts([]);
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -471,6 +502,14 @@ const NewsFeed: React.FC = () => {
             Based on your interests: {userInterests.slice(0, 3).join(', ')}
             {userInterests.length > 3 && ` and ${userInterests.length - 3} more`}
           </p>
+        </div>
+      )}
+
+      {/* Refresh Indicator */}
+      {isRefreshing && (
+        <div className="flex items-center justify-center space-x-2 py-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+          <RefreshCw className="h-4 w-4 text-blue-600 dark:text-blue-400 animate-spin" />
+          <span className="text-sm text-blue-700 dark:text-blue-300">Refreshing feed...</span>
         </div>
       )}
 
