@@ -322,7 +322,7 @@ const SubmitTool: React.FC = () => {
               onClick={() => setSubmissionMode('form')}
               className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-colors ${
                 submissionMode === 'form'
-                  ? 'bg-primary-500 text-white shadow-md'
+                  ? 'bg-gradient-primary text-white shadow-md'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600'
               }`}
             >
@@ -333,7 +333,7 @@ const SubmitTool: React.FC = () => {
               onClick={() => setSubmissionMode('csv')}
               className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-colors ${
                 submissionMode === 'csv'
-                  ? 'bg-primary-500 text-white shadow-md'
+                  ? 'bg-gradient-primary text-white shadow-md'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600'
               }`}
             >
