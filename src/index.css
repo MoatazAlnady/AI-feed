@@ -51,33 +51,33 @@
   }
 
   .dark {
-    --background: var(--dark-1);
+    --background: 240 10% 4%; /* Changed from purple to neutral dark */
     --foreground: 0 0% 98%;
-    --card: var(--dark-1);
+    --card: 240 10% 6%; /* Changed from purple to neutral dark card */
     --card-foreground: 0 0% 98%;
-    --popover: var(--dark-1);
+    --popover: 240 10% 6%; /* Changed from purple to neutral dark */
     --popover-foreground: 0 0% 98%;
     --primary: var(--c-cyan);
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 20%; /* Changed from violet to dark gray */
     --secondary-foreground: 210 40% 98%;
-    --muted: 248 32% 22%;
+    --muted: 240 10% 15%; /* Changed from purple to neutral gray */
     --muted-foreground: 240 5% 64.9%;
     --accent: 220 40% 20%; /* Changed from dark blue to neutral gray for dark mode */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
-    --border: var(--c-indigo);
-    --input: var(--c-indigo);
+    --border: 240 10% 15%; /* Changed from purple to neutral border */
+    --input: 240 10% 15%; /* Changed from purple to neutral input */
     --ring: 220 14% 91%; /* Grey instead of cyan in dark mode */
     
-    /* Surface tokens for dark mode */
-    --surface: 248 32% 18%;
+    /* Surface tokens for dark mode - neutral instead of purple */
+    --surface: 240 10% 8%;
     --surface-foreground: 0 0% 98%;
     
-    /* Custom gradients for dark mode - no more violet */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--c-cyan)), hsl(var(--c-indigo)));
-    --gradient-secondary: linear-gradient(135deg, hsl(var(--c-indigo)), hsl(var(--dark-1)));
+    /* Custom gradients for dark mode - neutral instead of purple */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--c-cyan)), hsl(210 40% 20%));
+    --gradient-secondary: linear-gradient(135deg, hsl(210 40% 20%), hsl(240 10% 6%));
     --gradient-brand: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
   }
 }
