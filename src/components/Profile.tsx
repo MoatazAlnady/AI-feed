@@ -442,7 +442,7 @@ const Profile: React.FC = () => {
                       {savedItems.map((item) => (
                         <div key={item.id} className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-md transition-shadow">
                           <div className="flex items-start space-x-3">
-                            <div className="w-12 h-12 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
                               {item.type === 'tool' ? (
                                 <Zap className="h-6 w-6 text-white" />
                               ) : (

@@ -10,10 +10,10 @@ const Footer: React.FC = () => {
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="p-2 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-lg">
+              <div className="p-2 bg-gradient-primary rounded-lg">
                 <Zap className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold">AI Nexus</span>
+              <span className="text-xl font-bold text-gradient">AI Nexus</span>
             </div>
             <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md">
               Your ultimate destination for discovering, exploring, and staying updated with the latest AI tools and technologies.
