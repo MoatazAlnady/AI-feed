@@ -132,7 +132,7 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
               <Button
                 variant="ghost"
                 className={cn(
-                  "w-full justify-start h-9",
+                  "w-full justify-start h-10 text-card-foreground hover:bg-accent hover:text-accent-foreground",
                   level > 0 && "pl-8",
                   isActive && "bg-primary/10 text-primary"
                 )}
@@ -154,7 +154,7 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
           <Button
             variant="ghost"
             className={cn(
-              "w-full justify-start h-9",
+              "w-full justify-start h-10 text-card-foreground hover:bg-accent hover:text-accent-foreground",
               level > 0 && "pl-8",
               isActive && "bg-primary/10 text-primary"
             )}
@@ -169,13 +169,13 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
   };
 
   return (
-    <div className="w-64 border-r bg-background">
-      <div className="p-6">
-        <h2 className="text-lg font-semibold">Admin Panel</h2>
+    <div className="w-64 border-r border-border bg-card">
+      <div className="p-6 border-b border-border">
+        <h2 className="text-lg font-semibold text-card-foreground">Admin Panel</h2>
         <p className="text-sm text-muted-foreground">Manage your platform</p>
       </div>
       <ScrollArea className="h-[calc(100vh-120px)] px-3">
-        <div className="space-y-1">
+        <div className="space-y-1 py-4">
           {menuItems.map(item => renderMenuItem(item))}
         </div>
       </ScrollArea>
