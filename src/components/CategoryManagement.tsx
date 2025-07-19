@@ -123,14 +123,20 @@ const CategoryManagement = () => {
           })
           .eq('id', editingCategory.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Category update error:', error);
+          throw error;
+        }
 
         toast({
           title: "Success",
           description: "Category updated successfully",
         });
         
-        // Refresh data immediately
+        // Reset form and close modal first
+        resetForm();
+        
+        // Then refresh data
         await fetchCategoriesAndSubs();
       } else {
         // Create category
