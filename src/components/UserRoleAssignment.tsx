@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -20,10 +21,27 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Search, UserCheck, Shield, Ban, Users } from 'lucide-react';
+import { Search, UserCheck, Shield, Ban, Users, Settings } from 'lucide-react';
 import { Role, UserWithRole, hasPermission, PERMISSIONS } from '@/utils/permissions';
+
+// Ban feature options
+const BAN_FEATURES = {
+  posts: 'Creating Posts',
+  comments: 'Writing Comments', 
+  articles: 'Writing Articles',
+  tools: 'Adding Tools',
+  groups: 'Using Groups',
+} as const;
+
+type BanFeature = keyof typeof BAN_FEATURES;
 
 const UserRoleAssignment: React.FC = () => {
   const { user } = useAuth();
@@ -36,6 +54,9 @@ const UserRoleAssignment: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [canAssignRoles, setCanAssignRoles] = useState(false);
   const [canBanUsers, setCanBanUsers] = useState(false);
+  const [showBanModal, setShowBanModal] = useState(false);
+  const [selectedUserForBan, setSelectedUserForBan] = useState<UserWithRole | null>(null);
+  const [selectedBanFeatures, setSelectedBanFeatures] = useState<BanFeature[]>([]);
 
   useEffect(() => {
     checkPermissions();
@@ -71,7 +92,7 @@ const UserRoleAssignment: React.FC = () => {
       if (rolesError) throw rolesError;
       setRoles(rolesData || []);
       
-      // Fetch users with roles
+      // Fetch users with roles and banned features
       const { data: usersData, error: usersError } = await supabase
         .from('user_profiles')
         .select(`
@@ -79,6 +100,7 @@ const UserRoleAssignment: React.FC = () => {
           full_name,
           role_id,
           is_banned,
+          banned_features,
           roles!user_profiles_role_id_fkey(
             id,
             name,
@@ -89,13 +111,24 @@ const UserRoleAssignment: React.FC = () => {
       
       if (usersError) throw usersError;
       
-      const usersWithRoles: UserWithRole[] = usersData?.map(userData => ({
-        id: userData.id,
-        full_name: userData.full_name,
-        role_id: userData.role_id,
-        is_banned: userData.is_banned,
-        role: userData.roles as Role,
-      })) || [];
+      const usersWithRoles: UserWithRole[] = usersData?.map(userData => {
+        // Handle banned_features which comes as JSONB array
+        let bannedFeatures: string[] = [];
+        if (userData.banned_features) {
+          if (Array.isArray(userData.banned_features)) {
+            bannedFeatures = userData.banned_features as string[];
+          }
+        }
+        
+        return {
+          id: userData.id,
+          full_name: userData.full_name,
+          role_id: userData.role_id,
+          is_banned: userData.is_banned,
+          banned_features: bannedFeatures,
+          role: userData.roles as Role,
+        };
+      }) || [];
       
       setUsers(usersWithRoles);
       
@@ -197,6 +230,55 @@ const UserRoleAssignment: React.FC = () => {
     }
   };
 
+  const handleGranularBan = (userItem: UserWithRole) => {
+    setSelectedUserForBan(userItem);
+    // Safely cast the banned features to our BanFeature type
+    const currentBannedFeatures = (userItem.banned_features || []).filter(
+      (feature): feature is BanFeature => Object.keys(BAN_FEATURES).includes(feature)
+    );
+    setSelectedBanFeatures(currentBannedFeatures);
+    setShowBanModal(true);
+  };
+
+  const handleSaveBanFeatures = async () => {
+    if (!selectedUserForBan || !user) return;
+
+    try {
+      const { error } = await supabase.rpc('update_user_ban_features', {
+        target_user_id: selectedUserForBan.id,
+        features_to_ban: selectedBanFeatures,
+        admin_user_id: user.id,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "User ban features updated successfully.",
+      });
+
+      setShowBanModal(false);
+      setSelectedUserForBan(null);
+      setSelectedBanFeatures([]);
+      fetchData();
+    } catch (error) {
+      console.error('Error updating ban features:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update ban features.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleBanFeatureChange = (feature: BanFeature, checked: boolean) => {
+    if (checked) {
+      setSelectedBanFeatures(prev => [...prev, feature]);
+    } else {
+      setSelectedBanFeatures(prev => prev.filter(f => f !== feature));
+    }
+  };
+
   if (!canAssignRoles && !canBanUsers) {
     return (
       <Card>
@@ -279,6 +361,7 @@ const UserRoleAssignment: React.FC = () => {
                 <TableHead>User</TableHead>
                 <TableHead>Current Role</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Banned Features</TableHead>
                 {canAssignRoles && <TableHead>Assign Role</TableHead>}
                 {canBanUsers && <TableHead>Actions</TableHead>}
               </TableRow>
@@ -308,6 +391,19 @@ const UserRoleAssignment: React.FC = () => {
                       {userItem.is_banned ? "Banned" : "Active"}
                     </Badge>
                   </TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                      {userItem.banned_features && userItem.banned_features.length > 0 ? (
+                        userItem.banned_features.map((feature: string) => (
+                          <Badge key={feature} variant="outline" className="text-xs">
+                            {BAN_FEATURES[feature as BanFeature] || feature}
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-sm text-muted-foreground">None</span>
+                      )}
+                    </div>
+                  </TableCell>
                   {canAssignRoles && (
                     <TableCell>
                       <Select
@@ -331,24 +427,35 @@ const UserRoleAssignment: React.FC = () => {
                   )}
                   {canBanUsers && (
                     <TableCell>
-                      <Button
-                        variant={userItem.is_banned ? "default" : "destructive"}
-                        size="sm"
-                        onClick={() => handleBanToggle(userItem.id, userItem.is_banned)}
-                        disabled={userItem.id === user?.id} // Can't ban yourself
-                      >
-                        {userItem.is_banned ? (
-                          <>
-                            <UserCheck className="h-4 w-4 mr-1" />
-                            Unban
-                          </>
-                        ) : (
-                          <>
-                            <Ban className="h-4 w-4 mr-1" />
-                            Ban
-                          </>
-                        )}
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          variant={userItem.is_banned ? "default" : "destructive"}
+                          size="sm"
+                          onClick={() => handleBanToggle(userItem.id, userItem.is_banned)}
+                          disabled={userItem.id === user?.id} // Can't ban yourself
+                        >
+                          {userItem.is_banned ? (
+                            <>
+                              <UserCheck className="h-4 w-4 mr-1" />
+                              Unban
+                            </>
+                          ) : (
+                            <>
+                              <Ban className="h-4 w-4 mr-1" />
+                              Ban
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleGranularBan(userItem)}
+                          disabled={userItem.id === user?.id}
+                        >
+                          <Settings className="h-4 w-4 mr-1" />
+                          Features
+                        </Button>
+                      </div>
                     </TableCell>
                   )}
                 </TableRow>
@@ -363,6 +470,49 @@ const UserRoleAssignment: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Granular Ban Features Modal */}
+      <Dialog open={showBanModal} onOpenChange={setShowBanModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              Manage Ban Features for {selectedUserForBan?.full_name}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Select which features to ban this user from:
+            </p>
+            
+            <div className="space-y-3">
+              {Object.entries(BAN_FEATURES).map(([key, label]) => (
+                <div key={key} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={key}
+                    checked={selectedBanFeatures.includes(key as BanFeature)}
+                    onCheckedChange={(checked) => 
+                      handleBanFeatureChange(key as BanFeature, checked as boolean)
+                    }
+                  />
+                  <Label htmlFor={key} className="text-sm">
+                    {label}
+                  </Label>
+                </div>
+              ))}
+            </div>
+            
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button variant="outline" onClick={() => setShowBanModal(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveBanFeatures}>
+                Save Changes
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

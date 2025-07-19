@@ -1175,6 +1175,7 @@ export type Database = {
           age: number | null
           ai_nexus_top_voice: boolean | null
           articles_written: number | null
+          banned_features: Json | null
           bio: string | null
           birth_date: string | null
           city: string | null
@@ -1214,6 +1215,7 @@ export type Database = {
           age?: number | null
           ai_nexus_top_voice?: boolean | null
           articles_written?: number | null
+          banned_features?: Json | null
           bio?: string | null
           birth_date?: string | null
           city?: string | null
@@ -1253,6 +1255,7 @@ export type Database = {
           age?: number | null
           ai_nexus_top_voice?: boolean | null
           articles_written?: number | null
+          banned_features?: Json | null
           bio?: string | null
           birth_date?: string | null
           city?: string | null
@@ -1362,6 +1365,10 @@ export type Database = {
         Args: { user_id_param: string; permission_key_param: string }
         Returns: boolean
       }
+      is_user_banned_from_feature: {
+        Args: { user_id_param: string; feature_param: string }
+        Returns: boolean
+      }
       reject_tool_edit_request: {
         Args: { request_id_param: string; admin_notes_param: string }
         Returns: undefined
@@ -1382,6 +1389,14 @@ export type Database = {
       update_trending_tools_weekly: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      update_user_ban_features: {
+        Args: {
+          target_user_id: string
+          features_to_ban: string[]
+          admin_user_id: string
+        }
+        Returns: boolean
       }
     }
     Enums: {

@@ -19,6 +19,7 @@ export interface UserWithRole {
   full_name?: string;
   role_id: number;
   is_banned: boolean;
+  banned_features?: string[];
   role?: Role;
   permissions?: string[];
 }
