@@ -342,10 +342,10 @@ const CategoryManagement = () => {
                       )}
                     </td>
                     <td className="p-4">
-                      <Badge variant="secondary">
+                      <div className="px-3 py-1 bg-gradient-primary text-white rounded-full flex items-center justify-center w-fit">
                         <Tag className="h-3 w-3 mr-1" />
                         {category.sub_categories_count || 0}
-                      </Badge>
+                      </div>
                     </td>
                     <td className="p-4 text-right">
                       <div className="flex justify-end space-x-2">
