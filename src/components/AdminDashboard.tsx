@@ -155,7 +155,7 @@ const AdminDashboard: React.FC = () => {
                       <span className="text-sm text-green-600 ml-1">0%</span>
                     </div>
                   </div>
-                  <Settings className="h-8 w-8 text-purple-500" />
+                  <Settings className="h-8 w-8 text-primary" />
                 </div>
               </div>
               
@@ -225,8 +225,8 @@ const AdminDashboard: React.FC = () => {
                   onClick={() => setActiveSection('newsletters')}
                   className="p-4 bg-surface rounded-xl border hover:shadow-md transition-shadow flex items-center space-x-3"
                 >
-                  <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                    <FileText className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <FileText className="h-5 w-5 text-primary" />
                   </div>
                   <span className="font-medium">Newsletter</span>
                 </button>
@@ -235,8 +235,8 @@ const AdminDashboard: React.FC = () => {
                   onClick={() => setActiveSection('categories')}
                   className="p-4 bg-surface rounded-xl border hover:shadow-md transition-shadow flex items-center space-x-3"
                 >
-                  <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-                    <Flag className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                  <div className="p-2 bg-accent/10 rounded-lg">
+                    <Flag className="h-5 w-5 text-accent-foreground" />
                   </div>
                   <span className="font-medium">Categories</span>
                 </button>
