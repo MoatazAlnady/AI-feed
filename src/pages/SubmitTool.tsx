@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Upload, Link, Tag, DollarSign, Star, Send, Plus, Minus, Download, FileText, AlertCircle } from 'lucide-react';
 import { generateCSVTemplate } from '../utils/csvTemplate';
 import { useAuth } from '../context/AuthContext';
@@ -8,6 +8,8 @@ import { useToast } from '@/hooks/use-toast';
 const SubmitTool: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [categories, setCategories] = useState<any[]>([]);
+  const [subCategories, setSubCategories] = useState<any[]>([]);
   const [submissionMode, setSubmissionMode] = useState<'form' | 'csv'>('form');
   const [formData, setFormData] = useState({
     name: '',
@@ -35,20 +37,58 @@ const SubmitTool: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const categories = [
-    'Conversational AI',
-    'Image Generation',
-    'Video AI',
-    'Code Assistant',
-    'Data Analysis',
-    'Audio AI',
-    'Writing & Content',
-    'Productivity'
-  ];
+  // Fetch categories and sub-categories on component mount
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const { data: categoriesData, error: categoriesError } = await supabase
+        .from('categories')
+        .select('*')
+        .order('name');
+
+      if (categoriesError) throw categoriesError;
+
+      const { data: subCategoriesData, error: subCategoriesError } = await supabase
+        .from('sub_categories')
+        .select('*')
+        .order('name');
+
+      if (subCategoriesError) throw subCategoriesError;
+
+      setCategories(categoriesData || []);
+      setSubCategories(subCategoriesData || []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      // Fallback to hardcoded categories if fetch fails
+      setCategories([
+        { id: '1', name: 'Conversational AI' },
+        { id: '2', name: 'Image Generation' },
+        { id: '3', name: 'Video AI' },
+        { id: '4', name: 'Code Assistant' },
+        { id: '5', name: 'Data Analysis' },
+        { id: '6', name: 'Audio AI' },
+        { id: '7', name: 'Writing & Content' },
+        { id: '8', name: 'Productivity' }
+      ]);
+    }
+  };
+
+  // Get filtered sub-categories based on selected category
+  const getSubCategoriesForCategory = (categoryId: string) => {
+    return subCategories.filter(sub => sub.category_id === categoryId);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Clear subcategory when category changes
+    if (name === 'category') {
+      setFormData(prev => ({ ...prev, subcategory: '' }));
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -363,8 +403,8 @@ const SubmitTool: React.FC = () => {
                   >
                     <option value="">Select a category</option>
                     {categories.map((category) => (
-                      <option key={category} value={category}>
-                        {category}
+                      <option key={category.id} value={category.name}>
+                        {category.name}
                       </option>
                     ))}
                   </select>
@@ -374,15 +414,23 @@ const SubmitTool: React.FC = () => {
                 <label htmlFor="subcategory" className="block text-sm font-medium text-gray-700 mb-2">
                   Subcategory
                 </label>
-                <input
-                  type="text"
+                <select
                   id="subcategory"
                   name="subcategory"
                   value={formData.subcategory}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="e.g., Text-to-Image, Chatbots"
-                />
+                  disabled={!formData.category}
+                >
+                  <option value="">Select a subcategory</option>
+                  {formData.category && getSubCategoriesForCategory(
+                    categories.find(cat => cat.name === formData.category)?.id || ''
+                  ).map((subcategory) => (
+                    <option key={subcategory.id} value={subcategory.name}>
+                      {subcategory.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label htmlFor="toolType" className="block text-sm font-medium text-gray-700 mb-2">

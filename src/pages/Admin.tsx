@@ -1,8 +1,8 @@
 import React from 'react';
-import ContentManagement from '@/components/ContentManagement';
+import AdminDashboard from '@/components/AdminDashboard';
 
 const Admin = () => {
-  return <ContentManagement />;
+  return <AdminDashboard />;
 };
 
 export default Admin;
