@@ -683,7 +683,7 @@ const SubmitTool: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-primary text-white py-4 rounded-xl font-semibold hover:bg-gradient-brand transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+              className="w-full bg-gradient-primary text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 focus:ring-2 focus:ring-primary/20 focus:outline-none"
             >
               {isSubmitting ? (
                 <>
