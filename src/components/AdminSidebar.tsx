@@ -18,7 +18,9 @@ import {
   ChevronDown,
   ChevronRight,
   Eye,
-  Zap
+  Zap,
+  Flag,
+  Shield
 } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
@@ -59,7 +61,8 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
       icon: MessageSquare,
       children: [
         { id: 'posts', label: 'Posts', icon: FileText },
-        { id: 'moderation', label: 'Moderation', icon: Eye }
+        { id: 'moderation', label: 'Moderation', icon: Eye },
+        { id: 'reports', label: 'Reports', icon: Flag }
       ]
     },
     {
@@ -98,13 +101,18 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
     {
       id: 'users',
       label: 'User Management',
-      icon: Users
+      icon: Users,
+      children: [
+        { id: 'user-list', label: 'All Users', icon: Users },
+        { id: 'role-assignment', label: 'Role Assignment', icon: Shield }
+      ]
     },
     {
       id: 'settings',
       label: 'Settings',
       icon: Settings,
       children: [
+        { id: 'roles-permissions', label: 'Roles & Permissions', icon: Shield },
         { id: 'site-config', label: 'Site Configuration', icon: Globe },
         { id: 'system', label: 'System Settings', icon: Settings }
       ]

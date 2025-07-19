@@ -770,6 +770,101 @@ export type Database = {
           },
         ]
       }
+      reports: {
+        Row: {
+          admin_notes: string | null
+          content_id: string
+          content_type: string
+          created_at: string
+          description: string | null
+          id: string
+          reason: string
+          reporter_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          content_id: string
+          content_type: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          reason: string
+          reporter_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          reason?: string
+          reporter_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      role_permissions: {
+        Row: {
+          created_at: string
+          permission_key: string
+          role_id: number
+        }
+        Insert: {
+          created_at?: string
+          permission_key: string
+          role_id: number
+        }
+        Update: {
+          created_at?: string
+          permission_key?: string
+          role_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roles: {
+        Row: {
+          created_at: string
+          description: string
+          id: number
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: number
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: number
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       shared_posts: {
         Row: {
           created_at: string
@@ -1092,6 +1187,7 @@ export type Database = {
           github: string | null
           id: string
           interests: string[] | null
+          is_banned: boolean
           job_title: string | null
           languages: Json | null
           linkedin: string | null
@@ -1103,6 +1199,7 @@ export type Database = {
           phone: string | null
           phone_country_code: string | null
           profile_photo: string | null
+          role_id: number
           tools_submitted: number | null
           total_engagement: number | null
           total_reach: number | null
@@ -1129,6 +1226,7 @@ export type Database = {
           github?: string | null
           id: string
           interests?: string[] | null
+          is_banned?: boolean
           job_title?: string | null
           languages?: Json | null
           linkedin?: string | null
@@ -1140,6 +1238,7 @@ export type Database = {
           phone?: string | null
           phone_country_code?: string | null
           profile_photo?: string | null
+          role_id?: number
           tools_submitted?: number | null
           total_engagement?: number | null
           total_reach?: number | null
@@ -1166,6 +1265,7 @@ export type Database = {
           github?: string | null
           id?: string
           interests?: string[] | null
+          is_banned?: boolean
           job_title?: string | null
           languages?: Json | null
           linkedin?: string | null
@@ -1177,6 +1277,7 @@ export type Database = {
           phone?: string | null
           phone_country_code?: string | null
           profile_photo?: string | null
+          role_id?: number
           tools_submitted?: number | null
           total_engagement?: number | null
           total_reach?: number | null
@@ -1191,6 +1292,13 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_profiles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
             referencedColumns: ["id"]
           },
         ]
@@ -1245,6 +1353,14 @@ export type Database = {
           tags: string[]
           created_at: string
         }[]
+      }
+      get_user_permissions: {
+        Args: { user_id_param: string }
+        Returns: string[]
+      }
+      has_permission: {
+        Args: { user_id_param: string; permission_key_param: string }
+        Returns: boolean
       }
       reject_tool_edit_request: {
         Args: { request_id_param: string; admin_notes_param: string }

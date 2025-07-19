@@ -37,6 +37,9 @@ import CategoryManagement from '../components/CategoryManagement';
 import AdminSidebar from '../components/AdminSidebar';
 import NewsletterManagement from '../components/NewsletterManagement';
 import ContentManagement from '../components/ContentManagement';
+import RoleManagement from '../components/RoleManagement';
+import UserRoleAssignment from '../components/UserRoleAssignment';
+import ReportsManagement from '../components/ReportsManagement';
 import { supabase } from '../lib/supabase';
 import useI18nGuard from '../hooks/useI18nGuard';
 
@@ -246,6 +249,7 @@ const AdminDashboard: React.FC = () => {
         );
       
       case 'users':
+      case 'user-list':
         return (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -261,6 +265,15 @@ const AdminDashboard: React.FC = () => {
             <ContentManagement />
           </div>
         );
+
+      case 'role-assignment':
+        return <UserRoleAssignment />;
+
+      case 'roles-permissions':
+        return <RoleManagement />;
+
+      case 'reports':
+        return <ReportsManagement />;
 
       case 'categories':
         return <CategoryManagement />;
