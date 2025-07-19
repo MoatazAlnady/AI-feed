@@ -134,7 +134,7 @@ const AdminDashboard: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-surface rounded-2xl shadow-sm p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">{t('auto.totalUsers')}</p>
@@ -148,7 +148,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               
-              <div className="bg-surface rounded-2xl shadow-sm p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">{t('auto.totalTools')}</p>
@@ -162,7 +162,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               
-              <div className="bg-surface rounded-2xl shadow-sm p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">{t('auto.totalArticles')}</p>
@@ -176,7 +176,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               
-              <div className="bg-surface rounded-2xl shadow-sm p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">{t('auto.editRequests')}</p>
@@ -201,7 +201,7 @@ const AdminDashboard: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <button
                   onClick={() => setShowCreateUser(true)}
-                  className="p-4 bg-surface rounded-xl border hover:shadow-md transition-shadow flex items-center space-x-3"
+                  className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow flex items-center space-x-3"
                 >
                   <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
                     <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
@@ -211,7 +211,7 @@ const AdminDashboard: React.FC = () => {
                 
                 <button
                   onClick={() => setActiveSection('tool-requests')}
-                  className="p-4 bg-surface rounded-xl border hover:shadow-md transition-shadow flex items-center space-x-3"
+                  className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow flex items-center space-x-3"
                 >
                   <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                     <Edit className="h-5 w-5 text-blue-600 dark:text-blue-400" />
@@ -226,7 +226,7 @@ const AdminDashboard: React.FC = () => {
                 
                 <button
                   onClick={() => setActiveSection('newsletters')}
-                  className="p-4 bg-surface rounded-xl border hover:shadow-md transition-shadow flex items-center space-x-3"
+                  className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow flex items-center space-x-3"
                 >
                   <div className="p-2 bg-primary/10 rounded-lg">
                     <FileText className="h-5 w-5 text-primary" />
@@ -236,7 +236,7 @@ const AdminDashboard: React.FC = () => {
                 
                 <button
                   onClick={() => setActiveSection('categories')}
-                  className="p-4 bg-surface rounded-xl border hover:shadow-md transition-shadow flex items-center space-x-3"
+                  className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow flex items-center space-x-3"
                 >
                   <div className="p-2 bg-accent/10 rounded-lg">
                     <Flag className="h-5 w-5 text-accent-foreground" />
