@@ -301,7 +301,7 @@ const NewsletterManagement = () => {
           <h2 className="text-2xl font-bold">Newsletter Management</h2>
           <p className="text-muted-foreground">Create and manage newsletter campaigns</p>
         </div>
-        <Button onClick={() => setIsCreating(true)}>
+        <Button onClick={() => setIsCreating(true)} className="bg-gradient-primary text-white hover:shadow-lg">
           <Plus className="h-4 w-4 mr-2" />
           Create Newsletter
         </Button>

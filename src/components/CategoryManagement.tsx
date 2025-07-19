@@ -240,7 +240,7 @@ const CategoryManagement = () => {
         </div>
         <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
           <DialogTrigger asChild>
-            <Button onClick={() => setShowCreateModal(true)}>
+            <Button onClick={() => setShowCreateModal(true)} className="bg-gradient-primary text-white hover:shadow-lg">
               <Plus className="h-4 w-4 mr-2" />
               New Category
             </Button>
@@ -295,7 +295,7 @@ const CategoryManagement = () => {
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={resetForm}>Cancel</Button>
-              <Button onClick={handleSave}>
+              <Button onClick={handleSave} className="bg-gradient-primary text-white hover:shadow-lg">
                 {editingCategory ? 'Update' : 'Create'}
               </Button>
             </DialogFooter>
@@ -303,12 +303,12 @@ const CategoryManagement = () => {
         </Dialog>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Categories Overview</CardTitle>
-          <CardDescription>Manage your tool categories and sub-categories</CardDescription>
+      <Card className="bg-white dark:bg-gray-800 border">
+        <CardHeader className="bg-white dark:bg-gray-800">
+          <CardTitle className="text-foreground">Categories Overview</CardTitle>
+          <CardDescription className="text-muted-foreground">Manage your tool categories and sub-categories</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="bg-white dark:bg-gray-800">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
