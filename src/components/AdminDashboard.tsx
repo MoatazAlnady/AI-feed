@@ -292,10 +292,8 @@ const AdminDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -308,11 +306,11 @@ const AdminDashboard: React.FC = () => {
           onSectionChange={setActiveSection} 
         />
         
-        <div className="flex-1 p-8">
-          <div className="max-w-7xl mx-auto">
+        <div className="flex-1 bg-background">
+          <div className="max-w-7xl mx-auto p-8">
             {/* Header */}
             <div className="mb-8">
-              <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
                 Admin Dashboard
               </h1>
               <p className="text-xl text-muted-foreground">
