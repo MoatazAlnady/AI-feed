@@ -40,9 +40,14 @@
     --ring: 220 90% 56%; /* Light blue instead of purple */
     --radius: 0.75rem;
     
+    /* Surface tokens for consistent UI */
+    --surface: 0 0% 100%;
+    --surface-foreground: 240 10% 3.9%;
+    
     /* Custom gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--c-cyan)), hsl(var(--c-violet)));
     --gradient-secondary: linear-gradient(135deg, hsl(var(--c-violet)), hsl(var(--c-indigo)));
+    --gradient-brand: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
   }
 
   .dark {
@@ -66,9 +71,14 @@
     --input: var(--c-indigo);
     --ring: 220 14% 91%; /* Grey instead of cyan in dark mode */
     
+    /* Surface tokens for dark mode */
+    --surface: 248 32% 18%;
+    --surface-foreground: 0 0% 98%;
+    
     /* Custom gradients for dark mode - no more violet */
     --gradient-primary: linear-gradient(135deg, hsl(var(--c-cyan)), hsl(var(--c-indigo)));
     --gradient-secondary: linear-gradient(135deg, hsl(var(--c-indigo)), hsl(var(--dark-1)));
+    --gradient-brand: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
   }
 }
 

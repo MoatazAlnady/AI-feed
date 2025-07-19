@@ -1096,6 +1096,7 @@ export type Database = {
           languages: Json | null
           linkedin: string | null
           location: string | null
+          newsletter_frequency: string | null
           newsletter_subscription: boolean | null
           notification_preferences: Json | null
           organization_id: string | null
@@ -1132,6 +1133,7 @@ export type Database = {
           languages?: Json | null
           linkedin?: string | null
           location?: string | null
+          newsletter_frequency?: string | null
           newsletter_subscription?: boolean | null
           notification_preferences?: Json | null
           organization_id?: string | null
@@ -1168,6 +1170,7 @@ export type Database = {
           languages?: Json | null
           linkedin?: string | null
           location?: string | null
+          newsletter_frequency?: string | null
           newsletter_subscription?: boolean | null
           notification_preferences?: Json | null
           organization_id?: string | null
