@@ -109,11 +109,26 @@ const CategoryManagement = () => {
     }
 
     try {
+      // Debug: Check current user
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log('Current user:', user);
+      
+      if (!user) {
+        toast({
+          title: "Authentication Error",
+          description: "You must be logged in to edit categories",
+          variant: "destructive"
+        });
+        return;
+      }
+
       const slug = formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
       
       if (editingCategory) {
+        console.log('Attempting to update category:', editingCategory.id, formData);
+        
         // Update category
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('categories')
           .update({
             name: formData.name,
@@ -121,11 +136,19 @@ const CategoryManagement = () => {
             icon: formData.icon || null,
             slug
           })
-          .eq('id', editingCategory.id);
+          .eq('id', editingCategory.id)
+          .select();
+
+        console.log('Update result:', { data, error });
 
         if (error) {
           console.error('Category update error:', error);
-          throw error;
+          toast({
+            title: "Update Failed",
+            description: `Error: ${error.message}`,
+            variant: "destructive"
+          });
+          return;
         }
 
         toast({
