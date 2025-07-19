@@ -90,13 +90,9 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
       icon: CreditCard
     },
     {
-      id: 'marketing',
-      label: 'Marketing',
-      icon: Mail,
-      children: [
-        { id: 'newsletters', label: 'Newsletters', icon: Mail },
-        { id: 'campaigns', label: 'Campaigns', icon: TrendingUp }
-      ]
+      id: 'newsletters',
+      label: 'Newsletters',
+      icon: Mail
     },
     {
       id: 'users',

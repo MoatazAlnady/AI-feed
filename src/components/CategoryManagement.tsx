@@ -129,6 +129,9 @@ const CategoryManagement = () => {
           title: "Success",
           description: "Category updated successfully",
         });
+        
+        // Refresh data immediately
+        await fetchCategoriesAndSubs();
       } else {
         // Create category
         const { data: categoryData, error: categoryError } = await supabase
