@@ -151,6 +151,9 @@ const CategoryManagement = () => {
           return;
         }
 
+        // Refresh categories data
+        await fetchCategoriesAndSubs();
+
         toast({
           title: "Success",
           description: "Category updated successfully",
