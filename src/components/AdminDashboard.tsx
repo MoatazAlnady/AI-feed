@@ -252,7 +252,7 @@ const AdminDashboard: React.FC = () => {
       case 'users':
       case 'user-list':
         return (
-          <div className="space-y-6 bg-card rounded-xl p-6 border">
+          <div className="space-y-6 bg-white dark:bg-gray-800 rounded-xl p-6 border">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-foreground">User Management</h2>
@@ -266,7 +266,7 @@ const AdminDashboard: React.FC = () => {
                 <span>Create User</span>
               </button>
             </div>
-            <div className="bg-card rounded-lg border">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border">
               <ContentManagement />
             </div>
           </div>
@@ -274,49 +274,49 @@ const AdminDashboard: React.FC = () => {
 
       case 'role-assignment':
         return (
-          <div className="bg-card rounded-xl p-6 border">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border">
             <UserRoleAssignment />
           </div>
         );
 
       case 'roles-permissions':
         return (
-          <div className="bg-card rounded-xl p-6 border">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border">
             <RoleManagement />
           </div>
         );
 
       case 'reports':
         return (
-          <div className="bg-card rounded-xl p-6 border">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border">
             <ReportsManagement />
           </div>
         );
 
       case 'categories':
         return (
-          <div className="bg-card rounded-xl p-6 border">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border">
             <CategoryManagement />
           </div>
         );
 
       case 'newsletters':
         return (
-          <div className="bg-card rounded-xl p-6 border">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border">
             <NewsletterManagement />
           </div>
         );
 
       case 'pricing':
         return (
-          <div className="bg-card rounded-xl p-6 border">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border">
             <PricingManagement />
           </div>
         );
 
       case 'tool-requests':
         return (
-          <div className="bg-card rounded-xl p-6 border space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border space-y-6">
             <div>
               <h2 className="text-2xl font-bold text-foreground">Tool Edit Requests</h2>
               <p className="text-muted-foreground">Manage pending tool edit requests from users.</p>
@@ -327,7 +327,7 @@ const AdminDashboard: React.FC = () => {
 
       case 'site-config':
         return (
-          <div className="bg-card rounded-xl p-6 border space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border space-y-6">
             <div>
               <h2 className="text-2xl font-bold text-foreground">Site Configuration</h2>
               <p className="text-muted-foreground">Manage site settings and configurations.</p>
@@ -338,7 +338,7 @@ const AdminDashboard: React.FC = () => {
 
       case 'system':
         return (
-          <div className="bg-card rounded-xl p-6 border space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border space-y-6">
             <div>
               <h2 className="text-2xl font-bold text-foreground">System Settings</h2>
               <p className="text-muted-foreground">Advanced system configurations and maintenance.</p>
@@ -358,7 +358,7 @@ const AdminDashboard: React.FC = () => {
 
       default:
         return (
-          <div className="bg-card rounded-xl p-6 border space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border space-y-6">
             <h2 className="text-2xl font-bold text-foreground">Admin Panel</h2>
             <p className="text-muted-foreground">Select a section from the sidebar to get started.</p>
           </div>
@@ -376,13 +376,13 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-card flex">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
         <AdminSidebar 
           activeSection={activeSection} 
           onSectionChange={setActiveSection} 
         />
         
-        <div className="flex-1 bg-card">
+        <div className="flex-1 bg-gray-50 dark:bg-gray-900">
           <div className="max-w-7xl mx-auto p-8">
             {/* Header */}
             <div className="mb-8">
