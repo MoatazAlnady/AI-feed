@@ -151,7 +151,7 @@ const CategoryManagement = () => {
           return;
         }
 
-        // Refresh categories data
+        // Refresh categories data first
         await fetchCategoriesAndSubs();
 
         toast({
@@ -159,11 +159,8 @@ const CategoryManagement = () => {
           description: "Category updated successfully",
         });
         
-        // Reset form and close modal first
+        // Reset form and close modal
         resetForm();
-        
-        // Then refresh data
-        await fetchCategoriesAndSubs();
       } else {
         // Create category
         const { data: categoryData, error: categoryError } = await supabase
@@ -335,26 +332,26 @@ const CategoryManagement = () => {
         </Dialog>
       </div>
 
-      <Card className="bg-white dark:bg-gray-800 border">
-        <CardHeader className="bg-white dark:bg-gray-800">
+      <Card className="bg-card border border-primary/20">
+        <CardHeader className="bg-card">
           <CardTitle className="text-foreground">Categories Overview</CardTitle>
           <CardDescription className="text-muted-foreground">Manage your tool categories and sub-categories</CardDescription>
         </CardHeader>
-        <CardContent className="bg-white dark:bg-gray-800">
+        <CardContent className="bg-card">
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-4 font-medium">Name</th>
-                  <th className="text-left p-4 font-medium">Slug</th>
-                  <th className="text-left p-4 font-medium">Icon</th>
-                  <th className="text-left p-4 font-medium">Sub-categories</th>
-                  <th className="text-right p-4 font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {categories.map((category) => (
-                  <tr key={category.id} className="border-b hover:bg-muted/50">
+             <table className="w-full">
+               <thead>
+                 <tr className="border-b border-primary/30">
+                   <th className="text-left p-4 font-medium">Name</th>
+                   <th className="text-left p-4 font-medium">Slug</th>
+                   <th className="text-left p-4 font-medium">Icon</th>
+                   <th className="text-left p-4 font-medium">Sub-categories</th>
+                   <th className="text-right p-4 font-medium">Actions</th>
+                 </tr>
+               </thead>
+               <tbody>
+                 {categories.map((category) => (
+                   <tr key={category.id} className="border-b border-primary/20 hover:bg-muted/50">
                     <td className="p-4">
                       <div>
                         <div className="font-medium">{category.name}</div>
