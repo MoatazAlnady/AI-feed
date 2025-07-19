@@ -55,7 +55,7 @@
     --foreground: 0 0% 98%;
     --card: 240 10% 6%; /* Changed from purple to neutral dark card */
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 6%; /* Changed from purple to neutral dark */
+    --popover: 240 10% 8%;
     --popover-foreground: 0 0% 98%;
     --primary: var(--c-cyan);
     --primary-foreground: 210 40% 98%;
@@ -363,6 +363,23 @@ button {
 .dark input::placeholder,
 .dark textarea::placeholder {
   @apply text-muted-foreground;
+}
+
+/* Ensure dropdowns and popovers are never transparent */
+[data-radix-popper-content-wrapper] {
+  background: hsl(var(--popover)) !important;
+}
+
+.dark [data-radix-popper-content-wrapper] {
+  background: hsl(var(--popover)) !important;
+}
+
+[data-radix-select-content],
+[data-radix-dropdown-menu-content],
+[data-radix-popover-content] {
+  background: hsl(var(--popover)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  backdrop-filter: blur(8px) !important;
 }
 
 /* Window border colors */

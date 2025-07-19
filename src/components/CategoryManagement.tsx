@@ -175,8 +175,9 @@ const CategoryManagement = () => {
         });
       }
 
-      await fetchCategoriesAndSubs();
+      // Force refresh data after any save operation
       resetForm();
+      await fetchCategoriesAndSubs();
     } catch (error) {
       console.error('Error saving category:', error);
       toast({
@@ -207,7 +208,7 @@ const CategoryManagement = () => {
 
       if (error) throw error;
 
-      await fetchCategoriesAndSubs();
+      await fetchCategoriesAndSubs(); // Force refresh after deletion
       toast({
         title: "Success",
         description: "Category deleted successfully",
