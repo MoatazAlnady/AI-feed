@@ -151,16 +151,18 @@ const CategoryManagement = () => {
           return;
         }
 
-      toast({
-        title: "Success",
-        description: "Category updated successfully",
-      });
-      
-      // Reset form and close modal first
-      resetForm();
-      
-      // Then refresh categories data
-      await fetchCategoriesAndSubs();
+        toast({
+          title: "Success",
+          description: "Category updated successfully",
+        });
+        
+        // Reset form and close modal first
+        resetForm();
+        
+        // Force a complete refresh of the data
+        setTimeout(async () => {
+          await fetchCategoriesAndSubs();
+        }, 100);
       } else {
         // Create category
         const { data: categoryData, error: categoryError } = await supabase
@@ -332,12 +334,12 @@ const CategoryManagement = () => {
         </Dialog>
       </div>
 
-      <Card className="bg-white dark:bg-gray-800 border border-primary/20">
-        <CardHeader className="bg-white dark:bg-gray-800">
+      <Card className="bg-white dark:bg-gray-800 border border-primary/20 shadow-lg">
+        <CardHeader className="bg-white dark:bg-gray-800 border-b border-primary/10">
           <CardTitle className="text-foreground">Categories Overview</CardTitle>
           <CardDescription className="text-muted-foreground">Manage your tool categories and sub-categories</CardDescription>
         </CardHeader>
-        <CardContent className="bg-white dark:bg-gray-800">
+        <CardContent className="bg-white dark:bg-gray-800 p-6">
           <div className="overflow-x-auto">
              <table className="w-full">
                <thead>
