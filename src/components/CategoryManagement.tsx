@@ -151,16 +151,16 @@ const CategoryManagement = () => {
           return;
         }
 
-        // Refresh categories data first
-        await fetchCategoriesAndSubs();
-
-        toast({
-          title: "Success",
-          description: "Category updated successfully",
-        });
-        
-        // Reset form and close modal
-        resetForm();
+      toast({
+        title: "Success",
+        description: "Category updated successfully",
+      });
+      
+      // Reset form and close modal first
+      resetForm();
+      
+      // Then refresh categories data
+      await fetchCategoriesAndSubs();
       } else {
         // Create category
         const { data: categoryData, error: categoryError } = await supabase
@@ -332,12 +332,12 @@ const CategoryManagement = () => {
         </Dialog>
       </div>
 
-      <Card className="bg-card border border-primary/20">
-        <CardHeader className="bg-card">
+      <Card className="bg-white dark:bg-gray-800 border border-primary/20">
+        <CardHeader className="bg-white dark:bg-gray-800">
           <CardTitle className="text-foreground">Categories Overview</CardTitle>
           <CardDescription className="text-muted-foreground">Manage your tool categories and sub-categories</CardDescription>
         </CardHeader>
-        <CardContent className="bg-card">
+        <CardContent className="bg-white dark:bg-gray-800">
           <div className="overflow-x-auto">
              <table className="w-full">
                <thead>

@@ -135,7 +135,7 @@ const AdminDashboard: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-card rounded-2xl border p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl border p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">{t('auto.totalUsers')}</p>
@@ -149,7 +149,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               
-              <div className="bg-card rounded-2xl border p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl border p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">{t('auto.totalTools')}</p>
@@ -163,7 +163,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               
-              <div className="bg-card rounded-2xl border p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl border p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">{t('auto.totalArticles')}</p>
@@ -177,7 +177,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               
-              <div className="bg-card rounded-2xl border p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl border p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">{t('auto.editRequests')}</p>
@@ -202,7 +202,7 @@ const AdminDashboard: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <button
                   onClick={() => setShowCreateUser(true)}
-                  className="p-4 bg-card rounded-xl border hover:shadow-md transition-shadow flex items-center space-x-3"
+                  className="p-4 bg-white dark:bg-gray-800 rounded-xl border hover:shadow-md transition-shadow flex items-center space-x-3"
                 >
                   <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
                     <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
@@ -212,7 +212,7 @@ const AdminDashboard: React.FC = () => {
                 
                 <button
                   onClick={() => setActiveSection('tool-requests')}
-                  className="p-4 bg-card rounded-xl border hover:shadow-md transition-shadow flex items-center space-x-3"
+                  className="p-4 bg-white dark:bg-gray-800 rounded-xl border hover:shadow-md transition-shadow flex items-center space-x-3"
                 >
                   <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                     <Edit className="h-5 w-5 text-blue-600 dark:text-blue-400" />
@@ -227,7 +227,7 @@ const AdminDashboard: React.FC = () => {
                 
                 <button
                   onClick={() => setActiveSection('newsletters')}
-                  className="p-4 bg-card rounded-xl border hover:shadow-md transition-shadow flex items-center space-x-3"
+                  className="p-4 bg-white dark:bg-gray-800 rounded-xl border hover:shadow-md transition-shadow flex items-center space-x-3"
                 >
                   <div className="p-2 bg-primary/10 rounded-lg">
                     <FileText className="h-5 w-5 text-primary" />
@@ -237,7 +237,7 @@ const AdminDashboard: React.FC = () => {
                 
                 <button
                   onClick={() => setActiveSection('categories')}
-                  className="p-4 bg-card rounded-xl border hover:shadow-md transition-shadow flex items-center space-x-3"
+                  className="p-4 bg-white dark:bg-gray-800 rounded-xl border hover:shadow-md transition-shadow flex items-center space-x-3"
                 >
                   <div className="p-2 bg-accent/10 rounded-lg">
                     <Flag className="h-5 w-5 text-accent-foreground" />
@@ -252,7 +252,7 @@ const AdminDashboard: React.FC = () => {
       case 'users':
       case 'user-list':
         return (
-          <div className="space-y-6 bg-card rounded-xl p-6 border">
+          <div className="space-y-6 bg-white dark:bg-gray-800 rounded-xl p-6 border">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-foreground">User Management</h2>
@@ -266,7 +266,7 @@ const AdminDashboard: React.FC = () => {
                 <span>Create User</span>
               </button>
             </div>
-            <div className="bg-card rounded-lg border">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border">
               <ContentManagement />
             </div>
           </div>
@@ -274,49 +274,49 @@ const AdminDashboard: React.FC = () => {
 
       case 'role-assignment':
         return (
-          <div className="bg-card rounded-xl p-6 border">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border">
             <UserRoleAssignment />
           </div>
         );
 
       case 'roles-permissions':
         return (
-          <div className="bg-card rounded-xl p-6 border">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border">
             <RoleManagement />
           </div>
         );
 
       case 'reports':
         return (
-          <div className="bg-card rounded-xl p-6 border">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border">
             <ReportsManagement />
           </div>
         );
 
       case 'categories':
         return (
-          <div className="bg-card rounded-xl p-6 border">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border">
             <CategoryManagement />
           </div>
         );
 
       case 'newsletters':
         return (
-          <div className="bg-card rounded-xl p-6 border">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border">
             <NewsletterManagement />
           </div>
         );
 
       case 'pricing':
         return (
-          <div className="bg-card rounded-xl p-6 border">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border">
             <PricingManagement />
           </div>
         );
 
       case 'tool-requests':
         return (
-          <div className="bg-card rounded-xl p-6 border space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border space-y-6">
             <div>
               <h2 className="text-2xl font-bold text-foreground">Tool Edit Requests</h2>
               <p className="text-muted-foreground">Manage pending tool edit requests from users.</p>
@@ -327,7 +327,7 @@ const AdminDashboard: React.FC = () => {
 
       case 'site-config':
         return (
-          <div className="bg-card rounded-xl p-6 border space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border space-y-6">
             <div>
               <h2 className="text-2xl font-bold text-foreground">Site Configuration</h2>
               <p className="text-muted-foreground">Manage site settings and configurations.</p>
@@ -338,7 +338,7 @@ const AdminDashboard: React.FC = () => {
 
       case 'system':
         return (
-          <div className="bg-card rounded-xl p-6 border space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border space-y-6">
             <div>
               <h2 className="text-2xl font-bold text-foreground">System Settings</h2>
               <p className="text-muted-foreground">Advanced system configurations and maintenance.</p>
@@ -358,7 +358,7 @@ const AdminDashboard: React.FC = () => {
 
       default:
         return (
-          <div className="bg-card rounded-xl p-6 border space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border space-y-6">
             <h2 className="text-2xl font-bold text-foreground">Admin Panel</h2>
             <p className="text-muted-foreground">Select a section from the sidebar to get started.</p>
           </div>
