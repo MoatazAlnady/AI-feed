@@ -165,7 +165,7 @@ const PricingManagement: React.FC = () => {
           <p className="text-gray-600 dark:text-gray-400">Create and manage subscription plans for organizations</p>
         </div>
         {!showCreateForm && (
-          <Button onClick={() => setShowCreateForm(true)}>
+          <Button onClick={() => setShowCreateForm(true)} className="bg-gradient-primary text-white hover:shadow-lg">
             <Plus className="h-4 w-4 mr-2" />
             Create Plan
           </Button>
@@ -289,7 +289,7 @@ const PricingManagement: React.FC = () => {
               </div>
 
               <div className="flex gap-3 pt-4">
-                <Button type="submit">
+                <Button type="submit" className="bg-gradient-primary text-white hover:shadow-lg">
                   {editingPlan ? "Update Plan" : "Create Plan"}
                 </Button>
                 <Button type="button" variant="outline" onClick={resetForm}>

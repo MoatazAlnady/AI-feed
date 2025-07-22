@@ -9,13 +9,15 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Edit, Trash2, FolderOpen, Tag } from 'lucide-react';
+import { Plus, Edit, Trash2, FolderOpen, Tag, Palette } from 'lucide-react';
+import ColorPicker from '@/components/ui/color-picker';
 
 interface Category {
   id: string;
   name: string;
   slug: string;
   icon?: string;
+  color?: string;
   description?: string;
   created_at: string;
   sub_categories_count?: number;
@@ -40,6 +42,7 @@ const CategoryManagement = () => {
     name: '',
     description: '',
     icon: '',
+    color: '#3b82f6',
     subCategories: ''
   });
 
@@ -92,6 +95,7 @@ const CategoryManagement = () => {
       name: '',
       description: '',
       icon: '',
+      color: '#3b82f6',
       subCategories: ''
     });
     setEditingCategory(null);
@@ -134,6 +138,7 @@ const CategoryManagement = () => {
             name: formData.name,
             description: formData.description,
             icon: formData.icon || null,
+            color: formData.color || '#3b82f6',
             slug
           })
           .eq('id', editingCategory.id)
@@ -169,6 +174,7 @@ const CategoryManagement = () => {
             name: formData.name,
             description: formData.description,
             icon: formData.icon || null,
+            color: formData.color || '#3b82f6',
             slug
           })
           .select()
@@ -223,6 +229,7 @@ const CategoryManagement = () => {
       name: category.name,
       description: category.description || '',
       icon: category.icon || '',
+      color: category.color || '#3b82f6',
       subCategories: ''
     });
     setShowCreateModal(true);
@@ -301,12 +308,19 @@ const CategoryManagement = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="icon">Icon (optional)</Label>
+                <Label htmlFor="color">Category Color</Label>
+                <ColorPicker
+                  value={formData.color}
+                  onChange={(color) => setFormData({ ...formData, color })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="icon">Icon (emoji or text)</Label>
                 <Input
                   id="icon"
                   value={formData.icon}
                   onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                  placeholder="Icon name or emoji"
+                  placeholder="🎨 or icon name"
                 />
               </div>
               {!editingCategory && (
@@ -344,7 +358,7 @@ const CategoryManagement = () => {
                  <tr className="border-b border-primary/30">
                    <th className="text-left p-4 font-medium">Name</th>
                    <th className="text-left p-4 font-medium">Slug</th>
-                   <th className="text-left p-4 font-medium">Icon</th>
+                   <th className="text-left p-4 font-medium">Color</th>
                    <th className="text-left p-4 font-medium">Sub-categories</th>
                    <th className="text-right p-4 font-medium">Actions</th>
                  </tr>
@@ -363,19 +377,26 @@ const CategoryManagement = () => {
                     <td className="p-4">
                       <code className="text-sm bg-muted px-2 py-1 rounded">{category.slug}</code>
                     </td>
-                    <td className="p-4">
-                      {category.icon ? (
-                        <span className="text-lg">{category.icon}</span>
-                      ) : (
-                        <FolderOpen className="h-5 w-5 text-muted-foreground" />
-                      )}
-                    </td>
-                    <td className="p-4">
-                      <div className="px-3 py-1 bg-gradient-primary text-white rounded-full flex items-center justify-center w-fit">
-                        <Tag className="h-3 w-3 mr-1" />
-                        {category.sub_categories_count || 0}
-                      </div>
-                    </td>
+                     <td className="p-4">
+                       <div className="flex items-center gap-2">
+                         <div
+                           className="w-6 h-6 rounded-full border-2 border-gray-300"
+                           style={{ backgroundColor: category.color || '#3b82f6' }}
+                         />
+                         {category.icon && (
+                           <span className="text-lg">{category.icon}</span>
+                         )}
+                       </div>
+                     </td>
+                     <td className="p-4">
+                       <div 
+                         className="px-3 py-1 text-white rounded-full flex items-center justify-center w-fit"
+                         style={{ backgroundColor: category.color || '#3b82f6' }}
+                       >
+                         <Tag className="h-3 w-3 mr-1" />
+                         {category.sub_categories_count || 0}
+                       </div>
+                     </td>
                     <td className="p-4 text-right">
                       <div className="flex justify-end space-x-2">
                         <Button size="sm" variant="outline" onClick={() => handleEdit(category)}>
