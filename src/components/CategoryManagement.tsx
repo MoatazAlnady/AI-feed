@@ -156,13 +156,11 @@ const CategoryManagement = () => {
           description: "Category updated successfully",
         });
         
-        // Reset form and close modal first
-        resetForm();
+        // Force immediate refresh of the data before closing modal
+        await fetchCategoriesAndSubs();
         
-        // Force a complete refresh of the data
-        setTimeout(async () => {
-          await fetchCategoriesAndSubs();
-        }, 100);
+        // Reset form and close modal after data refresh
+        resetForm();
       } else {
         // Create category
         const { data: categoryData, error: categoryError } = await supabase

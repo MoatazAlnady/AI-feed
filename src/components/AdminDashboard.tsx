@@ -376,13 +376,13 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-background flex">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
         <AdminSidebar 
           activeSection={activeSection} 
           onSectionChange={setActiveSection} 
         />
         
-        <div className="flex-1 bg-background">
+        <div className="flex-1 bg-gray-50 dark:bg-gray-900">
           <div className="max-w-7xl mx-auto p-8">
             {/* Header */}
             <div className="mb-8">
