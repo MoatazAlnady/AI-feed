@@ -41,7 +41,6 @@ const CategoryManagement = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    icon: '',
     color: '#3b82f6',
     subCategories: ''
   });
@@ -94,7 +93,6 @@ const CategoryManagement = () => {
     setFormData({
       name: '',
       description: '',
-      icon: '',
       color: '#3b82f6',
       subCategories: ''
     });
@@ -137,7 +135,6 @@ const CategoryManagement = () => {
           .update({
             name: formData.name,
             description: formData.description,
-            icon: formData.icon || null,
             color: formData.color || '#3b82f6',
             slug
           })
@@ -173,7 +170,6 @@ const CategoryManagement = () => {
           .insert({
             name: formData.name,
             description: formData.description,
-            icon: formData.icon || null,
             color: formData.color || '#3b82f6',
             slug
           })
@@ -228,7 +224,6 @@ const CategoryManagement = () => {
     setFormData({
       name: category.name,
       description: category.description || '',
-      icon: category.icon || '',
       color: category.color || '#3b82f6',
       subCategories: ''
     });
@@ -314,15 +309,6 @@ const CategoryManagement = () => {
                   onChange={(color) => setFormData({ ...formData, color })}
                 />
               </div>
-              <div>
-                <Label htmlFor="icon">Icon (emoji or text)</Label>
-                <Input
-                  id="icon"
-                  value={formData.icon}
-                  onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                  placeholder="🎨 or icon name"
-                />
-              </div>
               {!editingCategory && (
                 <div>
                   <Label htmlFor="subCategories">Sub-categories (one per line)</Label>
@@ -379,13 +365,10 @@ const CategoryManagement = () => {
                     </td>
                      <td className="p-4">
                        <div className="flex items-center gap-2">
-                         <div
-                           className="w-6 h-6 rounded-full border-2 border-gray-300"
-                           style={{ backgroundColor: category.color || '#3b82f6' }}
-                         />
-                         {category.icon && (
-                           <span className="text-lg">{category.icon}</span>
-                         )}
+                          <div
+                            className="w-6 h-6 rounded-full border-2 border-gray-300"
+                            style={{ backgroundColor: category.color || '#3b82f6' }}
+                          />
                        </div>
                      </td>
                      <td className="p-4">

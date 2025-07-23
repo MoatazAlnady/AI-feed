@@ -960,7 +960,9 @@ export type Database = {
       sub_categories: {
         Row: {
           category_id: string
+          color: string | null
           created_at: string | null
+          description: string | null
           id: string
           name: string
           slug: string
@@ -968,7 +970,9 @@ export type Database = {
         }
         Insert: {
           category_id: string
+          color?: string | null
           created_at?: string | null
+          description?: string | null
           id?: string
           name: string
           slug: string
@@ -976,7 +980,9 @@ export type Database = {
         }
         Update: {
           category_id?: string
+          color?: string | null
           created_at?: string | null
+          description?: string | null
           id?: string
           name?: string
           slug?: string
@@ -1104,6 +1110,7 @@ export type Database = {
           pros: string[] | null
           share_count: number | null
           status: string | null
+          sub_category_ids: string[] | null
           subcategory: string | null
           tags: string[] | null
           updated_at: string | null
@@ -1126,6 +1133,7 @@ export type Database = {
           pros?: string[] | null
           share_count?: number | null
           status?: string | null
+          sub_category_ids?: string[] | null
           subcategory?: string | null
           tags?: string[] | null
           updated_at?: string | null
@@ -1148,6 +1156,7 @@ export type Database = {
           pros?: string[] | null
           share_count?: number | null
           status?: string | null
+          sub_category_ids?: string[] | null
           subcategory?: string | null
           tags?: string[] | null
           updated_at?: string | null

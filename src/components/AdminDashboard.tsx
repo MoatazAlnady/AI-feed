@@ -34,6 +34,7 @@ import { useAuth } from '../context/AuthContext';
 import CreateUserModal from '../components/CreateUserModal';
 import PricingManagement from '../components/PricingManagement';
 import CategoryManagement from '../components/CategoryManagement';
+import SubCategoryManagement from '../components/SubCategoryManagement';
 import AdminSidebar from '../components/AdminSidebar';
 import NewsletterManagement from '../components/NewsletterManagement';
 import ContentManagement from '../components/ContentManagement';
@@ -297,6 +298,13 @@ const AdminDashboard: React.FC = () => {
         return (
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-border shadow-lg">
             <CategoryManagement />
+          </div>
+        );
+
+      case 'sub-categories':
+        return (
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-border shadow-lg">
+            <SubCategoryManagement />
           </div>
         );
 

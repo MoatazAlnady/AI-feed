@@ -31,6 +31,8 @@ const COLOR_PALETTE = [
   { name: 'Gray', value: '#6b7280' },
   { name: 'Slate', value: '#64748b' },
   { name: 'Zinc', value: '#71717a' },
+  { name: 'Dark Blue', value: '#1e293b' },
+  { name: 'Black', value: '#0f172a' },
 ];
 
 const ColorPicker: React.FC<ColorPickerProps> = ({ value, onChange, className }) => {

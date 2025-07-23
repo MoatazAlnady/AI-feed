@@ -15,7 +15,7 @@ interface Tool {
   name: string;
   description: string;
   category_id: string;
-  subcategory: string;
+  sub_category_ids: string[];
   website: string;
   pricing: string;
   features: string[];
@@ -27,7 +27,18 @@ interface Tool {
 interface Category {
   id: string;
   name: string;
-  parent_id: string | null;
+  slug: string;
+  color: string;
+  description?: string;
+}
+
+interface SubCategory {
+  id: string;
+  category_id: string;
+  name: string;
+  slug: string;
+  color: string;
+  description?: string;
 }
 
 const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, onToolUpdated }) => {
@@ -36,12 +47,12 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
   const [submitting, setSubmitting] = useState(false);
   const [tool, setTool] = useState<Tool | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [subcategories, setSubcategories] = useState<Category[]>([]);
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     category_id: '',
-    subcategory: '',
+    sub_category_ids: [] as string[],
     website: '',
     pricing: 'free',
     features: [''],
@@ -60,14 +71,10 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
   }, [isOpen, toolId]);
 
   useEffect(() => {
-    if (formData.category_id) {
-      const parentCategory = categories.find(c => c.id === formData.category_id);
-      if (parentCategory) {
-        const subs = categories.filter(c => c.parent_id === parentCategory.id);
-        setSubcategories(subs);
-      }
+    if (isOpen && toolId) {
+      fetchSubCategories();
     }
-  }, [formData.category_id, categories]);
+  }, [isOpen, toolId]);
 
   const fetchToolData = async () => {
     try {
@@ -85,7 +92,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
           name: data.name || '',
           description: data.description || '',
           category_id: data.category_id || '',
-          subcategory: data.subcategory || '',
+          sub_category_ids: data.sub_category_ids || [],
           website: data.website || '',
           pricing: data.pricing || 'free',
           features: data.features?.length ? data.features : [''],
@@ -105,7 +112,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
   const fetchCategories = async () => {
     try {
       const { data, error } = await supabase
-        .from('tool_categories')
+        .from('categories')
         .select('*')
         .order('name');
 
@@ -115,6 +122,22 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
       }
     } catch (error: any) {
       console.error('Error fetching categories:', error);
+    }
+  };
+
+  const fetchSubCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('sub_categories')
+        .select('*')
+        .order('name');
+
+      if (error) throw error;
+      if (data) {
+        setSubCategories(data);
+      }
+    } catch (error: any) {
+      console.error('Error fetching sub-categories:', error);
     }
   };
 
@@ -162,7 +185,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
         name: formData.name,
         description: formData.description,
         category_id: formData.category_id,
-        subcategory: formData.subcategory,
+        sub_category_ids: formData.sub_category_ids,
         website: formData.website,
         pricing: formData.pricing,
         features: filteredFeatures,
@@ -193,7 +216,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
           name_param: formData.name,
           description_param: formData.description,
           category_id_param: formData.category_id,
-          subcategory_param: formData.subcategory,
+          subcategory_param: formData.sub_category_ids.join(','),
           website_param: formData.website,
           pricing_param: formData.pricing,
           features_param: filteredFeatures,
@@ -314,9 +337,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
                       className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
                       <option value="">Select a category</option>
-                      {categories
-                        .filter(category => category.parent_id === null)
-                        .map((category) => (
+                      {categories.map((category) => (
                           <option key={category.id} value={category.id}>
                             {category.name}
                           </option>
@@ -324,24 +345,31 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
                     </select>
                   </div>
                   <div>
-                    <label htmlFor="subcategory" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Subcategory
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Sub-categories (Multiple Choice)
                     </label>
-                    <select
-                      id="subcategory"
-                      name="subcategory"
-                      value={formData.subcategory}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      disabled={!formData.category_id}
-                    >
-                      <option value="">Select a subcategory</option>
-                      {subcategories.map((subcategory) => (
-                        <option key={subcategory.id} value={subcategory.name}>
-                          {subcategory.name}
-                        </option>
+                    <div className="max-h-32 overflow-y-auto border rounded-md p-2 space-y-2">
+                      {subCategories
+                        .filter(sub => sub.category_id === formData.category_id)
+                        .map((subCategory) => (
+                        <div key={subCategory.id} className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id={`sub-${subCategory.id}`}
+                            checked={formData.sub_category_ids.includes(subCategory.id)}
+                            onChange={() => {
+                              const newIds = formData.sub_category_ids.includes(subCategory.id)
+                                ? formData.sub_category_ids.filter(id => id !== subCategory.id)
+                                : [...formData.sub_category_ids, subCategory.id];
+                              setFormData(prev => ({ ...prev, sub_category_ids: newIds }));
+                            }}
+                          />
+                          <label htmlFor={`sub-${subCategory.id}`} className="text-sm cursor-pointer">
+                            {subCategory.name}
+                          </label>
+                        </div>
                       ))}
-                    </select>
+                    </div>
                   </div>
                 </div>
 
