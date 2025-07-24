@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Plus, Edit, Trash2, FolderOpen, Tag, Palette } from 'lucide-react';
 import ColorPicker from '@/components/ui/color-picker';
+import IconSelector from '@/components/IconSelector';
 
 interface Category {
   id: string;
@@ -42,7 +43,9 @@ const CategoryManagement = () => {
     name: '',
     description: '',
     color: '#3b82f6',
-    subCategories: ''
+    icon: 'FileText',
+    subCategories: '',
+    selectedSubCategories: [] as string[]
   });
 
   useEffect(() => {
@@ -94,7 +97,9 @@ const CategoryManagement = () => {
       name: '',
       description: '',
       color: '#3b82f6',
-      subCategories: ''
+      icon: 'FileText',
+      subCategories: '',
+      selectedSubCategories: []
     });
     setEditingCategory(null);
     setShowCreateModal(false);
@@ -136,6 +141,7 @@ const CategoryManagement = () => {
             name: formData.name,
             description: formData.description,
             color: formData.color || '#3b82f6',
+            icon: formData.icon || 'FileText',
             slug
           })
           .eq('id', editingCategory.id)
@@ -171,6 +177,7 @@ const CategoryManagement = () => {
             name: formData.name,
             description: formData.description,
             color: formData.color || '#3b82f6',
+            icon: formData.icon || 'FileText',
             slug
           })
           .select()
@@ -225,7 +232,9 @@ const CategoryManagement = () => {
       name: category.name,
       description: category.description || '',
       color: category.color || '#3b82f6',
-      subCategories: ''
+      icon: category.icon || 'FileText',
+      subCategories: '',
+      selectedSubCategories: []
     });
     setShowCreateModal(true);
   };
@@ -309,18 +318,51 @@ const CategoryManagement = () => {
                   onChange={(color) => setFormData({ ...formData, color })}
                 />
               </div>
-              {!editingCategory && (
-                <div>
-                  <Label htmlFor="subCategories">Sub-categories (one per line)</Label>
-                  <Textarea
-                    id="subCategories"
-                    value={formData.subCategories}
-                    onChange={(e) => setFormData({ ...formData, subCategories: e.target.value })}
-                    placeholder="Art & Design&#10;Photo Editing&#10;Logos & Graphics"
-                    rows={4}
-                  />
+              <div>
+                <Label htmlFor="icon">Category Icon</Label>
+                <IconSelector
+                  value={formData.icon}
+                  onChange={(icon) => setFormData({ ...formData, icon })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="subCategories">Sub-categories</Label>
+                <div className="space-y-2">
+                  <div className="max-h-32 overflow-y-auto border border-border rounded-lg p-3">
+                    {subCategories.map((subCat) => (
+                      <div key={subCat.id} className="flex items-center space-x-2 py-1">
+                        <input
+                          type="checkbox"
+                          id={`sub-${subCat.id}`}
+                          checked={formData.selectedSubCategories.includes(subCat.id)}
+                          onChange={(e) => {
+                            const newSelected = e.target.checked
+                              ? [...formData.selectedSubCategories, subCat.id]
+                              : formData.selectedSubCategories.filter(id => id !== subCat.id);
+                            setFormData({ ...formData, selectedSubCategories: newSelected });
+                          }}
+                          className="rounded border-gray-300"
+                        />
+                        <label htmlFor={`sub-${subCat.id}`} className="text-sm cursor-pointer">
+                          {subCat.name}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                  {!editingCategory && (
+                    <div>
+                      <Label htmlFor="newSubCategories">Add New Sub-categories (one per line)</Label>
+                      <Textarea
+                        id="newSubCategories"
+                        value={formData.subCategories}
+                        onChange={(e) => setFormData({ ...formData, subCategories: e.target.value })}
+                        placeholder="Art & Design&#10;Photo Editing&#10;Logos & Graphics"
+                        rows={3}
+                      />
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={resetForm}>Cancel</Button>

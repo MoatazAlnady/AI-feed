@@ -53,12 +53,23 @@ const Blog: React.FC = () => {
     <div className="py-8 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            {t('blog.title')}
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            {t('blog.subtitle')}
-          </p>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                {t('blog.title')}
+              </h1>
+              <p className="text-xl text-gray-600 max-w-3xl">
+                {t('blog.subtitle')}
+              </p>
+            </div>
+            <a
+              href="/auth"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-semibold rounded-xl hover:shadow-lg transition-shadow"
+            >
+              <Edit className="h-5 w-5 mr-2" />
+              Create New Article
+            </a>
+          </div>
         </div>
 
         {posts.length === 0 ? (

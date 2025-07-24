@@ -16,8 +16,10 @@ const SubmitTool: React.FC = () => {
     description: '',
     category: '',
     subcategory: '',
-    toolType: '',
+    toolType: [],
+    freePlan: 'No',
     website: '',
+    logoUrl: '',
     pricing: 'free',
     tags: '',
     features: '',
@@ -88,6 +90,13 @@ const SubmitTool: React.FC = () => {
     // Clear subcategory when category changes
     if (name === 'category') {
       setFormData(prev => ({ ...prev, subcategory: '' }));
+    }
+    
+    // Handle multiple tool types
+    if (name === 'toolType' && e.target instanceof HTMLSelectElement) {
+      const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+      setFormData(prev => ({ ...prev, toolType: selectedOptions }));
+      return;
     }
   };
 
@@ -249,22 +258,24 @@ const SubmitTool: React.FC = () => {
 
   const resetForm = () => {
     setSubmitted(false);
-    setFormData({
-      name: '',
-      description: '',
-      category: '',
-      subcategory: '',
-      toolType: '',
-      website: '',
-      pricing: 'free',
-      tags: '',
-      features: '',
-      logo: null,
-      pros: [''],
-      cons: [''],
-      is_light_logo: false,
-      is_dark_logo: false
-    });
+      setFormData({
+        name: '',
+        description: '',
+        category: '',
+        subcategory: '',
+        toolType: [],
+        freePlan: 'No',
+        website: '',
+        logoUrl: '',
+        pricing: 'free',
+        tags: '',
+        features: '',
+        logo: null,
+        pros: [''],
+        cons: [''],
+        is_light_logo: false,
+        is_dark_logo: false
+      });
     setCsvFile(null);
     setCsvData([]);
     setCsvError('');
@@ -432,7 +443,7 @@ const SubmitTool: React.FC = () => {
                   ))}
                 </select>
               </div>
-              <div>
+               <div>
                 <label htmlFor="toolType" className="block text-sm font-medium text-gray-700 mb-2">
                   Tool Type
                 </label>
@@ -441,9 +452,9 @@ const SubmitTool: React.FC = () => {
                   name="toolType"
                   value={formData.toolType}
                   onChange={handleInputChange}
+                  multiple
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
-                  <option value="">Select tool type</option>
                   <option value="Web App">Web App</option>
                   <option value="Desktop App">Desktop App</option>
                   <option value="Mobile App">Mobile App</option>
@@ -454,6 +465,24 @@ const SubmitTool: React.FC = () => {
                   <option value="Library/Framework">Library/Framework</option>
                 </select>
               </div>
+            </div>
+
+            {/* Free Plan/Credits */}
+            <div className="mb-6">
+              <label htmlFor="freePlan" className="block text-sm font-medium text-gray-700 mb-2">
+                Free Plan / Free Credits Available? *
+              </label>
+              <select
+                id="freePlan"
+                name="freePlan"
+                value={formData.freePlan}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              >
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
             </div>
 
             {/* Website URL */}
@@ -472,6 +501,25 @@ const SubmitTool: React.FC = () => {
                   required
                   className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   placeholder="https://example.com"
+                />
+              </div>
+            </div>
+
+            {/* Logo URL */}
+            <div className="mb-6">
+              <label htmlFor="logoUrl" className="block text-sm font-medium text-gray-700 mb-2">
+                Logo URL (Optional)
+              </label>
+              <div className="relative">
+                <Link className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="url"
+                  id="logoUrl"
+                  name="logoUrl"
+                  value={formData.logoUrl}
+                  onChange={handleInputChange}
+                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="https://example.com/logo.png"
                 />
               </div>
             </div>
@@ -683,7 +731,7 @@ const SubmitTool: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-gradient-primary text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+              className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 focus:ring-2 focus:ring-primary/20 focus:outline-none"
             >
               {isSubmitting ? (
                 <>

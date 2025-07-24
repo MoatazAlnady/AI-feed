@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Brain, 
   Image, 
@@ -14,58 +14,95 @@ import {
   Globe
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
 const Categories: React.FC = () => {
-  const categories = [
-    {
-      name: 'Conversational AI',
-      description: 'Chatbots, virtual assistants, and dialogue systems',
-      icon: MessageSquare,
-      color: 'bg-blue-500',
-      count: 45,
-      tools: ['ChatGPT', 'Claude', 'Bard']
-    },
-    {
-      name: 'Image Generation',
-      description: 'AI-powered image creation and editing tools',
-      icon: Image,
-      color: 'bg-purple-500',
-      count: 38,
-      tools: ['DALL-E', 'Midjourney', 'Stable Diffusion']
-    },
-    {
-      name: 'Video AI',
-      description: 'Video generation, editing, and enhancement',
-      icon: Video,
-      color: 'bg-red-500',
-      count: 22,
-      tools: ['Runway', 'Synthesia', 'Luma AI']
-    },
-    {
-      name: 'Code Assistant',
-      description: 'Programming help, code generation, and debugging',
-      icon: Code,
-      color: 'bg-green-500',
-      count: 31,
-      tools: ['GitHub Copilot', 'Cursor', 'Replit']
-    },
-    {
-      name: 'Data Analysis',
-      description: 'Analytics, insights, and data visualization',
-      icon: BarChart3,
-      color: 'bg-yellow-500',
-      count: 27,
-      tools: ['Tableau', 'DataRobot', 'H2O.ai']
-    },
-    {
-      name: 'Audio AI',
-      description: 'Voice synthesis, music generation, and audio editing',
-      icon: Music,
-      color: 'bg-pink-500',
-      count: 19,
-      tools: ['ElevenLabs', 'Mubert', 'AIVA']
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const iconMap: { [key: string]: any } = {
+    'MessageSquare': MessageSquare,
+    'Image': Image,
+    'Video': Video,
+    'Code': Code,
+    'BarChart3': BarChart3,
+    'Music': Music,
+    'FileText': FileText,
+    'Brain': Brain,
+    'Zap': Zap,
+    'Gamepad2': Gamepad2,
+    'Camera': Camera,
+    'Globe': Globe
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      // Fetch categories from database
+      const { data: categoriesData, error: categoriesError } = await supabase
+        .from('categories')
+        .select('*')
+        .order('name');
+
+      if (categoriesError) throw categoriesError;
+
+      // Get tool counts for each category
+      const { data: toolsData, error: toolsError } = await supabase
+        .from('tools')
+        .select('category_id')
+        .eq('status', 'published');
+
+      if (toolsError) throw toolsError;
+
+      // Count tools per category
+      const toolCounts = toolsData?.reduce((acc: any, tool) => {
+        acc[tool.category_id] = (acc[tool.category_id] || 0) + 1;
+        return acc;
+      }, {}) || {};
+
+      // Transform to display format
+      const transformedCategories = categoriesData?.map(category => ({
+        name: category.name,
+        description: category.description || 'AI tools in this category',
+        icon: iconMap[category.icon] || FileText,
+        color: category.color || '#3b82f6',
+        count: toolCounts[category.id] || 0,
+        tools: [] // We could fetch sample tools here if needed
+      })) || [];
+
+      setCategories(transformedCategories);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      // Fallback to static data
+      setCategories([
+        {
+          name: 'Conversational AI',
+          description: 'Chatbots, virtual assistants, and dialogue systems',
+          icon: MessageSquare,
+          color: '#3b82f6',
+          count: 0,
+          tools: []
+        }
+      ]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  if (loading) {
+    return (
+      <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
@@ -93,7 +130,7 @@ const Categories: React.FC = () => {
               >
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 group-hover:border-primary-300 dark:group-hover:border-primary-700">
                   <div className="flex items-start space-x-4">
-                    <div className={`${category.color} p-3 rounded-lg text-white flex-shrink-0`}>
+                    <div className="p-3 rounded-lg text-white flex-shrink-0" style={{ backgroundColor: category.color }}>
                       <Icon className="h-6 w-6" />
                     </div>
                     <div className="flex-1 min-w-0">

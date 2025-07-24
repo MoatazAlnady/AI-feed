@@ -33,6 +33,8 @@ const COLOR_PALETTE = [
   { name: 'Zinc', value: '#71717a' },
   { name: 'Dark Blue', value: '#1e293b' },
   { name: 'Black', value: '#0f172a' },
+  { name: 'Coral', value: '#ff7f7f' },
+  { name: 'Turquoise', value: '#40e0d0' },
 ];
 
 const ColorPicker: React.FC<ColorPickerProps> = ({ value, onChange, className }) => {
