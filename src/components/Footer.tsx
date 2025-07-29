@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
               <div className="p-2 bg-gradient-primary rounded-lg">
                 <Zap className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-gradient">AI Nexus</span>
+              <span className="text-xl font-bold text-gradient">AI Feed</span>
             </div>
             <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md">
               Your ultimate destination for discovering, exploring, and staying updated with the latest AI tools and technologies.
@@ -58,7 +58,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="border-t border-gray-200 dark:border-gray-800 mt-8 pt-8 text-center text-gray-500 dark:text-gray-400">
-          <p>&copy; 2025 AI Nexus. All rights reserved.</p>
+          <p>&copy; 2025 AI Feed. All rights reserved.</p>
         </div>
       </div>
     </footer>

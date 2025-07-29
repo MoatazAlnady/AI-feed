@@ -86,7 +86,7 @@ const Index = () => {
         <div className="container max-w-6xl mx-auto text-center">
           <div className="mb-8">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gradient slogan">
-              Welcome to AI Nexus
+              Welcome to AI Feed
             </h1>
             <p className="text-xl md:text-2xl font-bold text-gradient max-w-3xl mx-auto mb-8 leading-relaxed slogan-subtitle">
               The unified AI platform connecting AI-skilled creators
@@ -239,7 +239,7 @@ const Index = () => {
         <div className="container max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to join the AI revolution?</h2>
           <p className="text-xl text-muted-foreground mb-8">
-            Start your journey with AI Nexus today and connect with the future of technology.
+            Start your journey with AI Feed today and connect with the future of technology.
           </p>
           <Button size="lg" className="text-lg px-8" onClick={() => setShowAuthModal(true)}>
             Get Started Free <Star className="ml-2 h-5 w-5" />

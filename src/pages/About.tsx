@@ -8,7 +8,7 @@ const About: React.FC = () => {
       <section className="py-20 px-6">
         <div className="container max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
-            About AI Nexus
+            About AI Feed
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             We're building the world's most comprehensive platform for AI tools, talented creators, 
@@ -64,7 +64,7 @@ const About: React.FC = () => {
           <h2 className="text-3xl font-bold mb-6 text-foreground">Join Our Community</h2>
           <p className="text-lg text-muted-foreground mb-8">
             Whether you're a creator looking to showcase your skills, an employer seeking talent, 
-            or someone exploring AI tools, AI Nexus is your gateway to the future.
+            or someone exploring AI tools, AI Feed is your gateway to the future.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a 

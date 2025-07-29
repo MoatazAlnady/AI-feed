@@ -36,8 +36,8 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ mode, className = '' }) => {
       id: Date.now().toString(),
       role: 'assistant',
       content: mode === 'creator' 
-        ? `Hi ${user?.user_metadata?.full_name || 'there'}! I'm your AI Nexus assistant. I can help you with information about AI tools, answer questions about the platform, or assist with your content creation. What can I help you with today?`
-        : `Hello ${user?.user_metadata?.full_name || 'there'}! I'm your AI Nexus talent assistant. I can help you find the right talent, create search queries, or answer questions about candidates. How can I assist your recruitment needs today?`,
+        ? `Hi ${user?.user_metadata?.full_name || 'there'}! I'm your AI Feed assistant. I can help you with information about AI tools, answer questions about the platform, or assist with your content creation. What can I help you with today?`
+        : `Hello ${user?.user_metadata?.full_name || 'there'}! I'm your AI Feed talent assistant. I can help you find the right talent, create search queries, or answer questions about candidates. How can I assist your recruitment needs today?`,
       timestamp: new Date()
     };
     setMessages([initialMessage]);
@@ -97,7 +97,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ mode, className = '' }) => {
         } else if (input.toLowerCase().includes('verified') || input.toLowerCase().includes('badge')) {
           aiResponse = "Verification badges are awarded to trusted members of the community. To get verified, you need to consistently contribute quality content and follow our community guidelines. Top Voice badges are awarded to users who have submitted 50+ tools and 50+ articles with 100,000+ reach and 10,000+ engagement.";
         } else {
-          aiResponse = "I'm here to help with any questions about AI tools, content creation, or using the AI Nexus platform. You can ask about specific tools, how to improve your submissions, or get guidance on AI technologies.";
+          aiResponse = "I'm here to help with any questions about AI tools, content creation, or using the AI Feed platform. You can ask about specific tools, how to improve your submissions, or get guidance on AI technologies.";
         }
       } else {
         // Employer mode responses
@@ -168,8 +168,8 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ mode, className = '' }) => {
       id: Date.now().toString(),
       role: 'assistant',
       content: mode === 'creator' 
-        ? `Hi ${user?.user_metadata?.full_name || 'there'}! I'm your AI Nexus assistant. I can help you with information about AI tools, answer questions about the platform, or assist with your content creation. What can I help you with today?`
-        : `Hello ${user?.user_metadata?.full_name || 'there'}! I'm your AI Nexus talent assistant. I can help you find the right talent, create search queries, or answer questions about candidates. How can I assist your recruitment needs today?`,
+        ? `Hi ${user?.user_metadata?.full_name || 'there'}! I'm your AI Feed assistant. I can help you with information about AI tools, answer questions about the platform, or assist with your content creation. What can I help you with today?`
+        : `Hello ${user?.user_metadata?.full_name || 'there'}! I'm your AI Feed talent assistant. I can help you find the right talent, create search queries, or answer questions about candidates. How can I assist your recruitment needs today?`,
       timestamp: new Date()
     };
     setMessages([initialMessage]);
@@ -236,7 +236,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ mode, className = '' }) => {
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 dark:text-white">
-                  {mode === 'creator' ? 'AI Nexus Assistant' : 'Talent Search AI'}
+                  {mode === 'creator' ? 'AI Feed Assistant' : 'Talent Search AI'}
                 </h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {mode === 'creator' 

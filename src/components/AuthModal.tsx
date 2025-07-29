@@ -377,8 +377,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
           {/* Header */}
           <header className="flex w-full items-center justify-center py-6 relative">
             <h2 className="text-xl font-semibold text-foreground dark:text-foreground">
-              {mode === 'signin' ? 'Sign in to AI Nexus' : 
-               step === 1 ? 'Join AI Nexus' : 'Complete Your Profile'}
+              {mode === 'signin' ? 'Sign in to AI Feed' : 
+               step === 1 ? 'Join AI Feed' : 'Complete Your Profile'}
             </h2>
             <button
               onClick={onClose}
@@ -422,7 +422,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                     Before you can sign in, you need to confirm your email address. We've sent a confirmation link to <strong>{email}</strong>.
                   </p>
                   <div className="space-y-2 text-sm text-blue-700">
-                    <p>• Check your inbox for an email from AI Nexus</p>
+                    <p>• Check your inbox for an email from AI Feed</p>
                     <p>• Don't forget to check your spam/junk folder</p>
                     <p>• Click the confirmation link in the email</p>
                     <p>• Then return here to sign in</p>

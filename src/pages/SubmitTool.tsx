@@ -27,7 +27,8 @@ const SubmitTool: React.FC = () => {
     pros: [''],
     cons: [''],
     is_light_logo: false,
-    is_dark_logo: false
+    is_dark_logo: false,
+    showToolTypeDropdown: false
   });
 
   // CSV upload state
@@ -274,7 +275,8 @@ const SubmitTool: React.FC = () => {
         pros: [''],
         cons: [''],
         is_light_logo: false,
-        is_dark_logo: false
+        is_dark_logo: false,
+        showToolTypeDropdown: false
       });
     setCsvFile(null);
     setCsvData([]);
@@ -444,45 +446,78 @@ const SubmitTool: React.FC = () => {
                 </select>
               </div>
                <div>
-                <label htmlFor="toolType" className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Tool Type
                 </label>
-                <select
-                  id="toolType"
-                  name="toolType"
-                  value={formData.toolType}
-                  onChange={handleInputChange}
-                  multiple
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                >
-                  <option value="Web App">Web App</option>
-                  <option value="Desktop App">Desktop App</option>
-                  <option value="Mobile App">Mobile App</option>
-                  <option value="API">API</option>
-                  <option value="Browser Extension">Browser Extension</option>
-                  <option value="Plugin">Plugin</option>
-                  <option value="Cloud Service">Cloud Service</option>
-                  <option value="Library/Framework">Library/Framework</option>
-                </select>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, showToolTypeDropdown: !prev.showToolTypeDropdown }))}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-left flex items-center justify-between"
+                  >
+                    <span className="text-gray-900">
+                      {formData.toolType.length > 0 ? `${formData.toolType.length} selected` : 'Select tool types'}
+                    </span>
+                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {formData.showToolTypeDropdown && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg">
+                      {['Web App', 'Desktop App', 'Mobile App', 'API', 'Browser Extension', 'Plugin', 'Cloud Service', 'Library/Framework'].map((type) => (
+                        <label key={type} className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={formData.toolType.includes(type)}
+                            onChange={(e) => {
+                              const newTypes = e.target.checked 
+                                ? [...formData.toolType, type]
+                                : formData.toolType.filter(t => t !== type);
+                              setFormData(prev => ({ ...prev, toolType: newTypes }));
+                            }}
+                            className="mr-3 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                          />
+                          <span className="text-gray-900">{type}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Free Plan/Credits */}
-            <div className="mb-6">
-              <label htmlFor="freePlan" className="block text-sm font-medium text-gray-700 mb-2">
-                Free Plan / Free Credits Available? *
-              </label>
-              <select
-                id="freePlan"
-                name="freePlan"
-                value={formData.freePlan}
-                onChange={handleInputChange}
-                required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              >
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Free Plan / Free Credits Available? *
+                </label>
+                <div className="flex space-x-4">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="freePlan"
+                      value="Yes"
+                      checked={formData.freePlan === 'Yes'}
+                      onChange={handleInputChange}
+                      className="mr-2 text-primary-600 focus:ring-primary-500"
+                    />
+                    <span className="text-gray-700">Yes</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="freePlan"
+                      value="No"
+                      checked={formData.freePlan === 'No'}
+                      onChange={handleInputChange}
+                      className="mr-2 text-primary-600 focus:ring-primary-500"
+                    />
+                    <span className="text-gray-700">No</span>
+                  </label>
+                </div>
+              </div>
+              <div></div>
             </div>
 
             {/* Website URL */}
@@ -731,7 +766,7 @@ const SubmitTool: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+              className="w-full bg-gradient-primary text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 focus:ring-2 focus:ring-primary/20 focus:outline-none"
             >
               {isSubmitting ? (
                 <>

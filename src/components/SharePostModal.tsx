@@ -56,7 +56,7 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
   const handleExternalShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: 'Check out this post on AI Nexus',
+        title: 'Check out this post on AI Feed',
         url: postUrl,
       }).catch(console.error);
     } else {
@@ -187,7 +187,7 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
             {user && (
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-                  Share to AI Nexus
+                  Share to AI Feed
                 </h3>
                 
                 {/* Optional text input */}
@@ -222,7 +222,7 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
             {!user && (
               <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Sign in to share this post to your AI Nexus feed
+                  Sign in to share this post to your AI Feed feed
                 </p>
               </div>
             )}
