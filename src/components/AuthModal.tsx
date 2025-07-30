@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Mail, Lock, User, Eye, EyeOff, Upload, Camera, MapPin, Calendar, Users, Building, UserCheck, Sparkles, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { InputBase, TextareaBase, SelectBase } from '@/components/ui/InputBase';
+import OnboardingFlow from './OnboardingFlow';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // New required fields
   const [birthDate, setBirthDate] = useState('');
@@ -995,7 +997,16 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
           </div>
         </div>
       </div>
-    </div>
+      
+      <OnboardingFlow
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+        onComplete={() => {
+          setShowOnboarding(false);
+          onClose();
+        }}
+      />
+    </>
   );
 };
 

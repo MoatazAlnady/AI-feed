@@ -325,30 +325,45 @@ const CategoryManagement = () => {
                   onChange={(icon) => setFormData({ ...formData, icon })}
                 />
               </div>
-              <div>
-                <Label htmlFor="subCategories">Sub-categories</Label>
-                <div className="space-y-2">
-                  <div className="max-h-32 overflow-y-auto border border-border rounded-lg p-3">
-                    {subCategories.map((subCat) => (
-                      <div key={subCat.id} className="flex items-center space-x-2 py-1">
-                        <input
-                          type="checkbox"
-                          id={`sub-${subCat.id}`}
-                          checked={formData.selectedSubCategories.includes(subCat.id)}
-                          onChange={(e) => {
-                            const newSelected = e.target.checked
-                              ? [...formData.selectedSubCategories, subCat.id]
-                              : formData.selectedSubCategories.filter(id => id !== subCat.id);
-                            setFormData({ ...formData, selectedSubCategories: newSelected });
-                          }}
-                          className="rounded border-gray-300"
-                        />
-                        <label htmlFor={`sub-${subCat.id}`} className="text-sm cursor-pointer">
-                          {subCat.name}
-                        </label>
+                <div>
+                  <Label htmlFor="subCategories">Sub-categories</Label>
+                  <div className="space-y-2">
+                    <details className="border border-border rounded-lg">
+                      <summary className="cursor-pointer p-3 bg-muted/50 hover:bg-muted rounded-t-lg">
+                        Select Sub-categories ({formData.selectedSubCategories.length} selected)
+                      </summary>
+                      <div className="p-3 max-h-32 overflow-y-auto">
+                        <div className="mb-2">
+                          <Input
+                            placeholder="Search sub-categories..."
+                            className="text-sm"
+                            onChange={(e) => {
+                              const search = e.target.value.toLowerCase();
+                              // Filter functionality can be added here
+                            }}
+                          />
+                        </div>
+                        {subCategories.map((subCat) => (
+                          <div key={subCat.id} className="flex items-center space-x-2 py-1">
+                            <input
+                              type="checkbox"
+                              id={`sub-${subCat.id}`}
+                              checked={formData.selectedSubCategories.includes(subCat.id)}
+                              onChange={(e) => {
+                                const newSelected = e.target.checked
+                                  ? [...formData.selectedSubCategories, subCat.id]
+                                  : formData.selectedSubCategories.filter(id => id !== subCat.id);
+                                setFormData({ ...formData, selectedSubCategories: newSelected });
+                              }}
+                              className="rounded border-gray-300"
+                            />
+                            <label htmlFor={`sub-${subCat.id}`} className="text-sm cursor-pointer">
+                              {subCat.name}
+                            </label>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </details>
                   {!editingCategory && (
                     <div>
                       <Label htmlFor="newSubCategories">Add New Sub-categories (one per line)</Label>

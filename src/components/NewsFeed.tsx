@@ -866,7 +866,7 @@ const NewsFeed: React.FC = () => {
                     className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400 transition-colors"
                   >
                     <Share2 className="h-5 w-5" />
-                    <span>{post.share_count || 0}</span>
+                    <span>{post.shares || 0}</span>
                   </button>
                   {/* Show view count to the left of bookmark */}
                   {user && post.user_id === user.id && post.view_count !== undefined && (
