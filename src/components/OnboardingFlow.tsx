@@ -55,7 +55,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
       const { data: creators, error } = await supabase
         .from('user_profiles')
         .select('*')
-        .in('interests', userInterests)
+        .overlaps('interests', userInterests)
         .eq('verified', true)
         .or('ai_nexus_top_voice.eq.true,tools_submitted.gte.5,articles_written.gte.3')
         .limit(6);

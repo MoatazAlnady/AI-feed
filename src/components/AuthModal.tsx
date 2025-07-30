@@ -997,6 +997,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
             </p>
           </div>
         </div>
+        </div>
       </div>
       
       <OnboardingFlow
