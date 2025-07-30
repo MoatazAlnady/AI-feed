@@ -136,11 +136,11 @@ const AdminDashboard: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-card text-card-foreground rounded-2xl border border-border shadow-lg p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">{t('auto.totalUsers')}</p>
-                    <p className="text-2xl font-bold">{users.length}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('auto.totalUsers')}</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{users.length}</p>
                     <div className="flex items-center mt-1">
                       <TrendingUp className="h-4 w-4 text-green-500" />
                       <span className="text-sm text-green-600 ml-1">0%</span>
@@ -150,11 +150,11 @@ const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               
-              <div className="bg-card text-card-foreground rounded-2xl border border-border shadow-lg p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">{t('auto.totalTools')}</p>
-                    <p className="text-2xl font-bold">{tools.length}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('auto.totalTools')}</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{tools.length}</p>
                     <div className="flex items-center mt-1">
                       <TrendingUp className="h-4 w-4 text-green-500" />
                       <span className="text-sm text-green-600 ml-1">0%</span>
@@ -164,11 +164,11 @@ const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               
-              <div className="bg-card text-card-foreground rounded-2xl border border-border shadow-lg p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">{t('auto.totalArticles')}</p>
-                    <p className="text-2xl font-bold">{articles.length}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('auto.totalArticles')}</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{articles.length}</p>
                     <div className="flex items-center mt-1">
                       <TrendingUp className="h-4 w-4 text-green-500" />
                       <span className="text-sm text-green-600 ml-1">0%</span>
@@ -178,11 +178,11 @@ const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               
-              <div className="bg-card text-card-foreground rounded-2xl border border-border shadow-lg p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">{t('auto.editRequests')}</p>
-                    <p className="text-2xl font-bold">{pendingEditRequests}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('auto.editRequests')}</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{pendingEditRequests}</p>
                     {pendingEditRequests > 0 && (
                       <button
                         onClick={() => setActiveSection('tool-requests')}
@@ -203,22 +203,22 @@ const AdminDashboard: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <button
                   onClick={() => setShowCreateUser(true)}
-                  className="p-4 bg-card text-card-foreground rounded-xl border border-border shadow-lg hover:shadow-xl transition-shadow flex items-center space-x-3"
+                  className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-shadow flex items-center space-x-3"
                 >
                   <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
                     <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
                   </div>
-                  <span className="font-medium">{t('admin.createUser')}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">{t('admin.createUser')}</span>
                 </button>
                 
                 <button
                   onClick={() => setActiveSection('tool-requests')}
-                  className="p-4 bg-card text-card-foreground rounded-xl border border-border shadow-lg hover:shadow-xl transition-shadow flex items-center space-x-3"
+                  className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-shadow flex items-center space-x-3"
                 >
                   <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                     <Edit className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <span className="font-medium">{t('admin.toolEditRequests')}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">{t('admin.toolEditRequests')}</span>
                   {pendingEditRequests > 0 && (
                     <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full text-xs">
                       {pendingEditRequests}
@@ -228,22 +228,22 @@ const AdminDashboard: React.FC = () => {
                 
                 <button
                   onClick={() => setActiveSection('newsletters')}
-                  className="p-4 bg-card text-card-foreground rounded-xl border border-border shadow-lg hover:shadow-xl transition-shadow flex items-center space-x-3"
+                  className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-shadow flex items-center space-x-3"
                 >
                   <div className="p-2 bg-primary/10 rounded-lg">
                     <FileText className="h-5 w-5 text-primary" />
                   </div>
-                  <span className="font-medium">Newsletter</span>
+                  <span className="font-medium text-gray-900 dark:text-white">Newsletter</span>
                 </button>
                 
                 <button
                   onClick={() => setActiveSection('categories')}
-                  className="p-4 bg-card text-card-foreground rounded-xl border border-border shadow-lg hover:shadow-xl transition-shadow flex items-center space-x-3"
+                  className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-shadow flex items-center space-x-3"
                 >
                   <div className="p-2 bg-accent/10 rounded-lg">
                     <Flag className="h-5 w-5 text-accent-foreground" />
                   </div>
-                  <span className="font-medium">Categories</span>
+                  <span className="font-medium text-gray-900 dark:text-white">Categories</span>
                 </button>
               </div>
             </div>
