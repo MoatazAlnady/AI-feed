@@ -52,16 +52,16 @@ const Blog: React.FC = () => {
   return (
     <div className="py-8 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                {t('blog.title')}
-              </h1>
-              <p className="text-xl text-gray-600 max-w-3xl">
-                {t('blog.subtitle')}
-              </p>
-            </div>
+        <div className="mb-12">
+          <div className="flex flex-col items-center text-center mb-8">
+            <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+              {t('blog.title')}
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              {t('blog.subtitle')}
+            </p>
+          </div>
+          <div className="flex justify-end">
             <a
               href="/articles/create"
               className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-lg transition-shadow"
