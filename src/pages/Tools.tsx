@@ -99,7 +99,7 @@ const Tools: React.FC = () => {
               <div className="flex items-center space-x-4">
                 <Link
                   to="/tools/create"
-                  className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200 font-semibold"
+                  className="flex items-center space-x-2 px-6 py-3 bg-gradient-primary text-white rounded-xl hover:opacity-90 transition-all duration-200 font-semibold shadow-md"
                 >
                   <Plus className="h-5 w-5" />
                   <span>Submit A New AI Tool</span>
@@ -184,7 +184,7 @@ const Tools: React.FC = () => {
               </p>
               <Link
                 to="/tools/create"
-                className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-200"
+                className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-primary text-white font-semibold rounded-xl hover:opacity-90 transition-all duration-200 shadow-md"
               >
                 <Plus className="h-5 w-5" />
                 <span>Submit A New AI Tool</span>

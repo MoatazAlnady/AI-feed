@@ -63,7 +63,7 @@ const Blog: React.FC = () => {
               </p>
             </div>
             <a
-              href="/submit-article"
+              href="/articles/create"
               className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-lg transition-shadow"
             >
               <Edit className="h-5 w-5 mr-2" />
@@ -82,7 +82,7 @@ const Blog: React.FC = () => {
               {t('blog.beFirstToShare')}
             </p>
             <a
-              href="/submit-article"
+              href="/articles/create"
               className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-lg transition-shadow"
             >
               <Edit className="h-5 w-5 mr-2" />
