@@ -253,11 +253,11 @@ const AdminDashboard: React.FC = () => {
       case 'users':
       case 'user-list':
         return (
-          <div className="space-y-6 bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+          <div className="space-y-6 bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-foreground">User Management</h2>
-                <p className="text-muted-foreground">Manage all users, roles, and permissions</p>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">User Management</h2>
+                <p className="text-gray-600 dark:text-gray-300">Manage all users, roles, and permissions</p>
               </div>
               <button
                 onClick={() => setShowCreateUser(true)}
@@ -267,7 +267,7 @@ const AdminDashboard: React.FC = () => {
                 <span>Create User</span>
               </button>
             </div>
-            <div className="bg-card text-card-foreground rounded-lg border border-border">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
               <ContentManagement />
             </div>
           </div>
@@ -275,59 +275,59 @@ const AdminDashboard: React.FC = () => {
 
       case 'role-assignment':
         return (
-          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
             <UserRoleAssignment />
           </div>
         );
 
       case 'roles-permissions':
         return (
-          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
             <RoleManagement />
           </div>
         );
 
       case 'reports':
         return (
-          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
             <ReportsManagement />
           </div>
         );
 
       case 'categories':
         return (
-          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
             <CategoryManagement />
           </div>
         );
 
       case 'sub-categories':
         return (
-          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
             <SubCategoryManagement />
           </div>
         );
 
       case 'newsletters':
         return (
-          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
             <NewsletterManagement />
           </div>
         );
 
       case 'pricing':
         return (
-          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
             <PricingManagement />
           </div>
         );
 
       case 'tool-requests':
         return (
-          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">Tool Edit Requests</h2>
-              <p className="text-muted-foreground">Manage pending tool edit requests from users.</p>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Tool Edit Requests</h2>
+              <p className="text-gray-600 dark:text-gray-300">Manage pending tool edit requests from users.</p>
             </div>
             <AdminToolRequests />
           </div>
@@ -335,10 +335,10 @@ const AdminDashboard: React.FC = () => {
 
       case 'site-config':
         return (
-          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">Site Configuration</h2>
-              <p className="text-muted-foreground">Manage site settings and configurations.</p>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Site Configuration</h2>
+              <p className="text-gray-600 dark:text-gray-300">Manage site settings and configurations.</p>
             </div>
             <ContentManagement />
           </div>
@@ -346,19 +346,19 @@ const AdminDashboard: React.FC = () => {
 
       case 'system':
         return (
-          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">System Settings</h2>
-              <p className="text-muted-foreground">Advanced system configurations and maintenance.</p>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">System Settings</h2>
+              <p className="text-gray-600 dark:text-gray-300">Advanced system configurations and maintenance.</p>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              <div className="p-4 border border-primary/20 rounded-lg">
-                <h3 className="font-semibold mb-2">Database Health</h3>
-                <p className="text-sm text-muted-foreground">Monitor and maintain database performance</p>
+              <div className="p-4 border border-primary/20 rounded-lg bg-white dark:bg-gray-700">
+                <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">Database Health</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Monitor and maintain database performance</p>
               </div>
-              <div className="p-4 border border-primary/20 rounded-lg">
-                <h3 className="font-semibold mb-2">Cache Management</h3>
-                <p className="text-sm text-muted-foreground">Clear and manage application cache</p>
+              <div className="p-4 border border-primary/20 rounded-lg bg-white dark:bg-gray-700">
+                <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">Cache Management</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Clear and manage application cache</p>
               </div>
             </div>
           </div>
@@ -366,9 +366,9 @@ const AdminDashboard: React.FC = () => {
 
       default:
         return (
-          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg space-y-6">
-            <h2 className="text-2xl font-bold text-foreground">Admin Panel</h2>
-            <p className="text-muted-foreground">Select a section from the sidebar to get started.</p>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg space-y-6">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Panel</h2>
+            <p className="text-gray-600 dark:text-gray-300">Select a section from the sidebar to get started.</p>
           </div>
         );
     }

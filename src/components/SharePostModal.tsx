@@ -102,6 +102,18 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
 
       if (shareError) throw shareError;
 
+      // Update the original post's share_count
+      const { error: updateError } = await supabase
+        .from('posts')
+        .update({ 
+          share_count: (post.shares || 0) + 1 
+        })
+        .eq('id', post.id);
+
+      if (updateError) {
+        console.warn('Failed to update share count:', updateError);
+      }
+
       toast({
         title: "Post shared!",
         description: "The post has been shared to your followers.",
