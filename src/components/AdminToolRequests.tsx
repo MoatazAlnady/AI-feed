@@ -148,87 +148,89 @@ const AdminToolRequests: React.FC<AdminToolRequestsProps> = ({ onRefresh }) => {
   }
 
   return (
-    <div className="container max-w-6xl mx-auto py-8 px-6">
+    <div className="space-y-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Tool Edit Requests</h1>
-        <p className="text-muted-foreground">
-          Review and manage pending tool edit requests from users.
+        <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
+          Tool Edit Requests
+        </h1>
+        <p className="text-xl text-muted-foreground">
+          Review and manage user-submitted edit requests for AI tools
         </p>
       </div>
 
-      {requests.length === 0 ? (
-        <Card>
-          <CardContent className="text-center py-12">
-            <Clock className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No Pending Requests</h3>
-            <p className="text-muted-foreground">
-              All tool edit requests have been processed.
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-6">
-          {requests.map((request) => (
-            <Card key={request.id}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      {request.name}
-                      <Badge variant="outline">
-                        {request.category_name}
-                      </Badge>
-                    </CardTitle>
-                    <CardDescription className="mt-1">
-                      Requested by {request.user_name} • {new Date(request.created_at).toLocaleDateString()}
-                    </CardDescription>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSelectedRequest(request)}
-                  >
-                    <Eye className="h-4 w-4 mr-1" />
-                    Review
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-medium mb-2">Description</h4>
-                    <p className="text-sm text-muted-foreground">{request.description}</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-2">Website</h4>
-                    <a 
-                      href={request.website} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-sm text-primary hover:underline"
-                    >
-                      {request.website}
-                    </a>
-                  </div>
-                </div>
-                
-                {request.tags && request.tags.length > 0 && (
-                  <div className="mt-4">
-                    <h4 className="font-medium mb-2">Tags</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {request.tags.map((tag, index) => (
-                        <Badge key={index} variant="secondary">
-                          {tag}
+        {requests.length === 0 ? (
+          <Card>
+            <CardContent className="text-center py-12">
+              <Clock className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No Pending Requests</h3>
+              <p className="text-muted-foreground">
+                All tool edit requests have been processed.
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-6">
+            {requests.map((request) => (
+              <Card key={request.id}>
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        {request.name}
+                        <Badge variant="outline">
+                          {request.category_name}
                         </Badge>
-                      ))}
+                      </CardTitle>
+                      <CardDescription className="mt-1">
+                        Requested by {request.user_name} • {new Date(request.created_at).toLocaleDateString()}
+                      </CardDescription>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedRequest(request)}
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      Review
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-medium mb-2">Description</h4>
+                      <p className="text-sm text-muted-foreground">{request.description}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-2">Website</h4>
+                      <a 
+                        href={request.website} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-sm text-primary hover:underline"
+                      >
+                        {request.website}
+                      </a>
                     </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+                  
+                  {request.tags && request.tags.length > 0 && (
+                    <div className="mt-4">
+                      <h4 className="font-medium mb-2">Tags</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {request.tags.map((tag, index) => (
+                          <Badge key={index} variant="secondary">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
       {/* Review Modal */}
       {selectedRequest && (

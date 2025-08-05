@@ -319,11 +319,7 @@ const AdminDashboard: React.FC = () => {
         );
 
       case 'tool-requests':
-        return (
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
-            <AdminToolRequests onRefresh={fetchDashboardData} />
-          </div>
-        );
+        return <AdminToolRequests onRefresh={fetchDashboardData} />;
 
       case 'site-config':
         return (
@@ -374,138 +370,20 @@ const AdminDashboard: React.FC = () => {
           onSectionChange={setActiveSection} 
         />
         
-        <div className="flex-1 bg-gray-50 dark:bg-gray-900">
-          <div className="max-w-7xl mx-auto p-8">
-            {/* Dynamic Header */}
-            {activeSection !== 'overview' && (
-              <div className="mb-8">
-                {activeSection === 'tool-requests' && (
-                  <>
-                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
-                      Tool Edit Requests
-                    </h1>
-                    <p className="text-xl text-muted-foreground">
-                      Review and manage user-submitted edit requests for AI tools
-                    </p>
-                  </>
-                )}
-                {(activeSection === 'users' || activeSection === 'user-list') && (
-                  <>
-                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
-                      User Management
-                    </h1>
-                    <p className="text-xl text-muted-foreground">
-                      Manage all users, roles, and permissions
-                    </p>
-                  </>
-                )}
-                {activeSection === 'role-assignment' && (
-                  <>
-                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
-                      Role Assignment
-                    </h1>
-                    <p className="text-xl text-muted-foreground">
-                      Assign roles and manage user permissions
-                    </p>
-                  </>
-                )}
-                {activeSection === 'roles-permissions' && (
-                  <>
-                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
-                      Roles & Permissions
-                    </h1>
-                    <p className="text-xl text-muted-foreground">
-                      Configure system roles and permissions
-                    </p>
-                  </>
-                )}
-                {activeSection === 'reports' && (
-                  <>
-                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
-                      Reports Management
-                    </h1>
-                    <p className="text-xl text-muted-foreground">
-                      View and manage user reports and content moderation
-                    </p>
-                  </>
-                )}
-                {activeSection === 'categories' && (
-                  <>
-                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
-                      Category Management
-                    </h1>
-                    <p className="text-xl text-muted-foreground">
-                      Manage tool categories and organization
-                    </p>
-                  </>
-                )}
-                {activeSection === 'sub-categories' && (
-                  <>
-                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
-                      Sub-Category Management
-                    </h1>
-                    <p className="text-xl text-muted-foreground">
-                      Manage tool sub-categories and classification
-                    </p>
-                  </>
-                )}
-                {activeSection === 'newsletters' && (
-                  <>
-                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
-                      Newsletter Management
-                    </h1>
-                    <p className="text-xl text-muted-foreground">
-                      Manage newsletter content and subscriber communications
-                    </p>
-                  </>
-                )}
-                {activeSection === 'pricing' && (
-                  <>
-                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
-                      Pricing Management
-                    </h1>
-                    <p className="text-xl text-muted-foreground">
-                      Configure pricing plans and subscription options
-                    </p>
-                  </>
-                )}
-                {activeSection === 'site-config' && (
-                  <>
-                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
-                      Site Configuration
-                    </h1>
-                    <p className="text-xl text-muted-foreground">
-                      Manage site settings and configurations
-                    </p>
-                  </>
-                )}
-                {activeSection === 'system' && (
-                  <>
-                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
-                      System Settings
-                    </h1>
-                    <p className="text-xl text-muted-foreground">
-                      Advanced system configurations and maintenance
-                    </p>
-                  </>
-                )}
-              </div>
-            )}
-            
-            {activeSection === 'overview' && (
-              <div className="mb-8">
-                <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
-                  Admin Dashboard
-                </h1>
-                <p className="text-xl text-muted-foreground">
-                  Manage users, content, and platform settings
-                </p>
-              </div>
-            )}
+        <div className="flex-1 bg-gray-50 dark:bg-gray-900 p-8">
+          {activeSection === 'overview' && (
+            <div className="mb-8">
+              <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
+                Admin Dashboard
+              </h1>
+              <p className="text-xl text-muted-foreground">
+                Manage users, content, and platform settings
+              </p>
+            </div>
+          )}
 
-            {/* Dynamic Content */}
-            {renderContent()}
-          </div>
+          {/* Dynamic Content */}
+          {renderContent()}
         </div>
       </div>
 
