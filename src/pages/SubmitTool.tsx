@@ -140,6 +140,13 @@ const SubmitTool: React.FC = () => {
     setFormData(prev => ({ ...prev, pros: [...prev.pros, ''] }));
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent, action: () => void) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      action();
+    }
+  };
+
   const removePro = (index: number) => {
     if (formData.pros.length > 1) {
       const newPros = formData.pros.filter((_, i) => i !== index);
@@ -593,6 +600,7 @@ const SubmitTool: React.FC = () => {
                         type="text"
                         value={pro}
                         onChange={(e) => handleProsChange(index, e.target.value)}
+                        onKeyDown={(e) => handleKeyDown(e, addPro)}
                         className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         placeholder="Enter a positive aspect"
                       />
@@ -630,6 +638,7 @@ const SubmitTool: React.FC = () => {
                         type="text"
                         value={con}
                         onChange={(e) => handleConsChange(index, e.target.value)}
+                        onKeyDown={(e) => handleKeyDown(e, addCon)}
                         className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         placeholder="Enter a limitation or drawback"
                       />

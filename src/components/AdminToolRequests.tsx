@@ -28,7 +28,11 @@ interface ToolEditRequest {
   created_at: string;
 }
 
-const AdminToolRequests: React.FC = () => {
+interface AdminToolRequestsProps {
+  onRefresh?: () => void;
+}
+
+const AdminToolRequests: React.FC<AdminToolRequestsProps> = ({ onRefresh }) => {
   const { toast } = useToast();
   const [requests, setRequests] = useState<ToolEditRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,6 +81,7 @@ const AdminToolRequests: React.FC = () => {
       });
 
       await fetchRequests();
+      if (onRefresh) onRefresh(); // Refresh dashboard counts
       setSelectedRequest(null);
       setAdminNotes('');
     } catch (error) {
@@ -116,6 +121,7 @@ const AdminToolRequests: React.FC = () => {
       });
 
       await fetchRequests();
+      if (onRefresh) onRefresh(); // Refresh dashboard counts
       setSelectedRequest(null);
       setAdminNotes('');
     } catch (error) {

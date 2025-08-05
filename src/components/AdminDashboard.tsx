@@ -253,12 +253,8 @@ const AdminDashboard: React.FC = () => {
       case 'users':
       case 'user-list':
         return (
-          <div className="space-y-6 bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">User Management</h2>
-                <p className="text-gray-600 dark:text-gray-300">Manage all users, roles, and permissions</p>
-              </div>
+          <div className="space-y-6">
+            <div className="flex items-center justify-end">
               <button
                 onClick={() => setShowCreateUser(true)}
                 className="flex items-center space-x-2 px-4 py-2 bg-gradient-primary text-white rounded-lg hover:shadow-lg transition-all"
@@ -267,7 +263,7 @@ const AdminDashboard: React.FC = () => {
                 <span>Create User</span>
               </button>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
               <ContentManagement />
             </div>
           </div>
@@ -324,33 +320,21 @@ const AdminDashboard: React.FC = () => {
 
       case 'tool-requests':
         return (
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Tool Edit Requests</h2>
-              <p className="text-gray-600 dark:text-gray-300">Manage pending tool edit requests from users.</p>
-            </div>
-            <AdminToolRequests />
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+            <AdminToolRequests onRefresh={fetchDashboardData} />
           </div>
         );
 
       case 'site-config':
         return (
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Site Configuration</h2>
-              <p className="text-gray-600 dark:text-gray-300">Manage site settings and configurations.</p>
-            </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
             <ContentManagement />
           </div>
         );
 
       case 'system':
         return (
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">System Settings</h2>
-              <p className="text-gray-600 dark:text-gray-300">Advanced system configurations and maintenance.</p>
-            </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
             <div className="grid gap-4 md:grid-cols-2">
               <div className="p-4 border border-primary/20 rounded-lg bg-white dark:bg-gray-700">
                 <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">Database Health</h3>
@@ -366,7 +350,7 @@ const AdminDashboard: React.FC = () => {
 
       default:
         return (
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Panel</h2>
             <p className="text-gray-600 dark:text-gray-300">Select a section from the sidebar to get started.</p>
           </div>
@@ -392,15 +376,132 @@ const AdminDashboard: React.FC = () => {
         
         <div className="flex-1 bg-gray-50 dark:bg-gray-900">
           <div className="max-w-7xl mx-auto p-8">
-            {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
-                Admin Dashboard
-              </h1>
-              <p className="text-xl text-muted-foreground">
-                Manage users, content, and platform settings
-              </p>
-            </div>
+            {/* Dynamic Header */}
+            {activeSection !== 'overview' && (
+              <div className="mb-8">
+                {activeSection === 'tool-requests' && (
+                  <>
+                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
+                      Tool Edit Requests
+                    </h1>
+                    <p className="text-xl text-muted-foreground">
+                      Review and manage user-submitted edit requests for AI tools
+                    </p>
+                  </>
+                )}
+                {(activeSection === 'users' || activeSection === 'user-list') && (
+                  <>
+                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
+                      User Management
+                    </h1>
+                    <p className="text-xl text-muted-foreground">
+                      Manage all users, roles, and permissions
+                    </p>
+                  </>
+                )}
+                {activeSection === 'role-assignment' && (
+                  <>
+                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
+                      Role Assignment
+                    </h1>
+                    <p className="text-xl text-muted-foreground">
+                      Assign roles and manage user permissions
+                    </p>
+                  </>
+                )}
+                {activeSection === 'roles-permissions' && (
+                  <>
+                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
+                      Roles & Permissions
+                    </h1>
+                    <p className="text-xl text-muted-foreground">
+                      Configure system roles and permissions
+                    </p>
+                  </>
+                )}
+                {activeSection === 'reports' && (
+                  <>
+                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
+                      Reports Management
+                    </h1>
+                    <p className="text-xl text-muted-foreground">
+                      View and manage user reports and content moderation
+                    </p>
+                  </>
+                )}
+                {activeSection === 'categories' && (
+                  <>
+                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
+                      Category Management
+                    </h1>
+                    <p className="text-xl text-muted-foreground">
+                      Manage tool categories and organization
+                    </p>
+                  </>
+                )}
+                {activeSection === 'sub-categories' && (
+                  <>
+                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
+                      Sub-Category Management
+                    </h1>
+                    <p className="text-xl text-muted-foreground">
+                      Manage tool sub-categories and classification
+                    </p>
+                  </>
+                )}
+                {activeSection === 'newsletters' && (
+                  <>
+                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
+                      Newsletter Management
+                    </h1>
+                    <p className="text-xl text-muted-foreground">
+                      Manage newsletter content and subscriber communications
+                    </p>
+                  </>
+                )}
+                {activeSection === 'pricing' && (
+                  <>
+                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
+                      Pricing Management
+                    </h1>
+                    <p className="text-xl text-muted-foreground">
+                      Configure pricing plans and subscription options
+                    </p>
+                  </>
+                )}
+                {activeSection === 'site-config' && (
+                  <>
+                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
+                      Site Configuration
+                    </h1>
+                    <p className="text-xl text-muted-foreground">
+                      Manage site settings and configurations
+                    </p>
+                  </>
+                )}
+                {activeSection === 'system' && (
+                  <>
+                    <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
+                      System Settings
+                    </h1>
+                    <p className="text-xl text-muted-foreground">
+                      Advanced system configurations and maintenance
+                    </p>
+                  </>
+                )}
+              </div>
+            )}
+            
+            {activeSection === 'overview' && (
+              <div className="mb-8">
+                <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">
+                  Admin Dashboard
+                </h1>
+                <p className="text-xl text-muted-foreground">
+                  Manage users, content, and platform settings
+                </p>
+              </div>
+            )}
 
             {/* Dynamic Content */}
             {renderContent()}
