@@ -42,6 +42,7 @@ import RoleManagement from '../components/RoleManagement';
 import UserRoleAssignment from '../components/UserRoleAssignment';
 import ReportsManagement from '../components/ReportsManagement';
 import AdminToolRequests from '../components/AdminToolRequests';
+import AdminPendingTools from '../components/AdminPendingTools';
 import { supabase } from '../lib/supabase';
 import useI18nGuard from '../hooks/useI18nGuard';
 
@@ -317,6 +318,9 @@ const AdminDashboard: React.FC = () => {
             <PricingManagement />
           </div>
         );
+
+      case 'pending-tools':
+        return <AdminPendingTools onRefresh={fetchDashboardData} />;
 
       case 'tool-requests':
         return <AdminToolRequests onRefresh={fetchDashboardData} />;

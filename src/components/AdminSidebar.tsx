@@ -72,7 +72,8 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
       children: [
         { id: 'categories', label: 'Categories', icon: FileText },
         { id: 'sub-categories', label: 'Sub-Categories', icon: FileText },
-        { id: 'tool-requests', label: 'Tool Requests', icon: Wrench },
+        { id: 'pending-tools', label: 'Pending Tools', icon: Wrench },
+        { id: 'tool-requests', label: 'Tool Edit Requests', icon: Wrench },
         { id: 'featured', label: 'Featured Tools', icon: Zap }
       ]
     },

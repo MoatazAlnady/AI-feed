@@ -1406,6 +1406,10 @@ export type Database = {
         Args: { user_id_param: string; feature_param: string }
         Returns: boolean
       }
+      reject_pending_tool: {
+        Args: { tool_id_param: string; admin_notes_param: string }
+        Returns: undefined
+      }
       reject_tool_edit_request: {
         Args: { request_id_param: string; admin_notes_param: string }
         Returns: undefined
