@@ -1369,6 +1369,27 @@ export type Database = {
           created_at: string
         }[]
       }
+      get_pending_tools: {
+        Args: { limit_param?: number; offset_param?: number }
+        Returns: {
+          id: string
+          name: string
+          description: string
+          category_id: string
+          category_name: string
+          subcategory: string
+          website: string
+          logo_url: string
+          pricing: string
+          features: string[]
+          pros: string[]
+          cons: string[]
+          tags: string[]
+          user_id: string
+          user_name: string
+          created_at: string
+        }[]
+      }
       get_user_permissions: {
         Args: { user_id_param: string }
         Returns: string[]
