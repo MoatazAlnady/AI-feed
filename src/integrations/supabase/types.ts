@@ -1323,6 +1323,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_pending_tool: {
+        Args: { tool_id_param: string; admin_notes_param?: string }
+        Returns: undefined
+      }
       approve_tool_edit_request: {
         Args: { request_id_param: string; admin_notes_param?: string }
         Returns: undefined
