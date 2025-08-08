@@ -51,7 +51,21 @@ const AdminPendingTools: React.FC<AdminPendingToolsProps> = ({ onRefresh }) => {
       });
 
       if (error) throw error;
-      setTools(data || []);
+
+      const normalized = (Array.isArray(data) ? data : []).map((t: any) => ({
+        ...t,
+        features: Array.isArray(t?.features) ? t.features : [],
+        pros: Array.isArray(t?.pros) ? t.pros : [],
+        cons: Array.isArray(t?.cons) ? t.cons : [],
+        tags: Array.isArray(t?.tags) ? t.tags : [],
+        description: t?.description ?? '',
+        website: t?.website ?? '',
+        pricing: t?.pricing ?? '',
+        category_name: t?.category_name ?? 'Uncategorized',
+        user_name: t?.user_name ?? 'Unknown User',
+      }));
+
+      setTools(normalized);
     } catch (error) {
       console.error('Error fetching pending tools:', error);
       toast({
