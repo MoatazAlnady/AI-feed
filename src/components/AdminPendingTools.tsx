@@ -27,6 +27,26 @@ interface PendingTool {
   created_at: string;
 }
 
+interface PendingEditRequest {
+  id: string;
+  tool_id: string;
+  tool_name: string;
+  user_id: string;
+  user_name: string;
+  name: string | null;
+  description: string | null;
+  category_id: string | null;
+  category_name: string | null;
+  subcategory: string | null;
+  website: string | null;
+  pricing: string | null;
+  features: string[] | null;
+  pros: string[] | null;
+  cons: string[] | null;
+  tags: string[] | null;
+  created_at: string;
+}
+
 interface AdminPendingToolsProps {
   onRefresh?: () => void;
 }
@@ -34,13 +54,17 @@ interface AdminPendingToolsProps {
 const AdminPendingTools: React.FC<AdminPendingToolsProps> = ({ onRefresh }) => {
   const { toast } = useToast();
   const [tools, setTools] = useState<PendingTool[]>([]);
+  const [editRequests, setEditRequests] = useState<PendingEditRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<string | null>(null);
   const [selectedTool, setSelectedTool] = useState<PendingTool | null>(null);
+  const [selectedEdit, setSelectedEdit] = useState<PendingEditRequest | null>(null);
   const [adminNotes, setAdminNotes] = useState('');
 
   useEffect(() => {
-    fetchPendingTools();
+    setLoading(true);
+    Promise.all([fetchPendingTools(), fetchPendingEditRequests()])
+      .finally(() => setLoading(false));
   }, []);
 
   const fetchPendingTools = async () => {
@@ -73,11 +97,41 @@ const AdminPendingTools: React.FC<AdminPendingToolsProps> = ({ onRefresh }) => {
         description: "Failed to load pending tools",
         variant: "destructive"
       });
-    } finally {
-      setLoading(false);
     }
   };
 
+  const fetchPendingEditRequests = async () => {
+    try {
+      const { data, error } = await supabase.rpc('get_pending_edit_requests', {
+        limit_param: 50,
+        offset_param: 0
+      });
+
+      if (error) throw error;
+
+      const normalized = (Array.isArray(data) ? data : []).map((t: any) => ({
+        ...t,
+        features: Array.isArray(t?.features) ? t.features : [],
+        pros: Array.isArray(t?.pros) ? t.pros : [],
+        cons: Array.isArray(t?.cons) ? t.cons : [],
+        tags: Array.isArray(t?.tags) ? t.tags : [],
+        description: t?.description ?? '',
+        website: t?.website ?? '',
+        pricing: t?.pricing ?? '',
+        category_name: t?.category_name ?? 'Uncategorized',
+        user_name: t?.user_name ?? 'Unknown User',
+      }));
+
+      setEditRequests(normalized);
+    } catch (error) {
+      console.error('Error fetching edit requests:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load edit requests",
+        variant: "destructive"
+      });
+    }
+  };
   const handleApprove = async (toolId: string) => {
     setProcessing(toolId);
     try {
@@ -142,6 +196,77 @@ const AdminPendingTools: React.FC<AdminPendingToolsProps> = ({ onRefresh }) => {
       toast({
         title: "Error",
         description: "Failed to reject tool",
+        variant: "destructive"
+      });
+    } finally {
+      setProcessing(null);
+    }
+  };
+
+  const handleApproveEdit = async (requestId: string) => {
+    setProcessing(requestId);
+    try {
+      const { error } = await supabase.rpc('approve_tool_edit_request', {
+        request_id_param: requestId,
+        admin_notes_param: adminNotes || null
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Edit Request Approved",
+        description: "Changes have been applied to the tool."
+      });
+
+      await Promise.all([fetchPendingTools(), fetchPendingEditRequests()]);
+      if (onRefresh) onRefresh();
+      setSelectedEdit(null);
+      setAdminNotes('');
+    } catch (error) {
+      console.error('Error approving edit request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to approve edit request",
+        variant: "destructive"
+      });
+    } finally {
+      setProcessing(null);
+    }
+  };
+
+  const handleRejectEdit = async (requestId: string) => {
+    if (!adminNotes.trim()) {
+      toast({
+        title: "Error",
+        description: "Please provide a reason for rejection",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setProcessing(requestId);
+    try {
+      const { error } = await supabase.rpc('reject_tool_edit_request', {
+        request_id_param: requestId,
+        admin_notes_param: adminNotes
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Edit Request Rejected",
+        description: "The edit request has been rejected."
+      });
+
+      await fetchPendingEditRequests();
+      if (onRefresh) onRefresh();
+      setSelectedEdit(null);
+      setAdminNotes('');
+    } catch (error) {
+      console.error('Error rejecting edit request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to reject edit request",
         variant: "destructive"
       });
     } finally {
@@ -244,12 +369,71 @@ const AdminPendingTools: React.FC<AdminPendingToolsProps> = ({ onRefresh }) => {
                   </div>
                 )}
               </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+                </Card>
+              ))}
+            </div>
+          )}
 
-      {/* Review Modal */}
+          {/* Pending Edit Requests */}
+          <div className="mt-10">
+            <h2 className="text-2xl font-bold mb-4 text-foreground">Pending Edit Requests</h2>
+            {editRequests.length === 0 ? (
+              <Card>
+                <CardContent className="text-center py-12">
+                  <Clock className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No Pending Edit Requests</h3>
+                  <p className="text-muted-foreground">All edit requests have been processed.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-6">
+                {editRequests.map((req) => (
+                  <Card key={req.id}>
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <CardTitle className="flex items-center gap-2">
+                            Edit: {req.tool_name}
+                            {req.category_name && (
+                              <Badge variant="outline">{req.category_name}</Badge>
+                            )}
+                          </CardTitle>
+                          <CardDescription className="mt-1">
+                            Submitted by {req.user_name} • {new Date(req.created_at).toLocaleDateString()}
+                          </CardDescription>
+                        </div>
+                        <Button variant="outline" size="sm" onClick={() => setSelectedEdit(req)}>
+                          <Eye className="h-4 w-4 mr-1" />
+                          Review
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="font-medium mb-2">Proposed Description</h4>
+                          <p className="text-sm text-muted-foreground line-clamp-3">{req.description || '—'}</p>
+                        </div>
+                        <div>
+                          <h4 className="font-medium mb-2">Proposed Website</h4>
+                          {req.website ? (
+                            <a href={req.website} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline flex items-center gap-1">
+                              {req.website}
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          ) : (
+                            <p className="text-sm text-muted-foreground">—</p>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Review Modal */}
       {selectedTool && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
