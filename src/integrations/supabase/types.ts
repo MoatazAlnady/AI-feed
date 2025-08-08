@@ -1383,7 +1383,6 @@ export type Database = {
           category_name: string
           subcategory: string
           website: string
-          logo_url: string
           pricing: string
           features: string[]
           pros: string[]
