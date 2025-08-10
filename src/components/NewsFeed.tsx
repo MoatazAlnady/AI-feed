@@ -247,9 +247,7 @@ const NewsFeed: React.FC = () => {
       if (userIds.length > 0) {
         console.log('Querying user_profiles for IDs:', userIds);
         const { data: profiles, error: profileError } = await supabase
-          .from('user_profiles')
-          .select('id, full_name, profile_photo, job_title, verified, ai_nexus_top_voice, interests')
-          .in('id', userIds);
+          .rpc('get_public_profiles_by_ids', { ids: userIds });
 
         console.log('Profile query result:', { profiles, profileError });
         

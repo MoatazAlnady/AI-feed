@@ -68,10 +68,8 @@ const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ section = 'dashbo
     try {
       setLoading(true);
       
-      // Fetch talent pool count
-      const { count: talentCount, error: talentError } = await supabase
-        .from('user_profiles')
-        .select('id', { count: 'exact', head: true });
+      const { data: talentCount, error: talentError } = await supabase
+        .rpc('get_public_profiles_count', { search: null });
       
       if (!talentError) {
         setTalentPoolCount(talentCount || 0);

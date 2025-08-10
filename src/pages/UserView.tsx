@@ -76,11 +76,10 @@ const UserView: React.FC = () => {
       try {
         console.log('Fetching user profile for ID:', userId);
         
-        const { data: profile, error } = await supabase
-          .from('user_profiles')
-          .select('*')
-          .eq('id', userId)
-          .single();
+        const { data: profiles, error } = await supabase
+          .rpc('get_public_profiles_by_ids', { ids: [userId] });
+
+        const profile = profiles && profiles.length > 0 ? profiles[0] : null;
 
         if (error) {
           console.error('Error fetching user profile:', error);
@@ -92,35 +91,36 @@ const UserView: React.FC = () => {
         }
 
         if (profile) {
+          const p: any = profile as any;
           // Convert the real profile data to our UserProfile interface
           const userProfile: UserProfile = {
-            id: profile.id,
-            fullName: profile.full_name || 'Anonymous User',
+            id: p.id,
+            fullName: p.full_name || 'Anonymous User',
             email: 'Email not available', // Email not stored in user_profiles
-            jobTitle: profile.job_title || '',
-            company: profile.company || '',
-            location: profile.location || 'Location not specified',
-            bio: profile.bio || '',
-            profilePhoto: profile.profile_photo || undefined,
-            interests: profile.interests || [],
-            age: profile.age || 0,
-            gender: profile.gender || 'Not specified',
-            country: profile.country || 'Not specified',
-            city: profile.city || 'Not specified',
-            birthDate: profile.birth_date || '',
-            joinedAt: profile.created_at || new Date().toISOString(),
-            lastActive: profile.updated_at || new Date().toISOString(),
-            accountType: (profile.account_type === 'employer' ? 'employer' : 'user') as 'user' | 'employer',
+            jobTitle: p.job_title || '',
+            company: p.company || '',
+            location: p.location || 'Location not specified',
+            bio: p.bio || '',
+            profilePhoto: p.profile_photo || undefined,
+            interests: p.interests || [],
+            age: p.age || 0,
+            gender: p.gender || 'Not specified',
+            country: p.country || 'Not specified',
+            city: p.city || 'Not specified',
+            birthDate: p.birth_date || '',
+            joinedAt: p.created_at || new Date().toISOString(),
+            lastActive: p.updated_at || new Date().toISOString(),
+            accountType: (p.account_type === 'employer' ? 'employer' : 'user') as 'user' | 'employer',
             status: 'active', // Default since we don't have this field
-            verified: profile.verified || false,
-            contactVisible: profile.contact_visible || false,
-            phone: profile.phone || undefined,
-            website: profile.website || undefined,
-            linkedin: profile.linkedin || undefined,
-            github: profile.github || undefined,
+            verified: p.verified || false,
+            contactVisible: p.contact_visible || false,
+            phone: p.phone || undefined,
+            website: p.website || undefined,
+            linkedin: p.linkedin || undefined,
+            github: p.github || undefined,
             stats: {
-              toolsSubmitted: profile.tools_submitted || 0,
-              articlesWritten: profile.articles_written || 0,
+              toolsSubmitted: p.tools_submitted || 0,
+              articlesWritten: p.articles_written || 0,
               postsCreated: 0, // Would need to query posts table
               likesReceived: 0, // Would need to calculate
               followers: 0, // Would need to implement follower system
@@ -421,12 +421,14 @@ const UserView: React.FC = () => {
                         <span className="text-gray-600">{userProfile.phone}</span>
                       </div>
                     )}
-                    <div className="flex items-center space-x-3">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                      <span className="text-gray-600">
-                        Born {new Date(userProfile.birthDate).toLocaleDateString()} (Age: {userProfile.age})
-                      </span>
-                    </div>
+                    {userProfile.birthDate && (
+                      <div className="flex items-center space-x-3">
+                        <Calendar className="h-4 w-4 text-gray-400" />
+                        <span className="text-gray-600">
+                          Born {new Date(userProfile.birthDate).toLocaleDateString()} {userProfile.age ? `(Age: ${userProfile.age})` : ''}
+                        </span>
+                      </div>
+                    )}
                     <div className="flex items-center space-x-3">
                       <User className="h-4 w-4 text-gray-400" />
                       <span className="text-gray-600">{userProfile.gender}</span>

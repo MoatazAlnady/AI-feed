@@ -1422,12 +1422,15 @@ export type Database = {
           total_engagement: number
           total_reach: number
           location: string
+          country: string
+          city: string
           bio: string
           website: string
           github: string
           linkedin: string
           twitter: string
           interests: string[]
+          languages: Json
         }[]
       }
       get_top_creators: {

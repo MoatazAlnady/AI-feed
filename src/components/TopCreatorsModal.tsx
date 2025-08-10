@@ -50,28 +50,13 @@ const TopCreatorsModal: React.FC<TopCreatorsModalProps> = ({
       
       // Fetch top creators who have interests that match the user's interests
       const { data: creatorsData, error } = await supabase
-        .from('user_profiles')
-        .select(`
-          id,
-          full_name,
-          profile_photo,
-          bio,
-          interests,
-          tools_submitted,
-          articles_written,
-          total_reach,
-          verified,
-          ai_nexus_top_voice
-        `)
-        .neq('id', userId) // Exclude current user
-        .gt('tools_submitted', 0) // Must have submitted tools
-        .order('total_reach', { ascending: false })
-        .limit(8);
+        .rpc('get_public_user_profiles', { search: null, limit_param: 50, offset_param: 0 });
 
       if (error) throw error;
 
       // Filter creators who have matching interests
-      const relevantCreators = creatorsData?.filter(creator => {
+      const relevantCreators = (creatorsData || []).filter(creator => {
+        if (creator.id === userId) return false;
         const creatorInterests = creator.interests || [];
         return userInterests.some(interest => 
           creatorInterests.some((creatorInterest: string) => 
@@ -79,9 +64,13 @@ const TopCreatorsModal: React.FC<TopCreatorsModalProps> = ({
             interest.toLowerCase().includes(creatorInterest.toLowerCase())
           )
         );
-      }) || [];
+      });
 
-      setTopCreators(relevantCreators.slice(0, 6));
+      setTopCreators(relevantCreators.slice(0, 6).map((c: any) => ({
+        ...c,
+        tools_submitted: c.tools_submitted || 0,
+        articles_written: c.articles_written || 0,
+      })) as any);
     } catch (error) {
       console.error('Error fetching top creators:', error);
       toast({
@@ -195,9 +184,9 @@ const TopCreatorsModal: React.FC<TopCreatorsModalProps> = ({
                         )}
                         
                         <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
-                          <span>{creator.tools_submitted} tools</span>
-                          <span>{creator.articles_written} articles</span>
-                          <span>{creator.total_reach} reach</span>
+                          <span>{creator.tools_submitted || 0} tools</span>
+                          <span>{creator.articles_written || 0} articles</span>
+                          <span>{creator.total_reach || 0} reach</span>
                         </div>
                         
                         {matchingInterests.length > 0 && (

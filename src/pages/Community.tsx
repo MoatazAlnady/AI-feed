@@ -13,11 +13,11 @@ const Community: React.FC = () => {
     const fetchCreators = async () => {
       setLoading(true);
       try {
-        const { data: profiles, error } = await supabase
-          .from('user_profiles')
-          .select('id, full_name, job_title, bio, profile_photo, verified, ai_nexus_top_voice')
-          .limit(20)
-          .order('created_at', { ascending: false });
+        const { data: profiles, error } = await supabase.rpc('get_public_user_profiles', {
+          search: searchTerm || null,
+          limit_param: 20,
+          offset_param: 0,
+        });
 
         if (error) {
           console.error('Error fetching creators:', error);

@@ -76,16 +76,16 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
     try {
       setLoading(true);
       
-      // Fetch real talent data
-      const { data, error, count } = await supabase
-        .from('user_profiles')
-        .select('*', { count: 'exact' })
-        .order('created_at', { ascending: false });
+      const [{ data, error }, { data: countData, error: countError }] = await Promise.all([
+        supabase.rpc('get_public_user_profiles', { search: null, limit_param: 200, offset_param: 0 }),
+        supabase.rpc('get_public_profiles_count', { search: null })
+      ]);
+      if (countError) throw countError;
       
       if (error) throw error;
       
       // Transform data to match Talent interface
-      const transformedData: Talent[] = (data || []).map(profile => ({
+      const transformedData: Talent[] = (data || []).map((profile: any) => ({
         id: profile.id,
         full_name: profile.full_name || '',
         job_title: profile.job_title,
@@ -94,18 +94,18 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
         country: profile.country,
         city: profile.city,
         bio: profile.bio,
-        skills: typeof profile.interests === 'string' ? JSON.parse(profile.interests || '[]') : profile.interests || [],
+        skills: Array.isArray(profile.interests) ? profile.interests : [],
         experience: '',
-        languages: profile.languages as Array<{language: string, level: number}> || [],
+        languages: (profile.languages as Array<{language: string, level: number}>) || [],
         profile_photo: profile.profile_photo,
         verified: profile.verified,
-        contact_visible: profile.contact_visible,
+        contact_visible: !!profile.website || !!profile.github || !!profile.linkedin || !!profile.twitter,
         email: '',
-        phone: profile.phone
+        phone: undefined
       }));
       
       setTalents(transformedData);
-      setTotalTalents(count || 0);
+      setTotalTalents((countData as number) || 0);
     } catch (error) {
       console.error('Error fetching talents:', error);
     } finally {

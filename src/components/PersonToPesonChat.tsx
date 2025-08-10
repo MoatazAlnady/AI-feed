@@ -208,12 +208,15 @@ const PersonToPersonChat = () => {
 
   const searchUsers = async () => {
     try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('id, full_name, profile_photo, job_title, verified')
-        .ilike('full_name', `%${searchTerm}%`)
-        .neq('id', user?.id)
-        .limit(10);
+      const { data, error } = await supabase.rpc('get_public_user_profiles', {
+        search: searchTerm,
+        limit_param: 10,
+        offset_param: 0,
+      });
+
+      if (error) throw error;
+      const filtered = (data || []).filter((u: any) => u.id !== user?.id);
+      setSearchResults(filtered as any);
 
       if (error) throw error;
       setSearchResults(data || []);

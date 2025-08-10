@@ -10,13 +10,7 @@ export default function TopCreators() {
   const { data: creators, isLoading } = useQuery({
     queryKey: ['top-creators'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('id, full_name, profile_photo, verified, ai_nexus_top_voice, job_title, total_engagement')
-        .not('full_name', 'is', null)
-        .not('full_name', 'eq', '')
-        .order('total_engagement', { ascending: false })
-        .limit(10);
+      const { data, error } = await supabase.rpc('get_top_creators', { limit_param: 10 });
 
       if (error) throw error;
       return data;
