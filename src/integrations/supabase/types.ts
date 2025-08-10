@@ -1393,12 +1393,65 @@ export type Database = {
           created_at: string
         }[]
       }
+      get_public_profiles_by_ids: {
+        Args: { ids: string[] }
+        Returns: {
+          id: string
+          full_name: string
+          profile_photo: string
+          job_title: string
+          verified: boolean
+          ai_nexus_top_voice: boolean
+          interests: string[]
+        }[]
+      }
+      get_public_profiles_count: {
+        Args: { search?: string }
+        Returns: number
+      }
+      get_public_user_profiles: {
+        Args: { search?: string; limit_param?: number; offset_param?: number }
+        Returns: {
+          id: string
+          full_name: string
+          job_title: string
+          company: string
+          profile_photo: string
+          verified: boolean
+          ai_nexus_top_voice: boolean
+          total_engagement: number
+          total_reach: number
+          location: string
+          bio: string
+          website: string
+          github: string
+          linkedin: string
+          twitter: string
+          interests: string[]
+        }[]
+      }
+      get_top_creators: {
+        Args: { limit_param?: number }
+        Returns: {
+          id: string
+          full_name: string
+          profile_photo: string
+          verified: boolean
+          ai_nexus_top_voice: boolean
+          job_title: string
+          total_engagement: number
+        }[]
+      }
       get_user_permissions: {
         Args: { user_id_param: string }
         Returns: string[]
       }
       has_permission: {
         Args: { user_id_param: string; permission_key_param: string }
+        Returns: boolean
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
         Returns: boolean
       }
       is_user_banned_from_feature: {
