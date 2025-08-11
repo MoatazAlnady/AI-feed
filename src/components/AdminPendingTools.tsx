@@ -48,12 +48,18 @@ const AdminPendingTools: React.FC<AdminPendingToolsProps> = ({ onRefresh }) => {
 
   const fetchPendingTools = async () => {
     try {
+      console.log('Fetching pending tools...');
       const { data, error } = await supabase.rpc('get_pending_tools', {
         limit_param: 50,
         offset_param: 0
       });
 
-      if (error) throw error;
+      console.log('RPC get_pending_tools response:', { data, error });
+
+      if (error) {
+        console.warn('RPC error, trying direct query:', error);
+        throw error;
+      }
 
       let normalized = (Array.isArray(data) ? data : []).map((t: any) => ({
         ...t,
@@ -68,15 +74,21 @@ const AdminPendingTools: React.FC<AdminPendingToolsProps> = ({ onRefresh }) => {
         user_name: t?.user_name ?? 'Unknown User',
       }));
 
+      console.log('Normalized RPC data:', normalized);
+
       // Fallback: directly read pending tools in case RPC returns empty
       if (normalized.length === 0) {
+        console.log('No data from RPC, trying direct query...');
         const { data: fallback, error: fbErr } = await supabase
           .from('tools')
           .select('id, name, description, category_id, subcategory, website, pricing, features, pros, cons, tags, user_id, created_at, status')
           .eq('status', 'pending')
           .order('created_at', { ascending: false });
-        if (!fbErr) {
-          normalized = (fallback ?? []).map((t: any) => ({
+          
+        console.log('Direct query result:', { fallback, fbErr });
+        
+        if (!fbErr && fallback) {
+          normalized = fallback.map((t: any) => ({
             id: t.id,
             name: t.name,
             description: t.description ?? '',
@@ -93,6 +105,7 @@ const AdminPendingTools: React.FC<AdminPendingToolsProps> = ({ onRefresh }) => {
             user_name: 'Unknown User',
             created_at: t.created_at,
           }));
+          console.log('Fallback normalized data:', normalized);
         }
       }
 

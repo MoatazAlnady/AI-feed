@@ -170,12 +170,17 @@ const SubmitTool: React.FC = () => {
     setIsSubmitting(true);
     
     try {
+      console.log('Current user:', user);
+      console.log('User ID:', user?.id);
+      
       // Check for duplicates first
       const { count } = await supabase
         .from('tools')
         .select('id', { count: 'exact', head: true })
         .ilike('name', formData.name)
         .ilike('website', formData.website);
+
+      console.log('Duplicate check result:', count);
 
       if (count && count > 0) {
         toast({
@@ -209,15 +214,20 @@ const SubmitTool: React.FC = () => {
         status: 'pending'
       };
       
-      const { error } = await supabase
+      console.log('Submitting tool data:', submissionData);
+      
+      const { data: insertResult, error } = await supabase
         .from('tools')
-        .insert(submissionData);
+        .insert(submissionData)
+        .select('*');
+
+      console.log('Insert result:', { insertResult, error });
 
       if (error) {
         console.error('Error submitting tool:', error);
         toast({
           title: "Submission Error",
-          description: "There was an error submitting your tool. Please try again.",
+          description: `There was an error submitting your tool: ${error.message}`,
           variant: "destructive"
         });
         setIsSubmitting(false);
