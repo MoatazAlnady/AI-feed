@@ -198,11 +198,15 @@ const SubmitTool: React.FC = () => {
       const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(Boolean);
       const featuresArray = formData.features.split(',').map(feature => feature.trim()).filter(Boolean);
       
+      // Get the selected category ID
+      const selectedCategory = categories.find(cat => cat.name === formData.category);
+      
       const submissionData = {
         name: formData.name,
         description: formData.description,
         website: formData.website,
         pricing: formData.pricing,
+        category_id: selectedCategory?.id || null,
         subcategory: formData.subcategory,
         pros: filteredPros,
         cons: filteredCons,
@@ -688,6 +692,11 @@ const SubmitTool: React.FC = () => {
                   name="tags"
                   value={formData.tags}
                   onChange={handleInputChange}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                    }
+                  }}
                   className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   placeholder="AI, Machine Learning, NLP (comma separated)"
                 />
