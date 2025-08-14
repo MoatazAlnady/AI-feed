@@ -513,8 +513,8 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
       {/* Review Modal */}
       {selectedTool && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
               <div className="flex items-center gap-4">
                 <h2 className="text-xl font-bold">
                   {editMode ? 'Edit Tool Submission' : 'Review Tool Submission'}

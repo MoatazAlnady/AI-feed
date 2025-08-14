@@ -11,7 +11,7 @@ interface PromoteContentModalProps {
   isOpen: boolean;
   onClose: () => void;
   contentType: 'tool' | 'article' | 'post' | 'job' | 'event';
-  contentId: number;
+  contentId: string | number;
   contentTitle: string;
 }
 

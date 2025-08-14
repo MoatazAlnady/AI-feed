@@ -4,18 +4,24 @@ import { Search, Filter, Grid, List, GitCompare, Star, ExternalLink, Bookmark, Z
 import ToolComparisonModal from '../components/ToolComparisonModal';
 import PromoteContentModal from '../components/PromoteContentModal';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Tool {
-  id: number;
+  id: string;
   name: string;
   description: string;
-  category: string;
-  rating: number;
-  reviews: number;
+  category_id: string;
+  category_name?: string;
+  subcategory?: string;
   pricing: string;
-  image: string;
-  tags: string[];
   website: string;
+  features: string[];
+  pros: string[];
+  cons: string[];
+  tags: string[];
+  user_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
 const Tools: React.FC = () => {
@@ -27,44 +33,56 @@ const Tools: React.FC = () => {
   const [showPromoteModal, setShowPromoteModal] = useState(false);
   const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
   const [tools, setTools] = useState<Tool[]>([]);
+  const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const categories = [
-    'All Categories',
-    'Conversational AI',
-    'Image Generation',
-    'Video AI',
-    'Code Assistant',
-    'Data Analysis',
-    'Audio AI',
-    'Writing & Content',
-    'Productivity'
-  ];
-
   useEffect(() => {
-    const fetchTools = async () => {
-      try {
-        // In real app, fetch from API
-        // const response = await fetch('/api/tools');
-        // const data = await response.json();
-        // setTools(data);
-        setTools([]); // No dummy data
-      } catch (error) {
-        console.error('Error fetching tools:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTools();
+    fetchToolsAndCategories();
   }, []);
+
+  const fetchToolsAndCategories = async () => {
+    try {
+      // Fetch approved tools
+      const { data: toolsData, error: toolsError } = await supabase
+        .from('tools')
+        .select(`
+          *,
+          tool_categories(name)
+        `)
+        .eq('status', 'published')
+        .order('created_at', { ascending: false });
+
+      if (toolsError) throw toolsError;
+
+      // Fetch categories
+      const { data: categoriesData, error: categoriesError } = await supabase
+        .from('tool_categories')
+        .select('id, name')
+        .order('name');
+
+      if (categoriesError) throw categoriesError;
+
+      // Transform tools data with category names
+      const transformedTools = (toolsData || []).map(tool => ({
+        ...tool,
+        category_name: tool.tool_categories?.name || 'Uncategorized'
+      }));
+
+      setTools(transformedTools);
+      setCategories([{ id: 'all', name: 'All Categories' }, ...(categoriesData || [])]);
+    } catch (error) {
+      console.error('Error fetching tools and categories:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredTools = tools.filter(tool => {
     const matchesSearch = tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          tool.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         tool.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+                         (tool.tags || []).some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesCategory = selectedCategory === 'all-categories' || tool.category === selectedCategory;
+    const matchesCategory = selectedCategory === 'all' || tool.category_id === selectedCategory;
     
     return matchesSearch && matchesCategory;
   });
@@ -138,8 +156,8 @@ const Tools: React.FC = () => {
                   className="appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3 pr-8 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
                   {categories.map((category) => (
-                    <option key={category} value={category.toLowerCase().replace(' ', '-')}>
-                      {category}
+                    <option key={category.id} value={category.id}>
+                      {category.name}
                     </option>
                   ))}
                 </select>
@@ -168,7 +186,7 @@ const Tools: React.FC = () => {
             <p className="text-gray-600">
               Showing {filteredTools.length} tools
               {searchTerm && ` for "${searchTerm}"`}
-              {selectedCategory !== 'all-categories' && ` in ${selectedCategory.replace('-', ' ')}`}
+              {selectedCategory !== 'all' && ` in ${categories.find(c => c.id === selectedCategory)?.name || ''}`}
             </p>
           </div>
 
@@ -210,18 +228,14 @@ const Tools: React.FC = () => {
                       key={tool.id}
                       className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group"
                     >
-                      <div className="relative">
-                        <img
-                          src={tool.image}
-                          alt={tool.name}
-                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
+                      <div className="relative h-48 bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center">
+                        <div className="text-6xl text-primary-300">🤖</div>
                         <button className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors">
                           <Bookmark className="h-4 w-4 text-gray-600" />
                         </button>
                         <div className="absolute bottom-4 left-4">
                           <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-sm font-medium text-gray-700 rounded-full">
-                            {tool.category}
+                            {tool.category_name}
                           </span>
                         </div>
                       </div>
@@ -231,9 +245,8 @@ const Tools: React.FC = () => {
                           <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors">
                             {tool.name}
                           </h3>
-                          <div className="flex items-center space-x-1 text-sm text-yellow-500">
-                            <Star className="h-4 w-4 fill-current" />
-                            <span className="text-gray-600 font-medium">{tool.rating}</span>
+                          <div className="text-sm font-semibold text-gray-900">
+                            {tool.pricing}
                           </div>
                         </div>
 
@@ -241,25 +254,23 @@ const Tools: React.FC = () => {
                           {tool.description}
                         </p>
 
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {tool.tags.map((tag) => (
-                            <span
-                              key={tag}
-                              className="px-2 py-1 bg-primary-50 text-primary-600 text-xs font-medium rounded-md"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="text-sm text-gray-500">
-                            {tool.reviews.toLocaleString()} reviews
+                        {tool.tags && tool.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {tool.tags.slice(0, 3).map((tag, index) => (
+                              <span
+                                key={index}
+                                className="px-2 py-1 bg-primary-50 text-primary-600 text-xs font-medium rounded-md"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                            {tool.tags.length > 3 && (
+                              <span className="px-2 py-1 bg-gray-100 text-gray-500 text-xs font-medium rounded-md">
+                                +{tool.tags.length - 3} more
+                              </span>
+                            )}
                           </div>
-                          <div className="text-sm font-semibold text-gray-900">
-                            {tool.pricing}
-                          </div>
-                        </div>
+                        )}
 
                         <div className="flex space-x-2">
                           <Link
@@ -277,13 +288,6 @@ const Tools: React.FC = () => {
                             title="Promote Tool"
                           >
                             <TrendingUp className="h-4 w-4 text-blue-600" />
-                          </button>
-                          <button 
-                            onClick={() => setShowComparison(true)}
-                            className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                            title="Compare"
-                          >
-                            <GitCompare className="h-4 w-4 text-gray-600" />
                           </button>
                           <a
                             href={tool.website}
@@ -307,43 +311,43 @@ const Tools: React.FC = () => {
                       className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 p-6"
                     >
                       <div className="flex items-start space-x-6">
-                        <img
-                          src={tool.image}
-                          alt={tool.name}
-                          className="w-24 h-24 rounded-xl object-cover flex-shrink-0"
-                        />
+                        <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center flex-shrink-0">
+                          <div className="text-3xl">🤖</div>
+                        </div>
                         <div className="flex-1">
                           <div className="flex items-start justify-between mb-2">
                             <div>
                               <h3 className="text-xl font-bold text-gray-900 mb-1">{tool.name}</h3>
                               <span className="px-3 py-1 bg-primary-100 text-primary-700 text-sm font-medium rounded-full">
-                                {tool.category}
+                                {tool.category_name}
                               </span>
                             </div>
-                            <div className="flex items-center space-x-1 text-sm text-yellow-500">
-                              <Star className="h-4 w-4 fill-current" />
-                              <span className="text-gray-600 font-medium">{tool.rating}</span>
-                              <span className="text-gray-500">({tool.reviews.toLocaleString()})</span>
+                            <div className="text-sm font-semibold text-gray-900">
+                              {tool.pricing}
                             </div>
                           </div>
                           
                           <p className="text-gray-600 mb-3">{tool.description}</p>
                           
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {tool.tags.map((tag) => (
-                              <span
-                                key={tag}
-                                className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
+                          {tool.tags && tool.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {tool.tags.slice(0, 5).map((tag, index) => (
+                                <span
+                                  key={index}
+                                  className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                              {tool.tags.length > 5 && (
+                                <span className="px-2 py-1 bg-gray-100 text-gray-500 text-xs rounded-md">
+                                  +{tool.tags.length - 5} more
+                                </span>
+                              )}
+                            </div>
+                          )}
                           
                           <div className="flex items-center justify-between">
-                            <div className="text-sm font-semibold text-gray-900">
-                              {tool.pricing}
-                            </div>
                             <div className="flex space-x-2">
                               <Link
                                 to={`/tools/${tool.id}`}
@@ -360,13 +364,6 @@ const Tools: React.FC = () => {
                                 title="Promote Tool"
                               >
                                 <TrendingUp className="h-4 w-4 text-blue-600" />
-                              </button>
-                              <button 
-                                onClick={() => setShowComparison(true)}
-                                className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                                title="Compare"
-                              >
-                                <GitCompare className="h-4 w-4 text-gray-600" />
                               </button>
                               <a
                                 href={tool.website}
