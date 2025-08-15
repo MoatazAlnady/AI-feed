@@ -43,6 +43,17 @@ const SubmitTool: React.FC = () => {
   // Fetch categories and sub-categories on component mount
   useEffect(() => {
     fetchCategories();
+    
+    // Close dropdown when clicking outside
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.tool-type-dropdown')) {
+        setFormData(prev => ({ ...prev, showToolTypeDropdown: false }));
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const fetchCategories = async () => {
@@ -201,6 +212,27 @@ const SubmitTool: React.FC = () => {
       // Get the selected category ID
       const selectedCategory = categories.find(cat => cat.name === formData.category);
       
+      // Validation
+      if (!formData.subcategory.trim()) {
+        toast({
+          title: "Validation Error",
+          description: "Please select a subcategory.",
+          variant: "destructive"
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (formData.toolType.length === 0) {
+        toast({
+          title: "Validation Error",
+          description: "Please select at least one tool type.",
+          variant: "destructive"
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       const submissionData = {
         name: formData.name,
         description: formData.description,
@@ -446,13 +478,14 @@ const SubmitTool: React.FC = () => {
               </div>
               <div>
                 <label htmlFor="subcategory" className="block text-sm font-medium text-gray-700 mb-2">
-                  Subcategory
+                  Subcategory *
                 </label>
                 <select
                   id="subcategory"
                   name="subcategory"
                   value={formData.subcategory}
                   onChange={handleInputChange}
+                  required
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   disabled={!formData.category}
                 >
@@ -466,45 +499,45 @@ const SubmitTool: React.FC = () => {
                   ))}
                 </select>
               </div>
-               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tool Type
-                </label>
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, showToolTypeDropdown: !prev.showToolTypeDropdown }))}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-left flex items-center justify-between"
-                  >
-                    <span className="text-gray-900">
-                      {formData.toolType.length > 0 ? `${formData.toolType.length} selected` : 'Select tool types'}
-                    </span>
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  {formData.showToolTypeDropdown && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg">
-                      {['Web App', 'Desktop App', 'Mobile App', 'API', 'Browser Extension', 'Plugin', 'Cloud Service', 'Library/Framework'].map((type) => (
-                        <label key={type} className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={formData.toolType.includes(type)}
-                            onChange={(e) => {
-                              const newTypes = e.target.checked 
-                                ? [...formData.toolType, type]
-                                : formData.toolType.filter(t => t !== type);
-                              setFormData(prev => ({ ...prev, toolType: newTypes }));
-                            }}
-                            className="mr-3 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                          />
-                          <span className="text-gray-900">{type}</span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
+                <div>
+                 <label className="block text-sm font-medium text-gray-700 mb-2">
+                   Tool Type *
+                 </label>
+                 <div className="relative tool-type-dropdown">
+                   <button
+                     type="button"
+                     onClick={() => setFormData(prev => ({ ...prev, showToolTypeDropdown: !prev.showToolTypeDropdown }))}
+                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 text-left flex items-center justify-between"
+                   >
+                     <span className={formData.toolType.length === 0 ? 'text-gray-500 dark:text-gray-400' : 'text-gray-900 dark:text-white'}>
+                       {formData.toolType.length > 0 ? `${formData.toolType.length} selected` : 'Select tool types'}
+                     </span>
+                     <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                     </svg>
+                   </button>
+                   {formData.showToolTypeDropdown && (
+                     <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl shadow-lg">
+                       {['Web App', 'Desktop App', 'Mobile App', 'API', 'Browser Extension', 'Plugin', 'Cloud Service', 'Library/Framework'].map((type) => (
+                         <label key={type} className="flex items-center px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer">
+                           <input
+                             type="checkbox"
+                             checked={formData.toolType.includes(type)}
+                             onChange={(e) => {
+                               const newTypes = e.target.checked 
+                                 ? [...formData.toolType, type]
+                                 : formData.toolType.filter(t => t !== type);
+                               setFormData(prev => ({ ...prev, toolType: newTypes }));
+                             }}
+                             className="mr-3 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                           />
+                           <span className="text-gray-900 dark:text-gray-200">{type}</span>
+                         </label>
+                       ))}
+                     </div>
+                   )}
+                 </div>
+               </div>
             </div>
 
             {/* Free Plan/Credits */}
@@ -578,6 +611,22 @@ const SubmitTool: React.FC = () => {
                   placeholder="https://example.com/logo.png"
                 />
               </div>
+              {formData.logoUrl && (
+                <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Logo Preview:</p>
+                  <img 
+                    src={formData.logoUrl} 
+                    alt="Tool logo preview"
+                    className="w-16 h-16 object-contain rounded-lg border border-gray-200 dark:border-gray-600"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      target.nextElementSibling!.textContent = 'Failed to load logo';
+                    }}
+                  />
+                  <span className="text-sm text-red-500"></span>
+                </div>
+              )}
             </div>
 
             {/* Pricing */}
@@ -682,23 +731,52 @@ const SubmitTool: React.FC = () => {
             {/* Tags */}
             <div className="mb-6">
               <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
-                Tags
+                Tags (Press Enter to add)
               </label>
-              <div className="relative">
-                <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <div className="space-y-2">
+                {formData.tags && (
+                  <div className="flex flex-wrap gap-2">
+                    {formData.tags.split(',').filter(tag => tag.trim()).map((tag, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 text-sm rounded-full"
+                      >
+                        {tag.trim()}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const tags = formData.tags.split(',').filter((t, i) => i !== index);
+                            setFormData(prev => ({ ...prev, tags: tags.join(',') }));
+                          }}
+                          className="ml-1 text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-200"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <input
                   type="text"
                   id="tags"
-                  name="tags"
-                  value={formData.tags}
-                  onChange={handleInputChange}
+                  name="newTag"
+                  placeholder="Type a tag and press Enter"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
+                      const input = e.target as HTMLInputElement;
+                      const newTag = input.value.trim();
+                      if (newTag) {
+                        const currentTags = formData.tags ? formData.tags.split(',').filter(tag => tag.trim()) : [];
+                        if (!currentTags.includes(newTag)) {
+                          currentTags.push(newTag);
+                          setFormData(prev => ({ ...prev, tags: currentTags.join(',') }));
+                        }
+                        input.value = '';
+                      }
                     }
                   }}
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="AI, Machine Learning, NLP (comma separated)"
                 />
               </div>
             </div>
