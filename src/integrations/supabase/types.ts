@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -1165,13 +1165,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "tools_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "tool_categories"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "tools_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -1324,11 +1317,11 @@ export type Database = {
     }
     Functions: {
       approve_pending_tool: {
-        Args: { tool_id_param: string; admin_notes_param?: string }
+        Args: { admin_notes_param?: string; tool_id_param: string }
         Returns: undefined
       }
       approve_tool_edit_request: {
-        Args: { request_id_param: string; admin_notes_param?: string }
+        Args: { admin_notes_param?: string; request_id_param: string }
         Returns: undefined
       }
       calculate_post_reach_score: {
@@ -1337,72 +1330,72 @@ export type Database = {
       }
       create_tool_edit_request: {
         Args: {
-          tool_id_param: string
-          name_param: string
-          description_param: string
           category_id_param: string
-          subcategory_param: string
-          website_param: string
-          pricing_param: string
-          features_param: string[]
-          pros_param: string[]
           cons_param: string[]
+          description_param: string
+          features_param: string[]
+          name_param: string
+          pricing_param: string
+          pros_param: string[]
+          subcategory_param: string
           tags_param: string[]
+          tool_id_param: string
+          website_param: string
         }
         Returns: string
       }
       get_pending_edit_requests: {
         Args: { limit_param?: number; offset_param?: number }
         Returns: {
+          category_id: string
+          category_name: string
+          cons: string[]
+          created_at: string
+          description: string
+          features: string[]
           id: string
+          name: string
+          pricing: string
+          pros: string[]
+          subcategory: string
+          tags: string[]
           tool_id: string
           tool_name: string
           user_id: string
           user_name: string
-          name: string
-          description: string
-          category_id: string
-          category_name: string
-          subcategory: string
           website: string
-          pricing: string
-          features: string[]
-          pros: string[]
-          cons: string[]
-          tags: string[]
-          created_at: string
         }[]
       }
       get_pending_tools: {
         Args: { limit_param?: number; offset_param?: number }
         Returns: {
-          id: string
-          name: string
-          description: string
           category_id: string
           category_name: string
-          subcategory: string
-          website: string
-          pricing: string
-          features: string[]
-          pros: string[]
           cons: string[]
+          created_at: string
+          description: string
+          features: string[]
+          id: string
+          name: string
+          pricing: string
+          pros: string[]
+          subcategory: string
           tags: string[]
           user_id: string
           user_name: string
-          created_at: string
+          website: string
         }[]
       }
       get_public_profiles_by_ids: {
         Args: { ids: string[] }
         Returns: {
-          id: string
-          full_name: string
-          profile_photo: string
-          job_title: string
-          verified: boolean
           ai_nexus_top_voice: boolean
+          full_name: string
+          id: string
           interests: string[]
+          job_title: string
+          profile_photo: string
+          verified: boolean
         }[]
       }
       get_public_profiles_count: {
@@ -1410,39 +1403,39 @@ export type Database = {
         Returns: number
       }
       get_public_user_profiles: {
-        Args: { search?: string; limit_param?: number; offset_param?: number }
+        Args: { limit_param?: number; offset_param?: number; search?: string }
         Returns: {
-          id: string
-          full_name: string
-          job_title: string
-          company: string
-          profile_photo: string
-          verified: boolean
           ai_nexus_top_voice: boolean
+          bio: string
+          city: string
+          company: string
+          country: string
+          full_name: string
+          github: string
+          id: string
+          interests: string[]
+          job_title: string
+          languages: Json
+          linkedin: string
+          location: string
+          profile_photo: string
           total_engagement: number
           total_reach: number
-          location: string
-          country: string
-          city: string
-          bio: string
-          website: string
-          github: string
-          linkedin: string
           twitter: string
-          interests: string[]
-          languages: Json
+          verified: boolean
+          website: string
         }[]
       }
       get_top_creators: {
         Args: { limit_param?: number }
         Returns: {
-          id: string
-          full_name: string
-          profile_photo: string
-          verified: boolean
           ai_nexus_top_voice: boolean
+          full_name: string
+          id: string
           job_title: string
+          profile_photo: string
           total_engagement: number
+          verified: boolean
         }[]
       }
       get_user_permissions: {
@@ -1450,7 +1443,7 @@ export type Database = {
         Returns: string[]
       }
       has_permission: {
-        Args: { user_id_param: string; permission_key_param: string }
+        Args: { permission_key_param: string; user_id_param: string }
         Returns: boolean
       }
       is_admin: {
@@ -1458,23 +1451,23 @@ export type Database = {
         Returns: boolean
       }
       is_user_banned_from_feature: {
-        Args: { user_id_param: string; feature_param: string }
+        Args: { feature_param: string; user_id_param: string }
         Returns: boolean
       }
       reject_pending_tool: {
-        Args: { tool_id_param: string; admin_notes_param: string }
+        Args: { admin_notes_param: string; tool_id_param: string }
         Returns: undefined
       }
       reject_tool_edit_request: {
-        Args: { request_id_param: string; admin_notes_param: string }
+        Args: { admin_notes_param: string; request_id_param: string }
         Returns: undefined
       }
       track_post_view: {
         Args: {
-          post_id_param: string
-          user_id_param?: string
           ip_address_param?: unknown
+          post_id_param: string
           user_agent_param?: string
+          user_id_param?: string
         }
         Returns: boolean
       }
@@ -1488,9 +1481,9 @@ export type Database = {
       }
       update_user_ban_features: {
         Args: {
-          target_user_id: string
-          features_to_ban: string[]
           admin_user_id: string
+          features_to_ban: string[]
+          target_user_id: string
         }
         Returns: boolean
       }
