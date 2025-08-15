@@ -44,25 +44,42 @@ const ToolDetails: React.FC = () => {
 
   const fetchTool = async () => {
     try {
+      console.log('Fetching tool with ID:', id);
+      
+      // Fetch tool without join to avoid relationship issues
       const { data, error } = await supabase
         .from('tools')
         .select(`
           *,
-          user_profiles(full_name),
-          tool_categories(name)
+          user_profiles(full_name)
         `)
         .eq('id', id)
         .eq('status', 'published')
         .single();
 
       if (error) {
+        console.error('Tool fetch error:', error);
         setNotFound(true);
         return;
       }
 
+      // Fetch category separately if tool has category_id
+      let categoryName = 'Uncategorized';
+      if (data.category_id) {
+        const { data: categoryData } = await supabase
+          .from('categories')
+          .select('name')
+          .eq('id', data.category_id)
+          .single();
+        
+        if (categoryData) {
+          categoryName = categoryData.name;
+        }
+      }
+
       setTool({
         ...data,
-        category_name: data.tool_categories?.name || 'Uncategorized'
+        category_name: categoryName
       });
     } catch (error) {
       console.error('Error fetching tool:', error);

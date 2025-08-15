@@ -42,31 +42,40 @@ const Tools: React.FC = () => {
 
   const fetchToolsAndCategories = async () => {
     try {
-      // Fetch approved tools
+      console.log('Fetching tools and categories...');
+      
+      // Fetch approved tools (without join to avoid relationship issues)
       const { data: toolsData, error: toolsError } = await supabase
         .from('tools')
-        .select(`
-          *,
-          tool_categories(name)
-        `)
+        .select('*')
         .eq('status', 'published')
         .order('created_at', { ascending: false });
 
+      console.log('Tools query result:', { toolsData, toolsError });
+
       if (toolsError) throw toolsError;
 
-      // Fetch categories
+      // Fetch categories separately
       const { data: categoriesData, error: categoriesError } = await supabase
-        .from('tool_categories')
+        .from('categories')
         .select('id, name')
         .order('name');
 
+      console.log('Categories query result:', { categoriesData, categoriesError });
+
       if (categoriesError) throw categoriesError;
+
+      // Create a map for quick category lookup
+      const categoryMap = new Map(categoriesData?.map(cat => [cat.id, cat.name]) || []);
 
       // Transform tools data with category names
       const transformedTools = (toolsData || []).map(tool => ({
         ...tool,
-        category_name: tool.tool_categories?.name || 'Uncategorized'
+        category_name: categoryMap.get(tool.category_id) || 'Uncategorized'
       }));
+
+      console.log('Transformed tools:', transformedTools);
+      console.log('Categories for dropdown:', categoriesData);
 
       setTools(transformedTools);
       setCategories([{ id: 'all', name: 'All Categories' }, ...(categoriesData || [])]);
