@@ -27,6 +27,7 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const { user, signOut, isAdmin, loading } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const [userProfilePhoto, setUserProfilePhoto] = useState<string | null>(null);
 
   // Navigation items for different user types
   const navigation = [
@@ -134,6 +135,29 @@ const Header: React.FC = () => {
       window.removeEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
     };
   }, [user, isCreator, isEmployerView]);
+
+  // Fetch user profile photo from database
+  useEffect(() => {
+    const fetchUserProfilePhoto = async () => {
+      if (user) {
+        try {
+          const { data, error } = await supabase
+            .from('user_profiles')
+            .select('profile_photo')
+            .eq('id', user.id)
+            .single();
+          
+          if (!error && data?.profile_photo) {
+            setUserProfilePhoto(data.profile_photo);
+          }
+        } catch (error) {
+          console.error('Error fetching user profile photo:', error);
+        }
+      }
+    };
+
+    fetchUserProfilePhoto();
+  }, [user]);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -468,9 +492,9 @@ const Header: React.FC = () => {
                     className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-primary hover:shadow-md transition-all duration-200"
                     title={user?.user_metadata?.full_name || user?.email || 'User'}
                   >
-                    {user?.user_metadata?.profile_photo ? (
+                    {userProfilePhoto || user?.user_metadata?.profile_photo ? (
                       <img 
-                        src={user.user_metadata.profile_photo} 
+                        src={userProfilePhoto || user.user_metadata.profile_photo} 
                         alt="Profile" 
                         className="w-8 h-8 rounded-full object-cover"
                       />
@@ -540,29 +564,17 @@ const Header: React.FC = () => {
                             onLocaleChange={() => setShowUserMenu(false)} 
                           />
                            {isCreator && (
-                             <>
-                               <Link
-                                 to="/analytics"
-                                 className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                                 onClick={() => setShowUserMenu(false)}
-                               >
-                                 <div className="flex items-center">
-                                   <BarChart3 className="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" />
-                                   Analytics
-                                 </div>
-                               </Link>
-                               <Link
-                                 to="/upgrade"
-                                 className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                                 onClick={() => setShowUserMenu(false)}
-                               >
-                                 <div className="flex items-center">
-                                   <Crown className="h-4 w-4 mr-2 text-yellow-500 dark:text-yellow-400" />
-                                   Upgrade to Premium
-                                 </div>
-                               </Link>
-                             </>
-                           )}
+                              <Link
+                                to="/upgrade"
+                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                onClick={() => setShowUserMenu(false)}
+                              >
+                                <div className="flex items-center">
+                                  <Crown className="h-4 w-4 mr-2 text-yellow-500 dark:text-yellow-400" />
+                                  Upgrade to Premium
+                                </div>
+                              </Link>
+                            )}
                         </>
                       )}
                       {(isEmployer || isAdmin) && (
@@ -769,17 +781,6 @@ const Header: React.FC = () => {
                   )}
                   
                   {isCreator && !isEmployerView && (
-                    <>
-                      <Link
-                        to="/analytics"
-                        className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <div className="flex items-center">
-                          <BarChart3 className="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" />
-                          Analytics
-                        </div>
-                      </Link>
                       <Link
                         to="/upgrade"
                         className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
@@ -790,8 +791,7 @@ const Header: React.FC = () => {
                           Upgrade to Premium
                         </div>
                       </Link>
-                    </>
-                  )}
+                    )}
                   {!isEmployerView && (
                     <>
                       <Link

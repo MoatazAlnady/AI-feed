@@ -66,7 +66,7 @@ interface UserProfile {
 const UserView: React.FC = () => {
   const { userId, handle } = useParams(); // Support both userId and handle params
   const navigate = useNavigate();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, isAdmin } = useAuth();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'activity' | 'content'>('overview');
@@ -237,14 +237,14 @@ const UserView: React.FC = () => {
 
   if (!userProfile) {
     return (
-      <div className="py-8 bg-gray-50 min-h-screen">
+      <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-20">
             <User className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               User Not Found
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
               The user you're looking for doesn't exist or has been removed.
             </p>
             <button
@@ -260,13 +260,13 @@ const UserView: React.FC = () => {
   }
 
   return (
-    <div className="py-8 bg-gray-50 min-h-screen">
+    <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => navigate('/community')}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
+            className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4"
           >
             <ArrowLeft className="h-5 w-5" />
             <span>Back to Community</span>
@@ -274,47 +274,49 @@ const UserView: React.FC = () => {
           
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
                 User Profile
               </h1>
-              <p className="text-xl text-gray-600">
+              <p className="text-xl text-gray-600 dark:text-gray-400">
                 Viewing profile for {userProfile.fullName}
               </p>
             </div>
             
-            {/* Admin Actions */}
-            <div className="flex space-x-3">
-              <select
-                value={userProfile.status}
-                onChange={(e) => handleStatusChange(e.target.value as any)}
-                className={`px-4 py-2 border rounded-lg font-medium ${
-                  userProfile.status === 'active' ? 'border-green-300 text-green-700 bg-green-50' :
-                  userProfile.status === 'inactive' ? 'border-yellow-300 text-yellow-700 bg-yellow-50' :
-                  'border-red-300 text-red-700 bg-red-50'
-                }`}
-              >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="banned">Banned</option>
-              </select>
-              
-              <button
-                onClick={handleVerificationToggle}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  userProfile.verified 
-                    ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <Shield className="h-4 w-4" />
-                <span>{userProfile.verified ? 'Verified' : 'Unverified'}</span>
-              </button>
-            </div>
+            {/* Only show admin actions for admin users */}
+            {currentUser && isAdmin && (
+              <div className="flex space-x-3">
+                <select
+                  value={userProfile.status}
+                  onChange={(e) => handleStatusChange(e.target.value as any)}
+                  className={`px-4 py-2 border rounded-lg font-medium ${
+                    userProfile.status === 'active' ? 'border-green-300 text-green-700 bg-green-50' :
+                    userProfile.status === 'inactive' ? 'border-yellow-300 text-yellow-700 bg-yellow-50' :
+                    'border-red-300 text-red-700 bg-red-50'
+                  }`}
+                >
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="banned">Banned</option>
+                </select>
+                
+                <button
+                  onClick={handleVerificationToggle}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                    userProfile.verified 
+                      ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <Shield className="h-4 w-4" />
+                  <span>{userProfile.verified ? 'Verified' : 'Unverified'}</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Profile Header */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden mb-8">
           <div className="h-32 bg-gradient-to-r from-primary-500 to-secondary-500"></div>
           <div className="px-8 pb-8">
             <div className="flex items-start space-x-6 -mt-16">
