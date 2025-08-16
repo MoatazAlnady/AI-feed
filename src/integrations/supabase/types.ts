@@ -1422,6 +1422,7 @@ export type Database = {
           created_at: string
           id: string
           rating: number
+          status: string
           title: string | null
           tool_id: string
           updated_at: string
@@ -1432,6 +1433,7 @@ export type Database = {
           created_at?: string
           id?: string
           rating: number
+          status?: string
           title?: string | null
           tool_id: string
           updated_at?: string
@@ -1442,6 +1444,7 @@ export type Database = {
           created_at?: string
           id?: string
           rating?: number
+          status?: string
           title?: string | null
           tool_id?: string
           updated_at?: string
@@ -1717,7 +1720,14 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      tool_ratings_v: {
+        Row: {
+          avg_rating: number | null
+          reviews_count: number | null
+          tool_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       approve_pending_tool: {

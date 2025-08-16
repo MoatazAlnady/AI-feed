@@ -240,5 +240,14 @@
     "securityAlerts": "Security Alerts",
     "settingsUpdated": "Settings Updated",
     "settingsSaved": "Your notification preferences have been saved."
+  },
+  "tools": {
+    "rating": {
+      "label": "Rating",
+      "noReviews": "— (0)",
+      "noReviewsAccessible": "No reviews yet",
+      "accessibleLabel": "Rated {{rating}} out of 5 from {{count}} reviews",
+      "readAll": "Read all reviews"
+    }
   }
 }

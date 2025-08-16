@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Search, Filter, Grid, List, GitCompare, Star, ExternalLink, Bookmark, Zap, Plus, TrendingUp, MoreHorizontal } from 'lucide-react';
 import ToolComparisonModal from '../components/ToolComparisonModal';
 import PromoteContentModal from '../components/PromoteContentModal';
+import ToolStars from '../components/ToolStars';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -53,10 +54,13 @@ const Tools: React.FC = () => {
     try {
       console.log('Fetching tools and categories...');
       
-      // Fetch approved tools (without join to avoid relationship issues)
+      // Fetch approved tools with ratings from the view
       const { data: toolsData, error: toolsError } = await supabase
         .from('tools')
-        .select('*')
+        .select(`
+          *,
+          tool_ratings_v(avg_rating, reviews_count)
+        `)
         .eq('status', 'published')
         .order('created_at', { ascending: false });
 
@@ -77,13 +81,16 @@ const Tools: React.FC = () => {
       // Create a map for quick category lookup
       const categoryMap = new Map(categoriesData?.map(cat => [cat.id, cat.name]) || []);
 
-      // Transform tools data with category names
-      const transformedTools = (toolsData || []).map(tool => ({
-        ...tool,
-        category_name: categoryMap.get(tool.category_id) || 'Uncategorized',
-        average_rating: tool.average_rating || 0,
-        review_count: tool.review_count || 0
-      }));
+      // Transform tools data with category names and ratings
+      const transformedTools = (toolsData || []).map(tool => {
+        const ratingsData = Array.isArray(tool.tool_ratings_v) ? tool.tool_ratings_v[0] : null;
+        return {
+          ...tool,
+          category_name: categoryMap.get(tool.category_id) || 'Uncategorized',
+          average_rating: ratingsData?.avg_rating || tool.average_rating || 0,
+          review_count: ratingsData?.reviews_count || tool.review_count || 0
+        };
+      });
 
       console.log('Transformed tools:', transformedTools);
       console.log('Categories for dropdown:', categoriesData);
@@ -276,9 +283,16 @@ const Tools: React.FC = () => {
 
                       <div className="p-6">
                         <div className="flex items-start justify-between mb-3">
-                          <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors">
-                            {tool.name}
-                          </h3>
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors mb-1">
+                              {tool.name}
+                            </h3>
+                            <ToolStars 
+                              value={tool.average_rating || 0}
+                              reviewsCount={tool.review_count || 0}
+                              size="sm"
+                            />
+                          </div>
                           <div className="text-sm font-semibold text-gray-900">
                             {tool.pricing}
                           </div>
@@ -379,16 +393,23 @@ const Tools: React.FC = () => {
                           <div className="flex items-start justify-between mb-2">
                             <div>
                               <h3 className="text-xl font-bold text-gray-900 mb-1">{tool.name}</h3>
-                               <span 
-                                 className="px-3 py-1 text-sm font-medium rounded-full border"
-                                 style={{
-                                   backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                                   borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                                   color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                                 }}
-                               >
-                                 {tool.category_name}
-                               </span>
+                              <div className="flex items-center gap-3 mb-2">
+                                <ToolStars 
+                                  value={tool.average_rating || 0}
+                                  reviewsCount={tool.review_count || 0}
+                                  size="sm"
+                                />
+                                <span 
+                                  className="px-3 py-1 text-sm font-medium rounded-full border"
+                                  style={{
+                                    backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                                    borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                                    color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                                  }}
+                                >
+                                  {tool.category_name}
+                                </span>
+                              </div>
                             </div>
                             <div className="text-sm font-semibold text-gray-900">
                               {tool.pricing}

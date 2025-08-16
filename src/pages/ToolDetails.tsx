@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import ToolStars from '@/components/ToolStars';
 import ToolReviews from '@/components/ToolReviews';
 
 interface Tool {
@@ -23,6 +24,8 @@ interface Tool {
   user_id: string;
   created_at: string;
   updated_at: string;
+  average_rating?: number;
+  review_count?: number;
   user_profiles?: {
     full_name: string;
   };
@@ -47,12 +50,13 @@ const ToolDetails: React.FC = () => {
     try {
       console.log('Fetching tool with ID:', id);
       
-      // Fetch tool without join to avoid relationship issues
+      // Fetch tool with ratings
       const { data, error } = await supabase
         .from('tools')
         .select(`
           *,
-          user_profiles(full_name)
+          user_profiles(full_name),
+          tool_ratings_v(avg_rating, reviews_count)
         `)
         .eq('id', id)
         .eq('status', 'published')
@@ -78,9 +82,12 @@ const ToolDetails: React.FC = () => {
         }
       }
 
+      const ratingsData = Array.isArray(data.tool_ratings_v) ? data.tool_ratings_v[0] : null;
       setTool({
         ...data,
-        category_name: categoryName
+        category_name: categoryName,
+        average_rating: ratingsData?.avg_rating || data.average_rating || 0,
+        review_count: ratingsData?.reviews_count || data.review_count || 0
       });
     } catch (error) {
       console.error('Error fetching tool:', error);
@@ -171,6 +178,25 @@ const ToolDetails: React.FC = () => {
                   <p className="text-lg text-gray-600 dark:text-gray-400 mb-4">
                     {tool.description}
                   </p>
+                  <div className="flex flex-wrap items-center gap-3 mb-4">
+                    <ToolStars 
+                      value={tool.average_rating || 0}
+                      reviewsCount={tool.review_count || 0}
+                      size="md"
+                    />
+                    {tool.review_count && tool.review_count > 0 && (
+                      <a 
+                        href="#reviews"
+                        className="text-sm text-primary hover:text-primary/80 underline"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                      >
+                        Read all reviews
+                      </a>
+                    )}
+                  </div>
                   <div className="flex flex-wrap items-center gap-3">
                     <Badge variant="secondary">{tool.category_name}</Badge>
                     {tool.subcategory && (
@@ -337,7 +363,7 @@ const ToolDetails: React.FC = () => {
         </div>
 
         {/* Reviews Section - Full Width at Bottom */}
-        <div className="mt-12">
+        <div className="mt-12" id="reviews">
           <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <CardContent className="p-6">
               <ToolReviews toolId={tool.id} />
