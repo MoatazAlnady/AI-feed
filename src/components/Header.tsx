@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Search, Zap, Plus, Settings, User, LogOut, Bell, MessageCircle, Building, BarChart3, Moon, Sun, Briefcase } from 'lucide-react';
+import { Menu, X, Search, Zap, Plus, Settings, User, LogOut, Bell, MessageCircle, Building, BarChart3, Moon, Sun, Briefcase, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../providers/ThemeProvider';
 import AuthModal from './AuthModal';
 import VerificationBadge from './VerificationBadge';
 import LanguageSelector from './LanguageSelector';
+import ConnectionRequestsModal from './ConnectionRequestsModal';
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
@@ -17,6 +18,8 @@ const Header: React.FC = () => {
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [notificationCount, setNotificationCount] = useState(0);
   const [messageCount, setMessageCount] = useState(0);
+  const [connectionRequestsCount, setConnectionRequestsCount] = useState(0);
+  const [showConnectionRequests, setShowConnectionRequests] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
@@ -315,6 +318,21 @@ const Header: React.FC = () => {
                       </span>
                     )}
                   </Link>
+                )}
+
+                {/* Connection Requests - Only for creators */}
+                {isCreator && !isEmployerView && (
+                  <button
+                    onClick={() => setShowConnectionRequests(true)}
+                    className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                  >
+                    <Users className="h-5 w-5" />
+                    {connectionRequestsCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                        {connectionRequestsCount}
+                      </span>
+                    )}
+                  </button>
                 )}
 
                 {/* Messages */}
@@ -814,6 +832,11 @@ const Header: React.FC = () => {
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         initialMode={authMode}
+      />
+      
+      <ConnectionRequestsModal
+        open={showConnectionRequests}
+        onOpenChange={setShowConnectionRequests}
       />
     </>
   );

@@ -154,6 +154,57 @@ export type Database = {
         }
         Relationships: []
       }
+      connection_requests: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          recipient_id: string
+          requester_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          recipient_id: string
+          requester_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          recipient_id?: string
+          requester_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      connections: {
+        Row: {
+          created_at: string
+          id: string
+          user_1_id: string
+          user_2_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          user_1_id: string
+          user_2_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          user_1_id?: string
+          user_2_id?: string
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           created_at: string
@@ -1311,6 +1362,36 @@ export type Database = {
           },
         ]
       }
+      user_usage: {
+        Row: {
+          connection_requests_sent: number
+          created_at: string
+          id: string
+          messages_sent: number
+          month_year: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          connection_requests_sent?: number
+          created_at?: string
+          id?: string
+          messages_sent?: number
+          month_year: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          connection_requests_sent?: number
+          created_at?: string
+          id?: string
+          messages_sent?: number
+          month_year?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1323,6 +1404,10 @@ export type Database = {
       approve_tool_edit_request: {
         Args: { admin_notes_param?: string; request_id_param: string }
         Returns: undefined
+      }
+      are_users_connected: {
+        Args: { user1_id: string; user2_id: string }
+        Returns: boolean
       }
       calculate_post_reach_score: {
         Args: { post_id_param: string }
@@ -1437,6 +1522,10 @@ export type Database = {
           total_engagement: number
           verified: boolean
         }[]
+      }
+      get_user_connections_count: {
+        Args: { user_id_param: string }
+        Returns: number
       }
       get_user_permissions: {
         Args: { user_id_param: string }

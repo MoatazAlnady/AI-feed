@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   User, 
   UserPlus, 
@@ -17,6 +17,8 @@ import {
   Phone
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface UserProfileCardProps {
   userId: string;
@@ -42,6 +44,7 @@ interface UserProfileCardProps {
   };
   onFollow?: () => void;
   onMessage?: () => void;
+  onConnect?: () => void;
   className?: string;
 }
 
@@ -59,13 +62,47 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
   contactInfo = {},
   onFollow,
   onMessage,
+  onConnect,
   className = ''
 }) => {
   const { user } = useAuth();
   const [following, setFollowing] = useState(isFollowing);
   const [loading, setLoading] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [hasRequestPending, setHasRequestPending] = useState(false);
 
   const isOwnProfile = user?.id === userId;
+
+  useEffect(() => {
+    if (user && userId && !isOwnProfile) {
+      checkConnectionStatus();
+    }
+  }, [user, userId, isOwnProfile]);
+
+  const checkConnectionStatus = async () => {
+    if (!user) return;
+
+    try {
+      // Check if connected
+      const { data: connectionData } = await supabase
+        .rpc('are_users_connected', { user1_id: user.id, user2_id: userId });
+
+      setIsConnected(connectionData || false);
+
+      // Check for pending request
+      const { data: requestData } = await supabase
+        .from('connection_requests')
+        .select('id')
+        .eq('requester_id', user.id)
+        .eq('recipient_id', userId)
+        .eq('status', 'pending')
+        .maybeSingle();
+
+      setHasRequestPending(!!requestData);
+    } catch (error) {
+      console.error('Error checking connection status:', error);
+    }
+  };
 
   const handleFollow = async () => {
     if (!onFollow) return;
@@ -102,6 +139,60 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
       case 'instagram': return `https://instagram.com/${value}`;
       case 'youtube': return `https://youtube.com/@${value}`;
       default: return value;
+    }
+  };
+
+  const sendConnectionRequest = async () => {
+    if (!user) return;
+
+    setLoading(true);
+    try {
+      // Check usage limits
+      const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+      const { data: usageData } = await supabase
+        .from('user_usage')
+        .select('connection_requests_sent')
+        .eq('user_id', user.id)
+        .eq('month_year', currentMonth)
+        .maybeSingle();
+
+      const currentRequests = usageData?.connection_requests_sent || 0;
+      if (currentRequests >= 50) {
+        toast.error('Monthly connection request limit reached (50). Upgrade to premium for unlimited requests.');
+        return;
+      }
+
+      // Send connection request
+      const { error } = await supabase
+        .from('connection_requests')
+        .insert({
+          requester_id: user.id,
+          recipient_id: userId,
+          message: `Hi ${name}, I'd like to connect with you!`
+        });
+
+      if (error) throw error;
+
+      // Update usage
+      await supabase
+        .from('user_usage')
+        .upsert({
+          user_id: user.id,
+          month_year: currentMonth,
+          connection_requests_sent: currentRequests + 1
+        });
+
+      setHasRequestPending(true);
+      toast.success('Connection request sent!');
+      
+      if (onConnect) {
+        onConnect();
+      }
+    } catch (error) {
+      console.error('Error sending connection request:', error);
+      toast.error('Failed to send connection request');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -201,31 +292,36 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
         {/* Action Buttons */}
         {!isOwnProfile && (
           <div className="flex flex-col space-y-2">
-            <button
-              onClick={handleFollow}
-              disabled={loading}
-              className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                following
-                  ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  : 'bg-primary-500 text-white hover:bg-primary-600'
-              } disabled:opacity-50`}
-            >
-              {following ? (
-                <>
-                  <UserCheck className="h-4 w-4" />
-                  <span>Following</span>
-                </>
-              ) : (
-                <>
-                  <UserPlus className="h-4 w-4" />
-                  <span>Follow</span>
-                </>
-              )}
-            </button>
+            {isConnected ? (
+              <button
+                onClick={onMessage}
+                className="flex items-center space-x-1 px-3 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg text-sm font-medium transition-colors"
+              >
+                <MessageCircle className="h-4 w-4" />
+                <span>Message</span>
+              </button>
+            ) : hasRequestPending ? (
+              <button
+                disabled
+                className="flex items-center space-x-1 px-3 py-2 bg-muted text-muted-foreground rounded-lg text-sm font-medium"
+              >
+                <UserCheck className="h-4 w-4" />
+                <span>Request Sent</span>
+              </button>
+            ) : (
+              <button
+                onClick={sendConnectionRequest}
+                disabled={loading}
+                className="flex items-center space-x-1 px-3 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+              >
+                <UserPlus className="h-4 w-4" />
+                <span>Connect</span>
+              </button>
+            )}
             
             <button
               onClick={onMessage}
-              className="flex items-center space-x-1 px-3 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex items-center space-x-1 px-3 py-2 border rounded-lg text-sm font-medium hover:bg-muted transition-colors"
             >
               <MessageCircle className="h-4 w-4" />
               <span>Message</span>

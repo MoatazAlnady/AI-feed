@@ -6,13 +6,14 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import PromoteContentModal from '../components/PromoteContentModal';
+import NetworkTab from '../components/NetworkTab';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'overview' | 'posts' | 'content' | 'saved'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'posts' | 'content' | 'saved' | 'network'>('overview');
   const [showPromoteModal, setShowPromoteModal] = useState(false);
   const [selectedContent, setSelectedContent] = useState<any>(null);
   const [savedItems, setSavedItems] = useState<any[]>([]);
@@ -320,7 +321,8 @@ const Profile: React.FC = () => {
                 { key: 'overview', label: 'Overview' },
                 { key: 'posts', label: 'Posts' },
                 { key: 'content', label: 'My Content' },
-                { key: 'saved', label: 'Saved Items' }
+                { key: 'saved', label: 'Saved Items' },
+                { key: 'network', label: 'Network' }
               ].map(({ key, label }) => (
                 <button
                   key={key}
