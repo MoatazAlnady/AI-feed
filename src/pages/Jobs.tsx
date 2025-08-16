@@ -1,5 +1,6 @@
 import React from 'react';
 import { MapPin, Clock, Briefcase, ExternalLink } from 'lucide-react';
+import ChatDock from '@/components/ChatDock';
 
 const Jobs: React.FC = () => {
   // Mock jobs data - replace with real data from Supabase
@@ -120,6 +121,9 @@ const Jobs: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Chat Dock */}
+      <ChatDock />
     </div>
   );
 };

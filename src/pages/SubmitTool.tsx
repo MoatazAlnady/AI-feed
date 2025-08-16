@@ -22,7 +22,7 @@ const SubmitTool: React.FC = () => {
     logoUrl: '',
     pricing: 'free',
     tags: '',
-    features: '',
+    features: [''],
     logo: null as File | null,
     pros: [''],
     cons: [''],
@@ -147,15 +147,22 @@ const SubmitTool: React.FC = () => {
     setFormData(prev => ({ ...prev, cons: newCons }));
   };
 
+  const handleFeaturesChange = (index: number, value: string) => {
+    const newFeatures = [...formData.features];
+    newFeatures[index] = value;
+    setFormData(prev => ({ ...prev, features: newFeatures }));
+  };
+
   const addPro = () => {
     setFormData(prev => ({ ...prev, pros: [...prev.pros, ''] }));
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent, action: () => void) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      action();
-    }
+  const addCon = () => {
+    setFormData(prev => ({ ...prev, cons: [...prev.cons, ''] }));
+  };
+
+  const addFeature = () => {
+    setFormData(prev => ({ ...prev, features: [...prev.features, ''] }));
   };
 
   const removePro = (index: number) => {
@@ -165,14 +172,24 @@ const SubmitTool: React.FC = () => {
     }
   };
 
-  const addCon = () => {
-    setFormData(prev => ({ ...prev, cons: [...prev.cons, ''] }));
-  };
-
   const removeCon = (index: number) => {
     if (formData.cons.length > 1) {
       const newCons = formData.cons.filter((_, i) => i !== index);
       setFormData(prev => ({ ...prev, cons: newCons }));
+    }
+  };
+
+  const removeFeature = (index: number) => {
+    if (formData.features.length > 1) {
+      const newFeatures = formData.features.filter((_, i) => i !== index);
+      setFormData(prev => ({ ...prev, features: newFeatures }));
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent, action: () => void) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      action();
     }
   };
 
@@ -207,7 +224,7 @@ const SubmitTool: React.FC = () => {
       const filteredPros = formData.pros.filter(pro => pro.trim());
       const filteredCons = formData.cons.filter(con => con.trim());
       const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(Boolean);
-      const featuresArray = formData.features.split(',').map(feature => feature.trim()).filter(Boolean);
+      const featuresArray = formData.features.filter(feature => feature.trim());
       
       // Get the selected category ID
       const selectedCategory = categories.find(cat => cat.name === formData.category);
@@ -323,7 +340,7 @@ const SubmitTool: React.FC = () => {
         logoUrl: '',
         pricing: 'free',
         tags: '',
-        features: '',
+        features: [''],
         logo: null,
         pros: [''],
         cons: [''],
@@ -783,18 +800,40 @@ const SubmitTool: React.FC = () => {
 
             {/* Key Features */}
             <div className="mb-6">
-              <label htmlFor="features" className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Key Features
               </label>
-              <textarea
-                id="features"
-                name="features"
-                value={formData.features}
-                onChange={handleInputChange}
-                rows={3}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-                placeholder="List the main features and capabilities"
-              />
+              <div className="space-y-2">
+                {formData.features.map((feature, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      value={feature}
+                      onChange={(e) => handleFeaturesChange(index, e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(e, addFeature)}
+                      className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      placeholder="Enter a key feature"
+                    />
+                    {formData.features.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeFeature(index)}
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Minus className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addFeature}
+                  className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span className="text-sm">Add Feature</span>
+                </button>
+              </div>
             </div>
 
             {/* Logo Upload */}

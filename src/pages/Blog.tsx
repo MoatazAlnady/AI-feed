@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ChatDock from '@/components/ChatDock';
 import { Calendar, User, ArrowRight, Video, FileText, Edit } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 

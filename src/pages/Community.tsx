@@ -13,7 +13,7 @@ import {
   UserCheck,
   MessageCircle
 } from 'lucide-react';
-import ChatDock from '../components/ChatDockProvider';
+import ChatDock from '../components/ChatDock';
 import CreateEventModal from '../components/CreateEventModal';
 import CreateGroupModal from '../components/CreateGroupModal';
 import { supabase } from '../integrations/supabase/client';

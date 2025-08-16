@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ChatDock from '@/components/ChatDock';
 import { 
   User, Mail, Calendar, Heart, Bookmark, MessageSquare, Upload, 
   Briefcase, MapPin, Edit, Target, TrendingUp, ExternalLink,

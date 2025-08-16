@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ChatDock from '@/components/ChatDock';
 import { 
   Brain, 
   Image, 
@@ -186,6 +187,9 @@ const Categories: React.FC = () => {
           </Link>
         </div>
       </div>
+
+      {/* Chat Dock */}
+      <ChatDock />
     </div>
   );
 };
