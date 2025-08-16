@@ -430,13 +430,6 @@ const Community: React.FC = () => {
                         <span>Connect</span>
                       </button>
                     )}
-                    <button 
-                      onClick={() => window.location.href = `/messages?user=${creator.id}`}
-                      className="flex-1 px-4 py-2 border border-primary text-primary rounded-xl hover:bg-primary/10 transition-all duration-200 flex items-center justify-center space-x-1"
-                    >
-                      <MessageCircle className="h-4 w-4" />
-                      <span>Message</span>
-                    </button>
                   </>
                 )}
                 {user?.id === creator.id && (

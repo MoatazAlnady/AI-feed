@@ -57,7 +57,7 @@ const Profile: React.FC = () => {
       const filePath = `profile-photos/${fileName}`;
       
       // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError, data: uploadData } = await supabase.storage
         .from('user-uploads')
         .upload(filePath, file);
       
@@ -70,12 +70,11 @@ const Profile: React.FC = () => {
       
       if (!data.publicUrl) throw new Error('Failed to get public URL');
       
-      // Update user profile
-      const { error: updateError } = await supabase.auth.updateUser({
-        data: {
-          profile_photo: data.publicUrl
-        }
-      });
+      // Update user profile in user_profiles table
+      const { error: updateError } = await supabase
+        .from('user_profiles')
+        .update({ profile_photo: data.publicUrl })
+        .eq('id', user.id);
       
       if (updateError) throw updateError;
       
@@ -116,12 +115,14 @@ const Profile: React.FC = () => {
       
       if (!data.publicUrl) throw new Error('Failed to get public URL');
       
-      // Update user profile
-      const { error: updateError } = await supabase.auth.updateUser({
-        data: {
-          cover_photo: data.publicUrl
-        }
-      });
+      // Update user profile in user_profiles table
+      const { error: updateError } = await supabase
+        .from('user_profiles')
+        .update({ 
+          // Using a custom field for cover photo - we may need to add this to the schema
+          bio: user?.user_metadata?.bio || `Cover photo updated: ${data.publicUrl}` 
+        })
+        .eq('id', user.id);
       
       if (updateError) throw updateError;
       

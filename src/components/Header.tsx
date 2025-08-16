@@ -376,33 +376,52 @@ const Header: React.FC = () => {
                     {showCreateMenu && (
                       <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 animate-slide-up">
                         <Link
-                          to="/tools/create"
+                          to="/submit-tool"
                           className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                           onClick={() => setShowCreateMenu(false)}
                         >
                           AI Tool
                         </Link>
                         <Link
-                          to="/articles/create"
+                          to="/submit-article"
                           className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                           onClick={() => setShowCreateMenu(false)}
                         >
                           Article
                         </Link>
                         <Link
-                          to="/posts/create"
+                          to="/newsfeed"
                           className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                           onClick={() => setShowCreateMenu(false)}
                         >
                           Post
                         </Link>
-                        <Link
-                          to="/community"
-                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                          onClick={() => setShowCreateMenu(false)}
+                        <button
+                          onClick={() => {
+                            setShowCreateMenu(false);
+                            navigate('/community');
+                            setTimeout(() => {
+                              const event = new CustomEvent('openCreateEventModal');
+                              window.dispatchEvent(event);
+                            }, 100);
+                          }}
+                          className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                         >
                           Event
-                        </Link>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowCreateMenu(false);
+                            navigate('/community');
+                            setTimeout(() => {
+                              const event = new CustomEvent('openCreateGroupModal');
+                              window.dispatchEvent(event);
+                            }, 100);
+                          }}
+                          className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          Group
+                        </button>
                       </div>
                     )}
                   </div>
