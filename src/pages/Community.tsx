@@ -1,41 +1,154 @@
 import React, { useState, useEffect } from 'react';
-import { MessageSquare, Users, Lightbulb, TrendingUp, Star, Calendar, Plus, Search, Hash } from 'lucide-react';
+import { 
+  MessageSquare, 
+  Users, 
+  Lightbulb, 
+  TrendingUp, 
+  Star, 
+  Calendar, 
+  Plus, 
+  Search, 
+  Hash,
+  UserPlus,
+  UserCheck,
+  MessageCircle
+} from 'lucide-react';
 import ChatDock from '../components/ChatDockProvider';
 import { supabase } from '../integrations/supabase/client';
+import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
 
 const Community: React.FC = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'networking' | 'feed' | 'events' | 'groups'>('networking');
   const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState('all');
   const [creators, setCreators] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [connectionStates, setConnectionStates] = useState<{[key: string]: {isConnected: boolean, hasPendingRequest: boolean}}>({});
 
   useEffect(() => {
-    const fetchCreators = async () => {
-      setLoading(true);
-      try {
-        const { data: profiles, error } = await supabase.rpc('get_public_user_profiles', {
-          search: searchTerm || null,
-          limit_param: 20,
-          offset_param: 0,
-        });
-
-        if (error) {
-          console.error('Error fetching creators:', error);
-        } else {
-          console.log('Fetched creators:', profiles);
-          setCreators(profiles || []);
-        }
-      } catch (error) {
-        console.error('Error fetching creators:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (activeTab === 'networking') {
       fetchCreators();
     }
-  }, [activeTab]);
+  }, [activeTab, searchTerm]);
+
+  useEffect(() => {
+    if (creators.length > 0 && user) {
+      checkConnectionStates();
+    }
+  }, [creators, user]);
+
+  const checkConnectionStates = async () => {
+    if (!user) return;
+
+    const states: {[key: string]: {isConnected: boolean, hasPendingRequest: boolean}} = {};
+    
+    for (const creator of creators) {
+      if (creator.id === user.id) continue;
+
+      try {
+        // Check if connected
+        const { data: connectionData } = await supabase
+          .rpc('are_users_connected', { user1_id: user.id, user2_id: creator.id });
+
+        // Check for pending request
+        const { data: requestData } = await supabase
+          .from('connection_requests')
+          .select('id')
+          .eq('requester_id', user.id)
+          .eq('recipient_id', creator.id)
+          .eq('status', 'pending')
+          .maybeSingle();
+
+        states[creator.id] = {
+          isConnected: connectionData || false,
+          hasPendingRequest: !!requestData
+        };
+      } catch (error) {
+        console.error('Error checking connection status:', error);
+        states[creator.id] = { isConnected: false, hasPendingRequest: false };
+      }
+    }
+
+    setConnectionStates(states);
+  };
+
+  const sendConnectionRequest = async (creatorId: string, creatorName: string) => {
+    if (!user) return;
+
+    try {
+      // Check usage limits
+      const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+      const { data: usageData } = await supabase
+        .from('user_usage')
+        .select('connection_requests_sent')
+        .eq('user_id', user.id)
+        .eq('month_year', currentMonth)
+        .maybeSingle();
+
+      const currentRequests = usageData?.connection_requests_sent || 0;
+      if (currentRequests >= 50) {
+        toast.error('Monthly connection request limit reached (50). Upgrade to premium for unlimited requests.');
+        return;
+      }
+
+      // Send connection request
+      const { error } = await supabase
+        .from('connection_requests')
+        .insert({
+          requester_id: user.id,
+          recipient_id: creatorId,
+          message: `Hi ${creatorName}, I'd like to connect with you!`
+        });
+
+      if (error) throw error;
+
+      // Update usage
+      await supabase
+        .from('user_usage')
+        .upsert({
+          user_id: user.id,
+          month_year: currentMonth,
+          connection_requests_sent: currentRequests + 1
+        });
+
+      // Update local state
+      setConnectionStates(prev => ({
+        ...prev,
+        [creatorId]: { ...prev[creatorId], hasPendingRequest: true }
+      }));
+
+      toast.success('Connection request sent!');
+    } catch (error) {
+      console.error('Error sending connection request:', error);
+      toast.error('Failed to send connection request');
+    }
+  };
+
+  const fetchCreators = async () => {
+    setLoading(true);
+    try {
+      const { data: profiles, error } = await supabase.rpc('get_public_user_profiles', {
+        search: searchTerm || null,
+        limit_param: 20,
+        offset_param: 0,
+      });
+
+      if (error) {
+        console.error('Error fetching creators:', error);
+        toast.error('Failed to load creators');
+      } else {
+        console.log('Fetched creators:', profiles);
+        setCreators(profiles || []);
+      }
+    } catch (error) {
+      console.error('Error fetching creators:', error);
+      toast.error('Failed to load creators');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredCreators = creators.filter(creator => {
     if (!searchTerm) return true;
@@ -224,18 +337,50 @@ const Community: React.FC = () => {
                 {creator.bio || 'Passionate about AI and technology.'}
               </p>
               <div className="flex space-x-2">
-                <button 
-                  onClick={() => window.location.href = `/user-view/${creator.id}`}
-                  className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200"
-                >
-                  View Profile
-                </button>
-                <button 
-                  onClick={() => window.location.href = `/messages?user=${creator.id}`}
-                  className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200"
-                >
-                  Message
-                </button>
+                {user?.id !== creator.id && (
+                  <>
+                    {connectionStates[creator.id]?.isConnected ? (
+                      <button 
+                        onClick={() => window.location.href = `/messages?user=${creator.id}`}
+                        className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-all duration-200 flex items-center justify-center space-x-1"
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                        <span>Message</span>
+                      </button>
+                    ) : connectionStates[creator.id]?.hasPendingRequest ? (
+                      <button 
+                        disabled
+                        className="flex-1 px-4 py-2 bg-muted text-muted-foreground rounded-xl cursor-not-allowed flex items-center justify-center space-x-1"
+                      >
+                        <UserCheck className="h-4 w-4" />
+                        <span>Request Sent</span>
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={() => sendConnectionRequest(creator.id, creator.full_name)}
+                        className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-all duration-200 flex items-center justify-center space-x-1"
+                      >
+                        <UserPlus className="h-4 w-4" />
+                        <span>Connect</span>
+                      </button>
+                    )}
+                    <button 
+                      onClick={() => window.location.href = `/messages?user=${creator.id}`}
+                      className="flex-1 px-4 py-2 border border-primary text-primary rounded-xl hover:bg-primary/10 transition-all duration-200 flex items-center justify-center space-x-1"
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                      <span>Message</span>
+                    </button>
+                  </>
+                )}
+                {user?.id === creator.id && (
+                  <button 
+                    onClick={() => window.location.href = `/profile`}
+                    className="w-full px-4 py-2 bg-muted text-muted-foreground rounded-xl hover:bg-muted/80 transition-all duration-200"
+                  >
+                    View My Profile
+                  </button>
+                )}
               </div>
             </div>
           ))}
