@@ -23,7 +23,16 @@ import { toast } from 'sonner';
 
 const Community: React.FC = () => {
   const { user } = useAuth();
-  const { toggleOpen } = useChatDock();
+  
+  // Safe chat dock hook usage with fallback
+  let toggleOpen: (() => void) | undefined;
+  try {
+    const chatDock = useChatDock();
+    toggleOpen = chatDock.toggleOpen;
+  } catch (error) {
+    console.warn('ChatDockProvider not available, chat functionality disabled');
+    toggleOpen = undefined;
+  }
   const [activeTab, setActiveTab] = useState<'networking' | 'feed' | 'events' | 'groups'>('networking');
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
@@ -149,9 +158,14 @@ const Community: React.FC = () => {
   };
 
   const handleMessage = (userId: string, userName: string) => {
-    // Open chat dock and focus on user
-    toggleOpen();
-    toast.success(`Opening chat with ${userName}`);
+    if (toggleOpen) {
+      // Open chat dock and focus on user
+      toggleOpen();
+      toast.success(`Opening chat with ${userName}`);
+    } else {
+      // Fallback: redirect to messages page
+      window.location.href = `/messages?user=${userId}`;
+    }
   };
 
   const getProfileLink = (creator: any) => {
