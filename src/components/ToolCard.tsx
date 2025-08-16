@@ -111,7 +111,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
               </span>
             ))}
             {tool.tags.length > 3 && (
-              <span className="px-2 py-1 text-xs text-gray-500 dark:text-gray-400">
+              <span className="px-2 py-1 text-xs bg-gradient-to-r from-primary/20 to-secondary/20 text-primary dark:text-primary-400 rounded-md border border-primary/30">
                 +{tool.tags.length - 3} more
               </span>
             )}
