@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import ToolStars from '@/components/ToolStars';
 import ToolReviews from '@/components/ToolReviews';
 import ToolActionButtons from '@/components/ToolActionButtons';
@@ -29,6 +30,8 @@ interface Tool {
   review_count?: number;
   user_profiles?: {
     full_name: string;
+    profile_photo?: string;
+    handle?: string;
   };
   tool_categories?: {
     name: string;
@@ -61,7 +64,7 @@ const ToolDetails: React.FC = () => {
         .from('tools')
         .select(`
           *,
-          user_profiles(full_name)
+          user_profiles(full_name, profile_photo, handle)
         `)
         .eq('id', id)
         .eq('status', 'published')
@@ -304,13 +307,30 @@ const ToolDetails: React.FC = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-1">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-3">
                     <User className="h-4 w-4" />
                     Submitted by
                   </div>
-                  <p className="font-medium text-gray-900 dark:text-white">
-                    {tool.user_profiles?.full_name || 'Anonymous'}
-                  </p>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={tool.user_profiles?.profile_photo || undefined} />
+                      <AvatarFallback>
+                        <User className="h-5 w-5" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      {tool.user_profiles?.full_name ? (
+                        <Link
+                          to={`/profile/${tool.user_profiles.handle || tool.user_id}`}
+                          className="font-medium text-gray-900 dark:text-white hover:text-primary transition-colors"
+                        >
+                          {tool.user_profiles.full_name}
+                        </Link>
+                      ) : (
+                        <span className="font-medium text-gray-500 dark:text-gray-400">Anonymous</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 
                 <div>
