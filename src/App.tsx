@@ -30,6 +30,7 @@ import Jobs from "./pages/Jobs";
 import Upgrade from "./pages/Upgrade";
 import ToolComparison from "./pages/ToolComparison";
 import AdminNewsletter from "./pages/AdminNewsletter";
+import Notifications from "./pages/Notifications";
 
 const queryClient = new QueryClient();
 
@@ -82,7 +83,8 @@ const App = () => (
                 <Route path="employer/*" element={<EmployerDashboard />} />
                 <Route path="admin" element={<Admin />} />
                 <Route path="admin/newsletter" element={<AdminNewsletter />} />
-                <Route path="messages" element={<Messages />} />
+                 <Route path="messages" element={<Messages />} />
+                 <Route path="notifications" element={<Notifications />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
