@@ -211,16 +211,6 @@ const ToolDetails: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <a
-                    href={tool.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
-                  >
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    Visit Website
-                  </a>
-                  
                   <ToolActionButtons 
                     tool={tool} 
                     onDelete={handleToolDelete}
