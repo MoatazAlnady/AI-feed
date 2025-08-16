@@ -28,12 +28,12 @@ import {
 interface Subscriber {
   id: string;
   email: string;
-  user_id?: string;
+  user_id?: string | null;
   frequency: 'daily' | 'weekly' | 'monthly';
-  created_at: string;
+  created_at: string | null;
   user_profiles?: {
     full_name: string;
-  };
+  } | null;
   interests: Interest[];
 }
 
@@ -67,11 +67,11 @@ interface NewsletterIssue {
   title: string;
   frequency: 'daily' | 'weekly' | 'monthly';
   status: 'draft' | 'scheduled' | 'sent';
-  subject?: string;
-  intro_text?: string;
-  outro_text?: string;
-  scheduled_for?: string;
-  created_at: string;
+  subject?: string | null;
+  intro_text?: string | null;
+  outro_text?: string | null;
+  scheduled_for?: string | null;
+  created_at: string | null;
 }
 
 const NewsletterManagement: React.FC = () => {
@@ -123,7 +123,6 @@ const NewsletterManagement: React.FC = () => {
         .from('newsletter_subscribers')
         .select(`
           *,
-          user_profiles(full_name),
           newsletter_subscriber_interests(
             interests(id, name, slug)
           )
@@ -141,7 +140,8 @@ const NewsletterManagement: React.FC = () => {
       const transformedSubscribers = subscribersData?.map(sub => ({
         ...sub,
         frequency: sub.frequency as 'daily' | 'weekly' | 'monthly',
-        interests: sub.newsletter_subscriber_interests?.map(ni => ni.interests).flat() || []
+        interests: sub.newsletter_subscriber_interests?.map((ni: any) => ni.interests).flat() || [],
+        user_profiles: null // Since we don't have this relationship
       })) || [];
 
       setSubscribers(transformedSubscribers as Subscriber[]);
@@ -156,7 +156,6 @@ const NewsletterManagement: React.FC = () => {
         .from('newsletter_subscribers')
         .select(`
           *,
-          user_profiles(full_name),
           newsletter_subscriber_interests(
             interests(id, name, slug)
           )
@@ -167,7 +166,7 @@ const NewsletterManagement: React.FC = () => {
       }
 
       if (subscriberFilters.search) {
-        query = query.or(`email.ilike.%${subscriberFilters.search}%,user_profiles.full_name.ilike.%${subscriberFilters.search}%`);
+        query = query.ilike('email', `%${subscriberFilters.search}%`);
       }
 
       const { data, error } = await query;
@@ -179,7 +178,7 @@ const NewsletterManagement: React.FC = () => {
       // Filter by interests if specified
       if (subscriberFilters.interests.length > 0) {
         filteredData = filteredData.filter(sub => 
-          sub.newsletter_subscriber_interests?.some(ni => 
+          sub.newsletter_subscriber_interests?.some((ni: any) => 
             subscriberFilters.interests.includes(ni.interests?.id)
           )
         );
@@ -188,7 +187,8 @@ const NewsletterManagement: React.FC = () => {
       const formattedSubscribers = filteredData.map(sub => ({
         ...sub,
         frequency: sub.frequency as 'daily' | 'weekly' | 'monthly',
-        interests: sub.newsletter_subscriber_interests?.map(ni => ni.interests).flat() || []
+        interests: sub.newsletter_subscriber_interests?.map((ni: any) => ni.interests).flat() || [],
+        user_profiles: null
       }));
 
       setSubscribers(formattedSubscribers as Subscriber[]);
@@ -226,7 +226,8 @@ const NewsletterManagement: React.FC = () => {
       if (existingDraft && existingDraft.length > 0) {
         setCurrentIssue({
           ...existingDraft[0],
-          frequency: existingDraft[0].frequency as 'daily' | 'weekly' | 'monthly'
+          frequency: existingDraft[0].frequency as 'daily' | 'weekly' | 'monthly',
+          status: existingDraft[0].status as 'draft' | 'scheduled' | 'sent'
         });
         return;
       }
@@ -247,7 +248,8 @@ const NewsletterManagement: React.FC = () => {
       if (data) {
         setCurrentIssue({
           ...data,
-          frequency: data.frequency as 'daily' | 'weekly' | 'monthly'
+          frequency: data.frequency as 'daily' | 'weekly' | 'monthly',
+          status: data.status as 'draft' | 'scheduled' | 'sent'
         });
       }
     } catch (error) {
@@ -297,36 +299,47 @@ const NewsletterManagement: React.FC = () => {
 
   const fetchContentItems = async () => {
     try {
-      let tableName = selectedContentType === 'tool' ? 'tools' : 
-                     selectedContentType === 'article' ? 'articles' :
-                     selectedContentType === 'job' ? 'jobs' :
-                     selectedContentType === 'event' ? 'events' : 'posts';
-
-      let query = supabase
-        .from(tableName)
-        .select('*')
-        .eq('status', 'published');
-
-      if (contentSearch) {
-        if (selectedContentType === 'tool') {
-          query = query.or(`name.ilike.%${contentSearch}%,description.ilike.%${contentSearch}%`);
-        } else {
-          query = query.or(`title.ilike.%${contentSearch}%,content.ilike.%${contentSearch}%`);
-        }
+      let data: any[] = [];
+      
+      if (selectedContentType === 'tool') {
+        const { data: toolsData, error } = await supabase
+          .from('tools')
+          .select('*')
+          .eq('status', 'published')
+          .ilike('name', `%${contentSearch}%`)
+          .limit(20);
+        
+        if (error) throw error;
+        data = toolsData || [];
+      } else if (selectedContentType === 'article') {
+        const { data: articlesData, error } = await supabase
+          .from('articles')
+          .select('*')
+          .eq('status', 'published')
+          .ilike('title', `%${contentSearch}%`)
+          .limit(20);
+        
+        if (error) throw error;
+        data = articlesData || [];
+      } else if (selectedContentType === 'post') {
+        const { data: postsData, error } = await supabase
+          .from('posts')
+          .select('*')
+          .ilike('content', `%${contentSearch}%`)
+          .limit(20);
+        
+        if (error) throw error;
+        data = postsData || [];
       }
 
-      const { data, error } = await query.limit(20);
-
-      if (error) throw error;
-
-      const formattedItems = data?.map(item => ({
+      const formattedItems = data.map(item => ({
         id: item.id,
-        title: item.name || item.title,
-        description: item.description || item.content?.slice(0, 160),
+        title: item.name || item.title || 'Untitled',
+        description: item.description || item.content?.slice(0, 160) || '',
         website: item.website || '',
         created_at: item.created_at,
         type: selectedContentType
-      })) || [];
+      }));
 
       setContentItems(formattedItems);
     } catch (error) {
@@ -427,7 +440,8 @@ const NewsletterManagement: React.FC = () => {
       if (data) {
         setCurrentIssue({
           ...data,
-          frequency: data.frequency as 'daily' | 'weekly' | 'monthly'
+          frequency: data.frequency as 'daily' | 'weekly' | 'monthly',
+          status: data.status as 'draft' | 'scheduled' | 'sent'
         });
         
         toast({
@@ -639,7 +653,7 @@ const NewsletterManagement: React.FC = () => {
                             </td>
                             <td className="p-4">{subscriber.email}</td>
                             <td className="p-4">
-                              {subscriber.user_profiles?.full_name || 'N/A'}
+                              N/A
                             </td>
                             <td className="p-4">
                               <Badge variant="outline">
