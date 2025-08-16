@@ -125,7 +125,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
             <ul className="space-y-1">
               {tool.features.slice(0, 2).map((feature, index) => (
                 <li key={index} className="text-xs text-gray-600 dark:text-gray-300 flex items-start">
-                  <Star className="h-3 w-3 text-yellow-500 mr-1 mt-0.5 flex-shrink-0" />
+                  <Star className="h-3 w-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-transparent bg-clip-text mr-1 mt-0.5 flex-shrink-0" />
                   {feature}
                 </li>
               ))}
@@ -137,11 +137,11 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
         <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
           <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
             <div className="flex items-center">
-              <Users className="h-3 w-3 mr-1" />
+              <Users className="h-3 w-3 mr-1 bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text" />
               <span>Popular</span>
             </div>
             <div className="flex items-center">
-              <TrendingUp className="h-3 w-3 mr-1" />
+              <TrendingUp className="h-3 w-3 mr-1 bg-gradient-to-r from-green-500 to-blue-500 text-transparent bg-clip-text" />
               <span>Trending</span>
             </div>
           </div>

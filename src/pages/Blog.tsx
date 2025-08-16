@@ -205,6 +205,9 @@ const Blog: React.FC = () => {
           </>
         )}
       </div>
+
+      {/* Chat Dock */}
+      <ChatDock />
     </div>
   );
 };

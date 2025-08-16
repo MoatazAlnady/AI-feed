@@ -261,6 +261,9 @@ const Notifications: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Chat Dock */}
+      <ChatDock />
     </div>
   );
 };
