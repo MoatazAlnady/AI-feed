@@ -31,7 +31,6 @@ const ToolReviews: React.FC<ReviewsProps> = ({ toolId }) => {
   
   const [newReview, setNewReview] = useState({
     rating: 5,
-    title: '',
     comment: ''
   });
 
@@ -99,7 +98,6 @@ const ToolReviews: React.FC<ReviewsProps> = ({ toolId }) => {
         tool_id: toolId,
         user_id: user.id,
         rating: newReview.rating,
-        title: newReview.title.trim() || null,
         comment: newReview.comment.trim() || null
       };
 
@@ -123,7 +121,7 @@ const ToolReviews: React.FC<ReviewsProps> = ({ toolId }) => {
       }
 
       setShowReviewForm(false);
-      setNewReview({ rating: 5, title: '', comment: '' });
+      setNewReview({ rating: 5, comment: '' });
       fetchReviews();
     } catch (error) {
       console.error('Error submitting review:', error);
@@ -185,7 +183,6 @@ const ToolReviews: React.FC<ReviewsProps> = ({ toolId }) => {
               if (userReview) {
                 setNewReview({
                   rating: userReview.rating,
-                  title: userReview.title || '',
                   comment: userReview.comment || ''
                 });
               }
@@ -216,19 +213,6 @@ const ToolReviews: React.FC<ReviewsProps> = ({ toolId }) => {
               )}
             </div>
 
-            {/* Title */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Title (optional)
-              </label>
-              <input
-                type="text"
-                value={newReview.title}
-                onChange={(e) => setNewReview(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                placeholder="Summarize your experience..."
-              />
-            </div>
 
             {/* Comment */}
             <div>
@@ -308,11 +292,6 @@ const ToolReviews: React.FC<ReviewsProps> = ({ toolId }) => {
                     </span>
                   </div>
                   
-                  {review.title && (
-                    <h6 className="font-medium text-gray-800 dark:text-gray-200 mb-1">
-                      {review.title}
-                    </h6>
-                  )}
                   
                   {review.comment && (
                     <p className="text-gray-600 dark:text-gray-300 text-sm">

@@ -333,14 +333,16 @@ const ToolDetails: React.FC = () => {
                 </CardContent>
               </Card>
             )}
-
-            {/* Reviews Section */}
-            <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-              <CardContent className="p-6">
-                <ToolReviews toolId={tool.id} />
-              </CardContent>
-            </Card>
           </div>
+        </div>
+
+        {/* Reviews Section - Full Width at Bottom */}
+        <div className="mt-12">
+          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+            <CardContent className="p-6">
+              <ToolReviews toolId={tool.id} />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
