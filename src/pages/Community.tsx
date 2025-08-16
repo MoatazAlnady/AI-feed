@@ -158,14 +158,14 @@ const Community: React.FC = () => {
   });
 
   const renderFeed = () => (
-      <div className="space-y-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-          <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Community Feed</h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Connect with other creators, share insights, and discover new opportunities.
-          </p>
-        </div>
+    <div className="space-y-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+        <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Community Feed</h3>
+        <p className="text-gray-600 dark:text-gray-400">
+          Connect with other creators, share insights, and discover new opportunities.
+        </p>
       </div>
+    </div>
   );
 
   const renderEvents = () => (
