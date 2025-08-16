@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   Eye,
   Users,
-  Compare,
+  ArrowRightLeft,
   CheckCircle,
   X,
   ExternalLink
@@ -69,7 +69,7 @@ const ToolComparisonModal: React.FC<ToolComparisonModalProps> = ({
       <Card className="w-full max-w-2xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Compare className="h-5 w-5" />
+            <ArrowRightLeft className="h-5 w-5" />
             Tool Comparison ({selectedTools.length}/5)
           </CardTitle>
         </CardHeader>

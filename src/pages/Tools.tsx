@@ -24,6 +24,8 @@ interface Tool {
   user_id: string;
   created_at: string;
   updated_at: string;
+  average_rating: number;
+  review_count: number;
 }
 
 const Tools: React.FC = () => {
