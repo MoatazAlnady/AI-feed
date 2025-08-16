@@ -198,19 +198,19 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
               shareCount={tool.share_count || 0}
               className="text-xs"
             />
-            {/* View Details Button with proper dark mode styling */}
+            {/* View Details Button with newsfeed chip styling */}
             <Link
               to={`/tools/${tool.id}`}
-              className="px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 shadow-md hover:shadow-lg bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 dark:from-indigo-400 dark:to-purple-500 dark:hover:from-indigo-300 dark:hover:to-purple-400"
+              className="px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 border bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
             >
               View Details
             </Link>
-            {/* Try Now Button with proper dark mode styling */}
+            {/* Try Now Button with newsfeed chip styling */}
             <a
               href={tool.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 shadow-md hover:shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 dark:from-emerald-400 dark:to-teal-500 dark:hover:from-emerald-300 dark:hover:to-teal-400 group"
+              className="flex items-center px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 border bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800 group"
             >
               <span>Try Now</span>
               <ExternalLink className="h-3 w-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
