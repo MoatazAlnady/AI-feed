@@ -79,11 +79,10 @@ const ToolActionButtons: React.FC<ToolActionButtonsProps> = ({
         {canEdit && (
           <Link
             to={`/tools/${tool.id}/edit`}
-            className="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+            className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
             title="Edit Tool"
           >
-            <Edit className="h-4 w-4 mr-2" />
-            Edit
+            <Edit className="h-4 w-4" />
           </Link>
         )}
 
@@ -92,11 +91,10 @@ const ToolActionButtons: React.FC<ToolActionButtonsProps> = ({
           href={tool.website}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+          className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
           title="Visit Website"
         >
-          <ExternalLink className="h-4 w-4 mr-2" />
-          Visit
+          <ExternalLink className="h-4 w-4" />
         </a>
 
         {/* Delete Button - Show for admins only */}
@@ -104,12 +102,11 @@ const ToolActionButtons: React.FC<ToolActionButtonsProps> = ({
           <Button
             variant="outline"
             size="sm"
-            className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
+            className="w-8 h-8 p-0 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
             onClick={() => setShowDeleteDialog(true)}
             title="Delete Tool"
           >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Delete
+            <Trash2 className="h-4 w-4" />
           </Button>
         )}
       </div>
