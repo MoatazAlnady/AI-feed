@@ -14,6 +14,8 @@ import {
   MessageCircle
 } from 'lucide-react';
 import ChatDock from '../components/ChatDockProvider';
+import CreateEventModal from '../components/CreateEventModal';
+import CreateGroupModal from '../components/CreateGroupModal';
 import { supabase } from '../integrations/supabase/client';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
@@ -26,12 +28,30 @@ const Community: React.FC = () => {
   const [creators, setCreators] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [connectionStates, setConnectionStates] = useState<{[key: string]: {isConnected: boolean, hasPendingRequest: boolean}}>({});
+  const [showCreateEventModal, setShowCreateEventModal] = useState(false);
+  const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
+  const [events, setEvents] = useState<any[]>([]);
+  const [groups, setGroups] = useState<any[]>([]);
 
   useEffect(() => {
     if (activeTab === 'networking') {
       fetchCreators();
     }
   }, [activeTab, searchTerm]);
+
+  useEffect(() => {
+    // Listen for header create events
+    const handleCreateEvent = () => setShowCreateEventModal(true);
+    const handleCreateGroup = () => setShowCreateGroupModal(true);
+
+    window.addEventListener('openCreateEventModal', handleCreateEvent);
+    window.addEventListener('openCreateGroupModal', handleCreateGroup);
+
+    return () => {
+      window.removeEventListener('openCreateEventModal', handleCreateEvent);
+      window.removeEventListener('openCreateGroupModal', handleCreateGroup);
+    };
+  }, []);
 
   useEffect(() => {
     if (creators.length > 0 && user) {
@@ -172,36 +192,59 @@ const Community: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Community Events</h3>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200">
+        <button 
+          onClick={() => setShowCreateEventModal(true)}
+          className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200"
+        >
           <Plus className="h-4 w-4" />
           <span>Create Event</span>
         </button>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-          <div className="flex items-center space-x-2 mb-3">
-            <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-            <span className="text-sm text-gray-500 dark:text-gray-500">Tomorrow, 2:00 PM</span>
-          </div>
-          <h4 className="font-semibold text-gray-900 dark:text-white mb-2">AI Tools Showcase</h4>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            Discover the latest AI tools and their real-world applications.
-          </p>
-          <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Event →</button>
-        </div>
-        
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-          <div className="flex items-center space-x-2 mb-3">
-            <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-            <span className="text-sm text-gray-500 dark:text-gray-500">Friday, 5:00 PM</span>
-          </div>
-          <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Networking Mixer</h4>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            Connect with fellow AI enthusiasts and industry professionals.
-          </p>
-          <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">RSVP →</button>
-        </div>
+        {events.length === 0 ? (
+          <>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+              <div className="flex items-center space-x-2 mb-3">
+                <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                <span className="text-sm text-gray-500 dark:text-gray-500">Tomorrow, 2:00 PM</span>
+              </div>
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">AI Tools Showcase</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Discover the latest AI tools and their real-world applications.
+              </p>
+              <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Event →</button>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+              <div className="flex items-center space-x-2 mb-3">
+                <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                <span className="text-sm text-gray-500 dark:text-gray-500">Friday, 5:00 PM</span>
+              </div>
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Networking Mixer</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Connect with fellow AI enthusiasts and industry professionals.
+              </p>
+              <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">RSVP →</button>
+            </div>
+          </>
+        ) : (
+          events.map((event) => (
+            <div key={event.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+              <div className="flex items-center space-x-2 mb-3">
+                <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                <span className="text-sm text-gray-500 dark:text-gray-500">
+                  {event.date} at {event.time}
+                </span>
+              </div>
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{event.title}</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                {event.description}
+              </p>
+              <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Event →</button>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
@@ -210,54 +253,77 @@ const Community: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Discussion Groups</h3>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200">
+        <button 
+          onClick={() => setShowCreateGroupModal(true)}
+          className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200"
+        >
           <Plus className="h-4 w-4" />
           <span>Create Group</span>
         </button>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-          <div className="flex items-center space-x-2 mb-3">
-            <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-            <span className="font-semibold text-gray-900 dark:text-white">Machine Learning</span>
-          </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            Discuss ML algorithms, techniques, and latest research.
-          </p>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500 dark:text-gray-500">2.4k members</span>
-            <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Discussion →</button>
-          </div>
-        </div>
-        
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-          <div className="flex items-center space-x-2 mb-3">
-            <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-            <span className="font-semibold text-gray-900 dark:text-white">AI Tools</span>
-          </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            Share and discover new AI tools and platforms.
-          </p>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500 dark:text-gray-500">5.1k members</span>
-            <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Discussion →</button>
-          </div>
-        </div>
-        
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-          <div className="flex items-center space-x-2 mb-3">
-            <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-            <span className="font-semibold text-gray-900 dark:text-white">Startups & AI</span>
-          </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            Connect with AI startup founders and innovators.
-          </p>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500 dark:text-gray-500">1.8k members</span>
-            <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Discussion →</button>
-          </div>
-        </div>
+        {groups.length === 0 ? (
+          <>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+              <div className="flex items-center space-x-2 mb-3">
+                <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                <span className="font-semibold text-gray-900 dark:text-white">Machine Learning</span>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Discuss ML algorithms, techniques, and latest research.
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500 dark:text-gray-500">2.4k members</span>
+                <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Discussion →</button>
+              </div>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+              <div className="flex items-center space-x-2 mb-3">
+                <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                <span className="font-semibold text-gray-900 dark:text-white">AI Tools</span>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Share and discover new AI tools and platforms.
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500 dark:text-gray-500">5.1k members</span>
+                <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Discussion →</button>
+              </div>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+              <div className="flex items-center space-x-2 mb-3">
+                <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                <span className="font-semibold text-gray-900 dark:text-white">Startups & AI</span>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Connect with AI startup founders and innovators.
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500 dark:text-gray-500">1.8k members</span>
+                <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Discussion →</button>
+              </div>
+            </div>
+          </>
+        ) : (
+          groups.map((group) => (
+            <div key={group.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+              <div className="flex items-center space-x-2 mb-3">
+                <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                <span className="font-semibold text-gray-900 dark:text-white">{group.name}</span>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                {group.description}
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500 dark:text-gray-500">{group.members} members</span>
+                <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Discussion →</button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
@@ -468,6 +534,25 @@ const Community: React.FC = () => {
 
       {/* Chat Dock */}
       <ChatDock />
+
+      {/* Modals */}
+      <CreateEventModal
+        isOpen={showCreateEventModal}
+        onClose={() => setShowCreateEventModal(false)}
+        onEventCreated={(event) => {
+          setEvents(prev => [event, ...prev]);
+          toast.success('Event created successfully!');
+        }}
+      />
+
+      <CreateGroupModal
+        isOpen={showCreateGroupModal}
+        onClose={() => setShowCreateGroupModal(false)}
+        onGroupCreated={(group) => {
+          setGroups(prev => [group, ...prev]);
+          toast.success('Group created successfully!');
+        }}
+      />
     </div>
   );
 };
