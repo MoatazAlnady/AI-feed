@@ -19,6 +19,7 @@ import {
   UserPlus,
   MessageCircle
 } from 'lucide-react';
+import { useChatDock } from '@/context/ChatDockContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -54,6 +55,7 @@ const CreatorProfile: React.FC = () => {
   const { identifier } = useParams<{ identifier: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { openChatWith } = useChatDock();
   const [profile, setProfile] = useState<CreatorProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -313,7 +315,20 @@ const CreatorProfile: React.FC = () => {
                         {connectionStatus === 'connected' ? 'Connected' : 
                          connectionStatus === 'pending' ? 'Request Sent' : 'Connect'}
                       </Button>
-                      <Button variant="outline">
+                      <Button 
+                        variant="outline"
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          try {
+                            await openChatWith(profile.id, { createIfMissing: true });
+                            toast.success(`Opening chat with ${profile.full_name}`);
+                          } catch (error) {
+                            console.error('Error opening chat:', error);
+                            toast.error('Failed to open chat');
+                          }
+                        }}
+                      >
                         <MessageCircle className="h-4 w-4 mr-2" />
                         Message
                       </Button>

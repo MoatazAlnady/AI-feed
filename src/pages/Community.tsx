@@ -26,15 +26,6 @@ const Community: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  // Safe chat dock hook usage with fallback
-  let toggleOpen: (() => void) | undefined;
-  try {
-    const chatDock = useChatDock();
-    toggleOpen = chatDock.toggleOpen;
-  } catch (error) {
-    console.warn('ChatDockProvider not available, chat functionality disabled');
-    toggleOpen = undefined;
-  }
   const [activeTab, setActiveTab] = useState<'networking' | 'feed' | 'events' | 'groups'>('networking');
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
@@ -159,32 +150,19 @@ const Community: React.FC = () => {
     }
   };
 
-  const handleMessage = (userId: string, userName: string) => {
-    console.log('Message button clicked for:', userName, userId);
-    console.log('toggleOpen available:', !!toggleOpen);
-    
-    if (toggleOpen) {
-      try {
-        // Open chat dock and focus on user
-        toggleOpen();
-        // Small delay to ensure chat dock is open before trying to focus
-        setTimeout(() => {
-          // Dispatch custom event with user info for the chat dock
-          window.dispatchEvent(new CustomEvent('openChatWithUser', {
-            detail: { userId, userName }
-          }));
-        }, 100);
-        toast.success(`Opening chat with ${userName}`);
-      } catch (error) {
-        console.error('Error opening chat dock:', error);
-        // Fallback: redirect to messages page
-        toast.info(`Redirecting to messages...`);
-        navigate(`/messages?user=${userId}`);
-      }
-    } else {
-      // Fallback: redirect to messages page
-      toast.info(`Opening messages...`);
-      navigate(`/messages?user=${userId}`);
+  const handleMessage = async (userId: string, userName: string) => {
+    if (!user) {
+      toast.error('Please log in to send messages');
+      return;
+    }
+
+    try {
+      const { openChatWith } = useChatDock();
+      await openChatWith(userId, { createIfMissing: true });
+      toast.success(`Opening chat with ${userName}`);
+    } catch (error) {
+      console.error('Error opening chat:', error);
+      toast.error('Failed to open chat');
     }
   };
 

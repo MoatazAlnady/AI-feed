@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { setGlobalChatController } from '../components/ChatController';
 
 interface Thread {
   id: string;
@@ -47,6 +49,7 @@ interface ChatDockContextType {
   activeTab: 'focused' | 'other';
   setActiveTab: (tab: 'focused' | 'other') => void;
   loading: boolean;
+  openChatWith: (userId: string, opts?: { createIfMissing?: boolean }) => Promise<void>;
 }
 
 const ChatDockContext = createContext<ChatDockContextType | undefined>(undefined);
@@ -69,6 +72,21 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'focused' | 'other'>('focused');
   const [loading, setLoading] = useState(true);
+
+  // Check URL params for deep-linking
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const withUserId = urlParams.get('with');
+    
+    if (withUserId && user) {
+      // Auto-open chat with specified user
+      openChatWith(withUserId, { createIfMissing: true })
+        .catch(error => {
+          console.error('Error opening chat from URL:', error);
+          toast.error('Failed to open chat');
+        });
+    }
+  }, [user]); // Run when user changes
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -339,6 +357,68 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     return Promise.resolve();
   };
 
+  const openChatWith = async (userId: string, opts?: { createIfMissing?: boolean }) => {
+    try {
+      // Find existing thread with this user
+      let existingThread = threads.find(thread => 
+        thread.participants.some(p => p.id === userId)
+      );
+
+      if (!existingThread && opts?.createIfMissing) {
+        // Fetch user profile for thread creation
+        const { data: userProfile, error } = await supabase
+          .from('user_profiles')
+          .select('id, full_name, profile_photo, job_title')
+          .eq('id', userId)
+          .single();
+
+        if (error) {
+          console.error('Error fetching user profile:', error);
+          throw new Error('Failed to fetch user profile');
+        }
+
+        if (!userProfile) {
+          throw new Error('User not found');
+        }
+
+        // Create new thread
+        const newThread: Thread = {
+          id: `thread_${Date.now()}`,
+          participants: [{
+            id: userId,
+            name: userProfile.full_name || 'Unknown User',
+            avatar: userProfile.profile_photo,
+            title: userProfile.job_title,
+            online: false
+          }],
+          lastMessage: {
+            content: 'Start a conversation...',
+            timestamp: new Date().toISOString(),
+            senderId: ''
+          },
+          unreadCount: 0,
+          isFocused: true
+        };
+
+        setThreads(prev => [newThread, ...prev]);
+        existingThread = newThread;
+      }
+
+      if (existingThread) {
+        // Open chat dock and focus thread
+        setIsOpen(true);
+        setMinimized(false);
+        setActiveThreadId(existingThread.id);
+        setActiveTab('focused');
+      } else {
+        throw new Error('No existing conversation found');
+      }
+    } catch (error) {
+      console.error('Error opening chat:', error);
+      throw error;
+    }
+  };
+
   const toggleOpen = () => {
     setIsOpen(!isOpen);
     if (!isOpen) {
@@ -390,8 +470,14 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     unreadCount,
     activeTab,
     setActiveTab,
-    loading
+    loading,
+    openChatWith
   };
+
+  // Set global controller
+  useEffect(() => {
+    setGlobalChatController(openChatWith);
+  }, [openChatWith]);
 
   return (
     <ChatDockContext.Provider value={value}>

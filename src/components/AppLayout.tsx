@@ -7,8 +7,8 @@ import AIChatBot from '@/components/ChatDock';
 const AppLayout: React.FC = () => {
   const location = useLocation();
   
-  // Show chat on creator mode pages
-  const showChat = ['/newsfeed', '/submit-tool', '/submit-article', '/messages', '/profile'].includes(location.pathname);
+  // Show chat globally (removed path restriction)
+  const showChat = true;
 
   return (
     <div className="min-h-screen text-foreground">
@@ -27,7 +27,7 @@ const AppLayout: React.FC = () => {
       </main>
       <Footer />
       
-      {/* Global Chat for Creator Mode Pages */}
+      {/* Global Chat Widget */}
       {showChat && <AIChatBot />}
     </div>
   );

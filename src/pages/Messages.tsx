@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useChatDock } from '@/context/ChatDockContext';
+import { toast } from 'sonner';
 import { 
   Search, 
   Send, 
@@ -36,6 +39,18 @@ interface Conversation {
 
 const Messages: React.FC = () => {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const { openChatWith, toggleOpen } = useChatDock();
+
+  // Handle deep-linking
+  useEffect(() => {
+    const withUserId = searchParams.get('with');
+    if (withUserId) {
+      openChatWith(withUserId, { createIfMissing: true })
+        .then(() => toggleOpen())
+        .catch(error => toast.error('Failed to open chat'));
+    }
+  }, [searchParams, openChatWith, toggleOpen]);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');

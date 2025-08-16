@@ -71,7 +71,6 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
   handle
 }) => {
   const { user } = useAuth();
-  const { toggleOpen, setActiveThreadId } = useChatDock();
   const [following, setFollowing] = useState(isFollowing);
   const [loading, setLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
@@ -222,17 +221,22 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
   };
 
   const handleMessage = async () => {
+    if (!user) {
+      toast.error('Please log in to send messages');
+      return;
+    }
+
+    if (!userId) {
+      toast.error('Invalid user ID');
+      return;
+    }
+
     if (onMessage) {
       onMessage();
     } else {
-      // Open chat dock and find or create conversation with this user
       try {
-        // For now, this is a placeholder - in real implementation:
-        // 1. Find existing conversation with this user
-        // 2. If no conversation exists, create one
-        // 3. Set the active thread ID
-        // 4. Open the chat dock
-        toggleOpen();
+        const { openChatWith } = useChatDock();
+        await openChatWith(userId, { createIfMissing: true });
         toast.success(`Opening chat with ${name}`);
       } catch (error) {
         console.error('Error opening chat:', error);
