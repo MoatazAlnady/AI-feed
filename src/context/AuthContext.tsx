@@ -68,6 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email,
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/`,
         data: userData,
       },
     });
@@ -152,8 +153,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { data, error };
   };
 
-  // Check if user is admin - updated with your email
-  const isAdmin = user?.email === 'moataz.elnady@gmail.com' || user?.user_metadata?.account_type === 'admin';
+  // Check if user is admin based on database role only (no hardcoded bypass)
+  const [isAdmin, setIsAdmin] = useState(false);
+  
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (user) {
+        try {
+          const { data: profile, error } = await supabase
+            .from('user_profiles')
+            .select('account_type')
+            .eq('id', user.id)
+            .single();
+          
+          if (!error && profile) {
+            setIsAdmin(profile.account_type === 'admin');
+          }
+        } catch (error) {
+          console.error('Error checking admin status:', error);
+          setIsAdmin(false);
+        }
+      } else {
+        setIsAdmin(false);
+      }
+    };
+    
+    checkAdminStatus();
+  }, [user]);
 
   const value = {
     user,
