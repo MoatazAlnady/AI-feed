@@ -8,7 +8,7 @@ import { useTheme } from '../providers/ThemeProvider';
 import AuthModal from './AuthModal';
 import VerificationBadge from './VerificationBadge';
 import LanguageSelector from './LanguageSelector';
-import ConnectionRequestsModal from './ConnectionRequestsModal';
+import ConnectionRequestsPopover from './ConnectionRequestsPopover';
 import { supabase } from '../integrations/supabase/client';
 
 const Header: React.FC = () => {
@@ -21,7 +21,6 @@ const Header: React.FC = () => {
   const [notificationCount, setNotificationCount] = useState(0);
   const [messageCount, setMessageCount] = useState(0);
   const [connectionRequestsCount, setConnectionRequestsCount] = useState(0);
-  const [showConnectionRequests, setShowConnectionRequests] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
@@ -387,39 +386,9 @@ const Header: React.FC = () => {
 
                 {/* Connection Requests - Only for creators */}
                 {isCreator && !isEmployerView && (
-                  <div className="relative">
-                    <button
-                      onClick={() => setShowConnectionRequests(!showConnectionRequests)}
-                      className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                      title="Connection Requests"
-                    >
-                      <Users className="h-5 w-5" />
-                      {connectionRequestsCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                          {connectionRequestsCount}
-                        </span>
-                      )}
-                    </button>
-                    
-                    {showConnectionRequests && (
-                      <div className="absolute right-0 top-full mt-2 z-50">
-                        <div 
-                          className="fixed inset-0 bg-transparent z-40"
-                          onClick={() => setShowConnectionRequests(false)}
-                        />
-                        <div 
-                          className="relative z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 max-w-md w-80 max-h-96 overflow-hidden"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <ConnectionRequestsModal 
-                            open={true} 
-                            onOpenChange={setShowConnectionRequests}
-                            isInline={true}
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <ConnectionRequestsPopover 
+                    connectionRequestsCount={connectionRequestsCount} 
+                  />
                 )}
 
 
