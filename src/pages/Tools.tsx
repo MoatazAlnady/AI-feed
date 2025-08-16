@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ChatDock from '../components/ChatDock';
 import { Link } from 'react-router-dom';
 import { Search, Filter, Grid, List, GitCompare, Star, ExternalLink, Bookmark, Zap, Plus, TrendingUp, MoreHorizontal } from 'lucide-react';
 import ToolComparisonModal from '../components/ToolComparisonModal';
@@ -394,6 +395,9 @@ const Tools: React.FC = () => {
             </>
           )}
         </div>
+
+        {/* Chat Dock */}
+        <ChatDock />
       </div>
 
       {/* Tool Comparison Modal */}
