@@ -1223,23 +1223,29 @@ export type Database = {
       shares: {
         Row: {
           content_id: string
-          content_type: string
+          content_type: string | null
           created_at: string
           id: string
+          target_id: string
+          target_type: string
           user_id: string
         }
         Insert: {
           content_id: string
-          content_type: string
+          content_type?: string | null
           created_at?: string
           id?: string
+          target_id: string
+          target_type?: string
           user_id: string
         }
         Update: {
           content_id?: string
-          content_type?: string
+          content_type?: string | null
           created_at?: string
           id?: string
+          target_id?: string
+          target_type?: string
           user_id?: string
         }
         Relationships: []
