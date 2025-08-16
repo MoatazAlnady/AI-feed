@@ -214,6 +214,9 @@ const Community: React.FC = () => {
   };
 
   const filteredCreators = creators.filter(creator => {
+    // Hide current user from networking tab
+    if (user?.id === creator.id) return false;
+    
     if (!searchTerm) return true;
     return creator.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
            creator.job_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -445,52 +448,42 @@ const Community: React.FC = () => {
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                 {creator.bio || 'Passionate about AI and technology.'}
               </p>
-              <div className="flex space-x-2">
-                {user?.id !== creator.id && (
-                  <>
-                    {/* Always show Connect button */}
-                    {connectionStates[creator.id]?.isConnected ? (
-                      <div className="flex items-center space-x-1 px-3 py-2 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-lg text-sm font-medium">
-                        <UserCheck className="h-4 w-4" />
-                        <span>Connected</span>
-                      </div>
-                    ) : connectionStates[creator.id]?.hasPendingRequest ? (
-                      <button 
-                        disabled
-                        className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors disabled:opacity-50 bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200"
-                      >
-                        <UserCheck className="h-4 w-4 inline mr-1" />
-                        Request Sent
-                      </button>
-                    ) : (
-                      <button 
-                        onClick={() => sendConnectionRequest(creator.id, creator.full_name)}
-                        className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
-                      >
-                        <UserPlus className="h-4 w-4 inline mr-1" />
-                        Connect
-                      </button>
-                    )}
-                    
-                    {/* Always show Message button */}
+              {user?.id !== creator.id && (
+                <div className="mt-6 flex w-full items-center justify-center gap-3">
+                  {/* Connection status button */}
+                  {connectionStates[creator.id]?.isConnected ? (
+                    <div className="flex items-center space-x-1 px-3 py-2 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-lg text-sm font-medium">
+                      <UserCheck className="h-4 w-4" />
+                      <span>Connected</span>
+                    </div>
+                  ) : connectionStates[creator.id]?.hasPendingRequest ? (
                     <button 
-                      onClick={() => handleMessage(creator.id, creator.full_name)}
+                      disabled
+                      className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors disabled:opacity-50 bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200"
+                    >
+                      <UserCheck className="h-4 w-4 inline mr-1" />
+                      Request Sent
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => sendConnectionRequest(creator.id, creator.full_name)}
                       className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
                     >
-                      <MessageCircle className="h-4 w-4 inline mr-1" />
-                      Message
+                      <UserPlus className="h-4 w-4 inline mr-1" />
+                      Connect
                     </button>
-                  </>
-                )}
-                {user?.id === creator.id && (
+                  )}
+                  
+                  {/* Always show Message button */}
                   <button 
-                    onClick={() => window.location.href = `/profile`}
-                    className="w-full px-4 py-2 bg-muted text-muted-foreground rounded-xl hover:bg-muted/80 transition-all duration-200"
+                    onClick={() => handleMessage(creator.id, creator.full_name)}
+                    className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
                   >
-                    View My Profile
+                    <MessageCircle className="h-4 w-4 inline mr-1" />
+                    Message
                   </button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           ))}
         </div>

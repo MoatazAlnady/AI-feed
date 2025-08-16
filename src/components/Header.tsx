@@ -320,21 +320,6 @@ const Header: React.FC = () => {
             
             {user ? (
               <>
-                {/* Analytics - Only for creators */}
-                {isCreator && !isEmployerView && (
-                  <Link
-                    to="/analytics"
-                    className={`p-2 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg ${
-                      location.pathname === '/analytics'
-                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30'
-                        : 'text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100'
-                    }`}
-                    title="Analytics"
-                  >
-                    <BarChart3 className="h-5 w-5" />
-                  </Link>
-                )}
-
                 {/* Notifications */}
                 {isEmployerView ? (
                   <Link
@@ -362,6 +347,20 @@ const Header: React.FC = () => {
                   </Link>
                 )}
 
+                {/* Messages */}
+                <Link
+                  to="/messages"
+                  className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                  title="Messages"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  {messageCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                      {messageCount}
+                    </span>
+                  )}
+                </Link>
+
                 {/* Connection Requests - Only for creators */}
                 {isCreator && !isEmployerView && (
                   <button
@@ -378,19 +377,6 @@ const Header: React.FC = () => {
                   </button>
                 )}
 
-                {/* Messages */}
-                <Link
-                  to="/messages"
-                  className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                  title="Messages"
-                >
-                  <MessageCircle className="h-5 w-5" />
-                  {messageCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                      {messageCount}
-                    </span>
-                  )}
-                </Link>
 
                 {/* Create Dropdown - Only for authenticated users in creator view */}
                 {!isEmployerView && (
@@ -911,6 +897,14 @@ const Header: React.FC = () => {
         open={showConnectionRequests}
         onOpenChange={setShowConnectionRequests}
       />
+      
+      {/* Close connection requests when clicking outside */}
+      {showConnectionRequests && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setShowConnectionRequests(false)}
+        />
+      )}
     </>
   );
 };

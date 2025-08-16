@@ -117,23 +117,36 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
     }
   };
 
+  const handleOutsideClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onOpenChange(false);
+    }
+  };
+
+  if (!open) return null;
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Connection Requests</DialogTitle>
-        </DialogHeader>
+    <div 
+      className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center pt-16"
+      onClick={handleOutsideClick}
+    >
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full mx-4 max-h-96 overflow-hidden">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Connection Requests
+          </h3>
+        </div>
         
-        <div className="space-y-4 max-h-96 overflow-y-auto">
+        <div className="max-h-80 overflow-y-auto p-4 space-y-4">
           {loading ? (
             <div className="text-center py-4">Loading...</div>
           ) : requests.length === 0 ? (
-            <div className="text-center py-4 text-muted-foreground">
+            <div className="text-center py-4 text-gray-500 dark:text-gray-400">
               No pending connection requests
             </div>
           ) : (
             requests.map((request) => (
-              <div key={request.id} className="flex items-start space-x-3 p-3 rounded-lg border">
+              <div key={request.id} className="flex items-start space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
                 <Avatar className="h-10 w-10">
                   {request.requester.profile_photo ? (
                     <AvatarImage src={request.requester.profile_photo} />
@@ -145,35 +158,36 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
                 </Avatar>
                 
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium truncate">
+                  <div className="font-medium truncate text-gray-900 dark:text-white">
                     {request.requester.full_name || 'Unknown User'}
                   </div>
                   {request.requester.job_title && (
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
                       {request.requester.job_title}
                     </div>
                   )}
                   {request.message && (
-                    <div className="text-sm mt-1 text-muted-foreground">
+                    <div className="text-sm mt-1 text-gray-600 dark:text-gray-300">
                       "{request.message}"
                     </div>
                   )}
                   
-                  <div className="flex space-x-2 mt-2">
+                  <div className="flex space-x-2 mt-3">
                     <Button
                       size="sm"
                       onClick={() => handleRequest(request.id, 'accepted')}
-                      className="bg-green-600 hover:bg-green-700 text-white"
+                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-xs"
                     >
-                      <Check className="h-4 w-4 mr-1" />
+                      <Check className="h-3 w-3 mr-1" />
                       Accept
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => handleRequest(request.id, 'rejected')}
+                      className="px-3 py-1 text-xs"
                     >
-                      <X className="h-4 w-4 mr-1" />
+                      <X className="h-3 w-3 mr-1" />
                       Decline
                     </Button>
                   </div>
@@ -182,8 +196,8 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
             ))
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 };
 
