@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Plus, Save } from 'lucide-react';
 
@@ -36,6 +37,7 @@ interface CreateToolModalProps {
 
 const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onToolCreated }) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
   const [loading, setLoading] = useState(false);
@@ -206,7 +208,8 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
         pros,
         cons,
         tags,
-        status: 'published'
+        status: 'pending',
+        user_id: user?.id
       };
 
       const { error } = await supabase
