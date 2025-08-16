@@ -688,9 +688,13 @@ const NewsletterManagement: React.FC = () => {
                                 onCheckedChange={() => toggleSubscriberSelection(subscriber.id)}
                               />
                             </td>
-                            <td className="p-4">{subscriber.email}</td>
+                            <td className="p-4 font-medium">{subscriber.email}</td>
                             <td className="p-4">
-                              N/A
+                              {subscriber.user_id ? (
+                                <span className="text-sm text-muted-foreground">Registered User</span>
+                              ) : (
+                                <span className="text-sm text-muted-foreground">Newsletter Only</span>
+                              )}
                             </td>
                             <td className="p-4">
                               <Badge variant="outline">

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
 import { toast } from 'sonner';
-import { User, Search, MessageCircle, UserMinus } from 'lucide-react';
+import { Search } from 'lucide-react';
+import UserProfileCard from './UserProfileCard';
 
 interface Connection {
   id: string;
@@ -132,125 +132,65 @@ const NetworkTab: React.FC = () => {
       {loading ? (
         <div className="text-center py-8">Loading connections...</div>
       ) : (
-        <div className="space-y-8">
-          {/* Recent Connections Section */}
-          {recentConnections.length > 0 && (
-            <div>
-              <h4 className="text-md font-medium mb-4 text-gray-900 dark:text-gray-100">
-                Recent Connections ({recentConnections.length})
-              </h4>
-              <div className="grid gap-4">
+        <Tabs defaultValue="recent" className="w-full" dir="ltr">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="recent">Recent ({recentConnections.length})</TabsTrigger>
+            <TabsTrigger value="all">All ({allConnections.length})</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="recent" className="space-y-4">
+            {recentConnections.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                {searchTerm ? 'No recent connections found matching your search' : 'No recent connections in the last 30 days'}
+              </div>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {recentConnections.map((connection) => (
-                  <div key={connection.id} className="flex items-center justify-between p-4 border rounded-lg bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="h-12 w-12">
-                        {connection.connected_user.profile_photo ? (
-                          <AvatarImage src={connection.connected_user.profile_photo} />
-                        ) : (
-                          <AvatarFallback>
-                            <User className="h-6 w-6" />
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
-                      
-                      <div>
-                        <h4 className="font-medium">
-                          {connection.connected_user.full_name || 'Unknown User'}
-                        </h4>
-                        {connection.connected_user.job_title && (
-                          <p className="text-sm text-muted-foreground">
-                            {connection.connected_user.job_title}
-                            {connection.connected_user.company && ` at ${connection.connected_user.company}`}
-                          </p>
-                        )}
-                        <p className="text-xs text-muted-foreground">
-                          Connected on {new Date(connection.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex space-x-2">
-                      <Button size="sm" variant="outline">
-                        <MessageCircle className="h-4 w-4 mr-1" />
-                        Message
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => removeConnection(connection.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        <UserMinus className="h-4 w-4 mr-1" />
-                        Remove
-                      </Button>
-                    </div>
-                  </div>
+                  <UserProfileCard
+                    key={connection.id}
+                    userId={connection.connected_user.id}
+                    name={connection.connected_user.full_name || 'Unknown User'}
+                    title={connection.connected_user.job_title}
+                    company={connection.connected_user.company}
+                    profilePhoto={connection.connected_user.profile_photo}
+                    onMessage={() => {
+                      // Handle message action
+                      toast.info('Message functionality coming soon');
+                    }}
+                    onConnect={() => removeConnection(connection.id)}
+                    className="bg-primary/5 border-primary/20"
+                  />
                 ))}
               </div>
-            </div>
-          )}
+            )}
+          </TabsContent>
 
-          {/* All Connections Section */}
-          <div>
-            <h4 className="text-md font-medium mb-4 text-gray-900 dark:text-gray-100">
-              All Connections ({allConnections.length})
-            </h4>
+          <TabsContent value="all" className="space-y-4">
             {allConnections.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 {searchTerm ? 'No connections found matching your search' : 'No connections yet'}
               </div>
             ) : (
-              <div className="grid gap-4">
+              <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {allConnections.map((connection) => (
-                  <div key={connection.id} className="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="h-12 w-12">
-                        {connection.connected_user.profile_photo ? (
-                          <AvatarImage src={connection.connected_user.profile_photo} />
-                        ) : (
-                          <AvatarFallback>
-                            <User className="h-6 w-6" />
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
-                      
-                      <div>
-                        <h4 className="font-medium">
-                          {connection.connected_user.full_name || 'Unknown User'}
-                        </h4>
-                        {connection.connected_user.job_title && (
-                          <p className="text-sm text-muted-foreground">
-                            {connection.connected_user.job_title}
-                            {connection.connected_user.company && ` at ${connection.connected_user.company}`}
-                          </p>
-                        )}
-                        <p className="text-xs text-muted-foreground">
-                          Connected on {new Date(connection.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex space-x-2">
-                      <Button size="sm" variant="outline">
-                        <MessageCircle className="h-4 w-4 mr-1" />
-                        Message
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => removeConnection(connection.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        <UserMinus className="h-4 w-4 mr-1" />
-                        Remove
-                      </Button>
-                    </div>
-                  </div>
+                  <UserProfileCard
+                    key={connection.id}
+                    userId={connection.connected_user.id}
+                    name={connection.connected_user.full_name || 'Unknown User'}
+                    title={connection.connected_user.job_title}
+                    company={connection.connected_user.company}
+                    profilePhoto={connection.connected_user.profile_photo}
+                    onMessage={() => {
+                      // Handle message action
+                      toast.info('Message functionality coming soon');
+                    }}
+                    onConnect={() => removeConnection(connection.id)}
+                  />
                 ))}
               </div>
             )}
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
       )}
     </div>
   );
