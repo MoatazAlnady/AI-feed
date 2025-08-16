@@ -392,9 +392,13 @@ const Profile: React.FC = () => {
                       </p>
                     </div>
                   )}
-                </div>
-              )}
-            </div>
+                 </div>
+               )}
+
+               {activeTab === 'network' && (
+                 <NetworkTab />
+               )}
+             </div>
           </div>
         </div>
       </div>
