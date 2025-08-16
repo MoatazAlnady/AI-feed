@@ -71,6 +71,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
   handle
 }) => {
   const { user } = useAuth();
+  const { openChatWith } = useChatDock(); // Move hook to component level
   const [following, setFollowing] = useState(isFollowing);
   const [loading, setLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
@@ -235,7 +236,6 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
       onMessage();
     } else {
       try {
-        const { openChatWith } = useChatDock();
         await openChatWith(userId, { createIfMissing: true });
         toast.success(`Opening chat with ${name}`);
       } catch (error) {

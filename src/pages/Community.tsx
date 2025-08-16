@@ -24,6 +24,7 @@ import { toast } from 'sonner';
 
 const Community: React.FC = () => {
   const { user } = useAuth();
+  const { openChatWith } = useChatDock(); // Move hook to component level
   const navigate = useNavigate();
   
   const [activeTab, setActiveTab] = useState<'networking' | 'feed' | 'events' | 'groups'>('networking');
@@ -157,7 +158,6 @@ const Community: React.FC = () => {
     }
 
     try {
-      const { openChatWith } = useChatDock();
       await openChatWith(userId, { createIfMissing: true });
       toast.success(`Opening chat with ${userName}`);
     } catch (error) {

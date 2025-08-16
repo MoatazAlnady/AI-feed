@@ -82,10 +82,38 @@ const CreatorProfile: React.FC = () => {
         identifier: id
       });
 
+      console.log('Profile fetch result:', { data, error, identifier: id });
+
       if (error) {
         console.error('Error fetching profile:', error);
-        setNotFound(true);
-        return;
+        console.log('Will fallback to direct profile query for UUID:', id);
+        // Fallback to direct profile query if UUID
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (uuidRegex.test(id)) {
+          const { data: fallbackData, error: fallbackError } = await supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('id', id)
+            .maybeSingle();
+          
+          if (fallbackError) {
+            console.error('Fallback profile fetch failed:', fallbackError);
+            setNotFound(true);
+            return;
+          }
+          
+          if (!fallbackData) {
+            setNotFound(true);
+            return;
+          }
+          
+          // Use fallback data
+          setProfile(fallbackData);
+          return;
+        } else {
+          setNotFound(true);
+          return;
+        }
       }
 
       if (!data || data.length === 0) {
