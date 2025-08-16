@@ -78,7 +78,9 @@ const Tools: React.FC = () => {
       // Transform tools data with category names
       const transformedTools = (toolsData || []).map(tool => ({
         ...tool,
-        category_name: categoryMap.get(tool.category_id) || 'Uncategorized'
+        category_name: categoryMap.get(tool.category_id) || 'Uncategorized',
+        average_rating: tool.average_rating || 0,
+        review_count: tool.review_count || 0
       }));
 
       console.log('Transformed tools:', transformedTools);
