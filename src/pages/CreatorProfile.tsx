@@ -69,6 +69,18 @@ const CreatorProfile: React.FC = () => {
         checkConnectionStatus();
       }
     }
+    
+    // Listen for connection request processing events
+    const handleConnectionRequestProcessed = () => {
+      if (user && profile) {
+        checkConnectionStatus();
+      }
+    };
+    window.addEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
+
+    return () => {
+      window.removeEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
+    };
   }, [identifier, user]);
 
   const fetchProfile = async (id: string) => {

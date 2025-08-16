@@ -102,6 +102,18 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
     if (user && userId && !isOwnProfile) {
       checkConnectionStatus();
     }
+    
+    // Listen for connection request processing events
+    const handleConnectionRequestProcessed = () => {
+      if (user && userId && !isOwnProfile) {
+        checkConnectionStatus();
+      }
+    };
+    window.addEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
+
+    return () => {
+      window.removeEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
+    };
   }, [user, userId, isOwnProfile]);
 
   const checkConnectionStatus = async () => {

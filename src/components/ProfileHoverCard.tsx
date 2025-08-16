@@ -39,6 +39,18 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
       fetchProfile();
       checkConnectionStatus();
     }
+    
+    // Listen for connection request processing events
+    const handleConnectionRequestProcessed = () => {
+      if (userId && userId !== user?.id) {
+        checkConnectionStatus();
+      }
+    };
+    window.addEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
+
+    return () => {
+      window.removeEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
+    };
   }, [userId, user]);
 
   const fetchProfile = async () => {

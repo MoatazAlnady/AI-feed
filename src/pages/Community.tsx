@@ -48,15 +48,24 @@ const Community: React.FC = () => {
     // Listen for header create events
     const handleCreateEvent = () => setShowCreateEventModal(true);
     const handleCreateGroup = () => setShowCreateGroupModal(true);
+    
+    // Listen for connection request processing events to refresh connection states
+    const handleConnectionRequestProcessed = () => {
+      if (activeTab === 'networking' && creators.length > 0 && user) {
+        checkConnectionStates();
+      }
+    };
 
     window.addEventListener('openCreateEventModal', handleCreateEvent);
     window.addEventListener('openCreateGroupModal', handleCreateGroup);
+    window.addEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
 
     return () => {
       window.removeEventListener('openCreateEventModal', handleCreateEvent);
       window.removeEventListener('openCreateGroupModal', handleCreateGroup);
+      window.removeEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
     };
-  }, []);
+  }, [activeTab, creators, user]);
 
   useEffect(() => {
     if (creators.length > 0 && user) {
