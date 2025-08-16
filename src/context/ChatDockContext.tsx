@@ -192,8 +192,8 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
         );
         const uniqueParticipantIds = [...new Set(allParticipantIds)];
 
-        const { data: profilesData } = await supabase.rpc('get_public_profiles' as any, {
-          uids: uniqueParticipantIds
+        const { data: profilesData } = await supabase.rpc('get_public_profiles_by_ids', {
+          ids: uniqueParticipantIds
         });
 
         const profileMap = new Map();
@@ -213,8 +213,8 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
             id: conv.id,
             participants: [{
               id: otherParticipant?.user_id || '',
-              name: profile?.display_name || 'Deleted User',
-              avatar: profile?.avatar_url,
+              name: profile?.full_name || 'Deleted User',
+              avatar: profile?.profile_photo,
               title: '', // Not available in public profiles
               online: false
             }],
@@ -261,8 +261,8 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (messagesData && messagesData.length > 0) {
         // Get sender profiles safely
         const senderIds = [...new Set(messagesData.map(msg => msg.sender_id))];
-        const { data: profilesData } = await supabase.rpc('get_public_profiles' as any, {
-          uids: senderIds
+        const { data: profilesData } = await supabase.rpc('get_public_profiles_by_ids', {
+          ids: senderIds
         });
 
         const profileMap = new Map();
@@ -369,8 +369,8 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
 
       if (!existingThread && opts?.createIfMissing) {
         // Get user profile safely using RPC
-        const { data: userProfiles } = await supabase.rpc('get_public_profiles' as any, {
-          uids: [userId]
+        const { data: userProfiles } = await supabase.rpc('get_public_profiles_by_ids', {
+          ids: [userId]
         });
 
         if (!Array.isArray(userProfiles) || userProfiles.length === 0) {
@@ -384,8 +384,8 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
           id: `thread_${Date.now()}`,
           participants: [{
             id: userId,
-            name: userProfile.display_name || 'Deleted User',
-            avatar: userProfile.avatar_url,
+            name: userProfile.full_name || 'Deleted User',
+            avatar: userProfile.profile_photo,
             title: '', // Not available in public profiles
             online: false
           }],

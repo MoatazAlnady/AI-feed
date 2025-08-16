@@ -90,8 +90,8 @@ const CreatorProfile: React.FC = () => {
         // Fallback to get_public_profiles if UUID
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
         if (uuidRegex.test(id)) {
-          const { data: fallbackData, error: fallbackError } = await supabase.rpc('get_public_profiles' as any, {
-            uids: [id]
+          const { data: fallbackData, error: fallbackError } = await supabase.rpc('get_public_profiles_by_ids', {
+            ids: [id]
           });
           
           if (fallbackError) {
@@ -109,16 +109,14 @@ const CreatorProfile: React.FC = () => {
           const publicProfile = fallbackData[0];
           const fullProfile = {
             ...publicProfile,
-            full_name: publicProfile.display_name,
-            profile_photo: publicProfile.avatar_url,
+            handle: '',
+            visibility: 'public',
             // Set other fields to defaults
-            job_title: '',
+            job_title: publicProfile.job_title || '',
             company: '',
             bio: '',
             location: '',
             cover_photo: '',
-            verified: false,
-            ai_nexus_top_voice: false,
             total_engagement: 0,
             total_reach: 0,
             tools_submitted: 0,
@@ -127,7 +125,6 @@ const CreatorProfile: React.FC = () => {
             github: '',
             linkedin: '',
             twitter: '',
-            interests: [],
             contact_visible: false
           };
           
