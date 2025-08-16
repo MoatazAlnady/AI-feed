@@ -205,7 +205,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
   };
 
   return (
-    <div className={`bg-white rounded-2xl shadow-sm border border-gray-200 p-6 ${className}`}>
+    <div className={`bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
       <div className="flex items-start space-x-4">
         {/* Profile Photo */}
         <div className="flex-shrink-0">
@@ -224,10 +224,10 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
 
         {/* User Info */}
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-gray-900 truncate">{name}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">{name}</h3>
           
           {title && (
-            <div className="flex items-center text-gray-600 mt-1">
+            <div className="flex items-center text-gray-600 dark:text-gray-400 mt-1">
               <Briefcase className="h-4 w-4 mr-1 flex-shrink-0" />
               <span className="text-sm truncate">
                 {title}{company && ` at ${company}`}
@@ -236,14 +236,14 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
           )}
           
           {location && (
-            <div className="flex items-center text-gray-600 mt-1">
+            <div className="flex items-center text-gray-600 dark:text-gray-400 mt-1">
               <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
               <span className="text-sm truncate">{location}</span>
             </div>
           )}
           
           {bio && (
-            <p className="text-gray-600 text-sm mt-2 line-clamp-2">{bio}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm mt-2 line-clamp-2">{bio}</p>
           )}
 
           {/* Social Links */}
@@ -258,7 +258,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
                     href={getSocialUrl(platform, value)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                     title={`${platform}: ${value}`}
                   >
                     <Icon className="h-4 w-4" />
@@ -272,22 +272,22 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
           {showContactInfo && (contactInfo.email || contactInfo.phone) && (
             <div className="mt-3 space-y-1">
               {contactInfo.email && (
-                <div className="flex items-center text-gray-600">
+                <div className="flex items-center text-gray-600 dark:text-gray-400">
                   <Mail className="h-4 w-4 mr-2 flex-shrink-0" />
                   <a
                     href={`mailto:${contactInfo.email}`}
-                    className="text-sm text-primary-600 hover:text-primary-700"
+                    className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
                   >
                     {contactInfo.email}
                   </a>
                 </div>
               )}
               {contactInfo.phone && (
-                <div className="flex items-center text-gray-600">
+                <div className="flex items-center text-gray-600 dark:text-gray-400">
                   <Phone className="h-4 w-4 mr-2 flex-shrink-0" />
                   <a
                     href={`tel:${contactInfo.phone}`}
-                    className="text-sm text-primary-600 hover:text-primary-700"
+                    className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
                   >
                     {contactInfo.phone}
                   </a>

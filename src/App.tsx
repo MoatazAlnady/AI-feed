@@ -58,6 +58,7 @@ const App = () => (
               <Route path="profile" element={<Profile />} />
               <Route path="settings" element={<Settings />} />
               <Route path="upgrade" element={<Upgrade />} />
+              <Route path="user/:userId" element={<Profile />} />
               <Route path="user-view/:userId" element={<Profile />} />
               <Route path="dashboard" element={<EmployerDashboard />} />
               <Route path="employer/*" element={<EmployerDashboard />} />

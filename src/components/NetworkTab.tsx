@@ -104,6 +104,16 @@ const NetworkTab: React.FC = () => {
     connection.connected_user.company?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Split connections into recent (last 30 days) and all
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  
+  const recentConnections = filteredConnections.filter(connection => 
+    new Date(connection.created_at) >= thirtyDaysAgo
+  );
+  
+  const allConnections = filteredConnections;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -121,58 +131,125 @@ const NetworkTab: React.FC = () => {
 
       {loading ? (
         <div className="text-center py-8">Loading connections...</div>
-      ) : filteredConnections.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground">
-          {searchTerm ? 'No connections found matching your search' : 'No connections yet'}
-        </div>
       ) : (
-        <div className="grid gap-4">
-          {filteredConnections.map((connection) => (
-            <div key={connection.id} className="flex items-center justify-between p-4 border rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Avatar className="h-12 w-12">
-                  {connection.connected_user.profile_photo ? (
-                    <AvatarImage src={connection.connected_user.profile_photo} />
-                  ) : (
-                    <AvatarFallback>
-                      <User className="h-6 w-6" />
-                    </AvatarFallback>
-                  )}
-                </Avatar>
-                
-                <div>
-                  <h4 className="font-medium">
-                    {connection.connected_user.full_name || 'Unknown User'}
-                  </h4>
-                  {connection.connected_user.job_title && (
-                    <p className="text-sm text-muted-foreground">
-                      {connection.connected_user.job_title}
-                      {connection.connected_user.company && ` at ${connection.connected_user.company}`}
-                    </p>
-                  )}
-                  <p className="text-xs text-muted-foreground">
-                    Connected on {new Date(connection.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex space-x-2">
-                <Button size="sm" variant="outline">
-                  <MessageCircle className="h-4 w-4 mr-1" />
-                  Message
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => removeConnection(connection.id)}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <UserMinus className="h-4 w-4 mr-1" />
-                  Remove
-                </Button>
+        <div className="space-y-8">
+          {/* Recent Connections Section */}
+          {recentConnections.length > 0 && (
+            <div>
+              <h4 className="text-md font-medium mb-4 text-gray-900 dark:text-gray-100">
+                Recent Connections ({recentConnections.length})
+              </h4>
+              <div className="grid gap-4">
+                {recentConnections.map((connection) => (
+                  <div key={connection.id} className="flex items-center justify-between p-4 border rounded-lg bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="h-12 w-12">
+                        {connection.connected_user.profile_photo ? (
+                          <AvatarImage src={connection.connected_user.profile_photo} />
+                        ) : (
+                          <AvatarFallback>
+                            <User className="h-6 w-6" />
+                          </AvatarFallback>
+                        )}
+                      </Avatar>
+                      
+                      <div>
+                        <h4 className="font-medium">
+                          {connection.connected_user.full_name || 'Unknown User'}
+                        </h4>
+                        {connection.connected_user.job_title && (
+                          <p className="text-sm text-muted-foreground">
+                            {connection.connected_user.job_title}
+                            {connection.connected_user.company && ` at ${connection.connected_user.company}`}
+                          </p>
+                        )}
+                        <p className="text-xs text-muted-foreground">
+                          Connected on {new Date(connection.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex space-x-2">
+                      <Button size="sm" variant="outline">
+                        <MessageCircle className="h-4 w-4 mr-1" />
+                        Message
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => removeConnection(connection.id)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <UserMinus className="h-4 w-4 mr-1" />
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
+          )}
+
+          {/* All Connections Section */}
+          <div>
+            <h4 className="text-md font-medium mb-4 text-gray-900 dark:text-gray-100">
+              All Connections ({allConnections.length})
+            </h4>
+            {allConnections.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                {searchTerm ? 'No connections found matching your search' : 'No connections yet'}
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {allConnections.map((connection) => (
+                  <div key={connection.id} className="flex items-center justify-between p-4 border rounded-lg dark:border-gray-700">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="h-12 w-12">
+                        {connection.connected_user.profile_photo ? (
+                          <AvatarImage src={connection.connected_user.profile_photo} />
+                        ) : (
+                          <AvatarFallback>
+                            <User className="h-6 w-6" />
+                          </AvatarFallback>
+                        )}
+                      </Avatar>
+                      
+                      <div>
+                        <h4 className="font-medium">
+                          {connection.connected_user.full_name || 'Unknown User'}
+                        </h4>
+                        {connection.connected_user.job_title && (
+                          <p className="text-sm text-muted-foreground">
+                            {connection.connected_user.job_title}
+                            {connection.connected_user.company && ` at ${connection.connected_user.company}`}
+                          </p>
+                        )}
+                        <p className="text-xs text-muted-foreground">
+                          Connected on {new Date(connection.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex space-x-2">
+                      <Button size="sm" variant="outline">
+                        <MessageCircle className="h-4 w-4 mr-1" />
+                        Message
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => removeConnection(connection.id)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <UserMinus className="h-4 w-4 mr-1" />
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

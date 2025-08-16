@@ -193,27 +193,19 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
               shareCount={tool.share_count || 0}
               className="text-xs"
             />
-            {/* زر View Details بألوان ثابتة */}
+            {/* View Details Button with proper dark mode styling */}
             <Link
               to={`/tools/${tool.id}`}
-              style={{
-                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                color: 'white'
-              }}
-              className="px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 shadow-md hover:shadow-lg hover:opacity-90"
+              className="px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 shadow-md hover:shadow-lg bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 dark:from-indigo-400 dark:to-purple-500 dark:hover:from-indigo-300 dark:hover:to-purple-400"
             >
               View Details
             </Link>
-            {/* زر Try Now بألوان ثابتة */}
+            {/* Try Now Button with proper dark mode styling */}
             <a
               href={tool.website}
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                background: 'linear-gradient(135deg, #10b981, #059669)',
-                color: 'white'
-              }}
-              className="flex items-center px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 shadow-md hover:shadow-lg hover:opacity-90 group"
+              className="flex items-center px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 shadow-md hover:shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 dark:from-emerald-400 dark:to-teal-500 dark:hover:from-emerald-300 dark:hover:to-teal-400 group"
             >
               <span>Try Now</span>
               <ExternalLink className="h-3 w-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
