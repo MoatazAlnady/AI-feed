@@ -70,7 +70,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
                 />
               </div>
             ) : (
-              <div className="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-semibold text-sm">
                   {tool.name.charAt(0).toUpperCase()}
                 </span>
@@ -99,19 +99,35 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
           {tool.description}
         </p>
 
-        {/* Tags */}
+        {/* Tags - مع الألوان الجديدة */}
         {tool.tags && tool.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
             {tool.tags.slice(0, 3).map((tag, index) => (
               <span
                 key={index}
-                className="px-2 py-1 text-xs bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-800 dark:text-blue-300 rounded-md border border-blue-200 dark:border-blue-700"
+                style={{
+                  background: theme === 'dark' 
+                    ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(147, 51, 234, 0.3))'
+                    : 'linear-gradient(135deg, #dbeafe, #e9d5ff)',
+                  color: theme === 'dark' ? '#93c5fd' : '#1e40af',
+                  border: theme === 'dark' ? '1px solid rgba(59, 130, 246, 0.5)' : '1px solid #3b82f6'
+                }}
+                className="px-2 py-1 text-xs rounded-md font-medium"
               >
                 #{tag}
               </span>
             ))}
             {tool.tags.length > 3 && (
-              <span className="px-2 py-1 text-xs bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 text-green-800 dark:text-green-300 rounded-md border border-green-200 dark:border-green-700">
+              <span
+                style={{
+                  background: theme === 'dark' 
+                    ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(16, 185, 129, 0.3))'
+                    : 'linear-gradient(135deg, #dcfce7, #d1fae5)',
+                  color: theme === 'dark' ? '#4ade80' : '#166534',
+                  border: theme === 'dark' ? '1px solid rgba(34, 197, 94, 0.5)' : '1px solid #22c55e'
+                }}
+                className="px-2 py-1 text-xs rounded-md font-medium"
+              >
                 +{tool.tags.length - 3} more
               </span>
             )}
@@ -125,7 +141,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
             <ul className="space-y-1">
               {tool.features.slice(0, 2).map((feature, index) => (
                 <li key={index} className="text-xs text-gray-600 dark:text-gray-300 flex items-start">
-                  <Star className="h-3 w-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-transparent bg-clip-text mr-1 mt-0.5 flex-shrink-0" />
+                  <Star className="h-3 w-3 text-yellow-500 mr-1 mt-0.5 flex-shrink-0" />
                   {feature}
                 </li>
               ))}
@@ -137,11 +153,11 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
         <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
           <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
             <div className="flex items-center">
-              <Users className="h-3 w-3 mr-1 bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text" />
+              <Users className="h-3 w-3 mr-1 text-blue-500" />
               <span>Popular</span>
             </div>
             <div className="flex items-center">
-              <TrendingUp className="h-3 w-3 mr-1 bg-gradient-to-r from-green-500 to-blue-500 text-transparent bg-clip-text" />
+              <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
               <span>Trending</span>
             </div>
           </div>
@@ -153,17 +169,27 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
               shareCount={tool.share_count || 0}
               className="text-xs"
             />
+            {/* زر View Details بألوان ثابتة */}
             <Link
               to={`/tools/${tool.id}`}
-              className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-md transition-all duration-200 shadow-md hover:shadow-lg"
+              style={{
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                color: 'white'
+              }}
+              className="px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 shadow-md hover:shadow-lg hover:opacity-90"
             >
               View Details
             </Link>
+            {/* زر Try Now بألوان ثابتة */}
             <a
               href={tool.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-md transition-all duration-200 shadow-md hover:shadow-lg group"
+              style={{
+                background: 'linear-gradient(135deg, #10b981, #059669)',
+                color: 'white'
+              }}
+              className="flex items-center px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 shadow-md hover:shadow-lg hover:opacity-90 group"
             >
               <span>Try Now</span>
               <ExternalLink className="h-3 w-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
