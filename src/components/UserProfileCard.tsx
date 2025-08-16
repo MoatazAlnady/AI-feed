@@ -343,46 +343,46 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
             </div>
           )}
         </div>
-
-        {/* Action Buttons */}
-        {!isOwnProfile && (
-          <div className="flex items-center space-x-2">
-            {/* Connection status button */}
-            {isConnected ? (
-              <div className="flex items-center space-x-1 px-3 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
-                <UserCheck className="h-4 w-4" />
-                <span>Connected</span>
-              </div>
-            ) : hasRequestPending ? (
-              <button
-                disabled
-                className="flex items-center space-x-1 px-3 py-2 bg-muted text-muted-foreground rounded-lg text-sm font-medium"
-              >
-                <UserCheck className="h-4 w-4" />
-                <span>Request Sent</span>
-              </button>
-            ) : (
-              <button
-                onClick={sendConnectionRequest}
-                disabled={loading}
-                className="flex items-center space-x-1 px-3 py-2 border rounded-lg text-sm font-medium transition-colors disabled:opacity-50 bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
-              >
-                <UserPlus className="h-4 w-4" />
-                <span>Connect</span>
-              </button>
-            )}
-
-            {/* Always show message button */}
-            <button
-              onClick={handleMessage}
-              className="flex items-center space-x-1 px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
-            >
-              <MessageCircle className="h-4 w-4" />
-              <span>Message</span>
-            </button>
-          </div>
-        )}
       </div>
+
+      {/* Action Buttons */}
+      {!isOwnProfile && (
+        <div className="mt-6 flex w-full items-center justify-center gap-3">
+          {/* Connection status button */}
+          {isConnected ? (
+            <div className="flex items-center space-x-1 px-3 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
+              <UserCheck className="h-4 w-4" />
+              <span>Connected</span>
+            </div>
+          ) : hasRequestPending ? (
+            <button
+              disabled
+              className="flex items-center space-x-1 px-3 py-2 bg-muted text-muted-foreground rounded-lg text-sm font-medium"
+            >
+              <UserCheck className="h-4 w-4" />
+              <span>Request Sent</span>
+            </button>
+          ) : (
+            <button
+              onClick={sendConnectionRequest}
+              disabled={loading}
+              className="flex items-center space-x-1 px-3 py-2 border rounded-lg text-sm font-medium transition-colors disabled:opacity-50 bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
+            >
+              <UserPlus className="h-4 w-4" />
+              <span>Connect</span>
+            </button>
+          )}
+
+          {/* Always show message button */}
+          <button
+            onClick={handleMessage}
+            className="flex items-center space-x-1 px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
+          >
+            <MessageCircle className="h-4 w-4" />
+            <span>Message</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };
