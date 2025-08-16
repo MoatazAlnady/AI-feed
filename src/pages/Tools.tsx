@@ -285,7 +285,7 @@ const Tools: React.FC = () => {
                         <div className="flex space-x-2">
                           <Link
                             to={`/tools/${tool.id}`}
-                            className="flex-1 bg-primary-500 text-white text-center py-2 px-4 rounded-lg font-medium hover:bg-primary-600 transition-colors"
+                            className="flex-1 text-center py-2 px-4 rounded-lg font-medium transition-colors border bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
                           >
                             Learn More
                           </Link>
@@ -294,19 +294,19 @@ const Tools: React.FC = () => {
                               setSelectedTool(tool);
                               setShowPromoteModal(true);
                             }}
-                            className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                            className="p-2 border rounded-lg transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
                             title="Promote Tool"
                           >
-                            <TrendingUp className="h-4 w-4 text-blue-600" />
+                            <TrendingUp className="h-4 w-4" />
                           </button>
                           <a
                             href={tool.website}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                            className="p-2 border rounded-lg transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
                             title="Visit Website"
                           >
-                            <ExternalLink className="h-4 w-4 text-gray-600" />
+                            <ExternalLink className="h-4 w-4" />
                           </a>
                         </div>
                       </div>
@@ -361,7 +361,7 @@ const Tools: React.FC = () => {
                             <div className="flex space-x-2">
                               <Link
                                 to={`/tools/${tool.id}`}
-                                className="bg-primary-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-600 transition-colors"
+                                className="py-2 px-4 rounded-lg font-medium transition-colors border bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
                               >
                                 Learn More
                               </Link>
@@ -370,19 +370,19 @@ const Tools: React.FC = () => {
                                   setSelectedTool(tool);
                                   setShowPromoteModal(true);
                                 }}
-                                className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                                className="p-2 border rounded-lg transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
                                 title="Promote Tool"
                               >
-                                <TrendingUp className="h-4 w-4 text-blue-600" />
+                                <TrendingUp className="h-4 w-4" />
                               </button>
                               <a
                                 href={tool.website}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                                className="p-2 border rounded-lg transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
                                 title="Visit Website"
                               >
-                                <ExternalLink className="h-4 w-4 text-gray-600" />
+                                <ExternalLink className="h-4 w-4" />
                               </a>
                             </div>
                           </div>

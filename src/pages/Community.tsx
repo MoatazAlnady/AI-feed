@@ -16,6 +16,7 @@ import {
 import ChatDock from '../components/ChatDock';
 import CreateEventModal from '../components/CreateEventModal';
 import CreateGroupModal from '../components/CreateGroupModal';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../integrations/supabase/client';
 import { useAuth } from '../context/AuthContext';
 import { useChatDock } from '../context/ChatDockContext';
@@ -23,6 +24,7 @@ import { toast } from 'sonner';
 
 const Community: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   
   // Safe chat dock hook usage with fallback
   let toggleOpen: (() => void) | undefined;
@@ -395,12 +397,12 @@ const Community: React.FC = () => {
                     src={creator.profile_photo} 
                     alt={creator.full_name || 'User'} 
                     className="w-12 h-12 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
-                    onClick={() => window.location.href = getProfileLink(creator)}
+                    onClick={() => navigate(getProfileLink(creator))}
                   />
                 ) : (
                   <div 
                     className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
-                    onClick={() => window.location.href = getProfileLink(creator)}
+                    onClick={() => navigate(getProfileLink(creator))}
                   >
                     <span className="text-white font-semibold">
                       {(creator.full_name || 'U').charAt(0).toUpperCase()}
@@ -411,7 +413,7 @@ const Community: React.FC = () => {
                   <div className="flex items-center space-x-2">
                     <h4 
                       className="font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                      onClick={() => window.location.href = getProfileLink(creator)}
+                      onClick={() => navigate(getProfileLink(creator))}
                     >
                       {creator.full_name || 'Anonymous User'}
                     </h4>
