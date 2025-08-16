@@ -85,11 +85,21 @@ const UserView: React.FC = () => {
         }
 
         // Direct query to user_profiles table
-        const { data: profile, error } = await supabase
+        let query = supabase
           .from('user_profiles')
-          .select('*')
-          .eq('id', profileId)
-          .maybeSingle();
+          .select('*');
+
+        // Check if profileId is a UUID (userId) or handle
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profileId);
+        
+        if (isUUID) {
+          query = query.eq('id', profileId);
+        } else {
+          // If it's not a UUID, treat it as a handle or email
+          query = query.or(`id.eq.${profileId}`);
+        }
+
+        const { data: profile, error } = await query.maybeSingle();
 
         console.log('Profile query result:', { profile, error });
 

@@ -65,6 +65,7 @@ const ChatDock: React.FC<ChatDockProps> = ({ className = '' }) => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-14 h-14 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-105"
+        aria-label={isOpen ? "Close chat" : "Open chat"}
       >
         {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
       </button>

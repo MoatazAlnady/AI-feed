@@ -51,8 +51,7 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
       icon: Home,
       children: [
         { id: 'hero', label: 'Hero Section', icon: Eye },
-        { id: 'trending', label: 'Trending Tools', icon: TrendingUp },
-        { id: 'newsletter-modal', label: 'Newsletter Modal', icon: Mail }
+        { id: 'trending', label: 'Trending Tools', icon: TrendingUp }
       ]
     },
     {
