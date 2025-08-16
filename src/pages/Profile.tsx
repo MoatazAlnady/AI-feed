@@ -11,6 +11,7 @@ import NetworkTab from '../components/NetworkTab';
 import ProfilePhotoUploader from '../components/ProfilePhotoUploader';
 import { useUserStats } from '../hooks/useUserStats';
 import { Link } from 'react-router-dom';
+import PostsTab from '../components/PostsTab';
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
@@ -269,15 +270,7 @@ const Profile: React.FC = () => {
               )}
 
               {activeTab === 'posts' && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Posts</h3>
-                  <div className="text-center py-8">
-                    <MessageSquare className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                    <p className="text-gray-600 dark:text-gray-400">
-                      No posts yet. Start sharing your thoughts and insights with the community!
-                    </p>
-                  </div>
-                </div>
+                <PostsTab userId={user?.id} />
               )}
 
               {activeTab === 'content' && (

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Search, Zap, Plus, Settings, User, LogOut, Bell, MessageCircle, Building, BarChart3, Moon, Sun, Briefcase, Users, Crown } from 'lucide-react';
+import ChatDock from './ChatDock';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../providers/ThemeProvider';
@@ -369,31 +370,7 @@ const Header: React.FC = () => {
                 )}
 
                 {/* Messages */}
-                {isEmployerView ? (
-                  <Link
-                    to="/employer/messages"
-                    className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                  >
-                    <MessageCircle className="h-5 w-5" />
-                    {messageCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                        {messageCount}
-                      </span>
-                    )}
-                  </Link>
-                ) : (
-                  <Link
-                    to="/messages"
-                    className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                  >
-                    <MessageCircle className="h-5 w-5" />
-                    {messageCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                        {messageCount}
-                      </span>
-                    )}
-                  </Link>
-                )}
+                <ChatDock />
 
                 {/* Create Dropdown - Only for authenticated users in creator view */}
                 {!isEmployerView && (
