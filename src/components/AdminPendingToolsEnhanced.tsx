@@ -69,18 +69,32 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
     try {
       console.log('Fetching pending tools...');
       
-      // Direct query with proper category join
+      // Fetch pending tools
       const { data: toolsData, error: toolsError } = await supabase
         .from('tools')
-        .select(`
-          *,
-          categories(name),
-          user_profiles(full_name)
-        `)
+        .select('*')
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
 
       if (toolsError) throw toolsError;
+
+      // Fetch categories separately
+      const { data: categoriesData, error: categoriesError } = await supabase
+        .from('categories')
+        .select('id, name');
+
+      if (categoriesError) throw categoriesError;
+
+      // Fetch user profiles separately
+      const { data: usersData, error: usersError } = await supabase
+        .from('user_profiles')
+        .select('id, full_name');
+
+      if (usersError) throw usersError;
+
+      // Create lookup maps
+      const categoryMap = new Map(categoriesData?.map(cat => [cat.id, cat.name]) || []);
+      const userMap = new Map(usersData?.map(user => [user.id, user.full_name]) || []);
 
       let normalized = (toolsData || []).map((t: any) => ({
         ...t,
@@ -91,8 +105,8 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
         description: t?.description ?? '',
         website: t?.website ?? '',
         pricing: t?.pricing ?? '',
-        category_name: t?.categories?.name ?? 'Uncategorized',
-        user_name: t?.user_profiles?.full_name ?? 'Unknown User',
+        category_name: categoryMap.get(t.category_id) || 'Uncategorized',
+        user_name: userMap.get(t.user_id) || 'Unknown User',
       }));
 
       console.log('Normalized pending tools data:', normalized);
