@@ -3,14 +3,14 @@ import { Zap, Users, Target, Globe, Award, Briefcase } from 'lucide-react';
 
 const About: React.FC = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Hero Section */}
       <section className="py-20 px-6">
         <div className="container max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
             About AI Feed
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             We're building the world's most comprehensive platform for AI tools, talented creators, 
             and innovative employers to connect and collaborate.
           </p>
@@ -69,13 +69,13 @@ const About: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a 
               href="/auth" 
-              className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+              className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white font-semibold rounded-lg hover:opacity-90 transition-all duration-200"
             >
               Get Started Today
             </a>
             <a 
               href="/tools" 
-              className="inline-flex items-center justify-center px-6 py-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors"
+              className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               Explore Tools
             </a>
