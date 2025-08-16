@@ -1616,6 +1616,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      user_profile_exists: {
+        Args: { user_id_param: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

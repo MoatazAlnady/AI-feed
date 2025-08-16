@@ -70,83 +70,17 @@ const AIChatBot = ({ initialMessage, autoOpen }: AIChatBotProps) => {
           onClick={() => setShowDualChat(!showDualChat)}
           className="w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg transition-all duration-300 hover:scale-105"
           size="icon"
-          title="Dual Chat (Creator + AI)"
+          title="Chat"
         >
-          {showDualChat ? <X className="h-6 w-6" /> : <Users className="h-8 w-8" />}
-        </Button>
-        
-        <Button
-          onClick={() => setIsOpen(!isOpen)}
-          className="w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white shadow-lg transition-all duration-300 hover:scale-105"
-          size="icon"
-          title="AI Assistant"
-        >
-          {isOpen ? <X className="h-5 w-5" /> : <Bot className="h-6 w-6" />}
+          {showDualChat ? <X className="h-6 w-6" /> : <Bot className="h-6 w-6" />}
         </Button>
       </div>
 
       {/* Dual Chat Tabs */}
       <DualChatTabs isOpen={showDualChat} onClose={() => setShowDualChat(false)} />
 
-      {/* Chat Window */}
-      {isOpen && !showDualChat && (
-        <div className="fixed bottom-24 right-6 z-40 w-80 h-96 animate-slide-up">
-          <Card className="h-full flex flex-col bg-white dark:bg-[#0a1426] border border-gray-200 dark:border-gray-700 shadow-2xl">
-            {/* Header */}
-            <div className="p-4 border-b bg-gradient-primary text-white rounded-t-lg">
-              <div className="flex items-center gap-2">
-                <Bot className="h-5 w-5" />
-                <h3 className="font-semibold">AI Assistant</h3>
-              </div>
-              <p className="text-sm opacity-90">Ask me about AI tools and solutions</p>
-            </div>
-
-            {/* Messages */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-3">
-              {messages.length === 0 ? (
-                <div className="text-center text-muted-foreground text-sm">
-                  <Bot className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p>Hi! I'm your AI assistant.</p>
-                  <p>What AI tools are you looking for?</p>
-                </div>
-              ) : (
-                messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`max-w-[80%] p-3 rounded-lg text-sm ${
-                        msg.sender === 'user'
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted text-foreground'
-                      }`}
-                    >
-                      {msg.text}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Input */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Ask about AI tools..."
-                  className="flex-1 px-3 py-2 text-sm border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
-                />
-                <Button type="submit" size="sm" className="px-3">
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            </form>
-          </Card>
-        </div>
-      )}
+      {/* Chat Window - Remove old single chat window */}
+      {/* DualChatTabs handles all chat functionality now */}
     </>
   );
 };

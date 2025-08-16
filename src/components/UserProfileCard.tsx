@@ -20,6 +20,7 @@ import { useAuth } from '../context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+
 interface UserProfileCardProps {
   userId: string;
   name: string;
@@ -196,6 +197,13 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
     }
   };
 
+  const handleMessage = () => {
+    // For now, just call the onMessage callback which would open messaging page
+    if (onMessage) {
+      onMessage();
+    }
+  };
+
   return (
     <div className={`bg-white rounded-2xl shadow-sm border border-gray-200 p-6 ${className}`}>
       <div className="flex items-start space-x-4">
@@ -294,7 +302,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
           <div className="flex flex-col space-y-2">
             {/* Always show message button */}
             <button
-              onClick={onMessage}
+              onClick={handleMessage}
               className="flex items-center space-x-1 px-3 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg text-sm font-medium transition-colors"
             >
               <MessageCircle className="h-4 w-4" />

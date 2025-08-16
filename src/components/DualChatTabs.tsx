@@ -73,7 +73,7 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
                     className="flex-1 px-3 py-2 text-sm border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   />
                   <Button size="sm" className="px-3">
-                    <MessageCircle className="h-4 w-4" />
+                    <Bot className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
