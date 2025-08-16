@@ -70,7 +70,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
                 />
               </div>
             ) : (
-              <div className="w-10 h-10 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
                 <span className="text-white font-semibold text-sm">
                   {tool.name.charAt(0).toUpperCase()}
                 </span>
@@ -102,16 +102,16 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
         {/* Tags */}
         {tool.tags && tool.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
-            {tool.tags.slice(0, 3).map((tag, index) => (
-              <span
-                key={index}
-                className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-md"
-              >
-                #{tag}
-              </span>
-            ))}
+             {tool.tags.slice(0, 3).map((tag, index) => (
+               <span
+                 key={index}
+                 className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-300 rounded-md border border-gray-200 dark:border-gray-600"
+               >
+                 #{tag}
+               </span>
+             ))}
             {tool.tags.length > 3 && (
-              <span className="px-2 py-1 text-xs bg-gradient-to-r from-primary/20 to-secondary/20 text-primary dark:text-primary-400 rounded-md border border-primary/30">
+              <span className="px-2 py-1 text-xs bg-gradient-to-r from-primary/30 to-secondary/30 dark:from-primary/20 dark:to-secondary/20 text-primary dark:text-primary-400 rounded-md border border-primary/40 dark:border-primary/30">
                 +{tool.tags.length - 3} more
               </span>
             )}
@@ -155,7 +155,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
             />
             <Link
               to={`/tools/${tool.id}`}
-              className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90 rounded-md transition-all duration-200"
+              className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-600 dark:to-purple-600 text-white hover:opacity-90 rounded-md transition-all duration-200 shadow-sm"
             >
               View Details
             </Link>
@@ -163,7 +163,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
               href={tool.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 rounded-md transition-all duration-200 group"
+              className="flex items-center px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-primary to-secondary dark:from-primary/90 dark:to-secondary/90 text-white hover:opacity-90 rounded-md transition-all duration-200 shadow-sm group"
             >
               <span>Try Now</span>
               <ExternalLink className="h-3 w-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
