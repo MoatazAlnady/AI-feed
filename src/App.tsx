@@ -31,6 +31,7 @@ import Upgrade from "./pages/Upgrade";
 import ToolComparison from "./pages/ToolComparison";
 import AdminNewsletter from "./pages/AdminNewsletter";
 import Notifications from "./pages/Notifications";
+import ConnectionRequests from './pages/ConnectionRequests';
 
 const queryClient = new QueryClient();
 
@@ -65,8 +66,8 @@ const App = () => (
                <Route path="talent" element={<Talent />} />
                <Route path="jobs" element={<Jobs />} />
                
-               {/* Creator Profile Routes */}
-               <Route path="creator/:identifier" element={<CreatorProfile />} />
+                {/* Creator Profile Routes */}
+                <Route path="creator/:handleOrId" element={<CreatorProfile />} />
                
                {/* Legacy Profile Routes - Redirect to creator profile for handle-based navigation */}
                <Route path="profile/:id" element={<CreatorProfile />} />
@@ -83,8 +84,9 @@ const App = () => (
                 <Route path="employer/*" element={<EmployerDashboard />} />
                 <Route path="admin" element={<Admin />} />
                 <Route path="admin/newsletter" element={<AdminNewsletter />} />
-                 <Route path="messages" element={<Messages />} />
-                 <Route path="notifications" element={<Notifications />} />
+                  <Route path="messages" element={<Messages />} />
+                  <Route path="notifications" element={<Notifications />} />
+                  <Route path="connection-requests" element={<ConnectionRequests />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

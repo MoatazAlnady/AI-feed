@@ -205,7 +205,7 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
         {/* Footer with See All button */}
         <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750">
           <Link
-            to="/messages"
+            to="/connection-requests"
             onClick={() => {
               onClose?.();
               onOpenChange(false);
