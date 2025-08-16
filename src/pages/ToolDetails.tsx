@@ -50,13 +50,12 @@ const ToolDetails: React.FC = () => {
     try {
       console.log('Fetching tool with ID:', id);
       
-      // Fetch tool with ratings
+      // Fetch tool data
       const { data, error } = await supabase
         .from('tools')
         .select(`
           *,
-          user_profiles(full_name),
-          tool_ratings_v(avg_rating, reviews_count)
+          user_profiles(full_name)
         `)
         .eq('id', id)
         .eq('status', 'published')
@@ -82,12 +81,9 @@ const ToolDetails: React.FC = () => {
         }
       }
 
-      const ratingsData = Array.isArray(data.tool_ratings_v) ? data.tool_ratings_v[0] : null;
       setTool({
         ...data,
-        category_name: categoryName,
-        average_rating: ratingsData?.avg_rating || data.average_rating || 0,
-        review_count: ratingsData?.reviews_count || data.review_count || 0
+        category_name: categoryName
       });
     } catch (error) {
       console.error('Error fetching tool:', error);
