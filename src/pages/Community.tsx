@@ -18,10 +18,12 @@ import CreateEventModal from '../components/CreateEventModal';
 import CreateGroupModal from '../components/CreateGroupModal';
 import { supabase } from '../integrations/supabase/client';
 import { useAuth } from '../context/AuthContext';
+import { useChatDock } from '../context/ChatDockContext';
 import { toast } from 'sonner';
 
 const Community: React.FC = () => {
   const { user } = useAuth();
+  const { toggleOpen } = useChatDock();
   const [activeTab, setActiveTab] = useState<'networking' | 'feed' | 'events' | 'groups'>('networking');
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
@@ -144,6 +146,20 @@ const Community: React.FC = () => {
       console.error('Error sending connection request:', error);
       toast.error('Failed to send connection request');
     }
+  };
+
+  const handleMessage = (userId: string, userName: string) => {
+    // Open chat dock and focus on user
+    toggleOpen();
+    toast.success(`Opening chat with ${userName}`);
+  };
+
+  const getProfileLink = (creator: any) => {
+    // Use handle if available, otherwise fallback to userId
+    if (creator.handle) {
+      return `/u/${creator.handle}`;
+    }
+    return `/profile/${creator.id}`;
   };
 
   const fetchCreators = async () => {
@@ -365,12 +381,12 @@ const Community: React.FC = () => {
                     src={creator.profile_photo} 
                     alt={creator.full_name || 'User'} 
                     className="w-12 h-12 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
-                    onClick={() => window.location.href = `/user/${creator.id}`}
+                    onClick={() => window.location.href = getProfileLink(creator)}
                   />
                 ) : (
                   <div 
                     className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
-                    onClick={() => window.location.href = `/user/${creator.id}`}
+                    onClick={() => window.location.href = getProfileLink(creator)}
                   >
                     <span className="text-white font-semibold">
                       {(creator.full_name || 'U').charAt(0).toUpperCase()}
@@ -381,7 +397,7 @@ const Community: React.FC = () => {
                   <div className="flex items-center space-x-2">
                     <h4 
                       className="font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                      onClick={() => window.location.href = `/user/${creator.id}`}
+                      onClick={() => window.location.href = getProfileLink(creator)}
                     >
                       {creator.full_name || 'Anonymous User'}
                     </h4>
@@ -405,31 +421,38 @@ const Community: React.FC = () => {
               <div className="flex space-x-2">
                 {user?.id !== creator.id && (
                   <>
+                    {/* Always show Connect button */}
                     {connectionStates[creator.id]?.isConnected ? (
-                      <button 
-                        onClick={() => window.location.href = `/messages?user=${creator.id}`}
-                        className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-all duration-200 flex items-center justify-center space-x-1"
-                      >
-                        <MessageCircle className="h-4 w-4" />
-                        <span>Message</span>
-                      </button>
+                      <div className="flex items-center space-x-1 px-3 py-2 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-lg text-sm font-medium">
+                        <UserCheck className="h-4 w-4" />
+                        <span>Connected</span>
+                      </div>
                     ) : connectionStates[creator.id]?.hasPendingRequest ? (
                       <button 
                         disabled
-                        className="flex-1 px-4 py-2 bg-muted text-muted-foreground rounded-xl cursor-not-allowed flex items-center justify-center space-x-1"
+                        className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors disabled:opacity-50 bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200"
                       >
-                        <UserCheck className="h-4 w-4" />
-                        <span>Request Sent</span>
+                        <UserCheck className="h-4 w-4 inline mr-1" />
+                        Request Sent
                       </button>
                     ) : (
                       <button 
                         onClick={() => sendConnectionRequest(creator.id, creator.full_name)}
-                        className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-all duration-200 flex items-center justify-center space-x-1"
+                        className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
                       >
-                        <UserPlus className="h-4 w-4" />
-                        <span>Connect</span>
+                        <UserPlus className="h-4 w-4 inline mr-1" />
+                        Connect
                       </button>
                     )}
+                    
+                    {/* Always show Message button */}
+                    <button 
+                      onClick={() => handleMessage(creator.id, creator.full_name)}
+                      className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
+                    >
+                      <MessageCircle className="h-4 w-4 inline mr-1" />
+                      Message
+                    </button>
                   </>
                 )}
                 {user?.id === creator.id && (
