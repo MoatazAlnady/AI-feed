@@ -568,14 +568,14 @@ const NewsletterManagement: React.FC = () => {
                         value={subscriberFilters.frequencies[0] || ""}
                         onValueChange={(value) => setSubscriberFilters(prev => ({ 
                           ...prev, 
-                          frequencies: value ? [value] : [] 
+                          frequencies: value === "all" ? [] : [value] 
                         }))}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="All frequencies" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All frequencies</SelectItem>
+                          <SelectItem value="all">All frequencies</SelectItem>
                           <SelectItem value="daily">Daily</SelectItem>
                           <SelectItem value="weekly">Weekly</SelectItem>
                           <SelectItem value="monthly">Monthly</SelectItem>
@@ -588,14 +588,14 @@ const NewsletterManagement: React.FC = () => {
                         value={subscriberFilters.interests[0] || ""}
                         onValueChange={(value) => setSubscriberFilters(prev => ({ 
                           ...prev, 
-                          interests: value ? [value] : [] 
+                          interests: value === "all" ? [] : [value] 
                         }))}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="All interests" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All interests</SelectItem>
+                          <SelectItem value="all">All interests</SelectItem>
                           {interests.map(interest => (
                             <SelectItem key={interest.id} value={interest.id}>
                               {interest.name}

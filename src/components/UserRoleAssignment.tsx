@@ -154,7 +154,7 @@ const UserRoleAssignment: React.FC = () => {
       );
     }
     
-    if (selectedRole) {
+    if (selectedRole && selectedRole !== "all") {
       const roleId = parseInt(selectedRole);
       filtered = filtered.filter(user => user.role_id === roleId);
     }
@@ -331,7 +331,7 @@ const UserRoleAssignment: React.FC = () => {
                   <SelectValue placeholder="All roles" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All roles</SelectItem>
+                  <SelectItem value="all">All roles</SelectItem>
                   {roles.map((role) => (
                     <SelectItem key={role.id} value={role.id.toString()}>
                       {role.name}
