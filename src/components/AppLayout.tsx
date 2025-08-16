@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AIChatBot from '@/components/ChatDock';
+import MultiChatDock from '@/components/MultiChatDock';
 
 const AppLayout: React.FC = () => {
   const location = useLocation();
@@ -29,6 +30,9 @@ const AppLayout: React.FC = () => {
       
       {/* Global Chat Widget */}
       {showChat && <AIChatBot />}
+      
+      {/* Multi-window Chat Dock */}
+      <MultiChatDock />
     </div>
   );
 };

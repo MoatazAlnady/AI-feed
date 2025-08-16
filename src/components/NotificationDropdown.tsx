@@ -2,19 +2,17 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Bell, Heart, MessageCircle, UserPlus, Share2, Star, CheckCircle, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../integrations/supabase/client';
 
 interface Notification {
-  id: number;
+  id: string;
   type: 'like' | 'comment' | 'follow' | 'share' | 'mention' | 'system';
   title: string;
   message: string;
-  timestamp: string;
+  created_at: string;
   read: boolean;
-  actionUrl?: string;
-  user?: {
-    name: string;
-    avatar?: string;
-  };
+  action_url?: string;
+  metadata?: any;
 }
 
 interface NotificationDropdownProps {
@@ -43,11 +41,20 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
 
   // Fetch notifications when dropdown opens
   const fetchNotifications = async () => {
+    if (!user) return;
+    
     setLoading(true);
     try {
-      // In real app, fetch from API
-      // For now, showing empty state
-      setNotifications([]);
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (!error && data) {
+        setNotifications(data as Notification[]);
+      }
     } catch (error) {
       console.error('Error fetching notifications:', error);
     } finally {
@@ -126,10 +133,30 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
     }
   };
 
-  const markAsRead = (id: number) => {
-    setNotifications(notifications.map(notification =>
-      notification.id === id ? { ...notification, read: true } : notification
-    ));
+  const markAsRead = async (id: string) => {
+    try {
+      await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('id', id);
+        
+      setNotifications(notifications.map(notification =>
+        notification.id === id ? { ...notification, read: true } : notification
+      ));
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (seconds < 60) return 'just now';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+    return `${Math.floor(seconds / 86400)}d ago`;
   };
 
   return (
@@ -213,14 +240,14 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                               {notification.message}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                              {notification.timestamp}
+                              {formatTimeAgo(notification.created_at)}
                             </p>
                             
-                            {notification.actionUrl && (
+                            {notification.action_url && (
                               <button
                                 onClick={() => {
                                   markAsRead(notification.id);
-                                  window.location.href = notification.actionUrl!;
+                                  window.location.href = notification.action_url!;
                                 }}
                                 className="text-xs text-primary hover:text-primary/80 mt-1"
                               >
