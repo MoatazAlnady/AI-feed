@@ -339,6 +339,30 @@ export type Database = {
           },
         ]
       }
+      interests: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           applicants: number
@@ -526,6 +550,215 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      newsletter_delivery_log: {
+        Row: {
+          created_at: string | null
+          id: string
+          issue_id: string | null
+          sent_at: string | null
+          status: string | null
+          subscriber_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          issue_id?: string | null
+          sent_at?: string | null
+          status?: string | null
+          subscriber_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          issue_id?: string | null
+          sent_at?: string | null
+          status?: string | null
+          subscriber_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_delivery_log_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "newsletter_delivery_log_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_subscribers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      newsletter_issue_items: {
+        Row: {
+          blurb_snapshot: string
+          content_id: string
+          content_type: string
+          created_at: string | null
+          id: string
+          issue_id: string | null
+          sort_order: number | null
+          title_snapshot: string
+          url_snapshot: string
+        }
+        Insert: {
+          blurb_snapshot: string
+          content_id: string
+          content_type: string
+          created_at?: string | null
+          id?: string
+          issue_id?: string | null
+          sort_order?: number | null
+          title_snapshot: string
+          url_snapshot: string
+        }
+        Update: {
+          blurb_snapshot?: string
+          content_id?: string
+          content_type?: string
+          created_at?: string | null
+          id?: string
+          issue_id?: string | null
+          sort_order?: number | null
+          title_snapshot?: string
+          url_snapshot?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_issue_items_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_issues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      newsletter_issue_recipients: {
+        Row: {
+          issue_id: string
+          subscriber_id: string
+        }
+        Insert: {
+          issue_id: string
+          subscriber_id: string
+        }
+        Update: {
+          issue_id?: string
+          subscriber_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_issue_recipients_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "newsletter_issue_recipients_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_subscribers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      newsletter_issues: {
+        Row: {
+          created_at: string | null
+          frequency: string
+          id: string
+          intro_text: string | null
+          outro_text: string | null
+          scheduled_for: string | null
+          status: string | null
+          subject: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          frequency: string
+          id?: string
+          intro_text?: string | null
+          outro_text?: string | null
+          scheduled_for?: string | null
+          status?: string | null
+          subject?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          frequency?: string
+          id?: string
+          intro_text?: string | null
+          outro_text?: string | null
+          scheduled_for?: string | null
+          status?: string | null
+          subject?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      newsletter_subscriber_interests: {
+        Row: {
+          interest_id: string
+          subscriber_id: string
+        }
+        Insert: {
+          interest_id: string
+          subscriber_id: string
+        }
+        Update: {
+          interest_id?: string
+          subscriber_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_subscriber_interests_interest_id_fkey"
+            columns: ["interest_id"]
+            isOneToOne: false
+            referencedRelation: "interests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "newsletter_subscriber_interests_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_subscribers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      newsletter_subscribers: {
+        Row: {
+          created_at: string | null
+          email: string
+          frequency: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          frequency: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          frequency?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
       organization_members: {
         Row: {
