@@ -1238,6 +1238,7 @@ export type Database = {
           company: string | null
           contact_visible: boolean | null
           country: string | null
+          cover_photo: string | null
           created_at: string | null
           full_name: string | null
           gender: string | null
@@ -1278,6 +1279,7 @@ export type Database = {
           company?: string | null
           contact_visible?: boolean | null
           country?: string | null
+          cover_photo?: string | null
           created_at?: string | null
           full_name?: string | null
           gender?: string | null
@@ -1318,6 +1320,7 @@ export type Database = {
           company?: string | null
           contact_visible?: boolean | null
           country?: string | null
+          cover_photo?: string | null
           created_at?: string | null
           full_name?: string | null
           gender?: string | null

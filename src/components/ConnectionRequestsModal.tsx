@@ -108,6 +108,9 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
 
       setRequests(prev => prev.filter(r => r.id !== requestId));
       toast.success(`Connection request ${action}`);
+
+      // Refresh the header count by dispatching a custom event
+      window.dispatchEvent(new CustomEvent('connectionRequestProcessed'));
     } catch (error) {
       console.error(`Error ${action} connection request:`, error);
       toast.error(`Failed to ${action} connection request`);

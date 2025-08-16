@@ -8,6 +8,7 @@ import AuthModal from './AuthModal';
 import VerificationBadge from './VerificationBadge';
 import LanguageSelector from './LanguageSelector';
 import ConnectionRequestsModal from './ConnectionRequestsModal';
+import { supabase } from '../integrations/supabase/client';
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
@@ -92,6 +93,37 @@ const Header: React.FC = () => {
 
     fetchCounts();
   }, [user]);
+
+  // Fetch connection requests count dynamically
+  useEffect(() => {
+    const fetchConnectionRequestsCount = async () => {
+      if (user && isCreator && !isEmployerView) {
+        try {
+          const { data, error } = await supabase
+            .from('connection_requests')
+            .select('id', { count: 'exact' })
+            .eq('recipient_id', user.id)
+            .eq('status', 'pending');
+
+          if (!error) {
+            setConnectionRequestsCount(data?.length || 0);
+          }
+        } catch (error) {
+          console.error('Error fetching connection requests count:', error);
+        }
+      }
+    };
+
+    fetchConnectionRequestsCount();
+
+    // Listen for connection request processing events
+    const handleConnectionRequestProcessed = () => fetchConnectionRequestsCount();
+    window.addEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
+
+    return () => {
+      window.removeEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
+    };
+  }, [user, isCreator, isEmployerView]);
 
   const isActive = (path: string) => location.pathname === path;
 

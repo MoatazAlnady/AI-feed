@@ -118,10 +118,7 @@ const Profile: React.FC = () => {
       // Update user profile in user_profiles table
       const { error: updateError } = await supabase
         .from('user_profiles')
-        .update({ 
-          // Using a custom field for cover photo - we may need to add this to the schema
-          bio: user?.user_metadata?.bio || `Cover photo updated: ${data.publicUrl}` 
-        })
+        .update({ cover_photo: data.publicUrl })
         .eq('id', user.id);
       
       if (updateError) throw updateError;
