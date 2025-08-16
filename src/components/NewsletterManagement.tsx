@@ -138,13 +138,16 @@ const NewsletterManagement: React.FC = () => {
       }
 
       const transformedSubscribers = subscribersData?.map(sub => ({
-        ...sub,
+        id: sub.id,
+        email: sub.email,
+        user_id: sub.user_id,
         frequency: sub.frequency as 'daily' | 'weekly' | 'monthly',
-        interests: sub.newsletter_subscriber_interests?.map((ni: any) => ni.interests).flat() || [],
-        user_profiles: null // Since we don't have this relationship
+        created_at: sub.created_at,
+        user_profiles: null,
+        interests: sub.newsletter_subscriber_interests?.map((ni: any) => ni.interests).flat().filter(Boolean) || []
       })) || [];
 
-      setSubscribers(transformedSubscribers as Subscriber[]);
+      setSubscribers(transformedSubscribers);
     } catch (error) {
       console.error('Error fetching subscribers:', error);
     }
@@ -185,13 +188,16 @@ const NewsletterManagement: React.FC = () => {
       }
 
       const formattedSubscribers = filteredData.map(sub => ({
-        ...sub,
+        id: sub.id,
+        email: sub.email,
+        user_id: sub.user_id,
         frequency: sub.frequency as 'daily' | 'weekly' | 'monthly',
-        interests: sub.newsletter_subscriber_interests?.map((ni: any) => ni.interests).flat() || [],
-        user_profiles: null
+        created_at: sub.created_at,
+        user_profiles: null,
+        interests: sub.newsletter_subscriber_interests?.map((ni: any) => ni.interests).flat().filter(Boolean) || []
       }));
 
-      setSubscribers(formattedSubscribers as Subscriber[]);
+      setSubscribers(formattedSubscribers);
     } catch (error) {
       console.error('Error fetching filtered subscribers:', error);
     }
@@ -224,10 +230,17 @@ const NewsletterManagement: React.FC = () => {
       if (draftError) throw draftError;
 
       if (existingDraft && existingDraft.length > 0) {
+        const draft = existingDraft[0];
         setCurrentIssue({
-          ...existingDraft[0],
-          frequency: existingDraft[0].frequency as 'daily' | 'weekly' | 'monthly',
-          status: existingDraft[0].status as 'draft' | 'scheduled' | 'sent'
+          id: draft.id,
+          title: draft.title,
+          frequency: draft.frequency as 'daily' | 'weekly' | 'monthly',
+          status: (draft.status as 'draft' | 'scheduled' | 'sent') || 'draft',
+          subject: draft.subject,
+          intro_text: draft.intro_text,
+          outro_text: draft.outro_text,
+          scheduled_for: draft.scheduled_for,
+          created_at: draft.created_at
         });
         return;
       }
@@ -247,9 +260,15 @@ const NewsletterManagement: React.FC = () => {
 
       if (data) {
         setCurrentIssue({
-          ...data,
+          id: data.id,
+          title: data.title,
           frequency: data.frequency as 'daily' | 'weekly' | 'monthly',
-          status: data.status as 'draft' | 'scheduled' | 'sent'
+          status: (data.status as 'draft' | 'scheduled' | 'sent') || 'draft',
+          subject: data.subject,
+          intro_text: data.intro_text,
+          outro_text: data.outro_text,
+          scheduled_for: data.scheduled_for,
+          created_at: data.created_at
         });
       }
     } catch (error) {
@@ -304,44 +323,56 @@ const NewsletterManagement: React.FC = () => {
       if (selectedContentType === 'tool') {
         const { data: toolsData, error } = await supabase
           .from('tools')
-          .select('*')
+          .select('id, name, description, website, created_at')
           .eq('status', 'published')
           .ilike('name', `%${contentSearch}%`)
           .limit(20);
         
         if (error) throw error;
-        data = toolsData || [];
+        data = toolsData?.map(item => ({
+          id: item.id,
+          title: item.name,
+          description: item.description?.slice(0, 160) || '',
+          website: item.website || '',
+          created_at: item.created_at,
+          type: 'tool' as const
+        })) || [];
       } else if (selectedContentType === 'article') {
         const { data: articlesData, error } = await supabase
           .from('articles')
-          .select('*')
+          .select('id, title, excerpt, created_at')
           .eq('status', 'published')
           .ilike('title', `%${contentSearch}%`)
           .limit(20);
         
         if (error) throw error;
-        data = articlesData || [];
+        data = articlesData?.map(item => ({
+          id: item.id,
+          title: item.title,
+          description: item.excerpt?.slice(0, 160) || '',
+          website: '',
+          created_at: item.created_at,
+          type: 'article' as const
+        })) || [];
       } else if (selectedContentType === 'post') {
         const { data: postsData, error } = await supabase
           .from('posts')
-          .select('*')
+          .select('id, content, created_at')
           .ilike('content', `%${contentSearch}%`)
           .limit(20);
         
         if (error) throw error;
-        data = postsData || [];
+        data = postsData?.map(item => ({
+          id: item.id,
+          title: 'Post',
+          description: item.content?.slice(0, 160) || '',
+          website: '',
+          created_at: item.created_at,
+          type: 'post' as const
+        })) || [];
       }
 
-      const formattedItems = data.map(item => ({
-        id: item.id,
-        title: item.name || item.title || 'Untitled',
-        description: item.description || item.content?.slice(0, 160) || '',
-        website: item.website || '',
-        created_at: item.created_at,
-        type: selectedContentType
-      }));
-
-      setContentItems(formattedItems);
+      setContentItems(data);
     } catch (error) {
       console.error('Error fetching content items:', error);
     }
@@ -439,9 +470,15 @@ const NewsletterManagement: React.FC = () => {
 
       if (data) {
         setCurrentIssue({
-          ...data,
+          id: data.id,
+          title: data.title,
           frequency: data.frequency as 'daily' | 'weekly' | 'monthly',
-          status: data.status as 'draft' | 'scheduled' | 'sent'
+          status: (data.status as 'draft' | 'scheduled' | 'sent') || 'draft',
+          subject: data.subject,
+          intro_text: data.intro_text,
+          outro_text: data.outro_text,
+          scheduled_for: data.scheduled_for,
+          created_at: data.created_at
         });
         
         toast({
