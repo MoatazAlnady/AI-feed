@@ -1857,6 +1857,10 @@ export type Database = {
         Args: { feature_param: string; user_id_param: string }
         Returns: boolean
       }
+      recalc_post_shares: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       reject_pending_tool: {
         Args: { admin_notes_param: string; tool_id_param: string }
         Returns: undefined

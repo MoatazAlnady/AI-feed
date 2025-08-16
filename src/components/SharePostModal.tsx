@@ -78,13 +78,14 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
     setIsSharing(true);
 
     try {
-      // Insert into universal shares table
       const { error: sharesError } = await supabase
         .from('shares')
         .insert({
           user_id: user.id,
           content_type: 'post',
-          content_id: post.id
+          content_id: post.id,
+          target_type: 'post',
+          target_id: post.id
         });
 
       if (sharesError && !sharesError.message.includes('duplicate')) {
@@ -102,17 +103,7 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
 
       if (shareError) throw shareError;
 
-      // Update the original post's share_count
-      const { error: updateError } = await supabase
-        .from('posts')
-        .update({ 
-          share_count: (post.shares || 0) + 1 
-        })
-        .eq('id', post.id);
-
-      if (updateError) {
-        console.warn('Failed to update share count:', updateError);
-      }
+      // Note: share_count is now updated automatically by the database trigger
 
       toast({
         title: "Post shared!",

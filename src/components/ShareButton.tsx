@@ -40,6 +40,8 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
           user_id: user.id,
           content_type: contentType,
           content_id: contentId,
+          target_type: contentType,
+          target_id: contentId,
         });
 
       if (error && !error.message.includes("duplicate")) {
