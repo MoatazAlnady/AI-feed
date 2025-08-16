@@ -102,7 +102,7 @@ const Profile: React.FC = () => {
                 <ProfilePhotoUploader
                   type="profile"
                   currentPhoto={profileData.profilePhoto}
-                  className="relative -mt-16"
+                  className="relative"
                 />
 
                 {/* User Details */}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Upload, Tag, FileText, Send, Video, Image } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import ChatDock from '../components/ChatDock';
 
 const SubmitArticle: React.FC = () => {
   const { user } = useAuth();
@@ -99,6 +100,9 @@ const SubmitArticle: React.FC = () => {
             </button>
           </div>
         </div>
+
+        {/* Chat Dock */}
+        <ChatDock />
       </div>
     );
   }
@@ -352,6 +356,9 @@ const SubmitArticle: React.FC = () => {
           </p>
         </form>
       </div>
+
+      {/* Chat Dock */}
+      <ChatDock />
     </div>
   );
 };

@@ -4,6 +4,7 @@ import { generateCSVTemplate } from '../utils/csvTemplate';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import ChatDock from '../components/ChatDock';
 
 const SubmitTool: React.FC = () => {
   const { user } = useAuth();
@@ -1056,6 +1057,9 @@ const SubmitTool: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Chat Dock */}
+      <ChatDock />
     </div>
   );
 };
