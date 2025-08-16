@@ -4,11 +4,15 @@ import { generateCSVTemplate } from '../utils/csvTemplate';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useParams, useNavigate } from 'react-router-dom';
 import ChatDock from '../components/ChatDock';
 
 const SubmitTool: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const isEditMode = !!id;
   const [categories, setCategories] = useState<any[]>([]);
   const [subCategories, setSubCategories] = useState<any[]>([]);
   const [submissionMode, setSubmissionMode] = useState<'form' | 'csv'>('form');
@@ -44,6 +48,9 @@ const SubmitTool: React.FC = () => {
   // Fetch categories and sub-categories on component mount
   useEffect(() => {
     fetchCategories();
+    if (isEditMode && id) {
+      fetchToolData(id);
+    }
     
     // Close dropdown when clicking outside
     const handleClickOutside = (event: MouseEvent) => {
@@ -88,6 +95,47 @@ const SubmitTool: React.FC = () => {
         { id: '7', name: 'Writing & Content' },
         { id: '8', name: 'Productivity' }
       ]);
+    }
+  };
+
+  const fetchToolData = async (toolId: string) => {
+    try {
+      const { data: tool, error } = await supabase
+        .from('tools')
+        .select('*')
+        .eq('id', toolId)
+        .single();
+
+      if (error) throw error;
+
+      if (tool) {
+        setFormData({
+          name: tool.name || '',
+          description: tool.description || '',
+          category: categories.find(cat => cat.id === tool.category_id)?.name || '',
+          subcategory: tool.subcategory || '',
+          toolType: [],
+          freePlan: 'No',
+          website: tool.website || '',
+          logoUrl: tool.logo_url || '',
+          pricing: tool.pricing || 'free',
+          tags: (tool.tags || []).join(','),
+          features: tool.features || [''],
+          logo: null,
+          pros: tool.pros || [''],
+          cons: tool.cons || [''],
+          is_light_logo: tool.is_light_logo || false,
+          is_dark_logo: tool.is_dark_logo || false,
+          showToolTypeDropdown: false
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching tool data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load tool data.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -202,23 +250,25 @@ const SubmitTool: React.FC = () => {
       console.log('Current user:', user);
       console.log('User ID:', user?.id);
       
-      // Check for duplicates first
-      const { count } = await supabase
-        .from('tools')
-        .select('id', { count: 'exact', head: true })
-        .ilike('name', formData.name)
-        .ilike('website', formData.website);
+      // Check for duplicates only if creating new tool
+      if (!isEditMode) {
+        const { count } = await supabase
+          .from('tools')
+          .select('id', { count: 'exact', head: true })
+          .ilike('name', formData.name)
+          .ilike('website', formData.website);
 
-      console.log('Duplicate check result:', count);
+        console.log('Duplicate check result:', count);
 
-      if (count && count > 0) {
-        toast({
-          title: "Duplicate Tool Detected",
-          description: "A tool with this name and website already exists in our database.",
-          variant: "destructive"
-        });
-        setIsSubmitting(false);
-        return;
+        if (count && count > 0) {
+          toast({
+            title: "Duplicate Tool Detected",
+            description: "A tool with this name and website already exists in our database.",
+            variant: "destructive"
+          });
+          setIsSubmitting(false);
+          return;
+        }
       }
 
       // Filter out empty pros and cons
@@ -293,18 +343,31 @@ const SubmitTool: React.FC = () => {
       
       console.log('Submitting tool data:', submissionData);
       
-      const { data: insertResult, error } = await supabase
-        .from('tools')
-        .insert(submissionData)
-        .select('*');
+      let result;
+      if (isEditMode && id) {
+        // Update existing tool
+        const { data: updateResult, error } = await supabase
+          .from('tools')
+          .update(submissionData)
+          .eq('id', id)
+          .select('*');
+        result = { insertResult: updateResult, error };
+      } else {
+        // Create new tool
+        const { data: insertResult, error } = await supabase
+          .from('tools')
+          .insert(submissionData)
+          .select('*');
+        result = { insertResult, error };
+      }
 
-      console.log('Insert result:', { insertResult, error });
+      console.log('Result:', result);
 
-      if (error) {
-        console.error('Error submitting tool:', error);
+      if (result.error) {
+        console.error(`Error ${isEditMode ? 'updating' : 'submitting'} tool:`, result.error);
         toast({
-          title: "Submission Error",
-          description: `There was an error submitting your tool: ${error.message}`,
+          title: `${isEditMode ? 'Update' : 'Submission'} Error`,
+          description: `There was an error ${isEditMode ? 'updating' : 'submitting'} your tool: ${result.error.message}`,
           variant: "destructive"
         });
         setIsSubmitting(false);
@@ -312,11 +375,17 @@ const SubmitTool: React.FC = () => {
       }
 
       toast({
-        title: "Tool Submitted Successfully!",
-        description: "Your tool has been submitted for review and will be published once approved."
+        title: `Tool ${isEditMode ? 'Updated' : 'Submitted'} Successfully!`,
+        description: isEditMode 
+          ? "Your tool has been updated successfully."
+          : "Your tool has been submitted for review and will be published once approved."
       });
       
-      setSubmitted(true);
+      if (isEditMode) {
+        navigate(`/tools/${id}`);
+      } else {
+        setSubmitted(true);
+      }
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -414,14 +483,18 @@ const SubmitTool: React.FC = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            Submit AI Tools
+            {isEditMode ? 'Edit AI Tool' : 'Submit AI Tools'}
           </h1>
           <p className="text-xl text-gray-600">
-            Share amazing AI tools with our community. Submit individual tools or upload multiple tools via CSV.
+            {isEditMode 
+              ? 'Update the details of your AI tool.'
+              : 'Share amazing AI tools with our community. Submit individual tools or upload multiple tools via CSV.'
+            }
           </p>
         </div>
 
-        {/* Submission Mode Toggle */}
+        {/* Submission Mode Toggle - Hide in edit mode */}
+        {!isEditMode && (
         <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Choose Submission Method</h3>
           <div className="flex space-x-4">
@@ -450,7 +523,9 @@ const SubmitTool: React.FC = () => {
           </div>
         </div>
 
-        {submissionMode === 'form' ? (
+        )}
+
+        {(submissionMode === 'form' || isEditMode) ? (
           /* Individual Tool Form */
           <form 
             onSubmit={handleFormSubmit} 
@@ -953,7 +1028,7 @@ const SubmitTool: React.FC = () => {
               ) : (
                 <>
                   <Send className="h-5 w-5" />
-                  <span>Submit Tool for Review</span>
+                  <span>{isEditMode ? 'Update Tool' : 'Submit Tool for Review'}</span>
                 </>
               )}
             </button>

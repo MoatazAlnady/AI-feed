@@ -52,7 +52,8 @@ const App = () => (
                   <SubmitTool />
                 </div>
                } />
-               <Route path="tools/:id" element={<ToolDetails />} />
+                <Route path="tools/:id" element={<ToolDetails />} />
+                <Route path="tools/:id/edit" element={<SubmitTool />} />
                <Route path="tools/compare/:toolIds" element={<ToolComparison />} />
                <Route path="posts/create" element={<CreatePost />} />
               <Route path="articles/create" element={<SubmitArticle />} />
