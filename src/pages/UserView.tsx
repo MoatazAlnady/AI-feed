@@ -77,93 +77,59 @@ const UserView: React.FC = () => {
         const profileId = userId || handle; // Use either userId or handle
         console.log('Fetching user profile for ID/handle:', profileId);
         
-        let profiles;
-        let error;
-        
-        if (handle) {
-          // For handle-based lookup, we'll use the same function for now
-          // In a real implementation, you'd have a separate function or search by handle
-          const { data: handleProfiles, error: handleError } = await supabase
-            .rpc('get_public_user_profiles', { 
-              search: null,
-              limit_param: 100,
-              offset_param: 0 
-            });
-          
-          // Filter by handle locally since we don't have a handle-specific RPC
-          profiles = handleProfiles?.filter(p => p.id === handle) || [];
-          error = handleError;
-        } else {
-          // For userId lookup, get all profiles and filter by id
-          const { data: userProfiles, error: userError } = await supabase
-            .rpc('get_public_user_profiles', { 
-              search: null,
-              limit_param: 100,
-              offset_param: 0 
-            });
-          
-          // Filter by userId locally 
-          profiles = userProfiles?.filter(p => p.id === profileId) || [];
-          error = userError;
+        if (!profileId) {
+          console.error('No profile ID provided');
+          setUserProfile(null);
+          setLoading(false);
+          return;
         }
 
-        const profile = profiles && profiles.length > 0 ? profiles[0] : null;
+        // Direct query to user_profiles table
+        const { data: profile, error } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', profileId)
+          .maybeSingle();
+
+        console.log('Profile query result:', { profile, error });
 
         if (error) {
           console.error('Error fetching user profile:', error);
-          if (error.code === 'PGRST116' || error.code === 'PGRST301') {
-            console.log('User profile not found for ID/handle:', profileId);
-          }
           setUserProfile(null);
+          setLoading(false);
           return;
         }
 
         if (profile) {
-          const p: any = profile as any;
-          
-          // Check if profile is private (this would need to be implemented in your schema)
-          const isPrivate = p.is_private || false;
-          
-          if (isPrivate && currentUser?.id !== p.id) {
-            // Show private profile component
-            setUserProfile({
-              id: p.id,
-              fullName: p.full_name || 'User',
-              profilePhoto: p.profile_photo,
-              isPrivate: true
-            } as any);
-            return;
-          }
-          
           // Convert the real profile data to our UserProfile interface
           const userProfile: UserProfile = {
-            id: p.id,
-            fullName: p.full_name || 'Anonymous User',
+            id: profile.id,
+            fullName: profile.full_name || 'Anonymous User',
             email: 'Email not available', // Email not stored in user_profiles
-            jobTitle: p.job_title || '',
-            company: p.company || '',
-            location: p.location || 'Location not specified',
-            bio: p.bio || '',
-            profilePhoto: p.profile_photo || undefined,
-            interests: p.interests || [],
-            age: p.age || 0,
-            gender: p.gender || 'Not specified',
-            country: p.country || 'Not specified',
-            city: p.city || 'Not specified',
-            birthDate: p.birth_date || '',
-            joinedAt: p.created_at || new Date().toISOString(),
-            lastActive: p.updated_at || new Date().toISOString(),
-            accountType: (p.account_type === 'employer' ? 'employer' : 'user') as 'user' | 'employer',
+            jobTitle: profile.job_title || '',
+            company: profile.company || '',
+            location: profile.location || 'Location not specified',
+            bio: profile.bio || '',
+            profilePhoto: profile.profile_photo || undefined,
+            interests: profile.interests || [],
+            age: profile.age || 0,
+            gender: profile.gender || 'Not specified',
+            country: profile.country || 'Not specified',
+            city: profile.city || 'Not specified',
+            birthDate: profile.birth_date || '',
+            joinedAt: profile.created_at || new Date().toISOString(),
+            lastActive: profile.updated_at || new Date().toISOString(),
+            accountType: (profile.account_type === 'employer' ? 'employer' : 'user') as 'user' | 'employer',
             status: 'active', // Default since we don't have this field
-            verified: p.verified || false,
-            contactVisible: p.contact_visible || false,
-            phone: p.phone || undefined,
-            website: p.website || undefined,
-            linkedin: p.linkedin || undefined,
-            github: p.github || undefined,
+            verified: profile.verified || false,
+            contactVisible: profile.contact_visible || false,
+            phone: profile.phone || undefined,
+            website: profile.website || undefined,
+            linkedin: profile.linkedin || undefined,
+            github: profile.github || undefined,
             stats: {
-              toolsSubmitted: p.tools_submitted || 0,
-              articlesWritten: p.articles_written || 0,
+              toolsSubmitted: profile.tools_submitted || 0,
+              articlesWritten: profile.articles_written || 0,
               postsCreated: 0, // Would need to query posts table
               likesReceived: 0, // Would need to calculate
               followers: 0, // Would need to implement follower system
@@ -172,8 +138,10 @@ const UserView: React.FC = () => {
             recentActivity: [] // Would need to implement activity tracking
           };
           
+          console.log('Setting user profile:', userProfile);
           setUserProfile(userProfile);
         } else {
+          console.log('No profile found for ID:', profileId);
           setUserProfile(null);
         }
       } catch (error) {
@@ -186,6 +154,8 @@ const UserView: React.FC = () => {
 
     if (userId || handle) {
       fetchUserProfile();
+    } else {
+      setLoading(false);
     }
   }, [userId, handle, currentUser]);
 

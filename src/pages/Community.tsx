@@ -167,17 +167,24 @@ const Community: React.FC = () => {
       try {
         // Open chat dock and focus on user
         toggleOpen();
+        // Small delay to ensure chat dock is open before trying to focus
+        setTimeout(() => {
+          // Dispatch custom event with user info for the chat dock
+          window.dispatchEvent(new CustomEvent('openChatWithUser', {
+            detail: { userId, userName }
+          }));
+        }, 100);
         toast.success(`Opening chat with ${userName}`);
       } catch (error) {
         console.error('Error opening chat dock:', error);
         // Fallback: redirect to messages page
         toast.info(`Redirecting to messages...`);
-        window.location.href = `/messages?user=${userId}`;
+        navigate(`/messages?user=${userId}`);
       }
     } else {
       // Fallback: redirect to messages page
-      toast.info(`Chat dock unavailable, redirecting to messages...`);
-      window.location.href = `/messages?user=${userId}`;
+      toast.info(`Opening messages...`);
+      navigate(`/messages?user=${userId}`);
     }
   };
 
