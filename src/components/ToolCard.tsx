@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ExternalLink, Star, Users, TrendingUp, Bookmark } from 'lucide-react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { ShareButton } from './ShareButton';
+import ToolActionButtons from './ToolActionButtons';
 
 interface ToolCardProps {
   tool: {
@@ -27,9 +28,10 @@ interface ToolCardProps {
     review_count?: number;
   };
   className?: string;
+  onDelete?: () => void;
 }
 
-const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
+const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '', onDelete }) => {
   const { theme } = useTheme();
 
   // Determine if logo should be inverted based on theme and logo type
@@ -223,40 +225,35 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
             </div>
           </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-between">
             <ShareButton
               contentType="tool"
               contentId={tool.id}
               shareCount={tool.share_count || 0}
               className="text-xs"
             />
-            {/* View Details Button with newsfeed chip styling */}
-            <Link
-              to={`/tools/${tool.id}`}
-              className="px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 border"
-              style={{
-                backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                color: theme === 'dark' ? '#e2e8f0' : '#111827'
-              }}
-            >
-              View Details
-            </Link>
-            {/* Try Now Button with newsfeed chip styling */}
-            <a
-              href={tool.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 border group"
-              style={{
-                backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                color: theme === 'dark' ? '#e2e8f0' : '#111827'
-              }}
-            >
-              <span>Try Now</span>
-              <ExternalLink className="h-3 w-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
-            </a>
+            
+            <div className="flex items-center space-x-2">
+              {/* View Details Button */}
+              <Link
+                to={`/tools/${tool.id}`}
+                className="px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 border"
+                style={{
+                  backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                  borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                  color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                }}
+              >
+                View Details
+              </Link>
+              
+              {/* Action Buttons (Edit/Delete/External) */}
+              <ToolActionButtons 
+                tool={tool} 
+                onDelete={onDelete}
+                className="flex items-center space-x-1"
+              />
+            </div>
           </div>
         </div>
       </div>

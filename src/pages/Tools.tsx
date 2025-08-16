@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import ChatDock from '../components/ChatDock';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Filter, Grid, List, GitCompare, Star, ExternalLink, Bookmark, Zap, Plus, TrendingUp, MoreHorizontal } from 'lucide-react';
+import { Search, Filter, Grid, List, GitCompare, Star, ExternalLink, Bookmark, Zap, Plus, TrendingUp, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
 import ToolComparisonModal from '../components/ToolComparisonModal';
 import PromoteContentModal from '../components/PromoteContentModal';
 import ToolStars from '../components/ToolStars';
+import ToolActionButtons from '../components/ToolActionButtons';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -31,7 +32,7 @@ interface Tool {
 }
 
 const Tools: React.FC = () => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { theme } = useTheme();
@@ -96,6 +97,10 @@ const Tools: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleToolDelete = () => {
+    fetchToolsAndCategories(); // Refresh the tools list
   };
 
   const filteredTools = tools.filter(tool => {
@@ -326,7 +331,7 @@ const Tools: React.FC = () => {
                           </div>
                         )}
 
-                        <div className="flex space-x-2">
+                         <div className="flex items-center justify-between space-x-2">
                            <Link
                              to={`/tools/${tool.id}`}
                              className="flex-1 text-center py-2 px-4 rounded-lg font-medium transition-colors border"
@@ -338,36 +343,30 @@ const Tools: React.FC = () => {
                            >
                              Learn More
                            </Link>
-                           <button 
-                             onClick={() => {
-                               setSelectedTool(tool);
-                               setShowPromoteModal(true);
-                             }}
-                             className="p-2 border rounded-lg transition-colors"
-                             style={{
-                               backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                               borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                               color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                             }}
-                             title="Promote Tool"
-                           >
-                             <TrendingUp className="h-4 w-4" />
-                           </button>
-                           <a
-                             href={tool.website}
-                             target="_blank"
-                             rel="noopener noreferrer"
-                             className="p-2 border rounded-lg transition-colors"
-                             style={{
-                               backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                               borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                               color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                             }}
-                             title="Visit Website"
-                           >
-                             <ExternalLink className="h-4 w-4" />
-                           </a>
-                        </div>
+                           
+                           <div className="flex items-center space-x-1">
+                             <button 
+                               onClick={() => {
+                                 setSelectedTool(tool);
+                                 setShowPromoteModal(true);
+                               }}
+                               className="p-2 border rounded-lg transition-colors"
+                               style={{
+                                 backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                                 borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                                 color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                               }}
+                               title="Promote Tool"
+                             >
+                               <TrendingUp className="h-4 w-4" />
+                             </button>
+                             
+                             <ToolActionButtons 
+                               tool={tool} 
+                               onDelete={handleToolDelete}
+                             />
+                           </div>
+                         </div>
                       </div>
                     </div>
                   ))}
@@ -442,50 +441,41 @@ const Tools: React.FC = () => {
                             </div>
                           )}
                           
-                          <div className="flex items-center justify-between">
-                            <div className="flex space-x-2">
-                               <Link
-                                 to={`/tools/${tool.id}`}
-                                 className="py-2 px-4 rounded-lg font-medium transition-colors border"
-                                 style={{
-                                   backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                                   borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                                   color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                                 }}
-                               >
-                                 Learn More
-                               </Link>
-                               <button 
-                                 onClick={() => {
-                                   setSelectedTool(tool);
-                                   setShowPromoteModal(true);
-                                 }}
-                                 className="p-2 border rounded-lg transition-colors"
-                                 style={{
-                                   backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                                   borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                                   color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                                 }}
-                                 title="Promote Tool"
-                               >
-                                 <TrendingUp className="h-4 w-4" />
-                               </button>
-                               <a
-                                 href={tool.website}
-                                 target="_blank"
-                                 rel="noopener noreferrer"
-                                 className="p-2 border rounded-lg transition-colors"
-                                 style={{
-                                   backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                                   borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                                   color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                                 }}
-                                 title="Visit Website"
-                               >
-                                 <ExternalLink className="h-4 w-4" />
-                               </a>
-                            </div>
-                          </div>
+                           <div className="flex items-center justify-between">
+                             <div className="flex items-center space-x-2">
+                                <Link
+                                  to={`/tools/${tool.id}`}
+                                  className="py-2 px-4 rounded-lg font-medium transition-colors border"
+                                  style={{
+                                    backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                                    borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                                    color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                                  }}
+                                >
+                                  Learn More
+                                </Link>
+                                <button 
+                                  onClick={() => {
+                                    setSelectedTool(tool);
+                                    setShowPromoteModal(true);
+                                  }}
+                                  className="p-2 border rounded-lg transition-colors"
+                                  style={{
+                                    backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                                    borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                                    color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                                  }}
+                                  title="Promote Tool"
+                                >
+                                  <TrendingUp className="h-4 w-4" />
+                                </button>
+                                
+                                <ToolActionButtons 
+                                  tool={tool} 
+                                  onDelete={handleToolDelete}
+                                />
+                             </div>
+                           </div>
                         </div>
                       </div>
                     </div>
