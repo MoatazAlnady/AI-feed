@@ -68,19 +68,21 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
   const fetchPendingTools = async () => {
     try {
       console.log('Fetching pending tools...');
-      const { data, error } = await supabase.rpc('get_pending_tools', {
-        limit_param: 50,
-        offset_param: 0
-      });
+      
+      // Direct query with proper category join
+      const { data: toolsData, error: toolsError } = await supabase
+        .from('tools')
+        .select(`
+          *,
+          categories(name),
+          user_profiles(full_name)
+        `)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
 
-      console.log('RPC get_pending_tools response:', { data, error });
+      if (toolsError) throw toolsError;
 
-      if (error) {
-        console.warn('RPC error, trying direct query:', error);
-        throw error;
-      }
-
-      let normalized = (Array.isArray(data) ? data : []).map((t: any) => ({
+      let normalized = (toolsData || []).map((t: any) => ({
         ...t,
         features: Array.isArray(t?.features) ? t.features : [],
         pros: Array.isArray(t?.pros) ? t.pros : [],
@@ -89,44 +91,11 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
         description: t?.description ?? '',
         website: t?.website ?? '',
         pricing: t?.pricing ?? '',
-        category_name: t?.category_name ?? 'Uncategorized',
-        user_name: t?.user_name ?? 'Unknown User',
+        category_name: t?.categories?.name ?? 'Uncategorized',
+        user_name: t?.user_profiles?.full_name ?? 'Unknown User',
       }));
 
-      console.log('Normalized RPC data:', normalized);
-
-      // Fallback: directly read pending tools in case RPC returns empty
-      if (normalized.length === 0) {
-        console.log('No data from RPC, trying direct query...');
-        const { data: fallback, error: fbErr } = await supabase
-          .from('tools')
-          .select('id, name, description, category_id, subcategory, website, pricing, features, pros, cons, tags, user_id, created_at, status')
-          .eq('status', 'pending')
-          .order('created_at', { ascending: false });
-          
-        console.log('Direct query result:', { fallback, fbErr });
-        
-        if (!fbErr && fallback) {
-          normalized = fallback.map((t: any) => ({
-            id: t.id,
-            name: t.name,
-            description: t.description ?? '',
-            category_id: t.category_id ?? '',
-            category_name: 'Uncategorized',
-            subcategory: t.subcategory ?? '',
-            website: t.website ?? '',
-            pricing: t.pricing ?? '',
-            features: Array.isArray(t.features) ? t.features : [],
-            pros: Array.isArray(t.pros) ? t.pros : [],
-            cons: Array.isArray(t.cons) ? t.cons : [],
-            tags: Array.isArray(t.tags) ? t.tags : [],
-            user_id: t.user_id,
-            user_name: 'Unknown User',
-            created_at: t.created_at,
-          }));
-          console.log('Fallback normalized data:', normalized);
-        }
-      }
+      console.log('Normalized pending tools data:', normalized);
 
       setTools(normalized);
     } catch (error) {
@@ -407,7 +376,7 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
         <div className="space-y-6">
           {/* Bulk Actions */}
           {selectedTools.size > 0 && (
-            <Card className="border-orange-200 bg-orange-50 dark:bg-orange-950">
+            <Card className="border-orange-200 bg-orange-50/50 dark:bg-orange-950/20">
               <CardContent className="py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -474,7 +443,7 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
             <CardContent>
               <div className="space-y-4">
                 {tools.map((tool, index) => (
-                  <div key={tool.id} className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-muted/50">
+                  <div key={tool.id} className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-muted/50 bg-card">
                     <Checkbox
                       checked={selectedTools.has(tool.id)}
                       onCheckedChange={() => toggleToolSelection(tool.id)}
