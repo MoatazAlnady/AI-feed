@@ -7,6 +7,7 @@ import PromoteContentModal from '../components/PromoteContentModal';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useTheme } from '@/providers/ThemeProvider';
 
 interface Tool {
   id: string;
@@ -32,6 +33,7 @@ const Tools: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { theme } = useTheme();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -248,11 +250,25 @@ const Tools: React.FC = () => {
                     >
                       <div className="relative h-48 bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center">
                         <div className="text-6xl text-primary-300">🤖</div>
-                        <button className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors">
-                          <Bookmark className="h-4 w-4 text-gray-600" />
+                        <button 
+                          className="absolute top-4 right-4 p-2 rounded-full border transition-colors"
+                          style={{
+                            backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                            borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                            color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                          }}
+                        >
+                          <Bookmark className="h-4 w-4" />
                         </button>
                         <div className="absolute bottom-4 left-4">
-                          <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-sm font-medium text-gray-700 rounded-full">
+                          <span 
+                            className="px-3 py-1 text-sm font-medium rounded-full border"
+                            style={{
+                              backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                              borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                              color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                            }}
+                          >
                             {tool.category_name}
                           </span>
                         </div>
@@ -274,48 +290,75 @@ const Tools: React.FC = () => {
 
                         {tool.tags && tool.tags.length > 0 && (
                           <div className="flex flex-wrap gap-2 mb-4">
-                            {tool.tags.slice(0, 3).map((tag, index) => (
-                              <span
-                                key={index}
-                                className="px-2 py-1 bg-primary-50 text-primary-600 text-xs font-medium rounded-md"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                            {tool.tags.length > 3 && (
-                              <span className="px-2 py-1 bg-gray-100 text-gray-500 text-xs font-medium rounded-md">
-                                +{tool.tags.length - 3} more
-                              </span>
-                            )}
+                             {tool.tags.slice(0, 3).map((tag, index) => (
+                               <span
+                                 key={index}
+                                 className="px-2 py-1 text-xs font-medium rounded-md border"
+                                 style={{
+                                   backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                                   borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                                   color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                                 }}
+                               >
+                                 {tag}
+                               </span>
+                             ))}
+                             {tool.tags.length > 3 && (
+                               <span 
+                                 className="px-2 py-1 text-xs font-medium rounded-md border"
+                                 style={{
+                                   backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                                   borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                                   color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                                 }}
+                               >
+                                 +{tool.tags.length - 3} more
+                               </span>
+                             )}
                           </div>
                         )}
 
                         <div className="flex space-x-2">
-                          <Link
-                            to={`/tools/${tool.id}`}
-                            className="flex-1 text-center py-2 px-4 rounded-lg font-medium transition-colors border bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
-                          >
-                            Learn More
-                          </Link>
-                          <button 
-                            onClick={() => {
-                              setSelectedTool(tool);
-                              setShowPromoteModal(true);
-                            }}
-                            className="p-2 border rounded-lg transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
-                            title="Promote Tool"
-                          >
-                            <TrendingUp className="h-4 w-4" />
-                          </button>
-                          <a
-                            href={tool.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 border rounded-lg transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
-                            title="Visit Website"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </a>
+                           <Link
+                             to={`/tools/${tool.id}`}
+                             className="flex-1 text-center py-2 px-4 rounded-lg font-medium transition-colors border"
+                             style={{
+                               backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                               borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                               color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                             }}
+                           >
+                             Learn More
+                           </Link>
+                           <button 
+                             onClick={() => {
+                               setSelectedTool(tool);
+                               setShowPromoteModal(true);
+                             }}
+                             className="p-2 border rounded-lg transition-colors"
+                             style={{
+                               backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                               borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                               color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                             }}
+                             title="Promote Tool"
+                           >
+                             <TrendingUp className="h-4 w-4" />
+                           </button>
+                           <a
+                             href={tool.website}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             className="p-2 border rounded-lg transition-colors"
+                             style={{
+                               backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                               borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                               color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                             }}
+                             title="Visit Website"
+                           >
+                             <ExternalLink className="h-4 w-4" />
+                           </a>
                         </div>
                       </div>
                     </div>
@@ -336,9 +379,16 @@ const Tools: React.FC = () => {
                           <div className="flex items-start justify-between mb-2">
                             <div>
                               <h3 className="text-xl font-bold text-gray-900 mb-1">{tool.name}</h3>
-                              <span className="px-3 py-1 bg-primary-100 text-primary-700 text-sm font-medium rounded-full">
-                                {tool.category_name}
-                              </span>
+                               <span 
+                                 className="px-3 py-1 text-sm font-medium rounded-full border"
+                                 style={{
+                                   backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                                   borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                                   color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                                 }}
+                               >
+                                 {tool.category_name}
+                               </span>
                             </div>
                             <div className="text-sm font-semibold text-gray-900">
                               {tool.pricing}
@@ -349,49 +399,76 @@ const Tools: React.FC = () => {
                           
                           {tool.tags && tool.tags.length > 0 && (
                             <div className="flex flex-wrap gap-2 mb-4">
-                              {tool.tags.slice(0, 5).map((tag, index) => (
-                                <span
-                                  key={index}
-                                  className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                              {tool.tags.length > 5 && (
-                                <span className="px-2 py-1 bg-gray-100 text-gray-500 text-xs rounded-md">
-                                  +{tool.tags.length - 5} more
-                                </span>
-                              )}
+                               {tool.tags.slice(0, 5).map((tag, index) => (
+                                 <span
+                                   key={index}
+                                   className="px-2 py-1 text-xs rounded-md border"
+                                   style={{
+                                     backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                                     borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                                     color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                                   }}
+                                 >
+                                   {tag}
+                                 </span>
+                               ))}
+                               {tool.tags.length > 5 && (
+                                 <span 
+                                   className="px-2 py-1 text-xs rounded-md border"
+                                   style={{
+                                     backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                                     borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                                     color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                                   }}
+                                 >
+                                   +{tool.tags.length - 5} more
+                                 </span>
+                               )}
                             </div>
                           )}
                           
                           <div className="flex items-center justify-between">
                             <div className="flex space-x-2">
-                              <Link
-                                to={`/tools/${tool.id}`}
-                                className="py-2 px-4 rounded-lg font-medium transition-colors border bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
-                              >
-                                Learn More
-                              </Link>
-                              <button 
-                                onClick={() => {
-                                  setSelectedTool(tool);
-                                  setShowPromoteModal(true);
-                                }}
-                                className="p-2 border rounded-lg transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
-                                title="Promote Tool"
-                              >
-                                <TrendingUp className="h-4 w-4" />
-                              </button>
-                              <a
-                                href={tool.website}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-2 border rounded-lg transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
-                                title="Visit Website"
-                              >
-                                <ExternalLink className="h-4 w-4" />
-                              </a>
+                               <Link
+                                 to={`/tools/${tool.id}`}
+                                 className="py-2 px-4 rounded-lg font-medium transition-colors border"
+                                 style={{
+                                   backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                                   borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                                   color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                                 }}
+                               >
+                                 Learn More
+                               </Link>
+                               <button 
+                                 onClick={() => {
+                                   setSelectedTool(tool);
+                                   setShowPromoteModal(true);
+                                 }}
+                                 className="p-2 border rounded-lg transition-colors"
+                                 style={{
+                                   backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                                   borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                                   color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                                 }}
+                                 title="Promote Tool"
+                               >
+                                 <TrendingUp className="h-4 w-4" />
+                               </button>
+                               <a
+                                 href={tool.website}
+                                 target="_blank"
+                                 rel="noopener noreferrer"
+                                 className="p-2 border rounded-lg transition-colors"
+                                 style={{
+                                   backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                                   borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                                   color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                                 }}
+                                 title="Visit Website"
+                               >
+                                 <ExternalLink className="h-4 w-4" />
+                               </a>
                             </div>
                           </div>
                         </div>

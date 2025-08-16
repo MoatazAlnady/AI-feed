@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ExternalLink, Star, Users, TrendingUp } from 'lucide-react';
+import { ExternalLink, Star, Users, TrendingUp, Bookmark } from 'lucide-react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { ShareButton } from './ShareButton';
 
@@ -58,71 +58,103 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
   return (
     <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md dark:hover:shadow-lg transition-all duration-300 group ${className}`}>
       <div className="p-6">
-        {/* Header with Logo and Title */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center space-x-3">
-            {tool.logo_url ? (
-              <div className="flex-shrink-0">
-                <img
-                  src={tool.logo_url}
-                  alt={`${tool.name} logo`}
-                  className={`w-10 h-10 rounded-lg object-contain ${
-                    shouldInvertLogo() ? 'filter invert' : ''
-                  }`}
-                />
-              </div>
-            ) : (
-              <div className="w-10 h-10 rounded-lg border flex items-center justify-center bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600">
-                <span className="text-gray-800 dark:text-slate-200 font-semibold text-sm">
-                  {tool.name.charAt(0).toUpperCase()}
-                </span>
-              </div>
-            )}
-            <div>
-              <div className="flex items-center space-x-2">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-                  {tool.name}
-                </h3>
-                {/* Rating Stars */}
-                {tool.average_rating && tool.average_rating > 0 && (
-                  <div className="flex items-center space-x-1">
-                    <div className="flex items-center">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star
-                          key={star}
-                          className={`h-3 w-3 ${
-                            star <= (tool.average_rating || 0)
-                              ? 'text-yellow-400 fill-current'
-                              : 'text-gray-300 dark:text-gray-600'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {tool.average_rating} ({tool.review_count || 0})
-                    </span>
-                  </div>
-                )}
-              </div>
-              {tool.subcategory && (
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {tool.subcategory}
-                </p>
-              )}
+        {/* Header with Logo, Title, Category, and Bookmark */}
+        <div className="relative">
+          {/* Category chip in top-left corner */}
+          {tool.subcategory && (
+            <div className="absolute -top-2 -left-2 z-10">
+              <span 
+                className="px-2 py-1 text-xs font-medium rounded-full border"
+                style={{
+                  backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                  borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                  color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                }}
+              >
+                {tool.subcategory}
+              </span>
             </div>
-          </div>
+          )}
           
-          {/* Pricing Badge */}
-          <span 
-            className="px-2 py-1 text-xs font-medium rounded-full border"
+          {/* Bookmark button in top-right corner */}
+          <button className="absolute -top-2 -right-2 z-10 p-2 rounded-full border transition-all duration-200 hover:scale-105"
             style={{
               backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
               borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
               color: theme === 'dark' ? '#e2e8f0' : '#111827'
             }}
           >
-            {tool.pricing || 'Free'}
-          </span>
+            <Bookmark className="h-3 w-3" />
+          </button>
+          
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              {tool.logo_url ? (
+                <div className="flex-shrink-0">
+                  <img
+                    src={tool.logo_url}
+                    alt={`${tool.name} logo`}
+                    className={`w-10 h-10 rounded-lg object-contain ${
+                      shouldInvertLogo() ? 'filter invert' : ''
+                    }`}
+                  />
+                </div>
+              ) : (
+                <div className="w-10 h-10 rounded-lg border flex items-center justify-center"
+                  style={{
+                    backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                    borderColor: theme === 'dark' ? '#334155' : '#d1d5db'
+                  }}
+                >
+                  <span 
+                    className="font-semibold text-sm"
+                    style={{ color: theme === 'dark' ? '#e2e8f0' : '#111827' }}
+                  >
+                    {tool.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
+              <div>
+                <div className="flex items-center space-x-2">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                    {tool.name}
+                  </h3>
+                  {/* Rating Stars */}
+                  {tool.average_rating && tool.average_rating > 0 && (
+                    <div className="flex items-center space-x-1">
+                      <div className="flex items-center">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`h-3 w-3 ${
+                              star <= (tool.average_rating || 0)
+                                ? 'text-yellow-400 fill-current'
+                                : 'text-gray-300 dark:text-gray-600'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {tool.average_rating} ({tool.review_count || 0})
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Pricing Badge */}
+            <span 
+              className="px-2 py-1 text-xs font-medium rounded-full border"
+              style={{
+                backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                color: theme === 'dark' ? '#e2e8f0' : '#111827'
+              }}
+            >
+              {tool.pricing || 'Free'}
+            </span>
+          </div>
         </div>
 
         {/* Description */}
@@ -201,7 +233,12 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
             {/* View Details Button with newsfeed chip styling */}
             <Link
               to={`/tools/${tool.id}`}
-              className="px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 border bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
+              className="px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 border"
+              style={{
+                backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                color: theme === 'dark' ? '#e2e8f0' : '#111827'
+              }}
             >
               View Details
             </Link>
@@ -210,7 +247,12 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
               href={tool.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 border bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800 group"
+              className="flex items-center px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 border group"
+              style={{
+                backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                color: theme === 'dark' ? '#e2e8f0' : '#111827'
+              }}
             >
               <span>Try Now</span>
               <ExternalLink className="h-3 w-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
