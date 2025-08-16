@@ -423,15 +423,15 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
                     </Button>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      onClick={() => handleBulkAction('approve')}
-                      disabled={bulkProcessing}
-                      className="bg-green-600 hover:bg-green-700 text-white"
-                    >
-                      <Check className="h-4 w-4 mr-1" />
-                      Approve Selected
-                    </Button>
+                     <Button
+                       size="sm"
+                       onClick={() => handleBulkAction('approve')}
+                       disabled={bulkProcessing}
+                       variant="gradient"
+                     >
+                       <Check className="h-4 w-4 mr-1" />
+                       Approve Selected
+                     </Button>
                     <Button
                       size="sm"
                       variant="destructive"

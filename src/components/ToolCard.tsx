@@ -163,7 +163,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
               href={tool.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center px-3 py-1.5 text-xs font-medium bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors group"
+              className="flex items-center px-3 py-1.5 text-xs font-medium bg-gradient-primary text-white rounded-md hover:opacity-90 transition-opacity group"
             >
               <span>Try Now</span>
               <ExternalLink className="h-3 w-3 ml-1 group-hover:translate-x-0.5 transition-transform" />

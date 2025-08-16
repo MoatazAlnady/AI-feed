@@ -1,9 +1,15 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import AIChatBot from '@/components/ChatDock';
 
 const AppLayout: React.FC = () => {
+  const location = useLocation();
+  
+  // Show chat on creator mode pages
+  const showChat = ['/newsfeed', '/submit-tool', '/submit-article', '/messages', '/profile'].includes(location.pathname);
+
   return (
     <div className="min-h-screen text-foreground">
       {/* Light mode orbs */}
@@ -20,6 +26,9 @@ const AppLayout: React.FC = () => {
         <Outlet />
       </main>
       <Footer />
+      
+      {/* Global Chat for Creator Mode Pages */}
+      {showChat && <AIChatBot />}
     </div>
   );
 };

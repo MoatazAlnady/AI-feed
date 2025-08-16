@@ -152,6 +152,35 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
       return;
     }
 
+    // Check for duplicates by name or website
+    try {
+      const { data: existingTools, error: checkError } = await supabase
+        .from('tools')
+        .select('id, name, website')
+        .or(`name.ilike.%${formData.name.trim()}%,website.eq.${formData.website.trim()}`);
+
+      if (checkError) throw checkError;
+
+      if (existingTools && existingTools.length > 0) {
+        const duplicate = existingTools.find(
+          tool => 
+            tool.name.toLowerCase() === formData.name.trim().toLowerCase() ||
+            tool.website === formData.website.trim()
+        );
+
+        if (duplicate) {
+          toast({
+            title: "Duplicate Tool Detected",
+            description: `A tool with this ${duplicate.name.toLowerCase() === formData.name.trim().toLowerCase() ? 'name' : 'website'} already exists`,
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('Error checking for duplicates:', error);
+    }
+
     try {
       setLoading(true);
 
@@ -218,18 +247,20 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
           </DialogDescription>
         </DialogHeader>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
-          {/* Basic Information */}
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="name">Tool Name *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                placeholder="Enter tool name"
-              />
-            </div>
+        <form onSubmit={(e) => e.preventDefault()} onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+            {/* Basic Information */}
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="name">Tool Name *</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  placeholder="Enter tool name"
+                  onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                />
+              </div>
             
             <div>
               <Label htmlFor="description">Description *</Label>
@@ -239,6 +270,7 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 placeholder="Describe what this tool does"
                 rows={3}
+                onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
               />
             </div>
             
@@ -250,6 +282,7 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
                 onChange={(e) => handleInputChange('website', e.target.value)}
                 placeholder="https://example.com"
                 type="url"
+                onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
               />
             </div>
             
@@ -275,9 +308,10 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
                 value={formData.tags}
                 onChange={(e) => handleInputChange('tags', e.target.value)}
                 placeholder="AI, machine learning, automation"
+                onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
               />
             </div>
-          </div>
+           </div>
 
           {/* Categories and Details */}
           <div className="space-y-4">
@@ -338,6 +372,7 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
                     value={feature}
                     onChange={(e) => handleArrayChange(index, e.target.value, 'features')}
                     placeholder="Enter a feature"
+                    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                   />
                   {formData.features.length > 1 && (
                     <Button
@@ -370,6 +405,7 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
                     value={pro}
                     onChange={(e) => handleArrayChange(index, e.target.value, 'pros')}
                     placeholder="Enter a pro"
+                    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                   />
                   {formData.pros.length > 1 && (
                     <Button
@@ -402,6 +438,7 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
                     value={con}
                     onChange={(e) => handleArrayChange(index, e.target.value, 'cons')}
                     placeholder="Enter a con"
+                    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                   />
                   {formData.cons.length > 1 && (
                     <Button
@@ -427,12 +464,13 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
             </div>
           </div>
         </div>
+        </form>
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={loading} className="bg-gradient-primary text-white">
+          <Button onClick={handleSubmit} disabled={loading} variant="gradient">
             {loading ? 'Creating...' : (
               <>
                 <Save className="h-4 w-4 mr-2" />
