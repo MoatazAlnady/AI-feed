@@ -1587,6 +1587,10 @@ export type Database = {
         Args: { admin_notes_param: string; request_id_param: string }
         Returns: undefined
       }
+      sync_user_profile_stats: {
+        Args: { user_uuid: string }
+        Returns: undefined
+      }
       track_post_view: {
         Args: {
           ip_address_param?: unknown

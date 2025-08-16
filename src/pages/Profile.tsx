@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   User, Mail, Calendar, Heart, Bookmark, MessageSquare, Upload, 
   Briefcase, MapPin, Edit, Target, TrendingUp, ExternalLink,
   Plus, Code, FileText, Users, Star, Zap
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../integrations/supabase/client';
 import PromoteContentModal from '../components/PromoteContentModal';
 import NetworkTab from '../components/NetworkTab';
 import ProfilePhotoUploader from '../components/ProfilePhotoUploader';
@@ -13,16 +14,56 @@ import { Link } from 'react-router-dom';
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
+  const [userProfile, setUserProfile] = useState<any>({});
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'posts' | 'content' | 'saved' | 'network'>('overview');
   const [showPromoteModal, setShowPromoteModal] = useState(false);
   const [selectedContent, setSelectedContent] = useState<any>(null);
   const [savedItems, setSavedItems] = useState<any[]>([]);
   const { stats } = useUserStats();
 
-  // User profile data - only use real data from user object
-  const userProfile = {
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        
+        if (data) {
+          setUserProfile(data);
+        } else {
+          // Fallback to user metadata if no profile exists
+          setUserProfile(user.user_metadata || {});
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+        setUserProfile(user.user_metadata || {});
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, [user]);
+
+  // User profile data with fallback
+  const profileData = {
     email: user?.email || '',
     joinedAt: user?.created_at || new Date().toISOString(),
+    fullName: userProfile.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'AI Enthusiast',
+    jobTitle: userProfile.job_title || user?.user_metadata?.job_title,
+    company: userProfile.company || user?.user_metadata?.company,
+    location: userProfile.location || user?.user_metadata?.location,
+    bio: userProfile.bio || user?.user_metadata?.bio,
+    interests: userProfile.interests || user?.user_metadata?.interests || [],
+    website: userProfile.website || user?.user_metadata?.website,
+    github: userProfile.github || user?.user_metadata?.github,
+    profilePhoto: userProfile.profile_photo || user?.user_metadata?.profile_photo,
+    coverPhoto: userProfile.cover_photo || user?.user_metadata?.cover_photo,
   };
 
   const userStats = [
@@ -49,7 +90,7 @@ const Profile: React.FC = () => {
             {/* Cover Photo */}
             <ProfilePhotoUploader
               type="cover"
-              currentPhoto={user?.user_metadata?.cover_photo}
+              currentPhoto={profileData.coverPhoto}
             />
             
             {/* Profile Info */}
@@ -58,7 +99,7 @@ const Profile: React.FC = () => {
                 {/* Profile Photo */}
                 <ProfilePhotoUploader
                   type="profile"
-                  currentPhoto={user?.user_metadata?.profile_photo}
+                  currentPhoto={profileData.profilePhoto}
                   className="relative -mt-16"
                 />
 
@@ -67,48 +108,48 @@ const Profile: React.FC = () => {
                   <div className="flex items-start justify-between">
                     <div>
                       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                        {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'AI Enthusiast'}
+                        {profileData.fullName}
                       </h1>
                       <div className="flex items-center space-x-4 text-gray-600 dark:text-gray-300 mb-3">
                         <div className="flex items-center space-x-1">
                           <Mail className="h-4 w-4" />
-                          <span>{userProfile.email}</span>
+                          <span>{profileData.email}</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <Calendar className="h-4 w-4" />
-                          <span>Joined {new Date(userProfile.joinedAt).toLocaleDateString()}</span>
+                          <span>Joined {new Date(profileData.joinedAt).toLocaleDateString()}</span>
                         </div>
                       </div>
                       
                       {/* Job Title & Company - only show if available */}
-                      {(user?.user_metadata?.job_title || user?.user_metadata?.company) && (
+                      {(profileData.jobTitle || profileData.company) && (
                         <div className="flex items-center space-x-1 mb-3">
                           <Briefcase className="h-4 w-4" />
                           <span>
-                            {user?.user_metadata?.job_title}
-                            {user?.user_metadata?.job_title && user?.user_metadata?.company && ' at '}
-                            {user?.user_metadata?.company}
+                            {profileData.jobTitle}
+                            {profileData.jobTitle && profileData.company && ' at '}
+                            {profileData.company}
                           </span>
                         </div>
                       )}
                       
                       {/* Location - only show if available */}
-                      {user?.user_metadata?.location && (
+                      {profileData.location && (
                         <div className="flex items-center space-x-1 mb-3">
                           <MapPin className="h-4 w-4" />
-                          <span>{user?.user_metadata?.location}</span>
+                          <span>{profileData.location}</span>
                         </div>
                       )}
                       
                       {/* Bio - only show if available */}
-                      {user?.user_metadata?.bio && (
-                        <p className="text-gray-600 dark:text-gray-400 mb-4 max-w-2xl">{user?.user_metadata?.bio}</p>
+                      {profileData.bio && (
+                        <p className="text-gray-600 dark:text-gray-400 mb-4 max-w-2xl">{profileData.bio}</p>
                       )}
                       
                       {/* Interests - only show if available */}
-                      {user?.user_metadata?.interests && user?.user_metadata?.interests.length > 0 && (
+                      {profileData.interests && profileData.interests.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-4">
-                          {user?.user_metadata?.interests.map((interest: string, index: number) => (
+                          {profileData.interests.map((interest: string, index: number) => (
                             <span
                               key={index}
                               className="px-3 py-1 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 rounded-full text-sm font-medium"
@@ -121,9 +162,9 @@ const Profile: React.FC = () => {
 
                       {/* Social Links - only show if available */}
                       <div className="flex space-x-3">
-                        {user?.user_metadata?.website && (
+                        {profileData.website && (
                           <a
-                            href={user.user_metadata.website}
+                            href={profileData.website}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -131,9 +172,9 @@ const Profile: React.FC = () => {
                             <ExternalLink className="h-5 w-5" />
                           </a>
                         )}
-                        {user?.user_metadata?.github && (
+                        {profileData.github && (
                           <a
-                            href={user.user_metadata.github}
+                            href={profileData.github}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"

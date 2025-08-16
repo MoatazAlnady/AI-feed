@@ -50,22 +50,22 @@ const ProfilePhotoUploader: React.FC<ProfilePhotoUploaderProps> = ({
     try {
       setIsUploading(true);
       
-      // Generate a unique file name
+      // Generate a unique file name with proper user folder structure
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${type}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `${type}-photos/${fileName}`;
+      const uniqueFileName = `${user.id}-${type}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const userFilePath = `${user.id}/${type}-photos/${uniqueFileName}`;
       
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage with proper path structure
       const { error: uploadError } = await supabase.storage
         .from('user-uploads')
-        .upload(filePath, file);
+        .upload(userFilePath, file, { upsert: true });
       
       if (uploadError) throw uploadError;
       
       // Get the public URL
       const { data } = supabase.storage
         .from('user-uploads')
-        .getPublicUrl(filePath);
+        .getPublicUrl(userFilePath);
       
       if (!data.publicUrl) throw new Error('Failed to get public URL');
       
@@ -76,7 +76,7 @@ const ProfilePhotoUploader: React.FC<ProfilePhotoUploaderProps> = ({
         .upsert({
           id: user.id,
           [updateField]: data.publicUrl
-        });
+        }, { onConflict: 'id' });
       
       if (updateError) throw updateError;
       

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, Send, Bot } from 'lucide-react';
+import { X, Send, Bot, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import DualChatTabs from './DualChatTabs';
 
 interface AIChatBotProps {
   initialMessage?: string;
@@ -10,6 +11,7 @@ interface AIChatBotProps {
 
 const AIChatBot = ({ initialMessage, autoOpen }: AIChatBotProps) => {
   const [isOpen, setIsOpen] = useState(autoOpen || false);
+  const [showDualChat, setShowDualChat] = useState(false);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Array<{id: number, text: string, sender: 'user' | 'ai'}>>([]);
 
@@ -62,19 +64,32 @@ const AIChatBot = ({ initialMessage, autoOpen }: AIChatBotProps) => {
 
   return (
     <>
-      {/* Chat Button */}
-      <div className="fixed bottom-6 right-6 z-50">
+      {/* Chat Buttons */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col space-y-3">
+        <Button
+          onClick={() => setShowDualChat(!showDualChat)}
+          className="w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg transition-all duration-300 hover:scale-105"
+          size="icon"
+          title="Dual Chat (Creator + AI)"
+        >
+          {showDualChat ? <X className="h-6 w-6" /> : <Users className="h-8 w-8" />}
+        </Button>
+        
         <Button
           onClick={() => setIsOpen(!isOpen)}
-          className="w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white shadow-lg transition-all duration-300 hover:scale-105"
+          className="w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white shadow-lg transition-all duration-300 hover:scale-105"
           size="icon"
+          title="AI Assistant"
         >
-          {isOpen ? <X className="h-6 w-6" /> : <Bot className="h-8 w-8" />}
+          {isOpen ? <X className="h-5 w-5" /> : <Bot className="h-6 w-6" />}
         </Button>
       </div>
 
+      {/* Dual Chat Tabs */}
+      <DualChatTabs isOpen={showDualChat} onClose={() => setShowDualChat(false)} />
+
       {/* Chat Window */}
-      {isOpen && (
+      {isOpen && !showDualChat && (
         <div className="fixed bottom-24 right-6 z-40 w-80 h-96 animate-slide-up">
           <Card className="h-full flex flex-col bg-white dark:bg-[#0a1426] border border-gray-200 dark:border-gray-700 shadow-2xl">
             {/* Header */}

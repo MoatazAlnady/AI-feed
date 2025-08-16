@@ -158,6 +158,10 @@ const ToolComparisonModal: React.FC<ToolComparisonModalProps> = ({ isOpen, onClo
     setSelectedTools(selectedTools.filter(t => t.id !== toolId));
   };
 
+  const handleClearComparison = () => {
+    setSelectedTools([]);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -300,21 +304,31 @@ const ToolComparisonModal: React.FC<ToolComparisonModalProps> = ({ isOpen, onClo
               )}
             </div>
             
-            {/* Compare Button */}
-            {selectedTools.length >= 2 && (
-              <div className="mt-6 text-center">
-                <button
-                  onClick={() => {
-                    // Scroll to top of comparison
-                    document.querySelector('.bg-white.border-2.border-primary-200')?.scrollIntoView({ 
-                      behavior: 'smooth', 
-                      block: 'start' 
-                    });
-                  }}
-                  className="px-6 py-3 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 transition-colors"
-                >
-                  View Detailed Comparison
-                </button>
+            {/* Selected tools summary and actions */}
+            {selectedTools.length > 0 && (
+              <div className="flex items-center justify-between p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg mt-6">
+                <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
+                  {selectedTools.length} tools selected for comparison
+                </span>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setSelectedTools([])}
+                    className="px-3 py-1.5 text-sm border border-primary-200 dark:border-primary-700 text-primary-600 dark:text-primary-400 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-800/30 transition-colors"
+                  >
+                    Clear All
+                  </button>
+                  {selectedTools.length >= 2 && (
+                    <button 
+                      onClick={() => {
+                        console.log('Comparing tools:', selectedTools);
+                        alert(`Comparing ${selectedTools.length} tools: ${selectedTools.map(t => t.name).join(', ')}`);
+                      }}
+                      className="px-3 py-1.5 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                    >
+                      Compare Now
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>
