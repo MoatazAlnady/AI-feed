@@ -84,14 +84,26 @@ const UserView: React.FC = () => {
           // For handle-based lookup, we'll use the same function for now
           // In a real implementation, you'd have a separate function or search by handle
           const { data: handleProfiles, error: handleError } = await supabase
-            .rpc('get_public_profiles_by_ids', { ids: [handle] });
-          profiles = handleProfiles;
+            .rpc('get_public_user_profiles', { 
+              search: null,
+              limit_param: 100,
+              offset_param: 0 
+            });
+          
+          // Filter by handle locally since we don't have a handle-specific RPC
+          profiles = handleProfiles?.filter(p => p.id === handle) || [];
           error = handleError;
         } else {
-          // Use the existing function for userId
+          // For userId lookup, get all profiles and filter by id
           const { data: userProfiles, error: userError } = await supabase
-            .rpc('get_public_profiles_by_ids', { ids: [profileId] });
-          profiles = userProfiles;
+            .rpc('get_public_user_profiles', { 
+              search: null,
+              limit_param: 100,
+              offset_param: 0 
+            });
+          
+          // Filter by userId locally 
+          profiles = userProfiles?.filter(p => p.id === profileId) || [];
           error = userError;
         }
 
@@ -236,10 +248,10 @@ const UserView: React.FC = () => {
               The user you're looking for doesn't exist or has been removed.
             </p>
             <button
-              onClick={() => navigate('/admin')}
+              onClick={() => navigate('/community')}
               className="bg-primary-500 text-white px-6 py-3 rounded-xl font-medium hover:bg-primary-600 transition-colors"
             >
-              Back to Admin Dashboard
+              Back to Community
             </button>
           </div>
         </div>
@@ -253,11 +265,11 @@ const UserView: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <button
-            onClick={() => navigate('/admin')}
+            onClick={() => navigate('/community')}
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
             <ArrowLeft className="h-5 w-5" />
-            <span>Back to Admin Dashboard</span>
+            <span>Back to Community</span>
           </button>
           
           <div className="flex items-center justify-between">

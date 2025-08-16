@@ -72,8 +72,8 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
                 />
               </div>
             ) : (
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">
+              <div className="w-10 h-10 rounded-lg border flex items-center justify-center bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600">
+                <span className="text-gray-800 dark:text-slate-200 font-semibold text-sm">
                   {tool.name.charAt(0).toUpperCase()}
                 </span>
               </div>

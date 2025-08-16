@@ -160,12 +160,23 @@ const Community: React.FC = () => {
   };
 
   const handleMessage = (userId: string, userName: string) => {
+    console.log('Message button clicked for:', userName, userId);
+    console.log('toggleOpen available:', !!toggleOpen);
+    
     if (toggleOpen) {
-      // Open chat dock and focus on user
-      toggleOpen();
-      toast.success(`Opening chat with ${userName}`);
+      try {
+        // Open chat dock and focus on user
+        toggleOpen();
+        toast.success(`Opening chat with ${userName}`);
+      } catch (error) {
+        console.error('Error opening chat dock:', error);
+        // Fallback: redirect to messages page
+        toast.info(`Redirecting to messages...`);
+        window.location.href = `/messages?user=${userId}`;
+      }
     } else {
       // Fallback: redirect to messages page
+      toast.info(`Chat dock unavailable, redirecting to messages...`);
       window.location.href = `/messages?user=${userId}`;
     }
   };

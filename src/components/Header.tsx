@@ -40,9 +40,18 @@ const Header: React.FC = () => {
     { name: t('nav.blog'), href: '/blog' },
   ];
 
-  // Check if user is employer
+  // Check if user is employer - also check user_profiles table
   const isEmployer = user?.user_metadata?.account_type === 'employer';
-  const isCreator = user?.user_metadata?.account_type === 'creator' || user?.user_metadata?.account_type === 'user';
+  const isCreator = !isEmployer; // Default to creator if not employer
+  
+  // Debug logging
+  useEffect(() => {
+    if (user) {
+      console.log('Header - User account type:', user?.user_metadata?.account_type);
+      console.log('Header - isCreator:', isCreator);
+      console.log('Header - isEmployer:', isEmployer);
+    }
+  }, [user, isCreator, isEmployer]);
 
   // Check verification status
   const isVerified = user?.user_metadata?.verified || false;
