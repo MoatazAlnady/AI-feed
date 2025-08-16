@@ -363,18 +363,36 @@ const Header: React.FC = () => {
 
                 {/* Connection Requests - Only for creators */}
                 {isCreator && !isEmployerView && (
-                  <button
-                    onClick={() => setShowConnectionRequests(true)}
-                    className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                    title="Connection Requests"
-                  >
-                    <Users className="h-5 w-5" />
-                    {connectionRequestsCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                        {connectionRequestsCount}
-                      </span>
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowConnectionRequests(!showConnectionRequests)}
+                      className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                      title="Connection Requests"
+                    >
+                      <Users className="h-5 w-5" />
+                      {connectionRequestsCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                          {connectionRequestsCount}
+                        </span>
+                      )}
+                    </button>
+                    
+                    {showConnectionRequests && (
+                      <div className="absolute right-0 top-full mt-2 z-50">
+                        <div 
+                          className="fixed inset-0 bg-black/50 z-40"
+                          onClick={() => setShowConnectionRequests(false)}
+                        />
+                        <div className="relative z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-80 max-h-96 overflow-hidden">
+                          <ConnectionRequestsModal 
+                            open={true} 
+                            onOpenChange={setShowConnectionRequests}
+                            isInline={true}
+                          />
+                        </div>
+                      </div>
                     )}
-                  </button>
+                  </div>
                 )}
 
 
@@ -892,19 +910,6 @@ const Header: React.FC = () => {
         onClose={() => setShowAuthModal(false)}
         initialMode={authMode}
       />
-      
-      <ConnectionRequestsModal
-        open={showConnectionRequests}
-        onOpenChange={setShowConnectionRequests}
-      />
-      
-      {/* Close connection requests when clicking outside */}
-      {showConnectionRequests && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setShowConnectionRequests(false)}
-        />
-      )}
     </>
   );
 };

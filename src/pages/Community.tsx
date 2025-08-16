@@ -427,7 +427,7 @@ const Community: React.FC = () => {
                   <div className="flex items-center space-x-2">
                     <h4 
                       className="font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                      onClick={() => navigate(getProfileLink(creator))}
+                      onClick={() => navigate(`/profile/${creator.id}`)}
                     >
                       {creator.full_name || 'Anonymous User'}
                     </h4>

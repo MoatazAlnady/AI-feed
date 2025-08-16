@@ -22,11 +22,13 @@ interface ConnectionRequest {
 interface ConnectionRequestsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  isInline?: boolean;
 }
 
 const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
   open,
   onOpenChange,
+  isInline = false,
 }) => {
   const { user } = useAuth();
   const [requests, setRequests] = useState<ConnectionRequest[]>([]);
@@ -124,6 +126,78 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
   };
 
   if (!open) return null;
+
+  if (isInline) {
+    return (
+      <>
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Connection Requests
+          </h3>
+        </div>
+        
+        <div className="max-h-80 overflow-y-auto p-4 space-y-4">
+          {loading ? (
+            <div className="text-center py-4">Loading...</div>
+          ) : requests.length === 0 ? (
+            <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+              No pending connection requests
+            </div>
+          ) : (
+            requests.map((request) => (
+              <div key={request.id} className="flex items-start space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
+                <Avatar className="h-10 w-10">
+                  {request.requester.profile_photo ? (
+                    <AvatarImage src={request.requester.profile_photo} />
+                  ) : (
+                    <AvatarFallback>
+                      <User className="h-5 w-5" />
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium truncate text-gray-900 dark:text-white">
+                    {request.requester.full_name || 'Unknown User'}
+                  </div>
+                  {request.requester.job_title && (
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      {request.requester.job_title}
+                    </div>
+                  )}
+                  {request.message && (
+                    <div className="text-sm mt-1 text-gray-600 dark:text-gray-300">
+                      "{request.message}"
+                    </div>
+                  )}
+                  
+                  <div className="flex space-x-2 mt-3">
+                    <Button
+                      size="sm"
+                      onClick={() => handleRequest(request.id, 'accepted')}
+                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-xs"
+                    >
+                      <Check className="h-3 w-3 mr-1" />
+                      Accept
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleRequest(request.id, 'rejected')}
+                      className="px-3 py-1 text-xs"
+                    >
+                      <X className="h-3 w-3 mr-1" />
+                      Decline
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </>
+    );
+  }
 
   return (
     <div 
