@@ -96,7 +96,7 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between">
                                 <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                  {thread.participants[0]?.name || 'Unknown User'}
+                                  {thread.participants[0]?.name || 'Deleted User'}
                                 </p>
                                 <span className="text-xs text-gray-500">
                                   {new Date(thread.lastMessage.timestamp).toLocaleDateString()}
@@ -144,7 +144,7 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
                       </div>
                       <div>
                         <p className="text-sm font-medium">
-                          {threads.find(t => t.id === activeThreadId)?.participants[0]?.name || 'Unknown User'}
+                          {threads.find(t => t.id === activeThreadId)?.participants[0]?.name || 'Deleted User'}
                         </p>
                         <p className="text-xs text-gray-500">
                           {threads.find(t => t.id === activeThreadId)?.participants[0]?.title}

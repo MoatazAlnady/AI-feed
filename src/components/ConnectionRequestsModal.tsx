@@ -72,7 +72,7 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
       const requestsWithProfiles = data?.map(request => ({
         ...request,
         requester: profiles?.find(p => p.id === request.requester_id) || {
-          full_name: 'Unknown User',
+          full_name: 'Deleted User',
           profile_photo: undefined,
           job_title: undefined
         }
@@ -164,7 +164,7 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
                 
                 <div className="flex-1 min-w-0">
                   <div className="font-medium truncate text-gray-900 dark:text-white">
-                    {request.requester.full_name || 'Unknown User'}
+                    {request.requester.full_name || 'Deleted User'}
                   </div>
                   {request.requester.job_title && (
                     <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -253,7 +253,7 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
                 
                 <div className="flex-1 min-w-0">
                   <div className="font-medium truncate text-gray-900 dark:text-white">
-                    {request.requester.full_name || 'Unknown User'}
+                    {request.requester.full_name || 'Deleted User'}
                   </div>
                   {request.requester.job_title && (
                     <div className="text-sm text-gray-500 dark:text-gray-400">

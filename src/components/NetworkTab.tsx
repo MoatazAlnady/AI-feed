@@ -64,7 +64,7 @@ const NetworkTab: React.FC = () => {
           created_at: conn.created_at,
           connected_user: connectedUser || {
             id: connectedUserId,
-            full_name: 'Unknown User',
+            full_name: 'Deleted User',
             profile_photo: undefined,
             job_title: undefined,
             company: undefined
@@ -149,7 +149,7 @@ const NetworkTab: React.FC = () => {
                   <UserProfileCard
                     key={connection.id}
                     userId={connection.connected_user.id}
-                    name={connection.connected_user.full_name || 'Unknown User'}
+                    name={connection.connected_user.full_name || 'Deleted User'}
                     title={connection.connected_user.job_title}
                     company={connection.connected_user.company}
                     profilePhoto={connection.connected_user.profile_photo}
@@ -176,7 +176,7 @@ const NetworkTab: React.FC = () => {
                   <UserProfileCard
                     key={connection.id}
                     userId={connection.connected_user.id}
-                    name={connection.connected_user.full_name || 'Unknown User'}
+                    name={connection.connected_user.full_name || 'Deleted User'}
                     title={connection.connected_user.job_title}
                     company={connection.connected_user.company}
                     profilePhoto={connection.connected_user.profile_photo}

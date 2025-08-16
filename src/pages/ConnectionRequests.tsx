@@ -82,7 +82,7 @@ const ConnectionRequests: React.FC = () => {
           updated_at: request.updated_at,
           requester: (request as any).user_profiles ? {
             id: (request as any).user_profiles.id,
-            full_name: (request as any).user_profiles.full_name || 'Unknown User',
+            full_name: (request as any).user_profiles.full_name || 'Deleted User',
             profile_photo: (request as any).user_profiles.profile_photo,
             job_title: (request as any).user_profiles.job_title,
             company: (request as any).user_profiles.company,
@@ -362,7 +362,7 @@ const ConnectionRequests: React.FC = () => {
                                 }
                               }}
                             >
-                              {request.requester?.full_name || 'Unknown User'}
+                              {request.requester?.full_name || 'Deleted User'}
                             </h3>
                             
                             {request.requester?.job_title && (
@@ -460,7 +460,7 @@ const ConnectionRequests: React.FC = () => {
                                 }
                               }}
                             >
-                              {request.requester?.full_name || 'Unknown User'}
+                              {request.requester?.full_name || 'Deleted User'}
                             </h3>
                             
                             {request.requester?.job_title && (

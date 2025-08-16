@@ -106,7 +106,7 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
         website: t?.website ?? '',
         pricing: t?.pricing ?? '',
         category_name: categoryMap.get(t.category_id) || 'Uncategorized',
-        user_name: userMap.get(t.user_id) || 'Unknown User',
+        user_name: userMap.get(t.user_id) || 'Deleted User',
       }));
 
       console.log('Normalized pending tools data:', normalized);

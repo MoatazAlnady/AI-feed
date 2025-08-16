@@ -176,69 +176,62 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     try {
       setLoading(true);
       
-      // In a real implementation, fetch from Supabase
-      // For now, use mock data
-      const mockThreads: Thread[] = [
-        {
-          id: '1',
-          participants: [
-            {
-              id: '2',
-              name: 'Jane Smith',
-              avatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=150',
-              title: 'AI Product Manager',
-              online: true
-            }
-          ],
-          lastMessage: {
-            content: 'Hi there! I saw your profile and I think you would be a great fit for our team.',
-            timestamp: '2025-01-15T10:30:00Z',
-            senderId: '2'
-          },
-          unreadCount: 1,
-          isFocused: true
-        },
-        {
-          id: '2',
-          participants: [
-            {
-              id: '3',
-              name: 'Alex Johnson',
-              avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150',
-              title: 'CTO at TechCorp',
-              online: false
-            }
-          ],
-          lastMessage: {
-            content: 'Thanks for your application. When would you be available for an interview?',
-            timestamp: '2025-01-14T15:45:00Z',
-            senderId: '3'
-          },
-          unreadCount: 0,
-          isFocused: true
-        },
-        {
-          id: '3',
-          participants: [
-            {
-              id: '4',
-              name: 'Sarah Williams',
-              avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150',
-              title: 'HR Manager',
-              online: true
-            }
-          ],
-          lastMessage: {
-            content: 'Your application has been received. We will review it shortly.',
-            timestamp: '2025-01-13T09:20:00Z',
-            senderId: '4'
-          },
-          unreadCount: 0,
-          isFocused: false
+      // Fetch real conversations from database
+      const { data: conversations } = await supabase
+        .from('conversations')
+        .select(`
+          id,
+          conversation_participants!inner(user_id)
+        `)
+        .eq('conversation_participants.user_id', user.id);
+
+      if (conversations && conversations.length > 0) {
+        // Get all participant IDs and fetch their safe profiles
+        const allParticipantIds = conversations.flatMap(conv => 
+          conv.conversation_participants.map((p: any) => p.user_id)
+        );
+        const uniqueParticipantIds = [...new Set(allParticipantIds)];
+
+        const { data: profilesData } = await supabase.rpc('get_public_profiles' as any, {
+          uids: uniqueParticipantIds
+        });
+
+        const profileMap = new Map();
+        if (Array.isArray(profilesData)) {
+          profilesData.forEach((profile: any) => {
+            profileMap.set(profile.id, profile);
+          });
         }
-      ];
-      
-      setThreads(mockThreads);
+
+        const realThreads: Thread[] = conversations.map(conv => {
+          const otherParticipant = conv.conversation_participants.find(
+            (p: any) => p.user_id !== user.id
+          );
+          const profile = profileMap.get(otherParticipant?.user_id);
+
+          return {
+            id: conv.id,
+            participants: [{
+              id: otherParticipant?.user_id || '',
+              name: profile?.display_name || 'Deleted User',
+              avatar: profile?.avatar_url,
+              title: '', // Not available in public profiles
+              online: false
+            }],
+            lastMessage: {
+              content: 'No messages yet',
+              timestamp: new Date().toISOString(),
+              senderId: ''
+            },
+            unreadCount: 0,
+            isFocused: true
+          };
+        });
+
+        setThreads(realThreads);
+      } else {
+        setThreads([]);
+      }
     } catch (error) {
       console.error('Error fetching threads:', error);
     } finally {
@@ -252,36 +245,46 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     try {
       setLoading(true);
       
-      // In a real implementation, fetch from Supabase
-      // For now, use mock data
-      const mockMessages: Message[] = [
-        {
-          id: '1',
-          threadId,
-          content: 'Hi there! I saw your profile and I think you would be a great fit for our team.',
-          senderId: threadId === '1' ? '2' : (threadId === '2' ? '3' : '4'),
-          timestamp: '2025-01-15T10:30:00Z',
-          read: false
-        },
-        {
-          id: '2',
-          threadId,
-          content: 'We are looking for someone with your skills and experience.',
-          senderId: threadId === '1' ? '2' : (threadId === '2' ? '3' : '4'),
-          timestamp: '2025-01-15T10:31:00Z',
-          read: false
-        },
-        {
-          id: '3',
-          threadId,
-          content: 'Would you be interested in discussing this opportunity further?',
-          senderId: threadId === '1' ? '2' : (threadId === '2' ? '3' : '4'),
-          timestamp: '2025-01-15T10:32:00Z',
-          read: false
+      // Fetch real messages from database
+      const { data: messagesData } = await supabase
+        .from('conversation_messages')
+        .select(`
+          id,
+          conversation_id,
+          sender_id,
+          body,
+          created_at
+        `)
+        .eq('conversation_id', threadId)
+        .order('created_at', { ascending: true });
+
+      if (messagesData && messagesData.length > 0) {
+        // Get sender profiles safely
+        const senderIds = [...new Set(messagesData.map(msg => msg.sender_id))];
+        const { data: profilesData } = await supabase.rpc('get_public_profiles' as any, {
+          uids: senderIds
+        });
+
+        const profileMap = new Map();
+        if (Array.isArray(profilesData)) {
+          profilesData.forEach((profile: any) => {
+            profileMap.set(profile.id, profile);
+          });
         }
-      ];
-      
-      setMessages(mockMessages);
+
+        const realMessages: Message[] = messagesData.map(msg => ({
+          id: msg.id,
+          threadId: msg.conversation_id,
+          content: msg.body,
+          senderId: msg.sender_id,
+          timestamp: msg.created_at,
+          read: true
+        }));
+
+        setMessages(realMessages);
+      } else {
+        setMessages([]);
+      }
     } catch (error) {
       console.error('Error fetching messages:', error);
     } finally {
@@ -365,34 +368,29 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
       );
 
       if (!existingThread && opts?.createIfMissing) {
-        // Fetch user profile for thread creation
-        const { data: userProfile, error } = await supabase
-          .from('user_profiles')
-          .select('id, full_name, profile_photo, job_title')
-          .eq('id', userId)
-          .single();
+        // Get user profile safely using RPC
+        const { data: userProfiles } = await supabase.rpc('get_public_profiles' as any, {
+          uids: [userId]
+        });
 
-        if (error) {
-          console.error('Error fetching user profile:', error);
-          throw new Error('Failed to fetch user profile');
+        if (!Array.isArray(userProfiles) || userProfiles.length === 0) {
+          throw new Error('User not found or profile not accessible');
         }
 
-        if (!userProfile) {
-          throw new Error('User not found');
-        }
+        const userProfile = userProfiles[0];
 
         // Create new thread
         const newThread: Thread = {
           id: `thread_${Date.now()}`,
           participants: [{
             id: userId,
-            name: userProfile.full_name || 'Unknown User',
-            avatar: userProfile.profile_photo,
-            title: userProfile.job_title,
+            name: userProfile.display_name || 'Deleted User',
+            avatar: userProfile.avatar_url,
+            title: '', // Not available in public profiles
             online: false
           }],
           lastMessage: {
-            content: 'Start a conversation...',
+            content: 'No messages yet',
             timestamp: new Date().toISOString(),
             senderId: ''
           },

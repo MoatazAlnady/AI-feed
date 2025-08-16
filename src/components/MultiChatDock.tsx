@@ -67,7 +67,7 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
     return 1;
   };
 
-  // Load conversations
+  // Load conversations using safe RPC
   const loadConversations = useCallback(async () => {
     if (!user) return;
 
@@ -76,37 +76,52 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
         .from('conversations')
         .select(`
           id,
-          conversation_participants!inner(
-            user_id,
-            profiles_public_v(id, display_name, avatar_url, handle)
-          )
+          conversation_participants!inner(user_id)
         `)
         .eq('conversation_participants.user_id', user.id);
 
       if (!error && convData) {
-        const formattedConversations: Conversation[] = convData.map(conv => {
-          const otherParticipant = conv.conversation_participants.find(
-            (p: any) => p.user_id !== user.id
-          );
-          return {
+        // Get all participant IDs and fetch their safe profiles
+        const allParticipantIds = convData.flatMap(conv => 
+          conv.conversation_participants.map((p: any) => p.user_id)
+        );
+        const uniqueParticipantIds = [...new Set(allParticipantIds)];
+
+        if (uniqueParticipantIds.length > 0) {
+          const { data: profilesData } = await supabase.rpc('get_public_profiles' as any, {
+            uids: uniqueParticipantIds
+          });
+
+          const profileMap = new Map();
+          if (Array.isArray(profilesData)) {
+            profilesData.forEach((profile: any) => {
+              profileMap.set(profile.id, profile);
+            });
+          }
+
+          const formattedConversations: Conversation[] = convData.map(conv => ({
             id: conv.id,
-            participants: conv.conversation_participants.map((p: any) => ({
-              user_id: p.user_id,
-              display_name: p.profiles_public_v?.display_name || 'Unknown User',
-              avatar_url: p.profiles_public_v?.avatar_url,
-              handle: p.profiles_public_v?.handle
-            })),
+            participants: conv.conversation_participants.map((p: any) => {
+              const profile = profileMap.get(p.user_id);
+              return {
+                user_id: p.user_id,
+                display_name: profile?.display_name || 'Deleted User',
+                avatar_url: profile?.avatar_url,
+                handle: profile?.handle
+              };
+            }),
             unreadCount: 0 // TODO: Implement unread count
-          };
-        });
-        setConversations(formattedConversations);
+          }));
+          
+          setConversations(formattedConversations);
+        }
       }
     } catch (error) {
       console.error('Error loading conversations:', error);
     }
   }, [user]);
 
-  // Load messages for a conversation
+  // Load messages for a conversation using safe hydration
   const loadMessages = useCallback(async (conversationId: string) => {
     setLoading(prev => ({ ...prev, [conversationId]: true }));
     
@@ -118,24 +133,42 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
           conversation_id,
           sender_id,
           body,
-          created_at,
-          profiles_public_v!sender_id(display_name, avatar_url)
+          created_at
         `)
         .eq('conversation_id', conversationId)
         .order('created_at', { ascending: true });
 
       if (!error && data) {
-        const formattedMessages: Message[] = data.map(msg => ({
-          id: msg.id,
-          conversation_id: msg.conversation_id,
-          sender_id: msg.sender_id,
-          body: msg.body,
-          created_at: msg.created_at,
-          sender: {
-            display_name: (msg as any).profiles_public_v?.display_name || 'Unknown User',
-            avatar_url: (msg as any).profiles_public_v?.avatar_url
+        // Get unique sender IDs and fetch safe profiles
+        const senderIds = [...new Set(data.map(msg => msg.sender_id))];
+        let profileMap = new Map();
+        
+        if (senderIds.length > 0) {
+          const { data: profilesData } = await supabase.rpc('get_public_profiles' as any, {
+            uids: senderIds
+          });
+          
+          if (Array.isArray(profilesData)) {
+            profilesData.forEach((profile: any) => {
+              profileMap.set(profile.id, profile);
+            });
           }
-        }));
+        }
+
+        const formattedMessages: Message[] = data.map(msg => {
+          const profile = profileMap.get(msg.sender_id);
+          return {
+            id: msg.id,
+            conversation_id: msg.conversation_id,
+            sender_id: msg.sender_id,
+            body: msg.body,
+            created_at: msg.created_at,
+            sender: {
+              display_name: profile?.display_name || 'Deleted User',
+              avatar_url: profile?.avatar_url
+            }
+          };
+        });
         
         setMessages(prev => ({
           ...prev,
@@ -176,25 +209,39 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
     if (!user) return;
     
     try {
-      // Find or create DM conversation
-      const { data: conversationId, error } = await supabase.rpc('find_or_create_dm', {
-        other_user_id: userId
+      // Find or create DM conversation using edge function
+      const response = await fetch(`https://fbhhumtpdfalgkhzirew.supabase.co/functions/v1/chat/find-or-create-dm`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+        },
+        body: JSON.stringify({ otherUserId: userId })
       });
 
-      if (!error && conversationId) {
-        // Get user info
-        const { data: userData } = await supabase
-          .from('profiles_public_v')
-          .select('*')
-          .eq('id', userId)
-          .single();
+      if (!response.ok) {
+        throw new Error('Failed to find or create conversation');
+      }
 
-        const otherUser = userData ? {
+      const { conversationId } = await response.json();
+
+      if (conversationId) {
+        // Get user info using safe RPC
+        const { data: userData } = await supabase.rpc('get_public_profiles' as any, {
+          uids: [userId]
+        });
+
+        const otherUser = Array.isArray(userData) && userData.length > 0 ? {
           id: userId,
-          display_name: userData.display_name,
-          avatar_url: userData.avatar_url,
-          handle: userData.handle
-        } : undefined;
+          display_name: userData[0].display_name,
+          avatar_url: userData[0].avatar_url,
+          handle: userData[0].handle
+        } : {
+          id: userId,
+          display_name: 'Deleted User',
+          avatar_url: undefined,
+          handle: undefined
+        };
 
         openWindow(conversationId, otherUser);
       }

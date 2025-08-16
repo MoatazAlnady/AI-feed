@@ -256,7 +256,7 @@ const ReportsManagement: React.FC = () => {
                     </TableCell>
                     <TableCell>
                       <div className="font-medium">
-                        {report.reporter?.full_name || 'Unknown User'}
+                        {report.reporter?.full_name || 'Deleted User'}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -336,7 +336,7 @@ const ReportsManagement: React.FC = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {report.reporter?.full_name || 'Unknown User'}
+                      {report.reporter?.full_name || 'Deleted User'}
                     </TableCell>
                     <TableCell>{report.reason}</TableCell>
                     <TableCell>{getStatusBadge(report.status)}</TableCell>
@@ -378,7 +378,7 @@ const ReportsManagement: React.FC = () => {
                 <div>
                   <Label className="text-sm font-medium">Reporter</Label>
                   <div className="text-sm">
-                    {selectedReport.reporter?.full_name || 'Unknown User'}
+                    {selectedReport.reporter?.full_name || 'Deleted User'}
                   </div>
                 </div>
                 <div>

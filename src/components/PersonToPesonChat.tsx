@@ -411,7 +411,7 @@ const PersonToPersonChat = () => {
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <span className="font-medium truncate">{otherParticipant?.full_name || 'Unknown User'}</span>
+                      <span className="font-medium truncate">{otherParticipant?.full_name || 'Deleted User'}</span>
                       <span className="text-xs text-muted-foreground">
                         {new Date(conversation.last_message_at).toLocaleDateString()}
                       </span>
@@ -437,7 +437,7 @@ const PersonToPersonChat = () => {
                   <AvatarFallback>{getOtherParticipant(activeConversation)?.full_name?.[0] || '?'}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="font-semibold">{getOtherParticipant(activeConversation)?.full_name || 'Unknown User'}</h3>
+                  <h3 className="font-semibold">{getOtherParticipant(activeConversation)?.full_name || 'Deleted User'}</h3>
                   <p className="text-sm text-muted-foreground">Online</p>
                 </div>
               </div>

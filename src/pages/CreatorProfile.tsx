@@ -77,7 +77,7 @@ const CreatorProfile: React.FC = () => {
       setNotFound(false);
       setIsPrivate(false);
 
-      // Use the database function to get profile by handle or ID
+      // Use the safe RPC function to get profile by handle or ID
       const { data, error } = await supabase.rpc('get_profile_by_handle_or_id', {
         identifier: id
       });
@@ -86,15 +86,13 @@ const CreatorProfile: React.FC = () => {
 
       if (error) {
         console.error('Error fetching profile:', error);
-        console.log('Will fallback to direct profile query for UUID:', id);
-        // Fallback to direct profile query if UUID
+        console.log('Will fallback to get_public_profiles for UUID:', id);
+        // Fallback to get_public_profiles if UUID
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
         if (uuidRegex.test(id)) {
-          const { data: fallbackData, error: fallbackError } = await supabase
-            .from('user_profiles')
-            .select('*')
-            .eq('id', id)
-            .maybeSingle();
+          const { data: fallbackData, error: fallbackError } = await supabase.rpc('get_public_profiles' as any, {
+            uids: [id]
+          });
           
           if (fallbackError) {
             console.error('Fallback profile fetch failed:', fallbackError);
@@ -102,13 +100,38 @@ const CreatorProfile: React.FC = () => {
             return;
           }
           
-          if (!fallbackData) {
+          if (!Array.isArray(fallbackData) || fallbackData.length === 0) {
             setNotFound(true);
             return;
           }
           
-          // Use fallback data
-          setProfile(fallbackData);
+          // Convert to full profile format
+          const publicProfile = fallbackData[0];
+          const fullProfile = {
+            ...publicProfile,
+            full_name: publicProfile.display_name,
+            profile_photo: publicProfile.avatar_url,
+            // Set other fields to defaults
+            job_title: '',
+            company: '',
+            bio: '',
+            location: '',
+            cover_photo: '',
+            verified: false,
+            ai_nexus_top_voice: false,
+            total_engagement: 0,
+            total_reach: 0,
+            tools_submitted: 0,
+            articles_written: 0,
+            website: '',
+            github: '',
+            linkedin: '',
+            twitter: '',
+            interests: [],
+            contact_visible: false
+          };
+          
+          setProfile(fullProfile);
           return;
         } else {
           setNotFound(true);
