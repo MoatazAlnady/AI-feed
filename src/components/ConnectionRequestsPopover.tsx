@@ -23,10 +23,22 @@ const ConnectionRequestsPopover: React.FC<ConnectionRequestsPopoverProps> = ({
   useEffect(() => {
     if (!open) return;
     
+    console.log('Setting up click-outside listener');
+    
     const onDown = (e: MouseEvent | TouchEvent) => {
+      console.log('Click detected:', e.target);
       const target = e.target as Node;
-      if (panelRef.current?.contains(target)) return;   // inside panel
-      if (triggerRef.current?.contains(target)) return; // the icon itself
+      
+      if (panelRef.current?.contains(target)) {
+        console.log('Click inside panel - ignoring');
+        return;   // inside panel
+      }
+      if (triggerRef.current?.contains(target)) {
+        console.log('Click on trigger - ignoring');
+        return; // the icon itself
+      }
+      
+      console.log('Click outside - closing panel');
       close();
     };
     
@@ -34,6 +46,7 @@ const ConnectionRequestsPopover: React.FC<ConnectionRequestsPopoverProps> = ({
     document.addEventListener('touchstart', onDown, true);
     
     return () => {
+      console.log('Removing click-outside listener');
       document.removeEventListener('mousedown', onDown, true);
       document.removeEventListener('touchstart', onDown, true);
     };
