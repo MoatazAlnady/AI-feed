@@ -113,7 +113,14 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
           </div>
           
           {/* Pricing Badge */}
-          <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPricingColor(tool.pricing)}`}>
+          <span 
+            className="px-2 py-1 text-xs font-medium rounded-full border"
+            style={{
+              backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+              borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+              color: theme === 'dark' ? '#e2e8f0' : '#111827'
+            }}
+          >
             {tool.pricing || 'Free'}
           </span>
         </div>
@@ -143,14 +150,12 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
             ))}
             {tool.tags.length > 3 && (
               <span
+                className="px-2 py-1 text-xs rounded-md font-medium border"
                 style={{
-                  background: theme === 'dark' 
-                    ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(16, 185, 129, 0.3))'
-                    : 'linear-gradient(135deg, #dcfce7, #d1fae5)',
-                  color: theme === 'dark' ? '#4ade80' : '#166534',
-                  border: theme === 'dark' ? '1px solid rgba(34, 197, 94, 0.5)' : '1px solid #22c55e'
+                  backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                  borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                  color: theme === 'dark' ? '#e2e8f0' : '#111827'
                 }}
-                className="px-2 py-1 text-xs rounded-md font-medium"
               >
                 +{tool.tags.length - 3} more
               </span>
