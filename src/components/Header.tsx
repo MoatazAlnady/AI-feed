@@ -404,11 +404,11 @@ const Header: React.FC = () => {
                     {showConnectionRequests && (
                       <div className="absolute right-0 top-full mt-2 z-50">
                         <div 
-                          className="fixed inset-0 bg-black/50 z-40"
+                          className="fixed inset-0 bg-transparent z-40"
                           onClick={() => setShowConnectionRequests(false)}
                         />
                         <div 
-                          className="relative z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-80 max-h-96 overflow-hidden"
+                          className="relative z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 max-w-md w-80 max-h-96 overflow-hidden"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <ConnectionRequestsModal 

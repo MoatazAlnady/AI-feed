@@ -120,7 +120,8 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
   };
 
   const handleOutsideClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
+    // Only handle outside clicks for non-inline modals
+    if (!isInline && e.target === e.currentTarget) {
       onOpenChange(false);
     }
   };
