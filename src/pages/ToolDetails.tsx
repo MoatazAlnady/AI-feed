@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import ToolReviews from '@/components/ToolReviews';
 
 interface Tool {
   id: string;
@@ -332,6 +333,13 @@ const ToolDetails: React.FC = () => {
                 </CardContent>
               </Card>
             )}
+
+            {/* Reviews Section */}
+            <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+              <CardContent className="p-6">
+                <ToolReviews toolId={tool.id} />
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

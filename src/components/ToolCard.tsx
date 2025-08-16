@@ -23,6 +23,8 @@ interface ToolCardProps {
     created_at?: string;
     user_id?: string;
     share_count?: number;
+    average_rating?: number;
+    review_count?: number;
   };
   className?: string;
 }
@@ -77,9 +79,31 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
               </div>
             )}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-                {tool.name}
-              </h3>
+              <div className="flex items-center space-x-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                  {tool.name}
+                </h3>
+                {/* Rating Stars */}
+                {tool.average_rating && tool.average_rating > 0 && (
+                  <div className="flex items-center space-x-1">
+                    <div className="flex items-center">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`h-3 w-3 ${
+                            star <= (tool.average_rating || 0)
+                              ? 'text-yellow-400 fill-current'
+                              : 'text-gray-300 dark:text-gray-600'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {tool.average_rating} ({tool.review_count || 0})
+                    </span>
+                  </div>
+                )}
+              </div>
               {tool.subcategory && (
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {tool.subcategory}

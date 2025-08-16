@@ -1177,8 +1177,42 @@ export type Database = {
           },
         ]
       }
+      tool_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+          title: string | null
+          tool_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+          title?: string | null
+          tool_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+          title?: string | null
+          tool_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       tools: {
         Row: {
+          average_rating: number | null
           category_id: string | null
           cons: string[] | null
           created_at: string | null
@@ -1192,6 +1226,7 @@ export type Database = {
           name_ci: string | null
           pricing: string
           pros: string[] | null
+          review_count: number | null
           share_count: number | null
           status: string | null
           sub_category_ids: string[] | null
@@ -1202,6 +1237,7 @@ export type Database = {
           website: string
         }
         Insert: {
+          average_rating?: number | null
           category_id?: string | null
           cons?: string[] | null
           created_at?: string | null
@@ -1215,6 +1251,7 @@ export type Database = {
           name_ci?: string | null
           pricing?: string
           pros?: string[] | null
+          review_count?: number | null
           share_count?: number | null
           status?: string | null
           sub_category_ids?: string[] | null
@@ -1225,6 +1262,7 @@ export type Database = {
           website: string
         }
         Update: {
+          average_rating?: number | null
           category_id?: string | null
           cons?: string[] | null
           created_at?: string | null
@@ -1238,6 +1276,7 @@ export type Database = {
           name_ci?: string | null
           pricing?: string
           pros?: string[] | null
+          review_count?: number | null
           share_count?: number | null
           status?: string | null
           sub_category_ids?: string[] | null
@@ -1599,6 +1638,10 @@ export type Database = {
           user_id_param?: string
         }
         Returns: boolean
+      }
+      update_tool_rating: {
+        Args: { tool_id_param: string }
+        Returns: undefined
       }
       update_trending_tools: {
         Args: Record<PropertyKey, never>
