@@ -318,14 +318,6 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
                 <span>Connect</span>
               </button>
             )}
-            
-            <button
-              onClick={onMessage}
-              className="flex items-center space-x-1 px-3 py-2 border rounded-lg text-sm font-medium hover:bg-muted transition-colors"
-            >
-              <MessageCircle className="h-4 w-4" />
-              <span>Message</span>
-            </button>
           </div>
         )}
       </div>

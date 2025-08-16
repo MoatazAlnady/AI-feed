@@ -1,27 +1,23 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { 
   User, Mail, Calendar, Heart, Bookmark, MessageSquare, Upload, 
-  Briefcase, MapPin, Edit, Camera, Target, TrendingUp, ExternalLink,
+  Briefcase, MapPin, Edit, Target, TrendingUp, ExternalLink,
   Plus, Code, FileText, Users, Star, Zap
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import PromoteContentModal from '../components/PromoteContentModal';
 import NetworkTab from '../components/NetworkTab';
-import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import ProfilePhotoUploader from '../components/ProfilePhotoUploader';
+import { useUserStats } from '../hooks/useUserStats';
+import { Link } from 'react-router-dom';
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'overview' | 'posts' | 'content' | 'saved' | 'network'>('overview');
   const [showPromoteModal, setShowPromoteModal] = useState(false);
   const [selectedContent, setSelectedContent] = useState<any>(null);
   const [savedItems, setSavedItems] = useState<any[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
-  
-  // Refs for file inputs
-  const profilePhotoInputRef = useRef<HTMLInputElement>(null);
-  const coverPhotoInputRef = useRef<HTMLInputElement>(null);
+  const { stats } = useUserStats();
 
   // User profile data - only use real data from user object
   const userProfile = {
@@ -30,9 +26,9 @@ const Profile: React.FC = () => {
   };
 
   const userStats = [
-    { label: 'Tools Submitted', value: user?.user_metadata?.tools_submitted || '0', icon: Upload },
-    { label: 'Articles Written', value: user?.user_metadata?.articles_written || '0', icon: MessageSquare },
-    { label: 'Likes Received', value: user?.user_metadata?.total_engagement || '0', icon: Heart },
+    { label: 'Tools Submitted', value: stats.toolsSubmitted.toString(), icon: Upload },
+    { label: 'Articles Written', value: stats.articlesWritten.toString(), icon: MessageSquare },
+    { label: 'Likes Received', value: stats.totalEngagement.toString(), icon: Heart },
     { label: 'Tools Bookmarked', value: '0', icon: Bookmark },
   ];
 
@@ -44,165 +40,27 @@ const Profile: React.FC = () => {
     setShowPromoteModal(true);
   };
 
-  const handleProfilePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
-    
-    try {
-      setIsUploading(true);
-      
-      // Generate a unique file name
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `profile-photos/${fileName}`;
-      
-      // Upload to Supabase Storage
-      const { error: uploadError, data: uploadData } = await supabase.storage
-        .from('user-uploads')
-        .upload(filePath, file);
-      
-      if (uploadError) throw uploadError;
-      
-      // Get the public URL
-      const { data } = supabase.storage
-        .from('user-uploads')
-        .getPublicUrl(filePath);
-      
-      if (!data.publicUrl) throw new Error('Failed to get public URL');
-      
-      // Update user profile in user_profiles table
-      const { error: updateError } = await supabase
-        .from('user_profiles')
-        .update({ profile_photo: data.publicUrl })
-        .eq('id', user.id);
-      
-      if (updateError) throw updateError;
-      
-      // Refresh the page to show the new photo
-      window.location.reload();
-      
-    } catch (error) {
-      console.error('Error uploading profile photo:', error);
-      alert('Failed to upload profile photo. Please try again.');
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleCoverPhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
-    
-    try {
-      setIsUploading(true);
-      
-      // Generate a unique file name
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-cover-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `cover-photos/${fileName}`;
-      
-      // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('user-uploads')
-        .upload(filePath, file);
-      
-      if (uploadError) throw uploadError;
-      
-      // Get the public URL
-      const { data } = supabase.storage
-        .from('user-uploads')
-        .getPublicUrl(filePath);
-      
-      if (!data.publicUrl) throw new Error('Failed to get public URL');
-      
-      // Update user profile in user_profiles table
-      const { error: updateError } = await supabase
-        .from('user_profiles')
-        .update({ cover_photo: data.publicUrl })
-        .eq('id', user.id);
-      
-      if (updateError) throw updateError;
-      
-      // Refresh the page to show the new photo
-      window.location.reload();
-      
-    } catch (error) {
-      console.error('Error uploading cover photo:', error);
-      alert('Failed to upload cover photo. Please try again.');
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleEditProfile = () => {
-    // Navigate to settings page
-    navigate('/settings');
-  };
-
   return (
     <>
       <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Profile Header */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden mb-8">
-            {/* Cover Photo - increased height */}
-            <div className="h-64 bg-gradient-to-r from-primary-500 to-secondary-500 relative">
-              {user?.user_metadata?.cover_photo && (
-                <img 
-                  src={user.user_metadata.cover_photo} 
-                  alt="Cover" 
-                  className="w-full h-full object-cover"
-                />
-              )}
-              <button 
-                onClick={() => coverPhotoInputRef.current?.click()}
-                className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-sm rounded-lg text-white hover:bg-white/30 transition-colors"
-                disabled={isUploading}
-              >
-                {isUploading ? 'Uploading...' : <Camera className="h-4 w-4" />}
-              </button>
-              <input
-                type="file"
-                ref={coverPhotoInputRef}
-                onChange={handleCoverPhotoChange}
-                accept="image/*"
-                className="hidden"
-              />
-            </div>
+            {/* Cover Photo */}
+            <ProfilePhotoUploader
+              type="cover"
+              currentPhoto={user?.user_metadata?.cover_photo}
+            />
             
             {/* Profile Info */}
             <div className="px-8 pb-8">
               <div className="flex items-start space-x-6 -mt-16">
                 {/* Profile Photo */}
-                <div className="relative">
-                  <div className="w-32 h-32 bg-white dark:bg-gray-700 rounded-full p-2 shadow-lg">
-                    {user?.user_metadata?.profile_photo ? (
-                      <img
-                        src={user.user_metadata.profile_photo}
-                        alt={user.user_metadata?.full_name || 'User'}
-                        className="w-full h-full rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
-                        <User className="h-12 w-12 text-white" />
-                      </div>
-                    )}
-                  </div>
-                  <button 
-                    onClick={() => profilePhotoInputRef.current?.click()}
-                    className="absolute bottom-2 right-2 p-2 bg-primary-500 text-white rounded-full hover:bg-primary-600 transition-colors"
-                    disabled={isUploading}
-                  >
-                    {isUploading ? '...' : <Camera className="h-4 w-4" />}
-                  </button>
-                  <input
-                    type="file"
-                    ref={profilePhotoInputRef}
-                    onChange={handleProfilePhotoChange}
-                    accept="image/*"
-                    className="hidden"
-                  />
-                </div>
+                <ProfilePhotoUploader
+                  type="profile"
+                  currentPhoto={user?.user_metadata?.profile_photo}
+                  className="relative -mt-16"
+                />
 
                 {/* User Details */}
                 <div className="flex-1 pt-16">

@@ -357,6 +357,7 @@ const Header: React.FC = () => {
                   <button
                     onClick={() => setShowConnectionRequests(true)}
                     className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                    title="Connection Requests"
                   >
                     <Users className="h-5 w-5" />
                     {connectionRequestsCount > 0 && (
