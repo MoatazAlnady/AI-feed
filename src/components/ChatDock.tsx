@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Send, Bot, Users } from 'lucide-react';
+import { X, Send, MessageCircle, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import DualChatTabs from './DualChatTabs';
@@ -72,7 +72,7 @@ const AIChatBot = ({ initialMessage, autoOpen }: AIChatBotProps) => {
           size="icon"
           title="Chat"
         >
-          {showDualChat ? <X className="h-6 w-6" /> : <Bot className="h-6 w-6" />}
+          {showDualChat ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
         </Button>
       </div>
 

@@ -155,7 +155,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '' }) => {
             />
             <Link
               to={`/tools/${tool.id}`}
-              className="px-3 py-1.5 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
+              className="px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90 rounded-md transition-all duration-200"
             >
               View Details
             </Link>

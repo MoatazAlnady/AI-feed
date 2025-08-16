@@ -299,16 +299,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
 
         {/* Action Buttons */}
         {!isOwnProfile && (
-          <div className="flex flex-col space-y-2">
-            {/* Always show message button */}
-            <button
-              onClick={handleMessage}
-              className="flex items-center space-x-1 px-3 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg text-sm font-medium transition-colors"
-            >
-              <MessageCircle className="h-4 w-4" />
-              <span>Message</span>
-            </button>
-
+          <div className="flex items-center space-x-2">
             {/* Connection status button */}
             {isConnected ? (
               <div className="flex items-center space-x-1 px-3 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
@@ -333,6 +324,15 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
                 <span>Connect</span>
               </button>
             )}
+
+            {/* Always show message button */}
+            <button
+              onClick={handleMessage}
+              className="flex items-center space-x-1 px-3 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg text-sm font-medium transition-colors"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span>Message</span>
+            </button>
           </div>
         )}
       </div>
