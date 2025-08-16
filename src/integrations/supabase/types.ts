@@ -1461,6 +1461,7 @@ export type Database = {
           is_dark_logo: boolean | null
           is_light_logo: boolean | null
           link_ci: string | null
+          logo_url: string | null
           name: string
           name_ci: string | null
           pricing: string
@@ -1486,6 +1487,7 @@ export type Database = {
           is_dark_logo?: boolean | null
           is_light_logo?: boolean | null
           link_ci?: string | null
+          logo_url?: string | null
           name: string
           name_ci?: string | null
           pricing?: string
@@ -1511,6 +1513,7 @@ export type Database = {
           is_dark_logo?: boolean | null
           is_light_logo?: boolean | null
           link_ci?: string | null
+          logo_url?: string | null
           name?: string
           name_ci?: string | null
           pricing?: string

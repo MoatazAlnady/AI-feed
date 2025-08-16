@@ -545,6 +545,21 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
             </div>
 
             <div className="p-6 space-y-6">
+              {/* Logo Display */}
+              {selectedTool.logo_url && (
+                <div className="flex justify-center">
+                  <div className="w-32 h-32 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-800 flex items-center justify-center">
+                    <img 
+                      src={selectedTool.logo_url} 
+                      alt={`${selectedTool.name} logo`}
+                      className="max-w-full max-h-full object-contain"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
               {editMode && editedTool ? (
                 /* Edit Mode */
                 <div className="space-y-6">
