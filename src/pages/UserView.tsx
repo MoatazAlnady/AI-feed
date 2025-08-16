@@ -64,7 +64,7 @@ interface UserProfile {
 }
 
 const UserView: React.FC = () => {
-  const { userId } = useParams();
+  const { userId, handle } = useParams(); // Support both userId and handle params
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -74,17 +74,33 @@ const UserView: React.FC = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        console.log('Fetching user profile for ID:', userId);
+        const profileId = userId || handle; // Use either userId or handle
+        console.log('Fetching user profile for ID/handle:', profileId);
         
-        const { data: profiles, error } = await supabase
-          .rpc('get_public_profiles_by_ids', { ids: [userId] });
+        let profiles;
+        let error;
+        
+        if (handle) {
+          // For handle-based lookup, we'll use the same function for now
+          // In a real implementation, you'd have a separate function or search by handle
+          const { data: handleProfiles, error: handleError } = await supabase
+            .rpc('get_public_profiles_by_ids', { ids: [handle] });
+          profiles = handleProfiles;
+          error = handleError;
+        } else {
+          // Use the existing function for userId
+          const { data: userProfiles, error: userError } = await supabase
+            .rpc('get_public_profiles_by_ids', { ids: [profileId] });
+          profiles = userProfiles;
+          error = userError;
+        }
 
         const profile = profiles && profiles.length > 0 ? profiles[0] : null;
 
         if (error) {
           console.error('Error fetching user profile:', error);
-          if (error.code === 'PGRST116') {
-            console.log('User profile not found for ID:', userId);
+          if (error.code === 'PGRST116' || error.code === 'PGRST301') {
+            console.log('User profile not found for ID/handle:', profileId);
           }
           setUserProfile(null);
           return;
@@ -92,6 +108,21 @@ const UserView: React.FC = () => {
 
         if (profile) {
           const p: any = profile as any;
+          
+          // Check if profile is private (this would need to be implemented in your schema)
+          const isPrivate = p.is_private || false;
+          
+          if (isPrivate && currentUser?.id !== p.id) {
+            // Show private profile component
+            setUserProfile({
+              id: p.id,
+              fullName: p.full_name || 'User',
+              profilePhoto: p.profile_photo,
+              isPrivate: true
+            } as any);
+            return;
+          }
+          
           // Convert the real profile data to our UserProfile interface
           const userProfile: UserProfile = {
             id: p.id,
@@ -141,10 +172,10 @@ const UserView: React.FC = () => {
       }
     };
 
-    if (userId) {
+    if (userId || handle) {
       fetchUserProfile();
     }
-  }, [userId]);
+  }, [userId, handle, currentUser]);
 
   const handleStatusChange = async (newStatus: 'active' | 'inactive' | 'banned') => {
     if (!userProfile) return;

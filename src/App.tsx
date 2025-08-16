@@ -22,6 +22,7 @@ import Community from "./pages/Community";
 import Blog from "./pages/Blog";
 import ToolDetails from "./pages/ToolDetails";
 import Profile from "./pages/Profile";
+import UserView from "./pages/UserView";
 import Settings from "./pages/Settings";
 import Jobs from "./pages/Jobs";
 import Upgrade from "./pages/Upgrade";
@@ -56,6 +57,8 @@ const App = () => (
               <Route path="talent" element={<Talent />} />
               <Route path="jobs" element={<Jobs />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="profile/:id" element={<UserView />} />
+              <Route path="u/:handle" element={<UserView />} />
               <Route path="settings" element={<Settings />} />
               <Route path="upgrade" element={<Upgrade />} />
               <Route path="user/:userId" element={<Profile />} />

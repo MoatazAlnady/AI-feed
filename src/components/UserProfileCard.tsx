@@ -17,8 +17,10 @@ import {
   Phone
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useChatDock } from '../context/ChatDockContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 
 
 interface UserProfileCardProps {
@@ -47,6 +49,7 @@ interface UserProfileCardProps {
   onMessage?: () => void;
   onConnect?: () => void;
   className?: string;
+  handle?: string; // Add handle prop for profile routing
 }
 
 const UserProfileCard: React.FC<UserProfileCardProps> = ({
@@ -64,15 +67,36 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
   onFollow,
   onMessage,
   onConnect,
-  className = ''
+  className = '',
+  handle
 }) => {
   const { user } = useAuth();
+  const { toggleOpen, setActiveThreadId } = useChatDock();
   const [following, setFollowing] = useState(isFollowing);
   const [loading, setLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [hasRequestPending, setHasRequestPending] = useState(false);
 
   const isOwnProfile = user?.id === userId;
+
+  // Get theme-aware button styles
+  const getButtonStyles = (theme: string) => ({
+    light: {
+      backgroundColor: '#ffffff',
+      borderColor: '#d1d5db',
+      color: '#111827'
+    },
+    dark: {
+      backgroundColor: '#0f172a',
+      borderColor: '#334155', 
+      color: '#e2e8f0'
+    }
+  });
+
+  const getHoverStyles = (theme: string) => ({
+    light: '#f3f4f6',
+    dark: '#1e293b'
+  });
 
   useEffect(() => {
     if (user && userId && !isOwnProfile) {
@@ -197,34 +221,57 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
     }
   };
 
-  const handleMessage = () => {
-    // For now, just call the onMessage callback which would open messaging page
+  const handleMessage = async () => {
     if (onMessage) {
       onMessage();
+    } else {
+      // Open chat dock and find or create conversation with this user
+      try {
+        // For now, this is a placeholder - in real implementation:
+        // 1. Find existing conversation with this user
+        // 2. If no conversation exists, create one
+        // 3. Set the active thread ID
+        // 4. Open the chat dock
+        toggleOpen();
+        toast.success(`Opening chat with ${name}`);
+      } catch (error) {
+        console.error('Error opening chat:', error);
+        toast.error('Failed to open chat');
+      }
     }
+  };
+
+  // Generate profile link - use handle if available, otherwise fallback to userId
+  const getProfileLink = () => {
+    if (handle) {
+      return `/u/${handle}`;
+    }
+    return `/profile/${userId}`;
   };
 
   return (
     <div className={`bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
       <div className="flex items-start space-x-4">
         {/* Profile Photo */}
-        <div className="flex-shrink-0">
+        <Link to={getProfileLink()} className="flex-shrink-0">
           {profilePhoto ? (
             <img
               src={profilePhoto}
               alt={name}
-              className="w-16 h-16 rounded-full object-cover"
+              className="w-16 h-16 rounded-full object-cover hover:ring-2 hover:ring-primary-300 transition-all cursor-pointer"
             />
           ) : (
-            <div className="w-16 h-16 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center hover:ring-2 hover:ring-primary-300 transition-all cursor-pointer">
               <User className="h-8 w-8 text-white" />
             </div>
           )}
-        </div>
+        </Link>
 
         {/* User Info */}
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">{name}</h3>
+          <Link to={getProfileLink()} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate cursor-pointer">{name}</h3>
+          </Link>
           
           {title && (
             <div className="flex items-center text-gray-600 dark:text-gray-400 mt-1">
@@ -318,7 +365,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
               <button
                 onClick={sendConnectionRequest}
                 disabled={loading}
-                className="flex items-center space-x-1 px-3 py-2 bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                className="flex items-center space-x-1 px-3 py-2 border rounded-lg text-sm font-medium transition-colors disabled:opacity-50 bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
               >
                 <UserPlus className="h-4 w-4" />
                 <span>Connect</span>
@@ -328,7 +375,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
             {/* Always show message button */}
             <button
               onClick={handleMessage}
-              className="flex items-center space-x-1 px-3 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg text-sm font-medium transition-colors"
+              className="flex items-center space-x-1 px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
             >
               <MessageCircle className="h-4 w-4" />
               <span>Message</span>
