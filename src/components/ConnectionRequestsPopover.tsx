@@ -116,6 +116,7 @@ const ConnectionRequestsPopover: React.FC<ConnectionRequestsPopoverProps> = ({
             <ConnectionRequestsModal 
               open={true} 
               onOpenChange={setOpen}
+              onClose={close}
               isInline={true}
             />
           </div>

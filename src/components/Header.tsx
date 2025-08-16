@@ -9,6 +9,7 @@ import AuthModal from './AuthModal';
 import VerificationBadge from './VerificationBadge';
 import LanguageSelector from './LanguageSelector';
 import ConnectionRequestsPopover from './ConnectionRequestsPopover';
+import NotificationDropdown from './NotificationDropdown';
 import { supabase } from '../integrations/supabase/client';
 
 const Header: React.FC = () => {
@@ -357,17 +358,7 @@ const Header: React.FC = () => {
                     )}
                   </Link>
                 ) : (
-                  <Link
-                    to="/notifications"
-                    className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                  >
-                    <Bell className="h-5 w-5" />
-                    {notificationCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                        {notificationCount}
-                      </span>
-                    )}
-                  </Link>
+                  <NotificationDropdown notificationCount={notificationCount} />
                 )}
 
                 {/* Messages */}

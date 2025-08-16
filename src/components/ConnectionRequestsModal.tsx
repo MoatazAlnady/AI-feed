@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -23,12 +24,14 @@ interface ConnectionRequestsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isInline?: boolean;
+  onClose?: () => void;
 }
 
 const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
   open,
   onOpenChange,
   isInline = false,
+  onClose,
 }) => {
   const { user } = useAuth();
   const [requests, setRequests] = useState<ConnectionRequest[]>([]);
@@ -137,15 +140,17 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
           </h3>
         </div>
         
-        <div className="max-h-80 overflow-y-auto p-4 space-y-4">
+        <div className="max-h-64 overflow-y-auto p-4 space-y-4">
           {loading ? (
-            <div className="text-center py-4">Loading...</div>
+            <div className="text-center py-4">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+            </div>
           ) : requests.length === 0 ? (
             <div className="text-center py-4 text-gray-500 dark:text-gray-400">
               No pending connection requests
             </div>
           ) : (
-            requests.map((request) => (
+            requests.slice(0, 3).map((request) => (
               <div key={request.id} className="flex items-start space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
                 <Avatar className="h-10 w-10">
                   {request.requester.profile_photo ? (
@@ -195,6 +200,20 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
               </div>
             ))
           )}
+        </div>
+
+        {/* Footer with See All button */}
+        <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750">
+          <Link
+            to="/messages"
+            onClick={() => {
+              onClose?.();
+              onOpenChange(false);
+            }}
+            className="block w-full text-center text-sm text-primary hover:text-primary/80 font-medium"
+          >
+            See All Connection Requests
+          </Link>
         </div>
       </>
     );
