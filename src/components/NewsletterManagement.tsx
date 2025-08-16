@@ -165,42 +165,18 @@ const NewsletterManagement: React.FC = () => {
 
   const fetchFilteredSubscribers = async () => {
     try {
-      let query = supabase
+      const { data, error } = await supabase
         .from('newsletter_subscribers')
-        .select(`
-          *,
-          user_profiles(full_name),
-          newsletter_subscriber_interests(
-            interest_id,
-            interests(id, name, slug)
-          )
-        `);
-
-      if (subscriberFilters.frequencies.length > 0) {
-        query = query.in('frequency', subscriberFilters.frequencies);
-      }
-
-      if (subscriberFilters.search) {
-        query = query.or(`email.ilike.%${subscriberFilters.search}%,user_profiles.full_name.ilike.%${subscriberFilters.search}%`);
-      }
-
-      const { data, error } = await query.order('created_at', { ascending: false });
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      let formattedSubscribers = data.map(subscriber => ({
+      const formattedSubscribers = (data || []).map(subscriber => ({
         ...subscriber,
-        interests: subscriber.newsletter_subscriber_interests?.map(si => si.interests).filter(Boolean) || []
+        frequency: subscriber.frequency as 'daily' | 'weekly' | 'monthly',
+        interests: [] as Interest[]
       }));
-
-      // Filter by interests if specified
-      if (subscriberFilters.interests.length > 0) {
-        formattedSubscribers = formattedSubscribers.filter(subscriber =>
-          subscriber.interests.some(interest => 
-            subscriberFilters.interests.includes(interest.id)
-          )
-        );
-      }
 
       setSubscribers(formattedSubscribers);
     } catch (error) {
@@ -235,7 +211,12 @@ const NewsletterManagement: React.FC = () => {
       if (draftError) throw draftError;
 
       if (existingDraft && existingDraft.length > 0) {
-        setCurrentIssue(existingDraft[0]);
+        const issue = {
+          ...existingDraft[0],
+          frequency: existingDraft[0].frequency as 'daily' | 'weekly' | 'monthly',
+          status: existingDraft[0].status as 'draft' | 'scheduled' | 'sent'
+        };
+        setCurrentIssue(issue);
         await fetchIssueItems(existingDraft[0].id);
       } else {
         // Create new draft issue
@@ -250,7 +231,13 @@ const NewsletterManagement: React.FC = () => {
           .single();
 
         if (createError) throw createError;
-        setCurrentIssue(newIssue);
+        
+        const formattedIssue = {
+          ...newIssue,
+          frequency: newIssue.frequency as 'daily' | 'weekly' | 'monthly',
+          status: newIssue.status as 'draft' | 'scheduled' | 'sent'
+        };
+        setCurrentIssue(formattedIssue);
       }
     } catch (error) {
       console.error('Error creating/getting draft issue:', error);
@@ -283,7 +270,9 @@ const NewsletterManagement: React.FC = () => {
           .limit(20);
 
         if (error) throw error;
-        setContentItems((data || []).map(item => ({ ...item, type: 'tool' as const })));
+        if (data && Array.isArray(data)) {
+          setContentItems(data.map((item: any) => ({ ...item, type: 'tool' as const })));
+        }
       }
     } catch (error) {
       console.error('Error fetching content items:', error);
@@ -389,7 +378,7 @@ const NewsletterManagement: React.FC = () => {
     if (!currentIssue) return;
 
     try {
-      const newItem: Partial<IssueItem> = {
+      const newItem = {
         issue_id: currentIssue.id,
         content_type: contentItem.type,
         content_id: contentItem.id,
@@ -461,7 +450,12 @@ const NewsletterManagement: React.FC = () => {
 
       if (error) throw error;
 
-      setCurrentIssue(data);
+      const formattedIssue = {
+        ...data,
+        frequency: data.frequency as 'daily' | 'weekly' | 'monthly',
+        status: data.status as 'draft' | 'scheduled' | 'sent'
+      };
+      setCurrentIssue(formattedIssue);
 
       toast({
         title: "Success",

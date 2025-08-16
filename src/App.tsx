@@ -27,6 +27,8 @@ import UserView from "./pages/UserView";
 import Settings from "./pages/Settings";
 import Jobs from "./pages/Jobs";
 import Upgrade from "./pages/Upgrade";
+import ToolComparison from "./pages/ToolComparison";
+import AdminNewsletter from "./pages/AdminNewsletter";
 
 const queryClient = new QueryClient();
 
@@ -48,9 +50,10 @@ const App = () => (
                 <div className="animate-fade-in">
                   <SubmitTool />
                 </div>
-              } />
-              <Route path="tools/:id" element={<ToolDetails />} />
-              <Route path="posts/create" element={<CreatePost />} />
+               } />
+               <Route path="tools/:id" element={<ToolDetails />} />
+               <Route path="tools/compare/:toolIds" element={<ToolComparison />} />
+               <Route path="posts/create" element={<CreatePost />} />
               <Route path="articles/create" element={<SubmitArticle />} />
               <Route path="categories" element={<Categories />} />
               <Route path="about" element={<About />} />
@@ -66,9 +69,10 @@ const App = () => (
               <Route path="user/:userId" element={<Profile />} />
               <Route path="user-view/:userId" element={<Profile />} />
               <Route path="dashboard" element={<EmployerDashboard />} />
-              <Route path="employer/*" element={<EmployerDashboard />} />
-              <Route path="admin" element={<Admin />} />
-              <Route path="messages" element={<Messages />} />
+               <Route path="employer/*" element={<EmployerDashboard />} />
+               <Route path="admin" element={<Admin />} />
+               <Route path="admin/newsletter" element={<AdminNewsletter />} />
+               <Route path="messages" element={<Messages />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

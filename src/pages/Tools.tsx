@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import ChatDock from '../components/ChatDock';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Search, Filter, Grid, List, GitCompare, Star, ExternalLink, Bookmark, Zap, Plus, TrendingUp, MoreHorizontal } from 'lucide-react';
 import ToolComparisonModal from '../components/ToolComparisonModal';
 import PromoteContentModal from '../components/PromoteContentModal';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Tool {
@@ -27,12 +28,15 @@ interface Tool {
 
 const Tools: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showComparison, setShowComparison] = useState(false);
   const [showPromoteModal, setShowPromoteModal] = useState(false);
   const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
+  const [selectedToolsForComparison, setSelectedToolsForComparison] = useState<string[]>([]);
   const [tools, setTools] = useState<Tool[]>([]);
   const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
@@ -404,6 +408,8 @@ const Tools: React.FC = () => {
       <ToolComparisonModal
         isOpen={showComparison}
         onClose={() => setShowComparison(false)}
+        selectedTools={selectedToolsForComparison}
+        tools={tools}
       />
 
       {/* Promote Modal */}
