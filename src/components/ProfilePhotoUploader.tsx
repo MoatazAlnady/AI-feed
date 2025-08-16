@@ -130,7 +130,7 @@ const ProfilePhotoUploader: React.FC<ProfilePhotoUploaderProps> = ({
             className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-sm rounded-lg text-white hover:bg-white/30 transition-colors cursor-pointer"
           >
             {isUploading ? (
-              <Upload className="h-4 w-4 animate-spin" />
+              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <Camera className="h-4 w-4" />
             )}
@@ -158,7 +158,7 @@ const ProfilePhotoUploader: React.FC<ProfilePhotoUploaderProps> = ({
             className="absolute bottom-2 right-2 p-2 bg-primary-500 text-white rounded-full hover:bg-primary-600 transition-colors cursor-pointer"
           >
             {isUploading ? (
-              <Upload className="h-4 w-4 animate-spin" />
+              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <Camera className="h-4 w-4" />
             )}

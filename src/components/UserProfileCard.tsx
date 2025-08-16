@@ -292,14 +292,21 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
         {/* Action Buttons */}
         {!isOwnProfile && (
           <div className="flex flex-col space-y-2">
+            {/* Always show message button */}
+            <button
+              onClick={onMessage}
+              className="flex items-center space-x-1 px-3 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg text-sm font-medium transition-colors"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span>Message</span>
+            </button>
+
+            {/* Connection status button */}
             {isConnected ? (
-              <button
-                onClick={onMessage}
-                className="flex items-center space-x-1 px-3 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg text-sm font-medium transition-colors"
-              >
-                <MessageCircle className="h-4 w-4" />
-                <span>Message</span>
-              </button>
+              <div className="flex items-center space-x-1 px-3 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
+                <UserCheck className="h-4 w-4" />
+                <span>Connected</span>
+              </div>
             ) : hasRequestPending ? (
               <button
                 disabled
@@ -312,7 +319,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
               <button
                 onClick={sendConnectionRequest}
                 disabled={loading}
-                className="flex items-center space-x-1 px-3 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                className="flex items-center space-x-1 px-3 py-2 bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
               >
                 <UserPlus className="h-4 w-4" />
                 <span>Connect</span>
