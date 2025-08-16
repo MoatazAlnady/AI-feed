@@ -28,7 +28,7 @@ export default function TopCreators() {
           {creators.map((creator) => (
             <Link
               key={creator.id}
-              to={`/user/${creator.id}`}
+              to={`/creator/${creator.id}`}
               className="flex flex-col items-center justify-start gap-2 w-28 group"
             >
               <div className="relative">

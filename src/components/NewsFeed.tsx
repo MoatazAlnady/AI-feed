@@ -20,6 +20,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { makeHashtagsClickable } from '@/utils/hashtagUtils';
+import { getCreatorProfileLink } from '@/utils/profileUtils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Link } from 'react-router-dom';
@@ -36,6 +37,7 @@ interface Post {
     title: string;
     verified: boolean;
     topVoice: boolean;
+    handle?: string;
   };
   content: string;
   timestamp: string;
@@ -313,7 +315,8 @@ const NewsFeed: React.FC = () => {
             avatar: profile?.profile_photo || '',
             title: authorTitle,
             verified: profile?.verified || false,
-            topVoice: profile?.ai_nexus_top_voice || false
+            topVoice: profile?.ai_nexus_top_voice || false,
+            handle: profile?.handle // Add handle for profile linking
           },
           content: post.content,
           timestamp: new Date(post.created_at).toLocaleDateString(),
@@ -337,13 +340,14 @@ const NewsFeed: React.FC = () => {
           sharedBy: post.type === 'shared' ? {
             name: sharedByProfile?.full_name || 'Someone',
             avatar: sharedByProfile?.profile_photo || '',
-            title: sharedByProfile?.job_title || 'AI Enthusiast'
+            title: sharedByProfile?.job_title || 'AI Enthusiast',
+            handle: sharedByProfile?.handle
           } : undefined,
           shareText: post.share_text || '',
           sharedAt: post.shared_at ? new Date(post.shared_at).toLocaleDateString() : undefined
         } as Post & { 
           type?: 'original' | 'shared';
-          sharedBy?: { name: string; avatar: string; title: string };
+          sharedBy?: { name: string; avatar: string; title: string; handle?: string };
           shareText?: string;
           sharedAt?: string;
         };
@@ -729,7 +733,7 @@ const NewsFeed: React.FC = () => {
           
           <div className="flex items-start space-x-4">
             {/* Clickable Avatar */}
-            <Link to={`/profile/${post.user_id}`} className="flex-shrink-0">
+            <Link to={getCreatorProfileLink({ id: post.user_id, handle: post.author.handle })} className="flex-shrink-0">
               {post.author.avatar ? (
                 <img
                   src={post.author.avatar}
@@ -745,7 +749,7 @@ const NewsFeed: React.FC = () => {
             <div className="flex-1">
               <div className="flex items-center space-x-2 mb-1">
                 {/* Clickable Author Name */}
-                <Link to={`/profile/${post.user_id}`} className="hover:underline">
+                <Link to={getCreatorProfileLink({ id: post.user_id, handle: post.author.handle })} className="hover:underline">
                   <h3 className="font-semibold text-gray-900 dark:text-white">{post.author.name}</h3>
                 </Link>
                 {post.author.verified && (

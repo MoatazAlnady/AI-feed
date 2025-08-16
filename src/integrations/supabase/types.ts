@@ -1557,6 +1557,7 @@ export type Database = {
           full_name: string | null
           gender: string | null
           github: string | null
+          handle: string | null
           id: string
           interests: string[] | null
           is_banned: boolean
@@ -1578,6 +1579,7 @@ export type Database = {
           twitter: string | null
           updated_at: string | null
           verified: boolean | null
+          visibility: string | null
           website: string | null
         }
         Insert: {
@@ -1598,6 +1600,7 @@ export type Database = {
           full_name?: string | null
           gender?: string | null
           github?: string | null
+          handle?: string | null
           id: string
           interests?: string[] | null
           is_banned?: boolean
@@ -1619,6 +1622,7 @@ export type Database = {
           twitter?: string | null
           updated_at?: string | null
           verified?: boolean | null
+          visibility?: string | null
           website?: string | null
         }
         Update: {
@@ -1639,6 +1643,7 @@ export type Database = {
           full_name?: string | null
           gender?: string | null
           github?: string | null
+          handle?: string | null
           id?: string
           interests?: string[] | null
           is_banned?: boolean
@@ -1660,6 +1665,7 @@ export type Database = {
           twitter?: string | null
           updated_at?: string | null
           verified?: boolean | null
+          visibility?: string | null
           website?: string | null
         }
         Relationships: [
@@ -1726,6 +1732,10 @@ export type Database = {
         Args: { user1_id: string; user2_id: string }
         Returns: boolean
       }
+      backfill_user_handles: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       calculate_post_reach_score: {
         Args: { post_id_param: string }
         Returns: number
@@ -1744,6 +1754,10 @@ export type Database = {
           tool_id_param: string
           website_param: string
         }
+        Returns: string
+      }
+      generate_unique_handle: {
+        Args: { base_name: string; user_id: string }
         Returns: string
       }
       get_pending_edit_requests: {
@@ -1785,6 +1799,33 @@ export type Database = {
           tags: string[]
           user_id: string
           user_name: string
+          website: string
+        }[]
+      }
+      get_profile_by_handle_or_id: {
+        Args: { identifier: string }
+        Returns: {
+          ai_nexus_top_voice: boolean
+          articles_written: number
+          bio: string
+          company: string
+          contact_visible: boolean
+          cover_photo: string
+          full_name: string
+          github: string
+          handle: string
+          id: string
+          interests: string[]
+          job_title: string
+          linkedin: string
+          location: string
+          profile_photo: string
+          tools_submitted: number
+          total_engagement: number
+          total_reach: number
+          twitter: string
+          verified: boolean
+          visibility: string
           website: string
         }[]
       }

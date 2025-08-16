@@ -24,6 +24,7 @@ import Blog from "./pages/Blog";
 import ToolDetails from "./pages/ToolDetails";
 import Profile from "./pages/Profile";
 import UserView from "./pages/UserView";
+import CreatorProfile from "./pages/CreatorProfile";
 import Settings from "./pages/Settings";
 import Jobs from "./pages/Jobs";
 import Upgrade from "./pages/Upgrade";
@@ -59,20 +60,28 @@ const App = () => (
               <Route path="about" element={<About />} />
               <Route path="blog" element={<Blog />} />
               <Route path="community" element={<Community />} />
-              <Route path="talent" element={<Talent />} />
-              <Route path="jobs" element={<Jobs />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="profile/:id" element={<UserView />} />
-              <Route path="u/:handle" element={<UserView />} />
-              <Route path="settings" element={<Settings />} />
-              <Route path="upgrade" element={<Upgrade />} />
-              <Route path="user/:userId" element={<Profile />} />
-              <Route path="user-view/:userId" element={<Profile />} />
-              <Route path="dashboard" element={<EmployerDashboard />} />
-               <Route path="employer/*" element={<EmployerDashboard />} />
-               <Route path="admin" element={<Admin />} />
-               <Route path="admin/newsletter" element={<AdminNewsletter />} />
-               <Route path="messages" element={<Messages />} />
+               <Route path="talent" element={<Talent />} />
+               <Route path="jobs" element={<Jobs />} />
+               
+               {/* Creator Profile Routes */}
+               <Route path="creator/:identifier" element={<CreatorProfile />} />
+               
+               {/* Legacy Profile Routes - Redirect to creator profile for handle-based navigation */}
+               <Route path="profile/:id" element={<CreatorProfile />} />
+               <Route path="u/:handle" element={<CreatorProfile />} />
+               <Route path="user/:userId" element={<CreatorProfile />} />
+               <Route path="user-view/:userId" element={<CreatorProfile />} />
+               
+               {/* Current User Profile (Edit Mode) */}
+               <Route path="profile" element={<Profile />} />
+               
+               <Route path="settings" element={<Settings />} />
+               <Route path="upgrade" element={<Upgrade />} />
+               <Route path="dashboard" element={<EmployerDashboard />} />
+                <Route path="employer/*" element={<EmployerDashboard />} />
+                <Route path="admin" element={<Admin />} />
+                <Route path="admin/newsletter" element={<AdminNewsletter />} />
+                <Route path="messages" element={<Messages />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
