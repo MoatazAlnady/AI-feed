@@ -24,6 +24,57 @@ const Profile: React.FC = () => {
   const [savedItems, setSavedItems] = useState<any[]>([]);
   const { stats } = useUserStats();
 
+  // Fetch user's saved items and content
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) return;
+
+      try {
+        // Fetch saved items (assuming we have a saved_items table or similar)
+        // This is a placeholder - you may need to implement the actual saved items logic
+        const savedItemsData: any[] = [];
+        setSavedItems(savedItemsData);
+
+        // Fetch user's tools and articles
+        const [toolsResponse, articlesResponse] = await Promise.all([
+          supabase
+            .from('tools')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('status', 'published'),
+          supabase
+            .from('articles')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('status', 'published')
+        ]);
+
+        const userContentData = [
+          ...(toolsResponse.data || []).map(tool => ({
+            ...tool,
+            type: 'tool',
+            title: tool.name,
+            url: `/tools/${tool.id}`
+          })),
+          ...(articlesResponse.data || []).map(article => ({
+            ...article,
+            type: 'article',
+            url: `/articles/${article.id}`
+          }))
+        ];
+
+        setUserContent(userContentData);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, [user]);
+
+  // State for user content
+  const [userContent, setUserContent] = useState<any[]>([]);
+
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (!user) return;
@@ -76,7 +127,7 @@ const Profile: React.FC = () => {
   ];
 
   const recentActivity: any[] = [];
-  const userContent: any[] = [];
+  // userContent is now fetched from useEffect above
 
   const handlePromoteContent = (content: any) => {
     setSelectedContent(content);

@@ -251,6 +251,28 @@ const SubmitTool: React.FC = () => {
         return;
       }
 
+      // Handle logo upload if present
+      let logoUrl = formData.logoUrl;
+      if (formData.logo) {
+        try {
+          const fileName = `${Date.now()}_${formData.logo.name}`;
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('user-uploads')
+            .upload(`tool-logos/${fileName}`, formData.logo);
+
+          if (uploadError) {
+            console.error('Logo upload error:', uploadError);
+          } else {
+            const { data: { publicUrl } } = supabase.storage
+              .from('user-uploads')
+              .getPublicUrl(`tool-logos/${fileName}`);
+            logoUrl = publicUrl;
+          }
+        } catch (uploadErr) {
+          console.error('Logo upload failed:', uploadErr);
+        }
+      }
+
       const submissionData = {
         name: formData.name,
         description: formData.description,
@@ -264,6 +286,7 @@ const SubmitTool: React.FC = () => {
         features: featuresArray,
         is_light_logo: formData.is_light_logo,
         is_dark_logo: formData.is_dark_logo,
+        logo_url: logoUrl,
         user_id: user?.id,
         status: 'pending'
       };
@@ -429,7 +452,15 @@ const SubmitTool: React.FC = () => {
 
         {submissionMode === 'form' ? (
           /* Individual Tool Form */
-          <form onSubmit={handleFormSubmit} className="bg-white rounded-2xl shadow-sm p-8">
+          <form 
+            onSubmit={handleFormSubmit} 
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+                e.preventDefault();
+              }
+            }}
+            className="bg-white rounded-2xl shadow-sm p-8"
+          >
             {/* Tool Name */}
             <div className="mb-6">
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
