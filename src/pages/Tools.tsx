@@ -54,13 +54,10 @@ const Tools: React.FC = () => {
     try {
       console.log('Fetching tools and categories...');
       
-      // Fetch approved tools with ratings from the view
+      // Fetch approved tools - use existing denormalized columns
       const { data: toolsData, error: toolsError } = await supabase
         .from('tools')
-        .select(`
-          *,
-          tool_ratings_v(avg_rating, reviews_count)
-        `)
+        .select('*')
         .eq('status', 'published')
         .order('created_at', { ascending: false });
 
@@ -82,15 +79,12 @@ const Tools: React.FC = () => {
       const categoryMap = new Map(categoriesData?.map(cat => [cat.id, cat.name]) || []);
 
       // Transform tools data with category names and ratings
-      const transformedTools = (toolsData || []).map(tool => {
-        const ratingsData = Array.isArray(tool.tool_ratings_v) ? tool.tool_ratings_v[0] : null;
-        return {
-          ...tool,
-          category_name: categoryMap.get(tool.category_id) || 'Uncategorized',
-          average_rating: ratingsData?.avg_rating || tool.average_rating || 0,
-          review_count: ratingsData?.reviews_count || tool.review_count || 0
-        };
-      });
+      const transformedTools = (toolsData || []).map(tool => ({
+        ...tool,
+        category_name: categoryMap.get(tool.category_id) || 'Uncategorized',
+        average_rating: tool.average_rating || 0,
+        review_count: tool.review_count || 0
+      }));
 
       console.log('Transformed tools:', transformedTools);
       console.log('Categories for dropdown:', categoriesData);
