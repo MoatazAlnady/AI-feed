@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Search, Zap, Plus, Settings, User, LogOut, Bell, MessageCircle, Building, BarChart3, Moon, Sun, Briefcase, Users } from 'lucide-react';
+import { Menu, X, Search, Zap, Plus, Settings, User, LogOut, Bell, MessageCircle, Building, BarChart3, Moon, Sun, Briefcase, Users, Crown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../providers/ThemeProvider';
@@ -486,18 +486,30 @@ const Header: React.FC = () => {
                             variant="menu" 
                             onLocaleChange={() => setShowUserMenu(false)} 
                           />
-                          {isCreator && (
-                            <Link
-                              to="/analytics"
-                              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                              onClick={() => setShowUserMenu(false)}
-                            >
-                              <div className="flex items-center">
-                                <BarChart3 className="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" />
-                                Analytics
-                              </div>
-                            </Link>
-                          )}
+                           {isCreator && (
+                             <>
+                               <Link
+                                 to="/analytics"
+                                 className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                 onClick={() => setShowUserMenu(false)}
+                               >
+                                 <div className="flex items-center">
+                                   <BarChart3 className="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" />
+                                   Analytics
+                                 </div>
+                               </Link>
+                               <Link
+                                 to="/upgrade"
+                                 className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                 onClick={() => setShowUserMenu(false)}
+                               >
+                                 <div className="flex items-center">
+                                   <Crown className="h-4 w-4 mr-2 text-yellow-500 dark:text-yellow-400" />
+                                   Upgrade to Premium
+                                 </div>
+                               </Link>
+                             </>
+                           )}
                         </>
                       )}
                       {(isEmployer || isAdmin) && (
@@ -704,16 +716,28 @@ const Header: React.FC = () => {
                   )}
                   
                   {isCreator && !isEmployerView && (
-                    <Link
-                      to="/analytics"
-                      className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <div className="flex items-center">
-                        <BarChart3 className="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" />
-                        Analytics
-                      </div>
-                    </Link>
+                    <>
+                      <Link
+                        to="/analytics"
+                        className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <div className="flex items-center">
+                          <BarChart3 className="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" />
+                          Analytics
+                        </div>
+                      </Link>
+                      <Link
+                        to="/upgrade"
+                        className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <div className="flex items-center">
+                          <Crown className="h-4 w-4 mr-2 text-yellow-500 dark:text-yellow-400" />
+                          Upgrade to Premium
+                        </div>
+                      </Link>
+                    </>
                   )}
                   {!isEmployerView && (
                     <>

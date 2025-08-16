@@ -24,6 +24,7 @@ import ToolDetails from "./pages/ToolDetails";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Jobs from "./pages/Jobs";
+import Upgrade from "./pages/Upgrade";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const App = () => (
               <Route path="jobs" element={<Jobs />} />
               <Route path="profile" element={<Profile />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="upgrade" element={<Upgrade />} />
               <Route path="user-view/:userId" element={<Profile />} />
               <Route path="dashboard" element={<EmployerDashboard />} />
               <Route path="employer/*" element={<EmployerDashboard />} />
