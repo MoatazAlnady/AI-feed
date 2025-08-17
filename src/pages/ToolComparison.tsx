@@ -234,140 +234,159 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
         </div>
       </div>
 
-      {/* Comparison Table */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {tools.map(tool => (
-          <Card key={tool.id} className="flex flex-col">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  {tool.logo_url ? (
-                    <img 
-                      src={tool.logo_url} 
-                      alt={`${tool.name} logo`}
-                      className="w-12 h-12 rounded-lg object-cover"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center">
-                      <Bot className="h-6 w-6 text-muted-foreground" />
+      {/* Horizontal Comparison Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b">
+              <th className="text-left p-4 font-medium text-muted-foreground min-w-[150px]">Tool</th>
+              {tools.map(tool => (
+                <th key={tool.id} className="text-center p-4 min-w-[250px]">
+                  <div className="flex flex-col items-center gap-2">
+                    {tool.logo_url ? (
+                      <img 
+                        src={tool.logo_url} 
+                        alt={`${tool.name} logo`}
+                        className="w-12 h-12 rounded-lg object-cover"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center">
+                        <Bot className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                    )}
+                    <div className="text-center">
+                      <h3 className="font-semibold text-lg">{tool.name}</h3>
+                      <Badge variant="outline" className="text-xs mt-1">
+                        {tool.category_name}
+                      </Badge>
                     </div>
-                  )}
-                  <div>
-                    <CardTitle className="text-xl">{tool.name}</CardTitle>
-                    <Badge variant="outline" className="text-xs">
-                      {tool.category_name}
-                    </Badge>
                   </div>
-                </div>
-                <Button size="sm" variant="outline" asChild>
-                  <a href={tool.website} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                </Button>
-              </div>
-              
-              {/* Rating */}
-              <div className="flex items-center gap-2">
-                <div className="flex items-center">
-                  {renderStars(tool.average_rating)}
-                </div>
-                <span className="text-sm font-medium">{tool.average_rating.toFixed(1)}</span>
-                <span className="text-sm text-muted-foreground">
-                  ({tool.review_count} reviews)
-                </span>
-              </div>
-
-              {/* Pricing */}
-              <Badge variant="secondary" className="w-fit">
-                {tool.pricing}
-              </Badge>
-            </CardHeader>
-
-            <CardContent className="flex-1 space-y-4">
-              {/* Description */}
-              <p className="text-sm text-muted-foreground line-clamp-3">
-                {tool.description}
-              </p>
-
-              {/* Features */}
-              <div>
-                <h4 className="font-medium text-sm mb-2">Key Features</h4>
-                <div className="space-y-1">
-                  {tool.features.slice(0, 4).map((feature, index) => (
-                    <div key={index} className="text-sm flex items-start gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                      <span className="line-clamp-2">{feature}</span>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {/* Rating Row */}
+            <tr className="border-b bg-muted/20">
+              <td className="p-4 font-medium">Rating</td>
+              {tools.map(tool => (
+                <td key={tool.id} className="p-4 text-center">
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center">
+                      {renderStars(tool.average_rating)}
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Pros */}
-              {tool.pros.length > 0 && (
-                <div>
-                  <h4 className="font-medium text-sm mb-2 text-green-600">Pros</h4>
+                    <span className="text-sm font-medium">{tool.average_rating.toFixed(1)}</span>
+                    <span className="text-sm text-muted-foreground">
+                      ({tool.review_count})
+                    </span>
+                  </div>
+                </td>
+              ))}
+            </tr>
+            
+            {/* Pricing Row */}
+            <tr className="border-b">
+              <td className="p-4 font-medium">Pricing</td>
+              {tools.map(tool => (
+                <td key={tool.id} className="p-4 text-center">
+                  <Badge variant="secondary">{tool.pricing}</Badge>
+                </td>
+              ))}
+            </tr>
+            
+            {/* Description Row */}
+            <tr className="border-b bg-muted/20">
+              <td className="p-4 font-medium">Description</td>
+              {tools.map(tool => (
+                <td key={tool.id} className="p-4">
+                  <p className="text-sm text-muted-foreground">{tool.description}</p>
+                </td>
+              ))}
+            </tr>
+            
+            {/* Key Features Row */}
+            <tr className="border-b">
+              <td className="p-4 font-medium">Key Features</td>
+              {tools.map(tool => (
+                <td key={tool.id} className="p-4">
                   <div className="space-y-1">
-                    {tool.pros.slice(0, 3).map((pro, index) => (
+                    {tool.features.slice(0, 5).map((feature, index) => (
+                      <div key={index} className="text-sm flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                        <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </td>
+              ))}
+            </tr>
+            
+            {/* Pros Row */}
+            <tr className="border-b bg-muted/20">
+              <td className="p-4 font-medium text-green-600">Pros</td>
+              {tools.map(tool => (
+                <td key={tool.id} className="p-4">
+                  <div className="space-y-1">
+                    {tool.pros.slice(0, 4).map((pro, index) => (
                       <div key={index} className="text-sm flex items-start gap-2">
                         <TrendingUp className="h-3 w-3 text-green-600 mt-0.5 shrink-0" />
-                        <span className="line-clamp-2">{pro}</span>
+                        <span>{pro}</span>
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
-
-              {/* Cons */}
-              {tool.cons.length > 0 && (
-                <div>
-                  <h4 className="font-medium text-sm mb-2 text-orange-600">Considerations</h4>
+                </td>
+              ))}
+            </tr>
+            
+            {/* Considerations Row */}
+            <tr className="border-b">
+              <td className="p-4 font-medium text-orange-600">Considerations</td>
+              {tools.map(tool => (
+                <td key={tool.id} className="p-4">
                   <div className="space-y-1">
-                    {tool.cons.slice(0, 3).map((con, index) => (
+                    {tool.cons.slice(0, 4).map((con, index) => (
                       <div key={index} className="text-sm flex items-start gap-2">
                         <MessageSquare className="h-3 w-3 text-orange-600 mt-0.5 shrink-0" />
-                        <span className="line-clamp-2">{con}</span>
+                        <span>{con}</span>
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
-
-              {/* Recent Review */}
-              {tool.reviews.length > 0 && (
-                <div>
-                  <h4 className="font-medium text-sm mb-2">Recent Review</h4>
-                  <div className="bg-muted/50 p-3 rounded-lg">
-                    <div className="flex items-center gap-2 mb-1">
-                      {renderStars(tool.reviews[0].rating)}
-                      <span className="text-sm font-medium">
-                        {tool.reviews[0].user_profiles?.full_name || 'Anonymous'}
-                      </span>
-                    </div>
-                    {tool.reviews[0].title && (
-                      <p className="font-medium text-sm">{tool.reviews[0].title}</p>
-                    )}
-                    {tool.reviews[0].comment && (
-                      <p className="text-sm text-muted-foreground line-clamp-3">
-                        {tool.reviews[0].comment}
-                      </p>
-                    )}
+                </td>
+              ))}
+            </tr>
+            
+            {/* Website Row */}
+            <tr className="border-b bg-muted/20">
+              <td className="p-4 font-medium">Website</td>
+              {tools.map(tool => (
+                <td key={tool.id} className="p-4 text-center">
+                  <Button size="sm" variant="outline" asChild>
+                    <a href={tool.website} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Visit
+                    </a>
+                  </Button>
+                </td>
+              ))}
+            </tr>
+            
+            {/* Tags Row */}
+            <tr className="border-b">
+              <td className="p-4 font-medium">Tags</td>
+              {tools.map(tool => (
+                <td key={tool.id} className="p-4">
+                  <div className="flex flex-wrap gap-1">
+                    {tool.tags.slice(0, 6).map(tag => (
+                      <Badge key={tag} variant="outline" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
                   </div>
-                </div>
-              )}
-
-              {/* Tags */}
-              {tool.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {tool.tags.slice(0, 4).map(tag => (
-                    <Badge key={tag} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+                </td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       {/* AI-Generated Insights */}

@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   Eye,
   Users,
   ArrowRightLeft,
   CheckCircle,
   X,
-  ExternalLink
+  ExternalLink,
+  Search,
+  Loader2
 } from 'lucide-react';
 
 interface Tool {
@@ -39,6 +43,108 @@ const ToolComparisonModal: React.FC<ToolComparisonModalProps> = ({
   onSelectionChange
 }) => {
   const { toast } = useToast();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState<Tool[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [allTools, setAllTools] = useState<Tool[]>(tools);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchAllTools();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (searchTerm.trim()) {
+      handleSearch();
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchTerm]);
+
+  const fetchAllTools = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('tools')
+        .select(`
+          id,
+          name,
+          description,
+          pricing,
+          website,
+          average_rating,
+          review_count,
+          category_id
+        `)
+        .eq('status', 'published')
+        .order('name');
+
+      if (error) throw error;
+
+      // Fetch categories separately
+      const { data: categoriesData } = await supabase
+        .from('categories')
+        .select('id, name');
+
+      const categoryMap = new Map(categoriesData?.map(cat => [cat.id, cat.name]) || []);
+
+      const formattedTools = data.map(tool => ({
+        ...tool,
+        category_name: categoryMap.get(tool.category_id) || 'AI Tool'
+      }));
+
+      setAllTools(formattedTools);
+    } catch (error) {
+      console.error('Error fetching tools:', error);
+    }
+  };
+
+  const handleSearch = async () => {
+    setIsSearching(true);
+    try {
+      const { data, error } = await supabase
+        .from('tools')
+        .select(`
+          id,
+          name,
+          description,
+          pricing,
+          website,
+          average_rating,
+          review_count,
+          category_id
+        `)
+        .eq('status', 'published')
+        .or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
+        .order('name')
+        .limit(20);
+
+      if (error) throw error;
+
+      // Fetch categories separately
+      const { data: categoriesData } = await supabase
+        .from('categories')
+        .select('id, name');
+
+      const categoryMap = new Map(categoriesData?.map(cat => [cat.id, cat.name]) || []);
+
+      const formattedResults = data.map(tool => ({
+        ...tool,
+        category_name: categoryMap.get(tool.category_id) || 'AI Tool'
+      }));
+
+      setSearchResults(formattedResults);
+    } catch (error) {
+      console.error('Error searching tools:', error);
+      toast({
+        title: "Search Error",
+        description: "Failed to search tools",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -84,8 +190,24 @@ const ToolComparisonModal: React.FC<ToolComparisonModalProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent className="overflow-y-auto max-h-[70vh]">
+          {/* Search Input */}
+          <div className="mb-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search for tools to compare..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4"
+              />
+              {isSearching && (
+                <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+              )}
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            {tools.map((tool) => (
+            {(searchTerm.trim() ? searchResults : allTools).map((tool) => (
               <div
                 key={tool.id}
                 className={`border rounded-lg p-4 cursor-pointer transition-all ${
