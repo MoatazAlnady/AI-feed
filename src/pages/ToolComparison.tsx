@@ -338,9 +338,9 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
               ))}
             </tr>
             
-            {/* Considerations Row */}
+            {/* Cons Row */}
             <tr className="border-b">
-              <td className="p-4 font-medium text-orange-600">Considerations</td>
+              <td className="p-4 font-medium text-orange-600">Cons</td>
               {tools.map(tool => (
                 <td key={tool.id} className="p-4">
                   <div className="space-y-1">
@@ -351,6 +351,18 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
                       </div>
                     ))}
                   </div>
+                </td>
+              ))}
+            </tr>
+            
+            {/* Free Plan Row */}
+            <tr className="border-b">
+              <td className="p-4 font-medium">Free Plan</td>
+              {tools.map(tool => (
+                <td key={tool.id} className="p-4 text-center">
+                  <Badge variant={tool.pricing.toLowerCase().includes('free') ? 'default' : 'secondary'}>
+                    {tool.pricing.toLowerCase().includes('free') ? 'Yes' : 'No'}
+                  </Badge>
                 </td>
               ))}
             </tr>
