@@ -496,6 +496,7 @@ const Tools: React.FC = () => {
         onClose={() => setShowComparison(false)}
         selectedTools={selectedToolsForComparison}
         tools={tools}
+        onSelectionChange={setSelectedToolsForComparison}
       />
 
       {/* Promote Modal */}
