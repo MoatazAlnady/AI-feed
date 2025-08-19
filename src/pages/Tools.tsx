@@ -155,6 +155,7 @@ const Tools: React.FC = () => {
                 </Link>
                 <button
                   onClick={() => {
+                    alert('Compare button clicked!'); // This should show immediately
                     console.log('Compare button clicked, showComparison:', showComparison);
                     setShowComparison(true);
                     console.log('setShowComparison(true) called');
