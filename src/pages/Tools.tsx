@@ -149,7 +149,11 @@ const Tools: React.FC = () => {
                   <span>Submit A New AI Tool</span>
                 </Link>
                 <button
-                  onClick={() => setShowComparison(true)}
+                  onClick={() => {
+                    console.log('Compare button clicked, showComparison:', showComparison);
+                    setShowComparison(true);
+                    console.log('setShowComparison(true) called');
+                  }}
                   className="flex items-center space-x-2 px-6 py-3 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 font-semibold"
                 >
                   <GitCompare className="h-5 w-5" />
