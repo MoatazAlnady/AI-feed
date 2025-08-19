@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Search, Zap, Plus, Settings, User, LogOut, Bell, MessageCircle, Building, BarChart3, Moon, Sun, Briefcase, Users, Crown } from 'lucide-react';
 import ChatDock from './ChatDock';
@@ -28,6 +28,8 @@ const Header: React.FC = () => {
   const { user, signOut, isAdmin, loading } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [userProfilePhoto, setUserProfilePhoto] = useState<string | null>(null);
+  const createMenuRef = useRef<HTMLDivElement>(null);
+  const createTriggerRef = useRef<HTMLButtonElement>(null);
 
   // Navigation items for different user types
   const navigation = [
@@ -158,6 +160,48 @@ const Header: React.FC = () => {
 
     fetchUserProfilePhoto();
   }, [user]);
+
+  // Click-outside listener for create menu
+  useEffect(() => {
+    if (!showCreateMenu) return;
+    
+    const onDown = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node;
+      
+      if (createMenuRef.current?.contains(target)) {
+        return; // inside menu
+      }
+      if (createTriggerRef.current?.contains(target)) {
+        return; // the trigger button itself
+      }
+      
+      setShowCreateMenu(false);
+    };
+    
+    document.addEventListener('mousedown', onDown, true);
+    document.addEventListener('touchstart', onDown, true);
+    
+    return () => {
+      document.removeEventListener('mousedown', onDown, true);
+      document.removeEventListener('touchstart', onDown, true);
+    };
+  }, [showCreateMenu]);
+
+  // Esc to close create menu
+  useEffect(() => {
+    if (!showCreateMenu) return;
+    
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setShowCreateMenu(false);
+        createTriggerRef.current?.focus();
+      }
+    };
+    
+    document.addEventListener('keydown', onKey, true);
+    return () => document.removeEventListener('keydown', onKey, true);
+  }, [showCreateMenu]);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -387,6 +431,7 @@ const Header: React.FC = () => {
                 {!isEmployerView && (
                   <div className="relative">
                     <button
+                      ref={createTriggerRef}
                       onClick={() => setShowCreateMenu(!showCreateMenu)}
                       className="flex items-center space-x-1 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-all duration-200 whitespace-nowrap"
                     >
@@ -395,7 +440,7 @@ const Header: React.FC = () => {
                     </button>
                     
                     {showCreateMenu && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 animate-slide-up">
+                      <div ref={createMenuRef} className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 animate-slide-up">
                         <Link
                           to="/submit-tool"
                           className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
