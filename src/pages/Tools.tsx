@@ -47,6 +47,11 @@ const Tools: React.FC = () => {
   const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Debug: Log showComparison state changes
+  useEffect(() => {
+    console.log('showComparison state changed:', showComparison);
+  }, [showComparison]);
+
   useEffect(() => {
     fetchToolsAndCategories();
   }, []);

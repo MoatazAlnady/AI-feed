@@ -146,6 +146,8 @@ const ToolComparisonModal: React.FC<ToolComparisonModalProps> = ({
     }
   };
 
+  console.log('ToolComparisonModal render - isOpen:', isOpen, 'selectedTools:', selectedTools, 'tools length:', tools.length);
+  
   if (!isOpen) return null;
 
   const selectedToolData = tools.filter(tool => selectedTools.includes(tool.id));
