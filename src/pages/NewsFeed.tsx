@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Plus, 
   MessageCircle, 
@@ -26,6 +26,8 @@ const Newsfeed: React.FC = () => {
   const [showNewsletterPopup, setShowNewsletterPopup] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
   const [trendingTools, setTrendingTools] = useState<any[]>([]);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   // Check if user should see newsletter popup - show on every refresh for unsubscribed users
   useEffect(() => {
@@ -39,6 +41,48 @@ const Newsfeed: React.FC = () => {
     // Check on component mount and when user changes
     checkNewsletterSubscription();
   }, [user]);
+
+  // Click-outside listener for create menu
+  useEffect(() => {
+    if (!showCreateMenu) return;
+    
+    const onDown = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node;
+      
+      if (menuRef.current?.contains(target)) {
+        return; // inside menu
+      }
+      if (triggerRef.current?.contains(target)) {
+        return; // the trigger button itself
+      }
+      
+      setShowCreateMenu(false);
+    };
+    
+    document.addEventListener('mousedown', onDown, true);
+    document.addEventListener('touchstart', onDown, true);
+    
+    return () => {
+      document.removeEventListener('mousedown', onDown, true);
+      document.removeEventListener('touchstart', onDown, true);
+    };
+  }, [showCreateMenu]);
+
+  // Esc to close create menu
+  useEffect(() => {
+    if (!showCreateMenu) return;
+    
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setShowCreateMenu(false);
+        triggerRef.current?.focus();
+      }
+    };
+    
+    document.addEventListener('keydown', onKey, true);
+    return () => document.removeEventListener('keydown', onKey, true);
+  }, [showCreateMenu]);
 
   const handlePostCreated = (newPost: any) => {
     setPosts([newPost, ...posts]);
@@ -107,6 +151,7 @@ const Newsfeed: React.FC = () => {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold text-gray-900 dark:text-white">Create Something</h3>
                   <button
+                    ref={triggerRef}
                     onClick={() => setShowCreateMenu(!showCreateMenu)}
                     className="p-2 bg-gradient-primary text-white rounded-lg hover:shadow-md transition-all"
                   >
@@ -115,7 +160,7 @@ const Newsfeed: React.FC = () => {
                 </div>
                 
                 {showCreateMenu && (
-                  <div className="space-y-3">
+                  <div ref={menuRef} className="space-y-3">
                     {createOptions.map((option, index) => (
                       <button
                         key={index}
