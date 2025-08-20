@@ -444,26 +444,36 @@ const Header: React.FC = () => {
                         <Link
                           to="/submit-tool"
                           className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                          onClick={() => setShowCreateMenu(false)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowCreateMenu(false);
+                          }}
                         >
                           AI Tool
                         </Link>
                         <Link
                           to="/submit-article"
                           className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                          onClick={() => setShowCreateMenu(false)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowCreateMenu(false);
+                          }}
                         >
                           Article
                         </Link>
                         <Link
-                          to="/newsfeed"
+                          to="/create-post"
                           className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                          onClick={() => setShowCreateMenu(false)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowCreateMenu(false);
+                          }}
                         >
                           Post
                         </Link>
                         <button
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setShowCreateMenu(false);
                             navigate('/community');
                             setTimeout(() => {
@@ -476,7 +486,8 @@ const Header: React.FC = () => {
                           Event
                         </button>
                         <button
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setShowCreateMenu(false);
                             navigate('/community');
                             setTimeout(() => {

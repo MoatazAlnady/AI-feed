@@ -168,7 +168,7 @@ const Community: React.FC = () => {
 
     try {
       await openChatWith(userId, { createIfMissing: true });
-      toast.success(`Opening chat with ${userName}`);
+      // Removed the notification toast - chat opening should be silent
     } catch (error) {
       console.error('Error opening chat:', error);
       toast.error('Failed to open chat');
@@ -176,11 +176,11 @@ const Community: React.FC = () => {
   };
 
   const getProfileLink = (creator: any) => {
-    // Use handle if available, otherwise fallback to userId
+    // Use handle if available, otherwise fallback to creator profile route
     if (creator.handle) {
-      return `/u/${creator.handle}`;
+      return `/creator/${creator.handle}`;
     }
-    return `/profile/${creator.id}`;
+    return `/creator/${creator.id}`;
   };
 
   const fetchCreators = async () => {
