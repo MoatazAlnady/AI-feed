@@ -369,24 +369,27 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
 
       if (!existingThread && opts?.createIfMissing) {
         // Get user profile safely using RPC
-        const { data: userProfiles } = await supabase.rpc('get_public_profiles_by_ids', {
+        const { data: userProfiles, error } = await supabase.rpc('get_public_profiles_by_ids', {
           ids: [userId]
         });
 
-        if (!Array.isArray(userProfiles) || userProfiles.length === 0) {
+        console.log('Chat: Fetching profile for user:', userId, 'Result:', userProfiles, 'Error:', error);
+
+        if (error || !Array.isArray(userProfiles) || userProfiles.length === 0) {
           throw new Error('User not found or profile not accessible');
         }
 
         const userProfile = userProfiles[0];
+        console.log('Chat: Using profile data:', userProfile);
 
-        // Create new thread
+        // Create new thread with proper name handling
         const newThread: Thread = {
           id: `thread_${Date.now()}`,
           participants: [{
             id: userId,
-            name: userProfile.full_name || 'Deleted User',
+            name: userProfile.full_name || 'AI Enthusiast', // Better fallback
             avatar: userProfile.profile_photo,
-            title: '', // Not available in public profiles
+            title: userProfile.job_title || '',
             online: false
           }],
           lastMessage: {

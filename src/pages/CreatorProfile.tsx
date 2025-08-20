@@ -52,7 +52,7 @@ interface CreatorProfile {
 }
 
 const CreatorProfile: React.FC = () => {
-  const { identifier } = useParams<{ identifier: string }>();
+  const { handleOrId } = useParams<{ handleOrId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { openChatWith } = useChatDock();
@@ -63,8 +63,8 @@ const CreatorProfile: React.FC = () => {
   const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
 
   useEffect(() => {
-    if (identifier) {
-      fetchProfile(identifier);
+    if (handleOrId) {
+      fetchProfile(handleOrId);
       if (user) {
         checkConnectionStatus();
       }
@@ -81,7 +81,7 @@ const CreatorProfile: React.FC = () => {
     return () => {
       window.removeEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
     };
-  }, [identifier, user]);
+  }, [handleOrId, user]);
 
   const fetchProfile = async (id: string) => {
     try {
@@ -89,12 +89,14 @@ const CreatorProfile: React.FC = () => {
       setNotFound(false);
       setIsPrivate(false);
 
+      console.log('CreatorProfile: Fetching profile for identifier:', id);
+
       // Use the safe RPC function to get profile by handle or ID
       const { data, error } = await supabase.rpc('get_profile_by_handle_or_id', {
         identifier: id
       });
 
-      console.log('Profile fetch result:', { data, error, identifier: id });
+      console.log('CreatorProfile: Profile fetch result:', { data, error, identifier: id });
 
       if (error) {
         console.error('Error fetching profile:', error);
@@ -121,7 +123,7 @@ const CreatorProfile: React.FC = () => {
           const publicProfile = fallbackData[0];
           const fullProfile = {
             ...publicProfile,
-            handle: '',
+            handle: `user-${publicProfile.id.slice(0, 8)}`, // Generate a handle for display
             visibility: 'public',
             // Set other fields to defaults
             job_title: publicProfile.job_title || '',
@@ -129,8 +131,8 @@ const CreatorProfile: React.FC = () => {
             bio: '',
             location: '',
             cover_photo: '',
-            total_engagement: 0,
-            total_reach: 0,
+            total_engagement: 0, // Default values for missing fields
+            total_reach: 0, // Default values for missing fields
             tools_submitted: 0,
             articles_written: 0,
             website: '',
@@ -140,6 +142,7 @@ const CreatorProfile: React.FC = () => {
             contact_visible: false
           };
           
+          console.log('CreatorProfile: Using fallback profile data:', fullProfile);
           setProfile(fullProfile);
           return;
         } else {
@@ -149,14 +152,17 @@ const CreatorProfile: React.FC = () => {
       }
 
       if (!data || data.length === 0) {
+        console.log('CreatorProfile: No data returned from RPC');
         setNotFound(true);
         return;
       }
 
       const profileData = data[0];
+      console.log('CreatorProfile: Using profile data:', profileData);
 
       // Check if we found by ID and need to redirect to handle
       if (id !== profileData.handle && profileData.handle) {
+        console.log('CreatorProfile: Redirecting to handle:', profileData.handle);
         navigate(`/creator/${profileData.handle}`, { replace: true });
         return;
       }
@@ -168,7 +174,7 @@ const CreatorProfile: React.FC = () => {
 
       setProfile(profileData);
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error('CreatorProfile: Error fetching profile:', error);
       setNotFound(true);
     } finally {
       setLoading(false);
