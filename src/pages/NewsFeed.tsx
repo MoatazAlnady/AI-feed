@@ -42,6 +42,16 @@ const Newsfeed: React.FC = () => {
     checkNewsletterSubscription();
   }, [user]);
 
+  // Listen for createPostModal event from Header
+  useEffect(() => {
+    const handleCreatePostEvent = () => {
+      setShowCreatePost(true);
+    };
+
+    window.addEventListener('openCreatePostModal', handleCreatePostEvent);
+    return () => window.removeEventListener('openCreatePostModal', handleCreatePostEvent);
+  }, []);
+
   // Click-outside listener for create menu
   useEffect(() => {
     if (!showCreateMenu) return;

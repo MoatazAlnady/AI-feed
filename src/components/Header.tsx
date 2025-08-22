@@ -442,7 +442,7 @@ const Header: React.FC = () => {
                     {showCreateMenu && (
                       <div ref={createMenuRef} className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 animate-slide-up">
                         <Link
-                          to="/submit-tool"
+                          to="/tools/create"
                           className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -452,7 +452,7 @@ const Header: React.FC = () => {
                           AI Tool
                         </Link>
                         <Link
-                          to="/submit-article"
+                          to="/articles/create"
                           className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -461,16 +461,18 @@ const Header: React.FC = () => {
                         >
                           Article
                         </Link>
-                        <Link
-                          to="/create-post"
-                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setShowCreateMenu(false);
+                            // For Post, we'll show the modal instead of navigating
+                            const event = new CustomEvent('openCreatePostModal');
+                            window.dispatchEvent(event);
                           }}
+                          className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                         >
                           Post
-                        </Link>
+                        </button>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -827,13 +829,16 @@ const Header: React.FC = () => {
                       >
                         Article
                       </Link>
-                      <Link
-                        to="/posts/create"
-                        className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
-                        onClick={() => setIsMenuOpen(false)}
+                      <button
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          const event = new CustomEvent('openCreatePostModal');
+                          window.dispatchEvent(event);
+                        }}
+                        className="w-full text-left block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
                       >
                         Post
-                      </Link>
+                      </button>
                       <Link
                         to="/community"
                         className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
