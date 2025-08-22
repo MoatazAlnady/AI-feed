@@ -11,7 +11,6 @@ import {
   Star
 } from 'lucide-react';
 import NewsFeedComponent from '../components/NewsFeed';
-import CreatePostModal from '../components/CreatePostModal';
 import CreateEventModal from '../components/CreateEventModal';
 import HashtagSystem from '../components/HashtagSystem';
 import ChatDock from '../components/ChatDockProvider';
@@ -20,7 +19,6 @@ import { useAuth } from '../context/AuthContext';
 
 const Newsfeed: React.FC = () => {
   const { user } = useAuth();
-  const [showCreatePost, setShowCreatePost] = useState(false);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [showCreateMenu, setShowCreateMenu] = useState(false);
   const [showNewsletterPopup, setShowNewsletterPopup] = useState(false);
@@ -41,16 +39,6 @@ const Newsfeed: React.FC = () => {
     // Check on component mount and when user changes
     checkNewsletterSubscription();
   }, [user]);
-
-  // Listen for createPostModal event from Header
-  useEffect(() => {
-    const handleCreatePostEvent = () => {
-      setShowCreatePost(true);
-    };
-
-    window.addEventListener('openCreatePostModal', handleCreatePostEvent);
-    return () => window.removeEventListener('openCreatePostModal', handleCreatePostEvent);
-  }, []);
 
   // Click-outside listener for create menu
   useEffect(() => {
@@ -94,10 +82,6 @@ const Newsfeed: React.FC = () => {
     return () => document.removeEventListener('keydown', onKey, true);
   }, [showCreateMenu]);
 
-  const handlePostCreated = (newPost: any) => {
-    setPosts([newPost, ...posts]);
-  };
-
   const handleEventCreated = (newEvent: any) => {
     // Handle event creation
     console.log('Event created:', newEvent);
@@ -113,7 +97,7 @@ const Newsfeed: React.FC = () => {
       icon: MessageCircle,
       label: 'Post',
       description: 'Share your thoughts with the community',
-      action: () => setShowCreatePost(true),
+      action: () => window.location.href = '/create-post',
       color: 'from-blue-500 to-blue-600'
     },
     {
@@ -195,7 +179,7 @@ const Newsfeed: React.FC = () => {
                 {!showCreateMenu && (
                   <div className="grid grid-cols-2 gap-2">
                     <button
-                      onClick={() => setShowCreatePost(true)}
+                      onClick={() => window.location.href = '/create-post'}
                       className="flex flex-col items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-800/20 transition-colors"
                     >
                       <MessageCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mb-1" />
@@ -239,13 +223,13 @@ const Newsfeed: React.FC = () => {
                     <User className="h-6 w-6 text-white" />
                   </div>
                   <button
-                    onClick={() => setShowCreatePost(true)}
+                    onClick={() => window.location.href = '/create-post'}
                     className="flex-1 text-left p-4 bg-gray-50 dark:bg-gray-700 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                   >
                     What's on your mind about AI?
                   </button>
                   <button
-                    onClick={() => setShowCreatePost(true)}
+                    onClick={() => window.location.href = '/create-post'}
                     className="bg-gradient-primary text-white px-6 py-3 rounded-xl font-medium hover:shadow-md transition-all flex items-center space-x-2"
                   >
                     <Plus className="h-4 w-4" />
@@ -311,12 +295,6 @@ const Newsfeed: React.FC = () => {
       <ChatDock />
 
       {/* Modals */}
-      <CreatePostModal
-        isOpen={showCreatePost}
-        onClose={() => setShowCreatePost(false)}
-        onPostCreated={handlePostCreated}
-      />
-      
       <CreateEventModal
         isOpen={showCreateEvent}
         onClose={() => setShowCreateEvent(false)}

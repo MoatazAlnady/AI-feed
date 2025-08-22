@@ -465,9 +465,8 @@ const Header: React.FC = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             setShowCreateMenu(false);
-                            // For Post, we'll show the modal instead of navigating
-                            const event = new CustomEvent('openCreatePostModal');
-                            window.dispatchEvent(event);
+                            // Navigate directly to create post page
+                            navigate('/create-post');
                           }}
                           className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                         >
@@ -832,8 +831,7 @@ const Header: React.FC = () => {
                       <button
                         onClick={() => {
                           setIsMenuOpen(false);
-                          const event = new CustomEvent('openCreatePostModal');
-                          window.dispatchEvent(event);
+                          navigate('/create-post');
                         }}
                         className="w-full text-left block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
                       >

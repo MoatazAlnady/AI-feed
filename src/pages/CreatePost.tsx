@@ -43,8 +43,8 @@ const CreatePost: React.FC = () => {
 
       if (error) throw error;
 
-      // Navigate to newsfeed to see the new post
-      navigate('/newsfeed');
+      // Navigate to the individual post page
+      navigate(`/posts/${newPostData.id}`);
     } catch (error) {
       console.error('Error creating post:', error);
       alert('Failed to create post. Please try again.');

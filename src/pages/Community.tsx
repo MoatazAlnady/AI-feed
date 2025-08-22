@@ -48,14 +48,6 @@ const Community: React.FC = () => {
     // Listen for header create events
     const handleCreateEvent = () => setShowCreateEventModal(true);
     const handleCreateGroup = () => setShowCreateGroupModal(true);
-    const handleCreatePost = () => {
-      // Navigate to newsfeed and open the create post modal
-      navigate('/newsfeed');
-      setTimeout(() => {
-        const event = new CustomEvent('openCreatePostModal');
-        window.dispatchEvent(event);
-      }, 100);
-    };
     
     // Listen for connection request processing events to refresh connection states
     const handleConnectionRequestProcessed = () => {
@@ -66,13 +58,11 @@ const Community: React.FC = () => {
 
     window.addEventListener('openCreateEventModal', handleCreateEvent);
     window.addEventListener('openCreateGroupModal', handleCreateGroup);
-    window.addEventListener('openCreatePostModal', handleCreatePost);
     window.addEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
 
     return () => {
       window.removeEventListener('openCreateEventModal', handleCreateEvent);
       window.removeEventListener('openCreateGroupModal', handleCreateGroup);
-      window.removeEventListener('openCreatePostModal', handleCreatePost);
       window.removeEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
     };
   }, [activeTab, creators, user, navigate]);

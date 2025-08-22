@@ -17,6 +17,7 @@ import SubmitTool from "./pages/SubmitTool";
 import SubmitArticle from "./pages/SubmitArticle";
 import NotFound from "./pages/NotFound";
 import CreatePost from "./pages/CreatePost";
+import PostDetails from "./pages/PostDetails";
 import About from "./pages/About";
 import Categories from "./pages/Categories";
 import Community from "./pages/Community";
@@ -57,8 +58,9 @@ const App = () => (
                <Route path="tools/:id" element={<ToolDetails />} />
                <Route path="tools/:id/edit" element={<SubmitTool />} />
               <Route path="tools/compare/:toolIds" element={<ToolComparison />} />
-              <Route path="posts/create" element={<CreatePost />} />
-              <Route path="create-post" element={<CreatePost />} />
+               <Route path="posts/create" element={<CreatePost />} />
+               <Route path="posts/:id" element={<PostDetails />} />
+               <Route path="create-post" element={<CreatePost />} />
              <Route path="articles/create" element={<SubmitArticle />} />
               <Route path="categories" element={<Categories />} />
               <Route path="about" element={<About />} />
