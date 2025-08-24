@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import NewsFeedComponent from '../components/NewsFeed';
 import CreateEventModal from '../components/CreateEventModal';
+import CreatePostModal from '../components/CreatePostModal';
 import HashtagSystem from '../components/HashtagSystem';
 import ChatDock from '../components/ChatDockProvider';
 import NewsletterPopup from '../components/NewsletterPopup';
@@ -20,6 +21,7 @@ import { useAuth } from '../context/AuthContext';
 const Newsfeed: React.FC = () => {
   const { user } = useAuth();
   const [showCreateEvent, setShowCreateEvent] = useState(false);
+  const [showCreatePost, setShowCreatePost] = useState(false);
   const [showCreateMenu, setShowCreateMenu] = useState(false);
   const [showNewsletterPopup, setShowNewsletterPopup] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
@@ -87,6 +89,10 @@ const Newsfeed: React.FC = () => {
     console.log('Event created:', newEvent);
   };
 
+  const handlePostCreated = (newPost: any) => {
+    setPosts(prev => [newPost, ...prev]);
+  };
+
   const handleHashtagClick = (hashtag: string) => {
     // Navigate to tools page with hashtag search
     window.location.href = `/tools?search=${encodeURIComponent(hashtag)}`;
@@ -97,7 +103,7 @@ const Newsfeed: React.FC = () => {
       icon: MessageCircle,
       label: 'Post',
       description: 'Share your thoughts with the community',
-      action: () => window.location.href = '/create-post',
+      action: () => setShowCreatePost(true),
       color: 'from-blue-500 to-blue-600'
     },
     {
@@ -179,7 +185,7 @@ const Newsfeed: React.FC = () => {
                 {!showCreateMenu && (
                   <div className="grid grid-cols-2 gap-2">
                     <button
-                      onClick={() => window.location.href = '/create-post'}
+                      onClick={() => setShowCreatePost(true)}
                       className="flex flex-col items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-800/20 transition-colors"
                     >
                       <MessageCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mb-1" />
@@ -223,13 +229,13 @@ const Newsfeed: React.FC = () => {
                     <User className="h-6 w-6 text-white" />
                   </div>
                   <button
-                    onClick={() => window.location.href = '/create-post'}
+                    onClick={() => setShowCreatePost(true)}
                     className="flex-1 text-left p-4 bg-gray-50 dark:bg-gray-700 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                   >
                     What's on your mind about AI?
                   </button>
                   <button
-                    onClick={() => window.location.href = '/create-post'}
+                    onClick={() => setShowCreatePost(true)}
                     className="bg-gradient-primary text-white px-6 py-3 rounded-xl font-medium hover:shadow-md transition-all flex items-center space-x-2"
                   >
                     <Plus className="h-4 w-4" />
@@ -295,6 +301,11 @@ const Newsfeed: React.FC = () => {
       <ChatDock />
 
       {/* Modals */}
+      <CreatePostModal
+        isOpen={showCreatePost}
+        onClose={() => setShowCreatePost(false)}
+        onPostCreated={handlePostCreated}
+      />
       <CreateEventModal
         isOpen={showCreateEvent}
         onClose={() => setShowCreateEvent(false)}

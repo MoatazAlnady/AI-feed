@@ -264,24 +264,31 @@ const SubCategoryManagement: React.FC = () => {
                 <Label htmlFor="category" className="text-right">
                   Category *
                 </Label>
-                <Select value={formData.category_id} onValueChange={(value) => setFormData(prev => ({ ...prev, category_id: value }))}>
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        <div className="flex items-center gap-2">
-                          <div 
-                            className="w-3 h-3 rounded-full" 
-                            style={{ backgroundColor: category.color }}
-                          />
-                          {category.name}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                 <Select value={formData.category_id} onValueChange={(value) => {
+                   const selectedCategory = categories.find(cat => cat.id === value);
+                   setFormData(prev => ({ 
+                     ...prev, 
+                     category_id: value,
+                     color: selectedCategory ? selectedCategory.color : prev.color
+                   }));
+                 }}>
+                   <SelectTrigger className="col-span-3">
+                     <SelectValue placeholder="Select a category" />
+                   </SelectTrigger>
+                   <SelectContent>
+                     {categories.map((category) => (
+                       <SelectItem key={category.id} value={category.id}>
+                         <div className="flex items-center gap-2">
+                           <div 
+                             className="w-3 h-3 rounded-full" 
+                             style={{ backgroundColor: category.color }}
+                           />
+                           {category.name}
+                         </div>
+                       </SelectItem>
+                     ))}
+                   </SelectContent>
+                 </Select>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="name" className="text-right">

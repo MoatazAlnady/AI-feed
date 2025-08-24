@@ -1,18 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import ChatDock from '@/components/ChatDock';
 import { 
-  Brain, 
-  Image, 
-  Video, 
-  Code, 
-  BarChart3, 
-  Music, 
-  FileText, 
-  Zap,
-  MessageSquare,
-  Gamepad2,
-  Camera,
-  Globe
+  MessageSquare, Image, Video, Code, BarChart3, Music, FileText, 
+  Brain, Zap, Gamepad2, Camera, Globe, Wrench, Cpu, Lightbulb,
+  Smartphone, Monitor, Headphones, Mic, Edit, Search, Shield,
+  Database, Cloud, Workflow, Settings, PieChart, TrendingUp
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -33,7 +25,23 @@ const Categories: React.FC = () => {
     'Zap': Zap,
     'Gamepad2': Gamepad2,
     'Camera': Camera,
-    'Globe': Globe
+    'Globe': Globe,
+    'Wrench': Wrench,
+    'Cpu': Cpu,
+    'Lightbulb': Lightbulb,
+    'Smartphone': Smartphone,
+    'Monitor': Monitor,
+    'Headphones': Headphones,
+    'Mic': Mic,
+    'Edit': Edit,
+    'Search': Search,
+    'Shield': Shield,
+    'Database': Database,
+    'Cloud': Cloud,
+    'Workflow': Workflow,
+    'Settings': Settings,
+    'PieChart': PieChart,
+    'TrendingUp': TrendingUp
   };
 
   useEffect(() => {
