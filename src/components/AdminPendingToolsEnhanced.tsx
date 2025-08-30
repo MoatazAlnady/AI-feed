@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { RejectionReasonModal } from '@/components/RejectionReasonModal';
 import { 
   Check, 
   X, 
@@ -59,6 +60,9 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
   const [editedTool, setEditedTool] = useState<PendingTool | null>(null);
   const [selectedTools, setSelectedTools] = useState<Set<string>>(new Set());
   const [bulkProcessing, setBulkProcessing] = useState(false);
+  const [rejectionModalOpen, setRejectionModalOpen] = useState(false);
+  const [rejectionType, setRejectionType] = useState<'single' | 'bulk'>('single');
+  const [toolToReject, setToolToReject] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -155,43 +159,46 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
   };
 
   const handleReject = async (toolId: string) => {
-    if (!adminNotes.trim()) {
-      toast({
-        title: "Error",
-        description: "Please provide a reason for rejection",
-        variant: "destructive"
-      });
-      return;
-    }
+    setToolToReject(toolId);
+    setRejectionType('single');
+    setRejectionModalOpen(true);
+  };
 
-    setProcessing(toolId);
-    try {
-      const { error } = await supabase.rpc('reject_pending_tool', {
-        tool_id_param: toolId,
-        admin_notes_param: adminNotes
-      });
+  const handleRejectConfirm = async (rejectionReason: string) => {
+    if (rejectionType === 'single' && toolToReject) {
+      setProcessing(toolToReject);
+      try {
+        const { error } = await supabase.rpc('reject_pending_tool', {
+          tool_id_param: toolToReject,
+          admin_notes_param: rejectionReason
+        });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      toast({
-        title: "Tool Rejected",
-        description: "Tool has been rejected."
-      });
+        toast({
+          title: "Tool Rejected",
+          description: "Tool has been rejected and the submitter has been notified."
+        });
 
-      await fetchPendingTools();
-      if (onRefresh) onRefresh();
-      setSelectedTool(null);
-      setAdminNotes('');
-      setEditMode(false);
-    } catch (error) {
-      console.error('Error rejecting tool:', error);
-      toast({
-        title: "Error",
-        description: "Failed to reject tool",
-        variant: "destructive"
-      });
-    } finally {
-      setProcessing(null);
+        await fetchPendingTools();
+        if (onRefresh) onRefresh();
+        setSelectedTool(null);
+        setAdminNotes('');
+        setEditMode(false);
+      } catch (error) {
+        console.error('Error rejecting tool:', error);
+        toast({
+          title: "Error",
+          description: "Failed to reject tool",
+          variant: "destructive"
+        });
+      } finally {
+        setProcessing(null);
+        setRejectionModalOpen(false);
+        setToolToReject(null);
+      }
+    } else if (rejectionType === 'bulk') {
+      await handleBulkReject(rejectionReason);
     }
   };
 
@@ -287,7 +294,7 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
     }
   };
 
-  const handleBulkAction = async (action: 'approve' | 'reject') => {
+  const handleBulkApprove = async () => {
     if (selectedTools.size === 0) {
       toast({
         title: "No Selection",
@@ -297,29 +304,13 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
       return;
     }
 
-    if (action === 'reject' && !adminNotes.trim()) {
-      toast({
-        title: "Error",
-        description: "Please provide a reason for rejection",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setBulkProcessing(true);
     try {
       const promises = Array.from(selectedTools).map(toolId => {
-        if (action === 'approve') {
-          return supabase.rpc('approve_pending_tool', {
-            tool_id_param: toolId,
-            admin_notes_param: adminNotes || null
-          });
-        } else {
-          return supabase.rpc('reject_pending_tool', {
-            tool_id_param: toolId,
-            admin_notes_param: adminNotes
-          });
-        }
+        return supabase.rpc('approve_pending_tool', {
+          tool_id_param: toolId,
+          admin_notes_param: adminNotes || null
+        });
       });
 
       const results = await Promise.all(promises);
@@ -328,13 +319,13 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
       if (errors.length > 0) {
         toast({
           title: "Partial Success",
-          description: `${selectedTools.size - errors.length} tools processed successfully, ${errors.length} failed`,
+          description: `${selectedTools.size - errors.length} tools approved successfully, ${errors.length} failed`,
           variant: "destructive"
         });
       } else {
         toast({
-          title: "Bulk Action Complete",
-          description: `${selectedTools.size} tools ${action === 'approve' ? 'approved' : 'rejected'} successfully`
+          title: "Bulk Approval Complete",
+          description: `${selectedTools.size} tools approved successfully`
         });
       }
 
@@ -343,14 +334,71 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
       setAdminNotes('');
       if (onRefresh) onRefresh();
     } catch (error) {
-      console.error('Error with bulk action:', error);
+      console.error('Error with bulk approval:', error);
       toast({
         title: "Error",
-        description: "Failed to complete bulk action",
+        description: "Failed to complete bulk approval",
         variant: "destructive"
       });
     } finally {
       setBulkProcessing(false);
+    }
+  };
+
+  const handleBulkRejectClick = () => {
+    if (selectedTools.size === 0) {
+      toast({
+        title: "No Selection",
+        description: "Please select at least one tool",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setRejectionType('bulk');
+    setRejectionModalOpen(true);
+  };
+
+  const handleBulkReject = async (rejectionReason: string) => {
+    setBulkProcessing(true);
+    try {
+      const promises = Array.from(selectedTools).map(toolId => {
+        return supabase.rpc('reject_pending_tool', {
+          tool_id_param: toolId,
+          admin_notes_param: rejectionReason
+        });
+      });
+
+      const results = await Promise.all(promises);
+      const errors = results.filter(r => r.error);
+
+      if (errors.length > 0) {
+        toast({
+          title: "Partial Success",
+          description: `${selectedTools.size - errors.length} tools rejected successfully, ${errors.length} failed`,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Bulk Rejection Complete",
+          description: `${selectedTools.size} tools rejected successfully and submitters have been notified`
+        });
+      }
+
+      await fetchPendingTools();
+      setSelectedTools(new Set());
+      setAdminNotes('');
+      if (onRefresh) onRefresh();
+    } catch (error) {
+      console.error('Error with bulk rejection:', error);
+      toast({
+        title: "Error",
+        description: "Failed to complete bulk rejection",
+        variant: "destructive"
+      });
+    } finally {
+      setBulkProcessing(false);
+      setRejectionModalOpen(false);
     }
   };
 
@@ -408,7 +456,7 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
                   <div className="flex items-center gap-2">
                      <Button
                        size="sm"
-                       onClick={() => handleBulkAction('approve')}
+                       onClick={handleBulkApprove}
                        disabled={bulkProcessing}
                        variant="gradient"
                      >
@@ -418,7 +466,7 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
                     <Button
                       size="sm"
                       variant="destructive"
-                      onClick={() => handleBulkAction('reject')}
+                      onClick={handleBulkRejectClick}
                       disabled={bulkProcessing}
                     >
                       <X className="h-4 w-4 mr-1" />
@@ -819,6 +867,22 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
           </div>
         </div>
       )}
+
+      {/* Rejection Reason Modal */}
+      <RejectionReasonModal
+        isOpen={rejectionModalOpen}
+        onClose={() => {
+          setRejectionModalOpen(false);
+          setToolToReject(null);
+        }}
+        onConfirm={handleRejectConfirm}
+        isLoading={rejectionType === 'single' ? processing === toolToReject : bulkProcessing}
+        selectedCount={rejectionType === 'bulk' ? selectedTools.size : 1}
+        toolNames={rejectionType === 'bulk' 
+          ? tools.filter(t => selectedTools.has(t.id)).map(t => t.name)
+          : selectedTool ? [selectedTool.name] : []
+        }
+      />
     </div>
   );
 };
