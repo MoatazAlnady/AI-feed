@@ -510,6 +510,25 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
                       checked={selectedTools.has(tool.id)}
                       onCheckedChange={() => toggleToolSelection(tool.id)}
                     />
+                    {/* Logo Preview */}
+                    <div className="w-12 h-12 flex-shrink-0">
+                      {tool.logo_url ? (
+                        <img 
+                          src={tool.logo_url} 
+                          alt={`${tool.name} logo`}
+                          className="w-full h-full object-contain rounded border bg-background"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-muted rounded border flex items-center justify-center">
+                          <span className="text-xs text-muted-foreground font-medium">
+                            {tool.name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
