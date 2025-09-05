@@ -250,6 +250,17 @@ const SubmitTool: React.FC = () => {
       console.log('Current user:', user);
       console.log('User ID:', user?.id);
       
+      // Check if user is authenticated
+      if (!user || !user.id) {
+        toast({
+          title: "Authentication Error",
+          description: "You must be logged in to submit a tool. Please log in and try again.",
+          variant: "destructive"
+        });
+        setIsSubmitting(false);
+        return;
+      }
+      
       // Check for duplicates only if creating new tool
       if (!isEditMode) {
         const { count } = await supabase
