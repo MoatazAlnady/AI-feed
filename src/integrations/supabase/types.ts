@@ -2221,6 +2221,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      user_can_access_conversation: {
+        Args: { conversation_uuid: string; user_uuid: string }
+        Returns: boolean
+      }
       user_profile_exists: {
         Args: { user_id_param: string }
         Returns: boolean
