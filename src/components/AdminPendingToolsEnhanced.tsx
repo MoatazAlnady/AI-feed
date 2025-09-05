@@ -802,34 +802,34 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
                     </div>
 
                     <div>
-                      <div className="flex justify-between items-start mb-4">
-                        <h3 className="font-semibold">Submission Info</h3>
-                        {/* Logo Preview - Right side */}
-                        <div className="w-16 h-16 rounded-lg p-1 bg-background ml-4">
-                          {selectedTool.logo_url ? (
-                            <img 
-                              src={selectedTool.logo_url} 
-                              alt={`${selectedTool.name} logo`}
-                              className="w-full h-full object-contain rounded"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
-                                const parent = target.parentElement;
-                                if (parent) {
-                                  parent.innerHTML = `<div class="w-full h-full bg-muted rounded flex items-center justify-center"><span class="text-sm text-muted-foreground font-medium">${selectedTool.name.charAt(0).toUpperCase()}</span></div>`;
-                                }
-                              }}
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-muted rounded flex items-center justify-center">
-                              <span className="text-sm text-muted-foreground font-medium">
-                                {selectedTool.name.charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                      <h3 className="font-semibold mb-4">Submission Info</h3>
                       <div className="space-y-4">
+                        {/* Logo Preview - Centered */}
+                        <div className="flex justify-center mb-6">
+                          <div className="w-24 h-24 border-2 border-border rounded-lg p-2 bg-background">
+                            {selectedTool.logo_url ? (
+                              <img 
+                                src={selectedTool.logo_url} 
+                                alt={`${selectedTool.name} logo`}
+                                className="w-full h-full object-contain rounded"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = 'none';
+                                  const parent = target.parentElement;
+                                  if (parent) {
+                                    parent.innerHTML = `<div class="w-full h-full bg-muted rounded flex items-center justify-center"><span class="text-lg text-muted-foreground font-medium">${selectedTool.name.charAt(0).toUpperCase()}</span></div>`;
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-muted rounded flex items-center justify-center">
+                                <span className="text-lg text-muted-foreground font-medium">
+                                  {selectedTool.name.charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                         <div>
                           <Label>Submitted by</Label>
                           <p className="text-sm mt-1 flex items-center gap-2">
