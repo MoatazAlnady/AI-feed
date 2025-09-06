@@ -631,22 +631,7 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
               </div>
             </div>
 
-            <div className="p-6 space-y-6">
-              {/* Logo Display */}
-              {selectedTool.logo_url && (
-                <div className="flex justify-center">
-                  <div className="w-32 h-32 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-800 flex items-center justify-center">
-                    <img 
-                      src={selectedTool.logo_url} 
-                      alt={`${selectedTool.name} logo`}
-                      className="max-w-full max-h-full object-contain"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
+            <div className="p-6">
               {editMode && editedTool ? (
                 /* Edit Mode */
                 <div className="space-y-6">
@@ -769,164 +754,161 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
                 </div>
               ) : (
                 /* View Mode */
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h3 className="font-semibold mb-4">Tool Information</h3>
-                      <div className="space-y-4">
-                        <div>
-                          <Label>Tool Name</Label>
-                          <p className="text-sm mt-1 font-medium">{selectedTool.name}</p>
+                <div className="grid gap-8 md:grid-cols-[380px,1fr]">
+                  {/* Left column: logo + submission info */}
+                  <div className="space-y-6">
+                    {/* Large Logo */}
+                    <div className="flex justify-center">
+                      {selectedTool.logo_url ? (
+                        <img 
+                          src={selectedTool.logo_url} 
+                          alt={`${selectedTool.name} logo`}
+                          className="h-28 w-28 rounded-xl object-contain bg-surface-2/40 ring-1 ring-border/20"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="h-28 w-28 rounded-xl bg-surface-2/40 ring-1 ring-border/20 flex items-center justify-center">
+                          <span className="text-2xl text-muted-foreground font-medium">
+                            {selectedTool.name.charAt(0).toUpperCase()}
+                          </span>
                         </div>
-                        <div>
-                          <Label>Description</Label>
-                          <p className="text-sm mt-1">{selectedTool.description}</p>
-                        </div>
-                        <div>
-                          <Label>Website</Label>
-                          <a 
-                            href={selectedTool.website} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-sm mt-1 text-primary hover:underline flex items-center gap-1"
-                          >
-                            {selectedTool.website}
-                            <ExternalLink className="h-3 w-3" />
-                          </a>
-                        </div>
-                        <div>
-                          <Label>Pricing</Label>
-                          <p className="text-sm mt-1">{selectedTool.pricing}</p>
-                        </div>
-                      </div>
+                      )}
                     </div>
 
+                    {/* Submission Info */}
                     <div>
-                      <h3 className="font-semibold mb-4">Submission Info</h3>
-                      <div className="space-y-4">
-                        {/* Logo Preview - Centered */}
-                        <div className="flex justify-center mb-6">
-                          <div className="w-24 h-24 border-2 border-border rounded-lg p-2 bg-background">
-                            {selectedTool.logo_url ? (
-                              <img 
-                                src={selectedTool.logo_url} 
-                                alt={`${selectedTool.name} logo`}
-                                className="w-full h-full object-contain rounded"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.style.display = 'none';
-                                  const parent = target.parentElement;
-                                  if (parent) {
-                                    parent.innerHTML = `<div class="w-full h-full bg-muted rounded flex items-center justify-center"><span class="text-lg text-muted-foreground font-medium">${selectedTool.name.charAt(0).toUpperCase()}</span></div>`;
-                                  }
-                                }}
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-muted rounded flex items-center justify-center">
-                                <span className="text-lg text-muted-foreground font-medium">
-                                  {selectedTool.name.charAt(0).toUpperCase()}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <div>
-                          <Label>Submitted by</Label>
-                          <p className="text-sm mt-1 flex items-center gap-2">
+                      <h3 className="text-base font-semibold mb-3">Submission Info</h3>
+                      <dl className="space-y-2 text-sm">
+                        <div className="flex gap-2">
+                          <dt className="basis-32 text-muted-foreground">Submitted by</dt>
+                          <dd className="flex items-center gap-2">
                             <User className="h-4 w-4" />
-                            {selectedTool.user_name}
-                          </p>
+                            <span className="font-medium">{selectedTool.user_name}</span>
+                          </dd>
                         </div>
-                        <div>
-                          <Label>Category</Label>
-                          <p className="text-sm mt-1">{selectedTool.category_name}</p>
+                        <div className="flex gap-2">
+                          <dt className="basis-32 text-muted-foreground">Category</dt>
+                          <dd>{selectedTool.category_name}</dd>
                         </div>
                         {selectedTool.subcategory && (
-                          <div>
-                            <Label>Subcategory</Label>
-                            <p className="text-sm mt-1">{selectedTool.subcategory}</p>
+                          <div className="flex gap-2">
+                            <dt className="basis-32 text-muted-foreground">Subcategory</dt>
+                            <dd>{selectedTool.subcategory}</dd>
                           </div>
                         )}
+                        <div className="flex gap-2">
+                          <dt className="basis-32 text-muted-foreground">Submitted</dt>
+                          <dd>{new Date(selectedTool.created_at).toLocaleString()}</dd>
+                        </div>
+                      </dl>
+                    </div>
+                  </div>
+
+                  {/* Right column: tool information */}
+                  <div className="max-w-prose">
+                    <h3 className="text-base font-semibold mb-4">Tool Information</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <Label>Tool Name</Label>
+                        <p className="text-sm mt-1 font-medium">{selectedTool.name}</p>
+                      </div>
+                      <div>
+                        <Label>Description</Label>
+                        <p className="text-sm mt-1">{selectedTool.description}</p>
+                      </div>
+                      <div>
+                        <Label>Website</Label>
+                        <a 
+                          href={selectedTool.website} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-sm mt-1 text-primary hover:underline flex items-center gap-1"
+                        >
+                          {selectedTool.website}
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </div>
+                      <div>
+                        <Label>Pricing</Label>
+                        <p className="text-sm mt-1">{selectedTool.pricing}</p>
+                      </div>
+
+                      {selectedTool.tags && selectedTool.tags.length > 0 && (
                         <div>
-                          <Label>Submitted</Label>
-                          <p className="text-sm mt-1">{new Date(selectedTool.created_at).toLocaleString()}</p>
+                          <Label>Tags</Label>
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            {selectedTool.tags.map((tag, index) => (
+                              <Badge key={index} variant="secondary">
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                          <Label>Features</Label>
+                          <ul className="text-sm mt-1 space-y-1">
+                            {selectedTool.features?.map((feature, index) => (
+                              <li key={index}>• {feature}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <Label>Pros</Label>
+                          <ul className="text-sm mt-1 space-y-1">
+                            {selectedTool.pros?.map((pro, index) => (
+                              <li key={index}>• {pro}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <Label>Cons</Label>
+                          <ul className="text-sm mt-1 space-y-1">
+                            {selectedTool.cons?.map((con, index) => (
+                              <li key={index}>• {con}</li>
+                            ))}
+                          </ul>
                         </div>
                       </div>
-                    </div>
-                  </div>
 
-                  {selectedTool.tags && selectedTool.tags.length > 0 && (
-                    <div>
-                      <Label>Tags</Label>
-                      <div className="flex flex-wrap gap-2 mt-1">
-                        {selectedTool.tags.map((tag, index) => (
-                          <Badge key={index} variant="secondary">
-                            {tag}
-                          </Badge>
-                        ))}
+                      <div>
+                        <Label htmlFor="adminNotes">Admin Notes</Label>
+                        <Textarea
+                          id="adminNotes"
+                          value={adminNotes}
+                          onChange={(e) => setAdminNotes(e.target.value)}
+                          placeholder="Add notes about your decision..."
+                          rows={3}
+                          className="mt-1"
+                        />
+                      </div>
+
+                      <div className="flex gap-3 pt-4">
+                        <Button
+                          onClick={() => handleApprove(selectedTool.id)}
+                          disabled={processing === selectedTool.id}
+                          className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          <Check className="h-4 w-4 mr-2" />
+                          {processing === selectedTool.id ? "Processing..." : "Approve & Publish"}
+                        </Button>
+                        <Button
+                          onClick={() => handleReject(selectedTool.id)}
+                          disabled={processing === selectedTool.id}
+                          variant="destructive"
+                          className="flex-1"
+                        >
+                          <X className="h-4 w-4 mr-2" />
+                          {processing === selectedTool.id ? "Processing..." : "Reject"}
+                        </Button>
                       </div>
                     </div>
-                  )}
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                      <Label>Features</Label>
-                      <ul className="text-sm mt-1 space-y-1">
-                        {selectedTool.features?.map((feature, index) => (
-                          <li key={index}>• {feature}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <Label>Pros</Label>
-                      <ul className="text-sm mt-1 space-y-1">
-                        {selectedTool.pros?.map((pro, index) => (
-                          <li key={index}>• {pro}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <Label>Cons</Label>
-                      <ul className="text-sm mt-1 space-y-1">
-                        {selectedTool.cons?.map((con, index) => (
-                          <li key={index}>• {con}</li>
-                        ))}
-                      </ul>
-                    </div>
                   </div>
-
-                  <div>
-                    <Label htmlFor="adminNotes">Admin Notes</Label>
-                    <Textarea
-                      id="adminNotes"
-                      value={adminNotes}
-                      onChange={(e) => setAdminNotes(e.target.value)}
-                      placeholder="Add notes about your decision..."
-                      rows={3}
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div className="flex gap-3 pt-4">
-                    <Button
-                      onClick={() => handleApprove(selectedTool.id)}
-                      disabled={processing === selectedTool.id}
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                    >
-                      <Check className="h-4 w-4 mr-2" />
-                      {processing === selectedTool.id ? "Processing..." : "Approve & Publish"}
-                    </Button>
-                    <Button
-                      onClick={() => handleReject(selectedTool.id)}
-                      disabled={processing === selectedTool.id}
-                      variant="destructive"
-                      className="flex-1"
-                    >
-                      <X className="h-4 w-4 mr-2" />
-                      {processing === selectedTool.id ? "Processing..." : "Reject"}
-                    </Button>
-                  </div>
-                </>
+                </div>
               )}
             </div>
           </div>
