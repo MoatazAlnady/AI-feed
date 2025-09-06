@@ -45,6 +45,16 @@ const SubmitTool: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  // Cleanup effect for object URLs
+  useEffect(() => {
+    return () => {
+      // Clean up object URLs when component unmounts
+      if (formData.logo && formData.logo instanceof File) {
+        URL.revokeObjectURL(formData.logo as any);
+      }
+    };
+  }, [formData.logo]);
+
   // Fetch categories and sub-categories on component mount
   useEffect(() => {
     fetchCategories();
@@ -163,6 +173,12 @@ const SubmitTool: React.FC = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
+    
+    // Clean up previous object URL to prevent memory leaks
+    if (formData.logo && formData.logo instanceof File) {
+      URL.revokeObjectURL(formData.logo as any);
+    }
+    
     setFormData(prev => ({ ...prev, logo: file }));
   };
 
@@ -318,15 +334,15 @@ const SubmitTool: React.FC = () => {
         try {
           const fileName = `${Date.now()}_${formData.logo.name}`;
           const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('user-uploads')
-            .upload(`tool-logos/${fileName}`, formData.logo);
+            .from('tool-logos')
+            .upload(`${fileName}`, formData.logo);
 
           if (uploadError) {
             console.error('Logo upload error:', uploadError);
           } else {
             const { data: { publicUrl } } = supabase.storage
-              .from('user-uploads')
-              .getPublicUrl(`tool-logos/${fileName}`);
+              .from('tool-logos')
+              .getPublicUrl(`${fileName}`);
             logoUrl = publicUrl;
           }
         } catch (uploadErr) {
@@ -981,9 +997,17 @@ const SubmitTool: React.FC = () => {
                   Choose File
                 </label>
                 {formData.logo && (
-                  <p className="mt-2 text-sm text-gray-600">
-                    Selected: {formData.logo.name}
-                  </p>
+                  <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Logo Preview:</p>
+                    <img 
+                      src={URL.createObjectURL(formData.logo)} 
+                      alt="Tool logo preview"
+                      className="w-16 h-16 object-contain rounded-lg border border-gray-200 dark:border-gray-600 mx-auto"
+                    />
+                    <p className="mt-2 text-sm text-gray-600">
+                      Selected: {formData.logo.name}
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
