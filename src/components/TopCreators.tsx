@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import VerificationBadge from '@/components/VerificationBadge';
 import { Link } from 'react-router-dom';
+import { getCreatorProfileLink } from '@/utils/profileUtils';
 
 export default function TopCreators() {
   const { data: creators, isLoading } = useQuery({
@@ -28,7 +29,7 @@ export default function TopCreators() {
           {creators.map((creator) => (
             <Link
               key={creator.id}
-              to={`/creator/${creator.id}`}
+              to={getCreatorProfileLink({ id: creator.id, handle: creator.handle || undefined })}
               className="flex flex-col items-center justify-start gap-2 w-28 group"
             >
               <div className="relative">

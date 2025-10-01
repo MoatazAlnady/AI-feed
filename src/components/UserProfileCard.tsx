@@ -260,9 +260,9 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
   // Generate profile link - use handle if available, otherwise fallback to userId
   const getProfileLink = () => {
     if (handle) {
-      return `/u/${handle}`;
+      return `/creator/${handle}`;
     }
-    return `/profile/${userId}`;
+    return `/creator/${userId}`;
   };
 
   return (

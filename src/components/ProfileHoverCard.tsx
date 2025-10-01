@@ -6,6 +6,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { User, UserPlus, MessageCircle, MapPin, Briefcase } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { getCreatorProfileLink } from '@/utils/profileUtils';
 
 interface ProfileHoverCardProps {
   userId: string;
@@ -16,6 +18,7 @@ interface ProfileHoverCardProps {
 interface UserProfile {
   id: string;
   full_name: string;
+  handle?: string;
   profile_photo?: string;
   job_title?: string;
   company?: string;
@@ -29,6 +32,7 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
   onProfileClick,
 }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [hasRequestPending, setHasRequestPending] = useState(false);
@@ -57,7 +61,7 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
     try {
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('id, full_name, profile_photo, job_title, company, location, bio')
+        .select('id, full_name, handle, profile_photo, job_title, company, location, bio')
         .eq('id', userId)
         .single();
 
@@ -147,10 +151,19 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
     return <>{children}</>;
   }
 
+  const handleProfileNavigation = () => {
+    if (profile) {
+      navigate(getCreatorProfileLink({ id: profile.id, handle: profile.handle }));
+    }
+    if (onProfileClick) {
+      onProfileClick();
+    }
+  };
+
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
-        <span onClick={onProfileClick} className="cursor-pointer">
+        <span onClick={handleProfileNavigation} className="cursor-pointer">
           {children}
         </span>
       </HoverCardTrigger>

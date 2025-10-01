@@ -13,9 +13,11 @@ export interface ProfileReference {
  * Uses handle if available, falls back to ID
  */
 export function getCreatorProfileLink(profile: ProfileReference): string {
+  // Always prefer handle over ID for cleaner URLs
   if (profile.handle) {
     return `/creator/${profile.handle}`;
   }
+  // Fallback to ID if no handle exists
   return `/creator/${profile.id}`;
 }
 
