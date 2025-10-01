@@ -52,7 +52,7 @@ interface CreatorProfile {
 }
 
 const CreatorProfile: React.FC = () => {
-  const { handleOrId } = useParams<{ handleOrId: string }>();
+  const { handleOrId, id, handle, userId } = useParams<{ handleOrId?: string; id?: string; handle?: string; userId?: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { openChatWith } = useChatDock();
@@ -62,9 +62,12 @@ const CreatorProfile: React.FC = () => {
   const [isPrivate, setIsPrivate] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
 
+  // Combine all possible URL parameter names
+  const identifier = handleOrId || id || handle || userId;
+
   useEffect(() => {
-    if (handleOrId) {
-      fetchProfile(handleOrId);
+    if (identifier) {
+      fetchProfile(identifier);
       if (user) {
         checkConnectionStatus();
       }
@@ -81,7 +84,7 @@ const CreatorProfile: React.FC = () => {
     return () => {
       window.removeEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
     };
-  }, [handleOrId, user]);
+  }, [identifier, user]);
 
   const fetchProfile = async (id: string) => {
     try {

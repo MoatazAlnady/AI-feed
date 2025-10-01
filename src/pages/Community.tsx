@@ -176,7 +176,7 @@ const Community: React.FC = () => {
   };
 
   const getProfileLink = (creator: any) => {
-    // Use handle if available, otherwise fallback to creator profile route
+    // Use handle if available, otherwise fallback to ID
     if (creator.handle) {
       return `/creator/${creator.handle}`;
     }

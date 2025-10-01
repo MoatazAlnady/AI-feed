@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import ToolStars from '@/components/ToolStars';
 import ToolReviews from '@/components/ToolReviews';
 import ToolActionButtons from '@/components/ToolActionButtons';
+import { getCreatorProfileLink } from '@/utils/profileUtils';
 
 interface Tool {
   id: string;
@@ -321,7 +322,10 @@ const ToolDetails: React.FC = () => {
                     <div>
                       {tool.user_profiles?.full_name ? (
                         <Link
-                          to={`/profile/${tool.user_profiles.handle || tool.user_id}`}
+                          to={getCreatorProfileLink({ 
+                            id: tool.user_id, 
+                            handle: tool.user_profiles.handle 
+                          })}
                           className="font-medium text-gray-900 dark:text-white hover:text-primary transition-colors"
                         >
                           {tool.user_profiles.full_name}
