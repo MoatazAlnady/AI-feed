@@ -2149,6 +2149,7 @@ export type Database = {
         Returns: {
           ai_nexus_top_voice: boolean
           full_name: string
+          handle: string
           id: string
           job_title: string
           profile_photo: string
