@@ -445,7 +445,7 @@ const CreatorProfile: React.FC = () => {
               <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                 <div>
                   <div className="flex items-center space-x-2">
-                    <h1 className="text-2xl md:text-3xl font-bold text-white">
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
                       {profile.full_name || 'AI Enthusiast'}
                     </h1>
                     {profile.verified && (
@@ -458,13 +458,13 @@ const CreatorProfile: React.FC = () => {
                     )}
                   </div>
                   {profile.job_title && (
-                    <p className="text-white/90 text-lg mt-1">
+                    <p className="text-gray-800 dark:text-white/90 text-lg mt-1">
                       {profile.job_title}
                       {profile.company && ` at ${profile.company}`}
                     </p>
                   )}
                   {profile.location && (
-                    <div className="flex items-center space-x-1 text-white/80 mt-1">
+                    <div className="flex items-center space-x-1 text-gray-700 dark:text-white/80 mt-1">
                       <MapPin className="h-4 w-4" />
                       <span>{profile.location}</span>
                     </div>
