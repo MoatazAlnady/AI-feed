@@ -14,7 +14,8 @@ import {
   Youtube,
   Globe,
   Mail,
-  Phone
+  Phone,
+  X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useChatDock } from '../context/ChatDockContext';
@@ -251,6 +252,30 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
     }
   };
 
+  const withdrawConnectionRequest = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('connection_requests')
+        .delete()
+        .eq('requester_id', user.id)
+        .eq('recipient_id', userId)
+        .eq('status', 'pending');
+
+      if (error) throw error;
+
+      setHasRequestPending(false);
+      toast.success('Connection request withdrawn');
+    } catch (error) {
+      console.error('Error withdrawing connection request:', error);
+      toast.error('Failed to withdraw connection request');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleMessage = async () => {
     if (!user) {
       toast.error('Please log in to send messages');
@@ -389,11 +414,13 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
             </div>
           ) : hasRequestPending ? (
             <button
-              disabled
-              className="flex items-center space-x-1 px-3 py-2 bg-muted text-muted-foreground rounded-lg text-sm font-medium"
+              onClick={withdrawConnectionRequest}
+              disabled={loading}
+              className="flex items-center space-x-1 px-3 py-2 bg-muted text-muted-foreground rounded-lg text-sm font-medium hover:bg-destructive/10 hover:text-destructive transition-colors"
             >
               <UserCheck className="h-4 w-4" />
               <span>Request Sent</span>
+              <X className="h-3 w-3 ml-1" />
             </button>
           ) : (
             <button

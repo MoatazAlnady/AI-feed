@@ -5,7 +5,7 @@ import { Button } from './ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
-import { User, UserPlus, MessageCircle, MapPin, Briefcase, Check } from 'lucide-react';
+import { User, UserPlus, MessageCircle, MapPin, Briefcase, Check, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getCreatorProfileLink } from '@/utils/profileUtils';
 
@@ -167,6 +167,30 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
     }
   };
 
+  const withdrawConnectionRequest = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('connection_requests')
+        .delete()
+        .eq('requester_id', user.id)
+        .eq('recipient_id', userId)
+        .eq('status', 'pending');
+
+      if (error) throw error;
+
+      setHasRequestPending(false);
+      toast.success('Connection request withdrawn');
+    } catch (error) {
+      console.error('Error withdrawing connection request:', error);
+      toast.error('Failed to withdraw connection request');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!profile || userId === user?.id) {
     return <>{children}</>;
   }
@@ -254,9 +278,16 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
                 Message
               </Button>
             ) : hasRequestPending ? (
-              <Button size="sm" variant="outline" disabled className="flex-1">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={withdrawConnectionRequest}
+                disabled={loading}
+                className="flex-1"
+              >
                 <Check className="h-4 w-4 mr-1" />
                 Request Sent
+                <X className="h-3 w-3 ml-1" />
               </Button>
             ) : (
               <Button 

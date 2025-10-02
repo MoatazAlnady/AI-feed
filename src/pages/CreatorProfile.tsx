@@ -21,7 +21,8 @@ import {
   UserCheck,
   UserMinus,
   Users,
-  Check
+  Check,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -319,6 +320,27 @@ const CreatorProfile: React.FC = () => {
     }
   };
 
+  const withdrawConnectionRequest = async () => {
+    if (!user || !profile) return;
+    
+    try {
+      const { error } = await supabase
+        .from('connection_requests')
+        .delete()
+        .eq('requester_id', user.id)
+        .eq('recipient_id', profile.id)
+        .eq('status', 'pending');
+
+      if (error) throw error;
+
+      setConnectionStatus('none');
+      toast.success('Connection request withdrawn');
+    } catch (error) {
+      console.error('Error withdrawing connection request:', error);
+      toast.error('Failed to withdraw connection request');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -472,9 +494,9 @@ const CreatorProfile: React.FC = () => {
                         )}
                       </Button>
                       <Button 
-                        onClick={sendConnectionRequest}
-                        disabled={connectionStatus !== 'none'}
-                        variant={connectionStatus === 'connected' ? 'outline' : 'default'}
+                        onClick={connectionStatus === 'pending' ? withdrawConnectionRequest : sendConnectionRequest}
+                        disabled={connectionStatus === 'connected'}
+                        variant={connectionStatus === 'connected' ? 'outline' : connectionStatus === 'pending' ? 'outline' : 'default'}
                       >
                         {connectionStatus === 'connected' ? (
                           <>
@@ -485,6 +507,7 @@ const CreatorProfile: React.FC = () => {
                           <>
                             <Check className="h-4 w-4 mr-2" />
                             Request Sent
+                            <X className="h-3 w-3 ml-1" />
                           </>
                         ) : (
                           <>
