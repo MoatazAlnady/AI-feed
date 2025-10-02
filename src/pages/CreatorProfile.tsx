@@ -22,7 +22,6 @@ import {
   UserMinus,
   Users
 } from 'lucide-react';
-import { useChatDock } from '@/context/ChatDockContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -58,7 +57,6 @@ const CreatorProfile: React.FC = () => {
   const { handleOrId, id, handle, userId } = useParams<{ handleOrId?: string; id?: string; handle?: string; userId?: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { openChatWith } = useChatDock();
   const [profile, setProfile] = useState<CreatorProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -476,8 +474,16 @@ const CreatorProfile: React.FC = () => {
                           e.preventDefault();
                           e.stopPropagation();
                           try {
-                            await openChatWith(profile.id, { createIfMissing: true });
-                            toast.success(`Opening chat with ${profile.full_name}`);
+                            if (typeof window !== 'undefined' && (window as any).chatDock?.open) {
+                              const success = await (window as any).chatDock.open(profile.id);
+                              if (success) {
+                                toast.success(`Opening chat with ${profile.full_name}`);
+                              } else {
+                                toast.error('Failed to open chat. Please try again.');
+                              }
+                            } else {
+                              toast.error('Chat system not ready. Please try again.');
+                            }
                           } catch (error) {
                             console.error('Error opening chat:', error);
                             toast.error('Failed to open chat');

@@ -213,48 +213,51 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
   }, [user, loadMessages]);
 
   // Open chat with a user
-  const openChatWith = useCallback(async (userId: string) => {
-    if (!user) return;
+  const openChatWith = useCallback(async (userId: string): Promise<boolean> => {
+    if (!user) {
+      console.error('User not authenticated');
+      return false;
+    }
     
     try {
-      // Find or create DM conversation using edge function
-      const response = await fetch(`https://fbhhumtpdfalgkhzirew.supabase.co/functions/v1/chat-find-or-create-dm`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
-        },
-        body: JSON.stringify({ otherUserId: userId })
+      // Find or create DM conversation using edge function with invoke
+      const { data, error } = await supabase.functions.invoke('chat-find-or-create-dm', {
+        body: { otherUserId: userId }
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to find or create conversation');
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
       }
 
-      const { conversationId } = await response.json();
-
-      if (conversationId) {
-        // Get user info using safe RPC
-        const { data: userData } = await supabase.rpc('get_public_profiles_by_ids', {
-          ids: [userId]
-        });
-
-        const otherUser = Array.isArray(userData) && userData.length > 0 ? {
-          id: userId,
-          display_name: userData[0].full_name,
-          avatar_url: userData[0].profile_photo,
-          handle: (userData[0] as any).handle || undefined
-        } : {
-          id: userId,
-          display_name: 'Deleted User',
-          avatar_url: undefined,
-          handle: undefined
-        };
-
-        openWindow(conversationId, otherUser);
+      const conversationId = data?.conversationId;
+      if (!conversationId) {
+        console.error('No conversation ID returned from edge function');
+        throw new Error('No conversation ID returned');
       }
+
+      // Get user info using safe RPC
+      const { data: userData } = await supabase.rpc('get_public_profiles_by_ids', {
+        ids: [userId]
+      });
+
+      const otherUser = Array.isArray(userData) && userData.length > 0 ? {
+        id: userId,
+        display_name: userData[0].full_name,
+        avatar_url: userData[0].profile_photo,
+        handle: (userData[0] as any).handle || undefined
+      } : {
+        id: userId,
+        display_name: 'Deleted User',
+        avatar_url: undefined,
+        handle: undefined
+      };
+
+      openWindow(conversationId, otherUser);
+      return true;
     } catch (error) {
       console.error('Error opening chat:', error);
+      return false;
     }
   }, [user]);
 

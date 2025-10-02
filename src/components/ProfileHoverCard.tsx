@@ -224,8 +224,12 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
                 onClick={async () => {
                   try {
                     if (typeof window !== 'undefined' && (window as any).chatDock?.open) {
-                      await (window as any).chatDock.open(userId);
-                      toast.success(`Opening chat with ${profile.full_name}`);
+                      const success = await (window as any).chatDock.open(userId);
+                      if (success) {
+                        toast.success(`Opening chat with ${profile.full_name}`);
+                      } else {
+                        toast.error('Failed to open chat. Please try again.');
+                      }
                     } else {
                       toast.error('Chat system not ready. Please try again.');
                     }
