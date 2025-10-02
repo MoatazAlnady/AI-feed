@@ -19,6 +19,7 @@ interface Tool {
   category_name?: string;
   subcategory?: string;
   pricing: string;
+  free_plan?: string;
   website: string;
   features: string[];
   pros: string[];
@@ -211,6 +212,13 @@ const ToolDetails: React.FC = () => {
                     <Badge variant={tool.pricing === 'free' ? 'default' : 'destructive'}>
                       {tool.pricing}
                     </Badge>
+                    {tool.free_plan === 'Yes' && (
+                      <Badge 
+                        className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-green-300 dark:border-green-700"
+                      >
+                        Free Plan Available
+                      </Badge>
+                    )}
                   </div>
                 </div>
 

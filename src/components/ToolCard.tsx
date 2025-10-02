@@ -12,6 +12,7 @@ interface ToolCardProps {
     description: string;
     website: string;
     pricing: string;
+    free_plan?: string;
     category_id?: string;
     subcategory?: string;
     is_light_logo?: boolean;
@@ -146,16 +147,29 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '', onDelete }) =
             </div>
             
             {/* Pricing Badge */}
-            <span 
-              className="px-2 py-1 text-xs font-medium rounded-full border"
-              style={{
-                backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                color: theme === 'dark' ? '#e2e8f0' : '#111827'
-              }}
-            >
-              {tool.pricing || 'Free'}
-            </span>
+            <div className="flex items-center gap-2">
+              <span 
+                className="px-2 py-1 text-xs font-medium rounded-full border"
+                style={{
+                  backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                  borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                  color: theme === 'dark' ? '#e2e8f0' : '#111827'
+                }}
+              >
+                {tool.pricing || 'Free'}
+              </span>
+              {tool.free_plan === 'Yes' && (
+                <span 
+                  className="px-2 py-1 text-xs font-medium rounded-full"
+                  style={{
+                    backgroundColor: theme === 'dark' ? 'rgba(34, 197, 94, 0.2)' : '#dcfce7',
+                    color: theme === 'dark' ? '#4ade80' : '#16a34a'
+                  }}
+                >
+                  Free Plan Available
+                </span>
+              )}
+            </div>
           </div>
         </div>
 

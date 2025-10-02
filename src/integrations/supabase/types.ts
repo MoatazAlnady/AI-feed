@@ -1675,6 +1675,7 @@ export type Database = {
           created_at: string | null
           description: string
           features: string[] | null
+          free_plan: string | null
           id: string
           is_dark_logo: boolean | null
           is_light_logo: boolean | null
@@ -1701,6 +1702,7 @@ export type Database = {
           created_at?: string | null
           description: string
           features?: string[] | null
+          free_plan?: string | null
           id?: string
           is_dark_logo?: boolean | null
           is_light_logo?: boolean | null
@@ -1727,6 +1729,7 @@ export type Database = {
           created_at?: string | null
           description?: string
           features?: string[] | null
+          free_plan?: string | null
           id?: string
           is_dark_logo?: boolean | null
           is_light_logo?: boolean | null
