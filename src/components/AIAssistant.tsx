@@ -359,7 +359,8 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ mode, className = '' }) => {
                   <button
                     type="submit"
                     disabled={!input.trim() || isLoading}
-                    className="p-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-3 bg-gradient-primary text-white rounded-xl hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    title="Send message"
                   >
                     <Send className="h-5 w-5" />
                   </button>
