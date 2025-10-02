@@ -362,6 +362,13 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const openChatWith = async (userId: string, opts?: { createIfMissing?: boolean }) => {
     try {
+      // Prefer MultiChatDock if available
+      if (typeof window !== 'undefined' && (window as any).chatDock?.open) {
+        await (window as any).chatDock.open(userId);
+        return;
+      }
+
+      // Fallback to legacy in-context threads (no real-time window)
       // Find existing thread with this user
       let existingThread = threads.find(thread => 
         thread.participants.some(p => p.id === userId)
@@ -436,7 +443,6 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
       throw error;
     }
   };
-
   const toggleOpen = () => {
     setIsOpen(!isOpen);
     if (!isOpen) {

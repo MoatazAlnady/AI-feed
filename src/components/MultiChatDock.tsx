@@ -307,18 +307,20 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
     setActiveWindow(conversationId);
   }, []);
 
-  // Expose API to parent
+  // Expose API globally so other components can open chat windows
   useEffect(() => {
-    if (onOpenChat) {
-      // Store the function for global access
-      (window as any).chatDock = {
-        open: openChatWith,
-        close: closeWindow,
-        minimize: minimizeWindow,
-        focus: focusWindow
-      };
-    }
-  }, [onOpenChat, openChatWith, closeWindow, minimizeWindow, focusWindow]);
+    (window as any).chatDock = {
+      open: openChatWith,
+      close: closeWindow,
+      minimize: minimizeWindow,
+      focus: focusWindow
+    };
+    return () => {
+      if ((window as any).chatDock?.open === openChatWith) {
+        delete (window as any).chatDock;
+      }
+    };
+  }, [openChatWith, closeWindow, minimizeWindow, focusWindow]);
 
   // Load initial data
   useEffect(() => {
