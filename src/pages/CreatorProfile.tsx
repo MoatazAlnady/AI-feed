@@ -71,10 +71,13 @@ const CreatorProfile: React.FC = () => {
   useEffect(() => {
     if (identifier) {
       fetchProfile(identifier);
-      if (user) {
-        checkConnectionStatus();
-        checkFollowStatus();
-      }
+    }
+  }, [identifier]);
+
+  useEffect(() => {
+    if (user && profile) {
+      checkConnectionStatus();
+      checkFollowStatus();
     }
     
     // Listen for connection request processing events
@@ -88,7 +91,7 @@ const CreatorProfile: React.FC = () => {
     return () => {
       window.removeEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
     };
-  }, [identifier, user]);
+  }, [user, profile]);
 
   const fetchProfile = async (id: string) => {
     try {
@@ -211,7 +214,8 @@ const CreatorProfile: React.FC = () => {
         .eq('requester_id', user.id)
         .eq('recipient_id', profile.id)
         .eq('status', 'pending')
-        .single();
+        .limit(1)
+        .maybeSingle();
 
       if (request) {
         setConnectionStatus('pending');
@@ -297,7 +301,15 @@ const CreatorProfile: React.FC = () => {
           message: `Hi ${profile.full_name}, I'd like to connect with you on AI Feed.`
         });
 
-      if (error) throw error;
+      if (error) {
+        // If duplicate key error, re-check status and update UI
+        if (error.code === '23505') {
+          await checkConnectionStatus();
+          toast.info('Connection request already exists');
+          return;
+        }
+        throw error;
+      }
 
       setConnectionStatus('pending');
       toast.success('Connection request sent!');

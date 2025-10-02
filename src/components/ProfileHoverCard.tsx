@@ -39,8 +39,7 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (userId && userId !== user?.id) {
-      fetchProfile();
+    if (userId && userId !== user?.id && profile) {
       checkConnectionStatus();
     }
     
@@ -55,6 +54,12 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
     return () => {
       window.removeEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
     };
+  }, [userId, user, profile]);
+
+  useEffect(() => {
+    if (userId && userId !== user?.id) {
+      fetchProfile();
+    }
   }, [userId, user]);
 
   const fetchProfile = async () => {
@@ -89,6 +94,7 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
         .eq('requester_id', user.id)
         .eq('recipient_id', userId)
         .eq('status', 'pending')
+        .limit(1)
         .maybeSingle();
 
       setHasRequestPending(!!requestData);
@@ -126,7 +132,15 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
           message: `Hi ${profile.full_name}, I'd like to connect with you!`
         });
 
-      if (error) throw error;
+      if (error) {
+        // If duplicate key error, re-check status and update UI
+        if (error.code === '23505') {
+          await checkConnectionStatus();
+          toast.info('Connection request already exists');
+          return;
+        }
+        throw error;
+      }
 
       // Update usage
       await supabase

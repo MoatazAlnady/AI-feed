@@ -99,7 +99,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
   });
 
   useEffect(() => {
-    if (user && userId && !isOwnProfile) {
+    if (user && userId && !isOwnProfile && name) {
       checkConnectionStatus();
     }
     
@@ -114,7 +114,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
     return () => {
       window.removeEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
     };
-  }, [user, userId, isOwnProfile]);
+  }, [user, userId, isOwnProfile, name]);
 
   const checkConnectionStatus = async () => {
     if (!user) return;
@@ -133,6 +133,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
         .eq('requester_id', user.id)
         .eq('recipient_id', userId)
         .eq('status', 'pending')
+        .limit(1)
         .maybeSingle();
 
       setHasRequestPending(!!requestData);
@@ -208,7 +209,15 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
           message: `Hi ${name}, I'd like to connect with you!`
         });
 
-      if (error) throw error;
+      if (error) {
+        // If duplicate key error, re-check status and update UI
+        if (error.code === '23505') {
+          await checkConnectionStatus();
+          toast.info('Connection request already exists');
+          return;
+        }
+        throw error;
+      }
 
       // Update usage
       await supabase
