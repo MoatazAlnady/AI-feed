@@ -100,6 +100,72 @@
     "clearCache": "",
     "tryAsking": ""
   },
+  "feed": {
+    "welcome": "Willkommen, {{name}}!",
+    "subtitle": "Bleiben Sie auf dem Laufenden mit den neuesten Nachrichten aus der KI-Community",
+    "createSomething": "Etwas erstellen",
+    "create": {
+      "post": {
+        "label": "Beitrag",
+        "desc": "Teilen Sie Ihre Gedanken mit der Community"
+      },
+      "tool": {
+        "label": "KI-Tool",
+        "desc": "Fügen Sie ein neues KI-Tool zu unserem Verzeichnis hinzu"
+      },
+      "article": {
+        "label": "Artikel",
+        "desc": "Teilen Sie Ihr Wissen und Ihre Erkenntnisse"
+      },
+      "event": {
+        "label": "Veranstaltung",
+        "desc": "Organisieren Sie eine KI-bezogene Veranstaltung"
+      }
+    },
+    "compose": {
+      "placeholder": "Was denken Sie über KI?",
+      "post": "Veröffentlichen"
+    },
+    "trendingTitle": "Wöchentlich angesagte KI-Tools"
+  },
+  "index": {
+    "hero": {
+      "title": "Willkommen bei AI Feed",
+      "subtitle": "Die einheitliche KI-Plattform, die KI-kompetente Kreative verbindet",
+      "ctaNewsletter": "KI-Newsletter abonnieren",
+      "ctaGetStarted": "Kostenlos starten",
+      "searchPlaceholder": "Was soll die KI tun? Welche Tools benötigen Sie? Suchen Sie mit Schlüsselwörtern, Bereichen, Kategorien..."
+    },
+    "features": {
+      "title": "Alles, was Sie auf einer Plattform brauchen",
+      "subtitle": "Entdecken, verbinden und zusammenarbeiten im KI-Ökosystem",
+      "tools": {
+        "title": "KI-Tools-Verzeichnis",
+        "desc": "Entdecken Sie kuratierte KI-Tools und Ressourcen, um Ihre Projekte zu optimieren",
+        "cta": "Tools durchsuchen"
+      },
+      "categories": {
+        "title": "KI-Kategorien",
+        "desc": "Durchsuchen Sie Tools nach Bereich, von NLP bis Vision",
+        "cta": "Kategorien durchsuchen"
+      },
+      "jobs": {
+        "title": "KI-Jobs",
+        "desc": "Sehen Sie Live-Angebote von Arbeitgebern",
+        "cta": "Jobs anzeigen"
+      }
+    },
+    "stats": {
+      "tools": "KI-Tools gelistet",
+      "creators": "Aktive Kreative",
+      "projects": "Abgeschlossene Projekte"
+    },
+    "cta": {
+      "title": "Bereit, der KI-Revolution beizutreten?",
+      "subtitle": "Beginnen Sie noch heute Ihre Reise mit AI Feed und verbinden Sie sich mit der Zukunft der Technologie.",
+      "button": "Kostenlos starten"
+    }
+  },
   "blog": {
     "title": "KI-Erkenntnisse Blog",
     "subtitle": "Bleiben Sie informiert über die neuesten Trends, Tutorials und Erkenntnisse aus der Welt der künstlichen Intelligenz.",

@@ -100,6 +100,72 @@
     "clearCache": "",
     "tryAsking": ""
   },
+  "feed": {
+    "welcome": "ようこそ、{{name}}さん！",
+    "subtitle": "AIコミュニティの最新情報をお届けします",
+    "createSomething": "何かを作成",
+    "create": {
+      "post": {
+        "label": "投稿",
+        "desc": "コミュニティと考えを共有"
+      },
+      "tool": {
+        "label": "AIツール",
+        "desc": "新しいAIツールをディレクトリに追加"
+      },
+      "article": {
+        "label": "記事",
+        "desc": "知識と洞察を共有"
+      },
+      "event": {
+        "label": "イベント",
+        "desc": "AI関連イベントを企画"
+      }
+    },
+    "compose": {
+      "placeholder": "AIについて何を考えていますか？",
+      "post": "投稿"
+    },
+    "trendingTitle": "週間トレンドAIツール"
+  },
+  "index": {
+    "hero": {
+      "title": "AI Feedへようこそ",
+      "subtitle": "AIスキルを持つクリエイターをつなぐ統合AIプラットフォーム",
+      "ctaNewsletter": "AIニュースレターを購読",
+      "ctaGetStarted": "無料で始める",
+      "searchPlaceholder": "AIに何をしてほしいですか？どんなツールが必要ですか？キーワード、分野、カテゴリで検索..."
+    },
+    "features": {
+      "title": "必要なものすべてが1つのプラットフォームに",
+      "subtitle": "AIエコシステムで発見、接続、コラボレーション",
+      "tools": {
+        "title": "AIツールディレクトリ",
+        "desc": "プロジェクトを強化するための厳選されたAIツールとリソースを発見",
+        "cta": "ツールを閲覧"
+      },
+      "categories": {
+        "title": "AIカテゴリ",
+        "desc": "NLPからビジョンまで、ドメイン別にツールを閲覧",
+        "cta": "カテゴリを閲覧"
+      },
+      "jobs": {
+        "title": "AI求人",
+        "desc": "雇用主からのライブ求人を確認",
+        "cta": "求人を見る"
+      }
+    },
+    "stats": {
+      "tools": "リストされたAIツール",
+      "creators": "アクティブなクリエイター",
+      "projects": "完了したプロジェクト"
+    },
+    "cta": {
+      "title": "AI革命に参加する準備はできていますか？",
+      "subtitle": "今日AI Feedで旅を始め、テクノロジーの未来につながりましょう。",
+      "button": "無料で始める"
+    }
+  },
   "blog": {
     "title": "AIインサイトブログ",
     "subtitle": "人工知能の世界から最新のトレンド、チュートリアル、インサイトをお届けします。",

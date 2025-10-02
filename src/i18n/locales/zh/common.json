@@ -100,6 +100,72 @@
     "clearCache": "",
     "tryAsking": ""
   },
+  "feed": {
+    "welcome": "欢迎，{{name}}！",
+    "subtitle": "及时了解 AI 社区的最新动态",
+    "createSomething": "创建内容",
+    "create": {
+      "post": {
+        "label": "帖子",
+        "desc": "与社区分享您的想法"
+      },
+      "tool": {
+        "label": "AI 工具",
+        "desc": "向我们的目录添加新的 AI 工具"
+      },
+      "article": {
+        "label": "文章",
+        "desc": "分享您的知识和见解"
+      },
+      "event": {
+        "label": "活动",
+        "desc": "组织与 AI 相关的活动"
+      }
+    },
+    "compose": {
+      "placeholder": "您对 AI 有什么想法？",
+      "post": "发布"
+    },
+    "trendingTitle": "每周热门 AI 工具"
+  },
+  "index": {
+    "hero": {
+      "title": "欢迎来到 AI Feed",
+      "subtitle": "连接具有 AI 技能的创作者的统一 AI 平台",
+      "ctaNewsletter": "订阅 AI 新闻通讯",
+      "ctaGetStarted": "免费开始",
+      "searchPlaceholder": "您想让 AI 做什么？您需要什么工具？使用关键词、领域、类别搜索..."
+    },
+    "features": {
+      "title": "一个平台满足您的所有需求",
+      "subtitle": "在 AI 生态系统中发现、连接和协作",
+      "tools": {
+        "title": "AI 工具目录",
+        "desc": "发现精选的 AI 工具和资源以增强您的项目",
+        "cta": "浏览工具"
+      },
+      "categories": {
+        "title": "AI 类别",
+        "desc": "按领域浏览工具，从 NLP 到计算机视觉",
+        "cta": "浏览类别"
+      },
+      "jobs": {
+        "title": "AI 职位",
+        "desc": "查看雇主的实时职位空缺",
+        "cta": "查看职位"
+      }
+    },
+    "stats": {
+      "tools": "已列出的 AI 工具",
+      "creators": "活跃创作者",
+      "projects": "已完成项目"
+    },
+    "cta": {
+      "title": "准备加入 AI 革命了吗？",
+      "subtitle": "今天就开始使用 AI Feed，连接技术的未来。",
+      "button": "免费开始"
+    }
+  },
   "blog": {
     "title": "AI洞察博客",
     "subtitle": "了解人工智能世界的最新趋势、教程和洞察。",

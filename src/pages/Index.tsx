@@ -13,6 +13,7 @@ import TrendingTools from '@/components/TrendingTools';
 import TopCreators from '@/components/TopCreators';
 import AIChatBot from '@/components/ChatDock';
 import NewsFeedPage from '@/pages/NewsFeed';
+import { useTranslation } from 'react-i18next';
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,6 +23,7 @@ const Index = () => {
   const [autoOpenChat, setAutoOpenChat] = useState(false);
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { t } = useTranslation('common');
 
   // Scroll animations
   const heroAnimation = useScrollAnimation(0.1);
@@ -86,10 +88,10 @@ const Index = () => {
         <div className="container max-w-6xl mx-auto text-center">
           <div className="mb-8">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gradient slogan">
-              Welcome to AI Feed
+              {t('index.hero.title')}
             </h1>
             <p className="text-xl md:text-2xl font-bold text-gradient max-w-3xl mx-auto mb-8 leading-relaxed slogan-subtitle">
-              The unified AI platform connecting AI-skilled creators
+              {t('index.hero.subtitle')}
             </p>
           </div>
           
@@ -100,7 +102,7 @@ const Index = () => {
               className="text-lg px-8"
               onClick={() => setShowNewsletterPopup(true)}
             >
-              Subscribe to AI Newsletter <ArrowRight className="ml-2 h-5 w-5" />
+              {t('index.hero.ctaNewsletter')} <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button 
               size="lg" 
@@ -108,7 +110,7 @@ const Index = () => {
               className="text-lg px-8"
               onClick={() => setShowAuthModal(true)}
             >
-              Get Started Free <Star className="ml-2 h-5 w-5" />
+              {t('index.hero.ctaGetStarted')} <Star className="ml-2 h-5 w-5" />
             </Button>
           </div>
           
@@ -120,7 +122,7 @@ const Index = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="What do you want AI to do? What tools do you need? Search with keywords, fields, categories..."
+                placeholder={t('index.hero.searchPlaceholder')}
                 className="w-full pl-14 pr-4 py-4 text-lg border-0 rounded-xl focus:ring-0 focus:outline-none bg-white dark:bg-[#091527] text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
               />
             </div>
@@ -145,8 +147,8 @@ const Index = () => {
       }`}>
         <div className="container max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Everything you need in one platform</h2>
-            <p className="text-xl text-muted-foreground">Discover, connect, and collaborate in the AI ecosystem</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('index.features.title')}</h2>
+            <p className="text-xl text-muted-foreground">{t('index.features.subtitle')}</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -157,12 +159,12 @@ const Index = () => {
                 <div className="mb-6 mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                   <Zap className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4">AI Tools Directory</h3>
+                <h3 className="text-xl font-semibold mb-4">{t('index.features.tools.title')}</h3>
                 <p className="text-muted-foreground mb-6">
-                  Discover curated AI tools and resources to supercharge your projects
+                  {t('index.features.tools.desc')}
                 </p>
                 <Link to="/tools" className="text-primary hover:underline font-medium">
-                  Browse Tools →
+                  {t('index.features.tools.cta')} →
                 </Link>
               </CardContent>
             </Card>
@@ -174,12 +176,12 @@ const Index = () => {
                 <div className="mb-6 mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                   <FolderOpen className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4">AI Categories</h3>
+                <h3 className="text-xl font-semibold mb-4">{t('index.features.categories.title')}</h3>
                 <p className="text-muted-foreground mb-6">
-                  Browse tools by domain, from NLP to Vision
+                  {t('index.features.categories.desc')}
                 </p>
                 <Link to="/categories" className="text-primary hover:underline font-medium">
-                  Browse Categories →
+                  {t('index.features.categories.cta')} →
                 </Link>
               </CardContent>
             </Card>
@@ -191,12 +193,12 @@ const Index = () => {
                 <div className="mb-6 mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                   <Briefcase className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4">AI Jobs</h3>
+                <h3 className="text-xl font-semibold mb-4">{t('index.features.jobs.title')}</h3>
                 <p className="text-muted-foreground mb-6">
-                  See live openings from employers
+                  {t('index.features.jobs.desc')}
                 </p>
                 <Link to="/talent" className="text-primary hover:underline font-medium">
-                  View Jobs →
+                  {t('index.features.jobs.cta')} →
                 </Link>
               </CardContent>
             </Card>
@@ -214,19 +216,19 @@ const Index = () => {
               statsAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`} style={{ transitionDelay: '100ms' }}>
               <div className="text-4xl font-bold text-primary mb-2">500+</div>
-              <div className="text-muted-foreground">AI Tools Listed</div>
+              <div className="text-muted-foreground">{t('index.stats.tools')}</div>
             </div>
             <div className={`transition-all duration-500 ${
               statsAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`} style={{ transitionDelay: '200ms' }}>
               <div className="text-4xl font-bold text-primary mb-2">10K+</div>
-              <div className="text-muted-foreground">Active Creators</div>
+              <div className="text-muted-foreground">{t('index.stats.creators')}</div>
             </div>
             <div className={`transition-all duration-500 ${
               statsAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`} style={{ transitionDelay: '300ms' }}>
               <div className="text-4xl font-bold text-primary mb-2">50K+</div>
-              <div className="text-muted-foreground">Projects Completed</div>
+              <div className="text-muted-foreground">{t('index.stats.projects')}</div>
             </div>
           </div>
         </div>
@@ -237,12 +239,12 @@ const Index = () => {
         ctaAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}>
         <div className="container max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to join the AI revolution?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('index.cta.title')}</h2>
           <p className="text-xl text-muted-foreground mb-8">
-            Start your journey with AI Feed today and connect with the future of technology.
+            {t('index.cta.subtitle')}
           </p>
           <Button size="lg" className="text-lg px-8" onClick={() => setShowAuthModal(true)}>
-            Get Started Free <Star className="ml-2 h-5 w-5" />
+            {t('index.cta.button')} <Star className="ml-2 h-5 w-5" />
           </Button>
         </div>
       </section>

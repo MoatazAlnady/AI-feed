@@ -273,6 +273,72 @@
     "settingsUpdated": "Settings Updated",
     "settingsSaved": "Your notification preferences have been saved."
   },
+  "feed": {
+    "welcome": "Welcome, {{name}}!",
+    "subtitle": "Stay updated with the latest from the AI community",
+    "createSomething": "Create Something",
+    "create": {
+      "post": {
+        "label": "Post",
+        "desc": "Share your thoughts with the community"
+      },
+      "tool": {
+        "label": "AI Tool",
+        "desc": "Add a new AI tool to our directory"
+      },
+      "article": {
+        "label": "Article",
+        "desc": "Share your knowledge and insights"
+      },
+      "event": {
+        "label": "Event",
+        "desc": "Organize an AI-related event"
+      }
+    },
+    "compose": {
+      "placeholder": "What's on your mind about AI?",
+      "post": "Post"
+    },
+    "trendingTitle": "Weekly Trending AI Tools"
+  },
+  "index": {
+    "hero": {
+      "title": "Welcome to AI Feed",
+      "subtitle": "The unified AI platform connecting AI-skilled creators",
+      "ctaNewsletter": "Subscribe to AI Newsletter",
+      "ctaGetStarted": "Get Started Free",
+      "searchPlaceholder": "What do you want AI to do? What tools do you need? Search with keywords, fields, categories..."
+    },
+    "features": {
+      "title": "Everything you need in one platform",
+      "subtitle": "Discover, connect, and collaborate in the AI ecosystem",
+      "tools": {
+        "title": "AI Tools Directory",
+        "desc": "Discover curated AI tools and resources to supercharge your projects",
+        "cta": "Browse Tools"
+      },
+      "categories": {
+        "title": "AI Categories",
+        "desc": "Browse tools by domain, from NLP to Vision",
+        "cta": "Browse Categories"
+      },
+      "jobs": {
+        "title": "AI Jobs",
+        "desc": "See live openings from employers",
+        "cta": "View Jobs"
+      }
+    },
+    "stats": {
+      "tools": "AI Tools Listed",
+      "creators": "Active Creators",
+      "projects": "Projects Completed"
+    },
+    "cta": {
+      "title": "Ready to join the AI revolution?",
+      "subtitle": "Start your journey with AI Feed today and connect with the future of technology.",
+      "button": "Get Started Free"
+    }
+  },
   "tools": {
     "rating": {
       "label": "Rating",

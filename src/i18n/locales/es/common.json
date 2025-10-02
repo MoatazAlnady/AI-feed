@@ -100,6 +100,72 @@
     "clearCache": "",
     "tryAsking": ""
   },
+  "feed": {
+    "welcome": "¡Bienvenido, {{name}}!",
+    "subtitle": "Mantente actualizado con lo último de la comunidad de IA",
+    "createSomething": "Crear algo",
+    "create": {
+      "post": {
+        "label": "Publicación",
+        "desc": "Comparte tus pensamientos con la comunidad"
+      },
+      "tool": {
+        "label": "Herramienta de IA",
+        "desc": "Añade una nueva herramienta de IA a nuestro directorio"
+      },
+      "article": {
+        "label": "Artículo",
+        "desc": "Comparte tu conocimiento e ideas"
+      },
+      "event": {
+        "label": "Evento",
+        "desc": "Organiza un evento relacionado con IA"
+      }
+    },
+    "compose": {
+      "placeholder": "¿Qué piensas sobre IA?",
+      "post": "Publicar"
+    },
+    "trendingTitle": "Herramientas de IA semanales en tendencia"
+  },
+  "index": {
+    "hero": {
+      "title": "Bienvenido a AI Feed",
+      "subtitle": "La plataforma unificada de IA que conecta creadores expertos en IA",
+      "ctaNewsletter": "Suscríbete al boletín de IA",
+      "ctaGetStarted": "Comienza gratis",
+      "searchPlaceholder": "¿Qué quieres que haga la IA? ¿Qué herramientas necesitas? Busca con palabras clave, campos, categorías..."
+    },
+    "features": {
+      "title": "Todo lo que necesitas en una plataforma",
+      "subtitle": "Descubre, conecta y colabora en el ecosistema de IA",
+      "tools": {
+        "title": "Directorio de herramientas de IA",
+        "desc": "Descubre herramientas de IA seleccionadas y recursos para potenciar tus proyectos",
+        "cta": "Explorar herramientas"
+      },
+      "categories": {
+        "title": "Categorías de IA",
+        "desc": "Explora herramientas por dominio, desde PLN hasta Visión",
+        "cta": "Explorar categorías"
+      },
+      "jobs": {
+        "title": "Trabajos de IA",
+        "desc": "Ve ofertas en vivo de empleadores",
+        "cta": "Ver trabajos"
+      }
+    },
+    "stats": {
+      "tools": "Herramientas de IA listadas",
+      "creators": "Creadores activos",
+      "projects": "Proyectos completados"
+    },
+    "cta": {
+      "title": "¿Listo para unirte a la revolución de IA?",
+      "subtitle": "Comienza tu viaje con AI Feed hoy y conéctate con el futuro de la tecnología.",
+      "button": "Comienza gratis"
+    }
+  },
   "blog": {
     "title": "Blog de Perspectivas de IA",
     "subtitle": "Mantente informado con las últimas tendencias, tutoriales y perspectivas del mundo de la inteligencia artificial.",

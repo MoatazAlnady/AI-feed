@@ -17,9 +17,11 @@ import HashtagSystem from '../components/HashtagSystem';
 import ChatDock from '../components/ChatDockProvider';
 import NewsletterPopup from '../components/NewsletterPopup';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const Newsfeed: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation('common');
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showCreateMenu, setShowCreateMenu] = useState(false);
@@ -101,29 +103,29 @@ const Newsfeed: React.FC = () => {
   const createOptions = [
     {
       icon: MessageCircle,
-      label: 'Post',
-      description: 'Share your thoughts with the community',
+      label: t('feed.create.post.label'),
+      description: t('feed.create.post.desc'),
       action: () => setShowCreatePost(true),
       color: 'from-blue-500 to-blue-600'
     },
     {
       icon: Zap,
-      label: 'AI Tool',
-      description: 'Add a new AI tool to our directory',
+      label: t('feed.create.tool.label'),
+      description: t('feed.create.tool.desc'),
       action: () => window.location.href = '/tools/create',
       color: 'from-purple-500 to-purple-600'
     },
     {
       icon: PenTool,
-      label: 'Article',
-      description: 'Share your knowledge and insights',
+      label: t('feed.create.article.label'),
+      description: t('feed.create.article.desc'),
       action: () => window.location.href = '/articles/create',
       color: 'from-green-500 to-green-600'
     },
     {
       icon: Calendar,
-      label: 'Event',
-      description: 'Organize an AI-related event',
+      label: t('feed.create.event.label'),
+      description: t('feed.create.event.desc'),
       action: () => setShowCreateEvent(true),
       color: 'from-red-500 to-red-600'
     }
@@ -136,10 +138,10 @@ const Newsfeed: React.FC = () => {
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Welcome, {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'AI Enthusiast'}!
+              {t('feed.welcome', { name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'there' })}
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400">
-              Stay updated with the latest from the AI community
+              {t('feed.subtitle')}
             </p>
           </div>
 
@@ -149,7 +151,7 @@ const Newsfeed: React.FC = () => {
               {/* Create Content Card */}
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 mb-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-gray-900 dark:text-white">Create Something</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">{t('feed.createSomething')}</h3>
                   <button
                     ref={triggerRef}
                     onClick={() => setShowCreateMenu(!showCreateMenu)}
@@ -232,14 +234,14 @@ const Newsfeed: React.FC = () => {
                     onClick={() => setShowCreatePost(true)}
                     className="flex-1 text-left p-4 bg-gray-50 dark:bg-gray-700 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                   >
-                    What's on your mind about AI?
+                    {t('feed.compose.placeholder')}
                   </button>
                   <button
                     onClick={() => setShowCreatePost(true)}
                     className="bg-gradient-primary text-white px-6 py-3 rounded-xl font-medium hover:shadow-md transition-all flex items-center space-x-2"
                   >
                     <Plus className="h-4 w-4" />
-                    <span>Post</span>
+                    <span>{t('feed.compose.post')}</span>
                   </button>
                 </div>
               </div>
@@ -249,7 +251,7 @@ const Newsfeed: React.FC = () => {
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 mb-6">
                   <div className="flex items-center space-x-2 mb-4">
                     <TrendingUp className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Weekly Trending AI Tools</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">{t('feed.trendingTitle')}</h3>
                   </div>
                   
                   <div className="flex overflow-x-auto pb-4 space-x-4">

@@ -100,6 +100,72 @@
     "clearCache": "",
     "tryAsking": ""
   },
+  "feed": {
+    "welcome": "Bienvenue, {{name}} !",
+    "subtitle": "Restez informé des dernières nouvelles de la communauté IA",
+    "createSomething": "Créer quelque chose",
+    "create": {
+      "post": {
+        "label": "Publication",
+        "desc": "Partagez vos pensées avec la communauté"
+      },
+      "tool": {
+        "label": "Outil IA",
+        "desc": "Ajoutez un nouvel outil IA à notre répertoire"
+      },
+      "article": {
+        "label": "Article",
+        "desc": "Partagez vos connaissances et idées"
+      },
+      "event": {
+        "label": "Événement",
+        "desc": "Organisez un événement lié à l'IA"
+      }
+    },
+    "compose": {
+      "placeholder": "Qu'avez-vous en tête à propos de l'IA ?",
+      "post": "Publier"
+    },
+    "trendingTitle": "Outils IA tendance de la semaine"
+  },
+  "index": {
+    "hero": {
+      "title": "Bienvenue sur AI Feed",
+      "subtitle": "La plateforme IA unifiée connectant les créateurs qualifiés en IA",
+      "ctaNewsletter": "S'abonner à la newsletter IA",
+      "ctaGetStarted": "Commencer gratuitement",
+      "searchPlaceholder": "Que voulez-vous que l'IA fasse ? Quels outils avez-vous besoin ? Recherchez par mots-clés, domaines, catégories..."
+    },
+    "features": {
+      "title": "Tout ce dont vous avez besoin sur une seule plateforme",
+      "subtitle": "Découvrez, connectez et collaborez dans l'écosystème IA",
+      "tools": {
+        "title": "Répertoire d'outils IA",
+        "desc": "Découvrez des outils IA sélectionnés et des ressources pour booster vos projets",
+        "cta": "Parcourir les outils"
+      },
+      "categories": {
+        "title": "Catégories IA",
+        "desc": "Parcourez les outils par domaine, du NLP à la Vision",
+        "cta": "Parcourir les catégories"
+      },
+      "jobs": {
+        "title": "Emplois IA",
+        "desc": "Consultez les offres en direct des employeurs",
+        "cta": "Voir les emplois"
+      }
+    },
+    "stats": {
+      "tools": "Outils IA répertoriés",
+      "creators": "Créateurs actifs",
+      "projects": "Projets terminés"
+    },
+    "cta": {
+      "title": "Prêt à rejoindre la révolution IA ?",
+      "subtitle": "Commencez votre voyage avec AI Feed aujourd'hui et connectez-vous à l'avenir de la technologie.",
+      "button": "Commencer gratuitement"
+    }
+  },
   "blog": {
     "title": "Blog d'Insights IA",
     "subtitle": "Restez informé des dernières tendances, tutoriels et insights du monde de l'intelligence artificielle.",
