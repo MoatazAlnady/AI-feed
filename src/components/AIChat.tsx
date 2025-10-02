@@ -66,12 +66,12 @@ const AIChat: React.FC<AIChatProps> = ({ context = 'general', initialGreeting })
       </div>
       
       {/* Messages */}
-      <div className="flex-1 p-4 overflow-y-auto bg-background">
+      <div className="flex-1 p-4 overflow-y-auto bg-background max-h-[calc(100%-140px)]">
         {messages.length === 0 && (
           <div className="text-center text-muted-foreground text-sm py-8">
             <Bot className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p className="text-lg font-medium mb-2">Welcome! 👋</p>
-            <p>I'm here to help you with anything about AI Nexus.</p>
+            <p>I'm here to help you with anything about AI Feed.</p>
             <p className="mt-2">Start by asking a question!</p>
           </div>
         )}

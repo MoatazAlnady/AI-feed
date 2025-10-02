@@ -375,12 +375,29 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
 
         console.log('Chat: Fetching profile for user:', userId, 'Result:', userProfiles, 'Error:', error);
 
-        if (error || !Array.isArray(userProfiles) || userProfiles.length === 0) {
-          throw new Error('User not found or profile not accessible');
-        }
+        let userProfile = null;
 
-        const userProfile = userProfiles[0];
-        console.log('Chat: Using profile data:', userProfile);
+        if (error || !Array.isArray(userProfiles) || userProfiles.length === 0) {
+          console.warn('Chat: RPC failed or returned empty, trying direct fetch...');
+          
+          // Fallback: Try direct profile fetch
+          const { data: directProfile, error: directError } = await supabase
+            .from('user_profiles')
+            .select('id, full_name, profile_photo, job_title')
+            .eq('id', userId)
+            .single();
+
+          if (directError || !directProfile) {
+            console.error('Chat: Direct profile fetch also failed:', directError);
+            throw new Error('User not found or profile not accessible');
+          }
+
+          userProfile = directProfile;
+          console.log('Chat: Using direct profile data:', userProfile);
+        } else {
+          userProfile = userProfiles[0];
+          console.log('Chat: Using RPC profile data:', userProfile);
+        }
 
         // Create new thread with proper name handling
         const newThread: Thread = {

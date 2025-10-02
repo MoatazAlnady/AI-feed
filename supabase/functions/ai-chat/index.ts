@@ -20,7 +20,7 @@ serve(async (req) => {
     }
 
     // Build context-aware system prompt
-    let systemPrompt = `You are an AI assistant for AI Nexus, a platform for discovering and sharing AI tools. 
+    let systemPrompt = `You are an AI assistant for AI Feed, a platform for discovering and sharing AI tools. 
 Always respond in ${language} language. Keep responses clear, concise, and helpful.`;
 
     if (context === 'creator') {

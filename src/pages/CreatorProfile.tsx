@@ -227,7 +227,7 @@ const CreatorProfile: React.FC = () => {
           requester_id: user.id,
           recipient_id: profile.id,
           status: 'pending',
-          message: `Hi ${profile.full_name}, I'd like to connect with you on AI Nexus.`
+          message: `Hi ${profile.full_name}, I'd like to connect with you on AI Feed.`
         });
 
       if (error) throw error;

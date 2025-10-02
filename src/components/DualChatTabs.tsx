@@ -31,7 +31,7 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed bottom-24 right-6 z-50 w-96 h-[500px] animate-slide-up">
-      <Card className="h-full flex flex-col bg-white dark:bg-[#0a1426] border border-gray-200 dark:border-gray-700 shadow-2xl">
+      <Card className="h-full flex flex-col bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-2xl">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
           <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-gray-800">
             <TabsTrigger value="creator" className="flex items-center space-x-2">
@@ -154,7 +154,7 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
                   </div>
                   
                   {/* Messages */}
-                  <div className="flex-1 p-4 overflow-y-auto space-y-3">
+                  <div className="flex-1 p-4 overflow-y-auto space-y-3 max-h-[calc(100%-160px)]">
                     {messages.map((message) => (
                       <div
                         key={message.id}

@@ -455,7 +455,7 @@ const PersonToPersonChat = () => {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[calc(100vh-300px)]">
               {messages.map(message => {
                 const isOwn = message.sender_id === user?.id;
                 return (
