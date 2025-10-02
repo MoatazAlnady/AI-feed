@@ -2,3 +2,6 @@ project_id = "fbhhumtpdfalgkhzirew"
 
 [functions.ai-chat]
 verify_jwt = false
+
+[functions."chat-find-or-create-dm"]
+verify_jwt = true

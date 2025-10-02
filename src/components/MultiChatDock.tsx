@@ -227,14 +227,22 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
 
       if (error) {
         console.error('Edge function error:', error);
-        throw error;
       }
 
-      const conversationId = data?.conversationId;
+      let conversationId = (data as any)?.conversationId as string | undefined;
       if (!conversationId) {
-        console.error('No conversation ID returned from edge function');
-        throw new Error('No conversation ID returned');
+        console.warn('No conversationId from edge function, attempting RPC fallback...');
+        const { data: rpcData, error: rpcError } = await supabase.rpc('find_or_create_dm', {
+          other_user_id: userId
+        });
+        if (rpcError || !rpcData) {
+          console.error('RPC fallback failed:', rpcError);
+          throw new Error('Unable to create or find conversation');
+        }
+        conversationId = rpcData as unknown as string;
       }
+
+      console.log('Opening chat window for conversation:', conversationId);
 
       // Get user info using safe RPC
       const { data: userData } = await supabase.rpc('get_public_profiles_by_ids', {
@@ -384,7 +392,7 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
 
   // Desktop multi-window mode
   return (
-    <div className="fixed bottom-0 right-4 z-40 flex gap-2">
+    <div className="fixed bottom-0 right-4 z-50 flex gap-2">
       {windows.map((window) => (
         <div
           key={window.conversationId}
