@@ -256,11 +256,10 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
     if (onMessage) {
       onMessage();
     } else {
-      try {
-        await openChatWith(userId, { createIfMissing: true });
+      const success = await openChatWith(userId, { createIfMissing: true });
+      if (success) {
         toast.success(`Opening chat with ${name}`);
-      } catch (error) {
-        console.error('Error opening chat:', error);
+      } else {
         toast.error('Failed to open chat');
       }
     }

@@ -49,7 +49,7 @@ interface ChatDockContextType {
   activeTab: 'focused' | 'other';
   setActiveTab: (tab: 'focused' | 'other') => void;
   loading: boolean;
-  openChatWith: (userId: string, opts?: { createIfMissing?: boolean }) => Promise<void>;
+  openChatWith: (userId: string, opts?: { createIfMissing?: boolean }) => Promise<boolean>;
 }
 
 const ChatDockContext = createContext<ChatDockContextType | undefined>(undefined);
@@ -360,12 +360,13 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     return Promise.resolve();
   };
 
-  const openChatWith = async (userId: string, opts?: { createIfMissing?: boolean }) => {
+  const openChatWith = async (userId: string, opts?: { createIfMissing?: boolean }): Promise<boolean> => {
     try {
       // Prefer MultiChatDock if available
       if (typeof window !== 'undefined' && (window as any).chatDock?.open) {
-        await (window as any).chatDock.open(userId);
-        return;
+        const success = await (window as any).chatDock.open(userId);
+        console.log('[ChatDockContext] MultiChatDock result:', success);
+        return success;
       }
 
       // Fallback to legacy in-context threads (no real-time window)
@@ -396,7 +397,7 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
 
           if (directError || !directProfile) {
             console.error('Chat: Direct profile fetch also failed:', directError);
-            throw new Error('User not found or profile not accessible');
+            return false;
           }
 
           userProfile = directProfile;
@@ -435,12 +436,13 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
         setMinimized(false);
         setActiveThreadId(existingThread.id);
         setActiveTab('focused');
+        return true;
       } else {
-        throw new Error('No existing conversation found');
+        return false;
       }
     } catch (error) {
       console.error('Error opening chat:', error);
-      throw error;
+      return false;
     }
   };
   const toggleOpen = () => {

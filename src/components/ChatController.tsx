@@ -10,13 +10,13 @@ export const useChatController = () => {
 };
 
 // Export singleton function for global access
-let globalOpenChatWith: ((userId: string, opts?: { createIfMissing?: boolean }) => Promise<void>) | null = null;
+let globalOpenChatWith: ((userId: string, opts?: { createIfMissing?: boolean }) => Promise<boolean>) | null = null;
 
-export const setGlobalChatController = (openChatWith: (userId: string, opts?: { createIfMissing?: boolean }) => Promise<void>) => {
+export const setGlobalChatController = (openChatWith: (userId: string, opts?: { createIfMissing?: boolean }) => Promise<boolean>) => {
   globalOpenChatWith = openChatWith;
 };
 
-export const openChatWith = async (userId: string, opts?: { createIfMissing?: boolean }) => {
+export const openChatWith = async (userId: string, opts?: { createIfMissing?: boolean }): Promise<boolean> => {
   if (!globalOpenChatWith) {
     throw new Error('Chat controller not initialized');
   }

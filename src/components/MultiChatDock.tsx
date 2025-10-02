@@ -392,7 +392,7 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
 
   // Desktop multi-window mode
   return (
-    <div className="fixed bottom-0 right-4 z-50 flex gap-2">
+    <div className="fixed bottom-0 right-4 z-[60] flex gap-2">
       {windows.map((window) => (
         <div
           key={window.conversationId}

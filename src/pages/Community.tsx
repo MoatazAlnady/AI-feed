@@ -166,13 +166,11 @@ const Community: React.FC = () => {
       return;
     }
 
-    try {
-      await openChatWith(userId, { createIfMissing: true });
-      // Removed the notification toast - chat opening should be silent
-    } catch (error) {
-      console.error('Error opening chat:', error);
+    const success = await openChatWith(userId, { createIfMissing: true });
+    if (!success) {
       toast.error('Failed to open chat');
     }
+    // Silent on success - chat opening should be silent
   };
 
   const getProfileLink = (creator: any) => {
