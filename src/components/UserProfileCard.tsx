@@ -14,8 +14,7 @@ import {
   Youtube,
   Globe,
   Mail,
-  Phone,
-  X
+  Phone
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useChatDock } from '../context/ChatDockContext';
@@ -416,11 +415,10 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
             <button
               onClick={withdrawConnectionRequest}
               disabled={loading}
-              className="flex items-center space-x-1 px-3 py-2 bg-muted text-muted-foreground rounded-lg text-sm font-medium hover:bg-destructive/10 hover:text-destructive transition-colors"
+              className="flex items-center space-x-1 px-3 py-2 bg-muted text-muted-foreground rounded-lg text-sm font-medium hover:bg-muted/80 transition-colors cursor-pointer"
             >
               <UserCheck className="h-4 w-4" />
               <span>Request Sent</span>
-              <X className="h-3 w-3 ml-1" />
             </button>
           ) : (
             <button

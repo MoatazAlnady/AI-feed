@@ -21,8 +21,7 @@ import {
   UserCheck,
   UserMinus,
   Users,
-  Check,
-  X
+  Check
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -507,7 +506,6 @@ const CreatorProfile: React.FC = () => {
                           <>
                             <Check className="h-4 w-4 mr-2" />
                             Request Sent
-                            <X className="h-3 w-3 ml-1" />
                           </>
                         ) : (
                           <>
