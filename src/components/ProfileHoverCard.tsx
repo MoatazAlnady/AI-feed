@@ -217,7 +217,24 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
 
           <div className="flex space-x-2">
             {isConnected ? (
-              <Button size="sm" variant="outline" className="flex-1">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="flex-1"
+                onClick={async () => {
+                  try {
+                    if (typeof window !== 'undefined' && (window as any).chatDock?.open) {
+                      await (window as any).chatDock.open(userId);
+                      toast.success(`Opening chat with ${profile.full_name}`);
+                    } else {
+                      toast.error('Chat system not ready. Please try again.');
+                    }
+                  } catch (error) {
+                    console.error('Error opening chat:', error);
+                    toast.error('Failed to open chat');
+                  }
+                }}
+              >
                 <MessageCircle className="h-4 w-4 mr-1" />
                 Message
               </Button>
@@ -236,11 +253,6 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
                 Connect
               </Button>
             )}
-            
-            <Button size="sm" variant="outline">
-              <MessageCircle className="h-4 w-4 mr-1" />
-              Message
-            </Button>
           </div>
         </div>
       </HoverCardContent>

@@ -53,9 +53,9 @@
   .dark {
     --background: 240 10% 4%; /* Changed from purple to neutral dark */
     --foreground: 0 0% 98%;
-    --card: 240 10% 6%; /* Changed from purple to neutral dark card */
+    --card: 240 10% 12%; /* Lighter dark card for better visibility */
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 8%;
+    --popover: 240 10% 12%; /* Lighter popover */
     --popover-foreground: 0 0% 98%;
     --primary: var(--c-cyan);
     --primary-foreground: 210 40% 98%;

@@ -17,7 +17,10 @@ import {
   FileText,
   Lock,
   UserPlus,
-  MessageCircle
+  MessageCircle,
+  UserCheck,
+  UserMinus,
+  Users
 } from 'lucide-react';
 import { useChatDock } from '@/context/ChatDockContext';
 import { Button } from '@/components/ui/button';
@@ -61,6 +64,8 @@ const CreatorProfile: React.FC = () => {
   const [notFound, setNotFound] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
 
   // Combine all possible URL parameter names
   const identifier = handleOrId || id || handle || userId;
@@ -70,6 +75,7 @@ const CreatorProfile: React.FC = () => {
       fetchProfile(identifier);
       if (user) {
         checkConnectionStatus();
+        checkFollowStatus();
       }
     }
     
@@ -214,6 +220,69 @@ const CreatorProfile: React.FC = () => {
       }
     } catch (error) {
       console.error('Error checking connection status:', error);
+    }
+  };
+
+  const checkFollowStatus = async () => {
+    if (!user || !profile) return;
+
+    try {
+      const { data, error } = await (supabase as any)
+        .from('follows')
+        .select('id')
+        .eq('follower_id', user.id)
+        .eq('following_id', profile.id)
+        .maybeSingle();
+
+      if (!error) {
+        setIsFollowing(!!data);
+      }
+    } catch (error) {
+      console.error('Error checking follow status:', error);
+    }
+  };
+
+  const handleFollow = async () => {
+    if (!user || !profile) {
+      toast.error('Please log in to follow users');
+      return;
+    }
+
+    setFollowLoading(true);
+    try {
+      if (isFollowing) {
+        const { error } = await (supabase as any)
+          .from('follows')
+          .delete()
+          .eq('follower_id', user.id)
+          .eq('following_id', profile.id);
+
+        if (error) {
+          console.error('Unfollow error:', error);
+          throw error;
+        }
+        setIsFollowing(false);
+        toast.success('Unfollowed successfully');
+      } else {
+        const { error } = await (supabase as any)
+          .from('follows')
+          .insert([{
+            follower_id: user.id,
+            following_id: profile.id
+          }]);
+
+        if (error) {
+          console.error('Follow error:', error);
+          throw error;
+        }
+        setIsFollowing(true);
+        toast.success('Following successfully');
+      }
+    } catch (error: any) {
+      console.error('Error toggling follow:', error);
+      toast.error(error?.message || 'Failed to update follow status');
+    } finally {
+      setFollowLoading(false);
     }
   };
 
@@ -376,6 +445,23 @@ const CreatorProfile: React.FC = () => {
                   {!isOwnProfile && user && (
                     <>
                       <Button 
+                        onClick={handleFollow}
+                        disabled={followLoading}
+                        variant="outline"
+                      >
+                        {isFollowing ? (
+                          <>
+                            <UserCheck className="h-4 w-4 mr-2" />
+                            Following
+                          </>
+                        ) : (
+                          <>
+                            <UserPlus className="h-4 w-4 mr-2" />
+                            Follow
+                          </>
+                        )}
+                      </Button>
+                      <Button 
                         onClick={sendConnectionRequest}
                         disabled={connectionStatus !== 'none'}
                         variant={connectionStatus === 'connected' ? 'outline' : 'default'}
@@ -527,10 +613,11 @@ const CreatorProfile: React.FC = () => {
           {/* Main Content Area */}
           <div className="lg:col-span-2">
             <Tabs defaultValue="activity" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="activity">Activity</TabsTrigger>
                 <TabsTrigger value="tools">Tools</TabsTrigger>
                 <TabsTrigger value="articles">Articles</TabsTrigger>
+                <TabsTrigger value="groups">Groups</TabsTrigger>
               </TabsList>
               
               <TabsContent value="activity" className="mt-6">
@@ -567,6 +654,20 @@ const CreatorProfile: React.FC = () => {
                       <h3 className="text-lg font-medium text-gray-900 dark:text-white">No Articles Yet</h3>
                       <p className="text-gray-500">
                         {isOwnProfile ? "Articles you write will appear here" : "No articles published yet"}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="groups" className="mt-6">
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="text-center py-12">
+                      <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-white">No Groups Yet</h3>
+                      <p className="text-gray-500">
+                        {isOwnProfile ? "Groups you create or join will appear here" : "No groups to display"}
                       </p>
                     </div>
                   </CardContent>

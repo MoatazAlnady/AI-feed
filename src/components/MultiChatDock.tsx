@@ -88,14 +88,18 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
         const uniqueParticipantIds = [...new Set(allParticipantIds)];
 
         if (uniqueParticipantIds.length > 0) {
-          const { data: profilesData } = await supabase.rpc('get_public_profiles' as any, {
-            uids: uniqueParticipantIds
+          const { data: profilesData } = await supabase.rpc('get_public_profiles_by_ids', {
+            ids: uniqueParticipantIds
           });
 
           const profileMap = new Map();
           if (Array.isArray(profilesData)) {
             profilesData.forEach((profile: any) => {
-              profileMap.set(profile.id, profile);
+              profileMap.set(profile.id, {
+                ...profile,
+                display_name: profile.full_name,
+                avatar_url: profile.profile_photo
+              });
             });
           }
 
@@ -144,13 +148,17 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
         let profileMap = new Map();
         
         if (senderIds.length > 0) {
-          const { data: profilesData } = await supabase.rpc('get_public_profiles' as any, {
-            uids: senderIds
+          const { data: profilesData } = await supabase.rpc('get_public_profiles_by_ids', {
+            ids: senderIds
           });
           
           if (Array.isArray(profilesData)) {
             profilesData.forEach((profile: any) => {
-              profileMap.set(profile.id, profile);
+              profileMap.set(profile.id, {
+                ...profile,
+                display_name: profile.full_name,
+                avatar_url: profile.profile_photo
+              });
             });
           }
         }
@@ -210,7 +218,7 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
     
     try {
       // Find or create DM conversation using edge function
-      const response = await fetch(`https://fbhhumtpdfalgkhzirew.supabase.co/functions/v1/chat/find-or-create-dm`, {
+      const response = await fetch(`https://fbhhumtpdfalgkhzirew.supabase.co/functions/v1/chat-find-or-create-dm`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -227,15 +235,15 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
 
       if (conversationId) {
         // Get user info using safe RPC
-        const { data: userData } = await supabase.rpc('get_public_profiles' as any, {
-          uids: [userId]
+        const { data: userData } = await supabase.rpc('get_public_profiles_by_ids', {
+          ids: [userId]
         });
 
         const otherUser = Array.isArray(userData) && userData.length > 0 ? {
           id: userId,
-          display_name: userData[0].display_name,
-          avatar_url: userData[0].avatar_url,
-          handle: userData[0].handle
+          display_name: userData[0].full_name,
+          avatar_url: userData[0].profile_photo,
+          handle: (userData[0] as any).handle || undefined
         } : {
           id: userId,
           display_name: 'Deleted User',
