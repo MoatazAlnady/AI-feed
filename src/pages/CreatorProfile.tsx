@@ -20,7 +20,8 @@ import {
   MessageCircle,
   UserCheck,
   UserMinus,
-  Users
+  Users,
+  Check
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -475,9 +476,22 @@ const CreatorProfile: React.FC = () => {
                         disabled={connectionStatus !== 'none'}
                         variant={connectionStatus === 'connected' ? 'outline' : 'default'}
                       >
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        {connectionStatus === 'connected' ? 'Connected' : 
-                         connectionStatus === 'pending' ? 'Request Sent' : 'Connect'}
+                        {connectionStatus === 'connected' ? (
+                          <>
+                            <UserCheck className="h-4 w-4 mr-2" />
+                            Connected
+                          </>
+                        ) : connectionStatus === 'pending' ? (
+                          <>
+                            <Check className="h-4 w-4 mr-2" />
+                            Request Sent
+                          </>
+                        ) : (
+                          <>
+                            <UserPlus className="h-4 w-4 mr-2" />
+                            Connect
+                          </>
+                        )}
                       </Button>
                       <Button 
                         variant="outline"

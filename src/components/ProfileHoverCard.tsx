@@ -5,7 +5,7 @@ import { Button } from './ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
-import { User, UserPlus, MessageCircle, MapPin, Briefcase } from 'lucide-react';
+import { User, UserPlus, MessageCircle, MapPin, Briefcase, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getCreatorProfileLink } from '@/utils/profileUtils';
 
@@ -255,6 +255,7 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
               </Button>
             ) : hasRequestPending ? (
               <Button size="sm" variant="outline" disabled className="flex-1">
+                <Check className="h-4 w-4 mr-1" />
                 Request Sent
               </Button>
             ) : (
