@@ -51,28 +51,28 @@
   }
 
   .dark {
-    --background: 220 13% 9%; /* Tailwind gray-900 */
+    --background: 220 13% 9%; /* Dark page background */
     --foreground: 0 0% 98%;
-    --card: 217 19% 12%; /* Tailwind gray-800 - medium grey for cards */
+    --card: 217 28% 17%; /* #1f2937 - exact panel color */
     --card-foreground: 0 0% 98%;
-    --popover: 217 19% 12%; /* Tailwind gray-800 */
+    --popover: 217 28% 17%; /* #1f2937 */
     --popover-foreground: 0 0% 98%;
     --primary: var(--c-cyan);
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 20%; /* Changed from violet to dark gray */
+    --secondary: 210 40% 20%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217 19% 18%; /* Tailwind gray-700 */
+    --muted: 217 28% 20%; /* Slightly lighter than panels */
     --muted-foreground: 240 5% 64.9%;
-    --accent: 217 19% 18%; /* Tailwind gray-700 */
+    --accent: 217 28% 20%; /* Slightly lighter than panels */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
-    --border: 217 19% 27%; /* Tailwind gray-600 for borders */
-    --input: 217 19% 18%; /* Tailwind gray-700 */
-    --ring: 220 14% 91%; /* Grey instead of cyan in dark mode */
+    --border: 217 19% 27%;
+    --input: 217 28% 20%; /* Slightly lighter than panels */
+    --ring: 220 14% 91%;
     
-    /* Surface tokens for dark mode - neutral instead of purple */
-    --surface: 217 19% 12%; /* Tailwind gray-800 */
+    /* Surface tokens for dark mode */
+    --surface: 217 28% 17%; /* #1f2937 */
     --surface-foreground: 0 0% 98%;
     
     /* Custom gradients for dark mode - keep logo colors consistent with light mode */
