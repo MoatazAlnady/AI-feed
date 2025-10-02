@@ -39,8 +39,11 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (userId && userId !== user?.id && profile) {
-      checkConnectionStatus();
+    if (userId && userId !== user?.id) {
+      fetchProfile();
+      if (profile) {
+        checkConnectionStatus();
+      }
     }
     
     // Listen for connection request processing events
@@ -55,12 +58,6 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
       window.removeEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
     };
   }, [userId, user, profile]);
-
-  useEffect(() => {
-    if (userId && userId !== user?.id) {
-      fetchProfile();
-    }
-  }, [userId, user]);
 
   const fetchProfile = async () => {
     try {
@@ -94,10 +91,9 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
         .eq('requester_id', user.id)
         .eq('recipient_id', userId)
         .eq('status', 'pending')
-        .limit(1)
-        .maybeSingle();
+        .limit(1);
 
-      setHasRequestPending(!!requestData);
+      setHasRequestPending(requestData && requestData.length > 0);
     } catch (error) {
       console.error('Error checking connection status:', error);
     }
@@ -133,10 +129,11 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
         });
 
       if (error) {
-        // If duplicate key error, re-check status and update UI
+        // Handle duplicate request error gracefully
         if (error.code === '23505') {
+          // Re-check status and update UI
           await checkConnectionStatus();
-          toast.info('Connection request already exists');
+          toast.info('Connection request already sent');
           return;
         }
         throw error;

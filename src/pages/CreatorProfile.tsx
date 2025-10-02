@@ -214,10 +214,9 @@ const CreatorProfile: React.FC = () => {
         .eq('requester_id', user.id)
         .eq('recipient_id', profile.id)
         .eq('status', 'pending')
-        .limit(1)
-        .maybeSingle();
+        .limit(1);
 
-      if (request) {
+      if (request && request.length > 0) {
         setConnectionStatus('pending');
       }
     } catch (error) {

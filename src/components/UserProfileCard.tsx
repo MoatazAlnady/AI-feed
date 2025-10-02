@@ -133,10 +133,9 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
         .eq('requester_id', user.id)
         .eq('recipient_id', userId)
         .eq('status', 'pending')
-        .limit(1)
-        .maybeSingle();
+        .limit(1);
 
-      setHasRequestPending(!!requestData);
+      setHasRequestPending(requestData && requestData.length > 0);
     } catch (error) {
       console.error('Error checking connection status:', error);
     }
@@ -210,10 +209,11 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
         });
 
       if (error) {
-        // If duplicate key error, re-check status and update UI
+        // Handle duplicate request error gracefully
         if (error.code === '23505') {
+          // Re-check status and update UI
           await checkConnectionStatus();
-          toast.info('Connection request already exists');
+          toast.info('Connection request already sent');
           return;
         }
         throw error;
