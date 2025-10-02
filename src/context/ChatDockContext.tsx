@@ -176,24 +176,23 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     try {
       setLoading(true);
       
-      // Fetch real conversations from database
+      // Fetch conversations directly using participant columns
       const { data: conversations } = await supabase
         .from('conversations')
-        .select(`
-          id,
-          conversation_participants!inner(user_id)
-        `)
-        .eq('conversation_participants.user_id', user.id);
+        .select('id, participant_1_id, participant_2_id')
+        .or(`participant_1_id.eq.${user.id},participant_2_id.eq.${user.id}`);
 
       if (conversations && conversations.length > 0) {
-        // Get all participant IDs and fetch their safe profiles
-        const allParticipantIds = conversations.flatMap(conv => 
-          conv.conversation_participants.map((p: any) => p.user_id)
-        );
-        const uniqueParticipantIds = [...new Set(allParticipantIds)];
+        // Get other user IDs
+        const otherUserIds = conversations.map(conv => 
+          conv.participant_1_id === user.id ? conv.participant_2_id : conv.participant_1_id
+        ).filter(Boolean);
+        
+        const uniqueUserIds = [...new Set(otherUserIds)];
 
+        // Fetch profiles using RPC
         const { data: profilesData } = await supabase.rpc('get_public_profiles_by_ids', {
-          ids: uniqueParticipantIds
+          ids: uniqueUserIds
         });
 
         const profileMap = new Map();
@@ -204,18 +203,18 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
         }
 
         const realThreads: Thread[] = conversations.map(conv => {
-          const otherParticipant = conv.conversation_participants.find(
-            (p: any) => p.user_id !== user.id
-          );
-          const profile = profileMap.get(otherParticipant?.user_id);
+          const otherUserId = conv.participant_1_id === user.id 
+            ? conv.participant_2_id 
+            : conv.participant_1_id;
+          const profile = profileMap.get(otherUserId);
 
           return {
             id: conv.id,
             participants: [{
-              id: otherParticipant?.user_id || '',
+              id: otherUserId || '',
               name: profile?.full_name || 'Deleted User',
               avatar: profile?.profile_photo,
-              title: '', // Not available in public profiles
+              title: profile?.job_title || '',
               online: false
             }],
             lastMessage: {

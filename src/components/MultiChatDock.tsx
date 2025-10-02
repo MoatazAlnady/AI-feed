@@ -74,22 +74,20 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
     try {
       const { data: convData, error } = await supabase
         .from('conversations')
-        .select(`
-          id,
-          conversation_participants!inner(user_id)
-        `)
-        .eq('conversation_participants.user_id', user.id);
+        .select('id, participant_1_id, participant_2_id')
+        .or(`participant_1_id.eq.${user.id},participant_2_id.eq.${user.id}`);
 
       if (!error && convData) {
-        // Get all participant IDs and fetch their safe profiles
-        const allParticipantIds = convData.flatMap(conv => 
-          conv.conversation_participants.map((p: any) => p.user_id)
-        );
-        const uniqueParticipantIds = [...new Set(allParticipantIds)];
+        // Get other user IDs
+        const otherUserIds = convData.map(conv => 
+          conv.participant_1_id === user.id ? conv.participant_2_id : conv.participant_1_id
+        ).filter(Boolean);
+        
+        const uniqueUserIds = [...new Set(otherUserIds)];
 
-        if (uniqueParticipantIds.length > 0) {
+        if (uniqueUserIds.length > 0) {
           const { data: profilesData } = await supabase.rpc('get_public_profiles_by_ids', {
-            ids: uniqueParticipantIds
+            ids: uniqueUserIds
           });
 
           const profileMap = new Map();
@@ -103,19 +101,23 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
             });
           }
 
-          const formattedConversations: Conversation[] = convData.map(conv => ({
-            id: conv.id,
-            participants: conv.conversation_participants.map((p: any) => {
-              const profile = profileMap.get(p.user_id);
-              return {
-                user_id: p.user_id,
+          const formattedConversations: Conversation[] = convData.map(conv => {
+            const otherUserId = conv.participant_1_id === user.id 
+              ? conv.participant_2_id 
+              : conv.participant_1_id;
+            const profile = profileMap.get(otherUserId);
+            
+            return {
+              id: conv.id,
+              participants: [{
+                user_id: otherUserId,
                 display_name: profile?.display_name || 'Deleted User',
                 avatar_url: profile?.avatar_url,
                 handle: profile?.handle
-              };
-            }),
-            unreadCount: 0 // TODO: Implement unread count
-          }));
+              }],
+              unreadCount: 0
+            };
+          });
           
           setConversations(formattedConversations);
         }
