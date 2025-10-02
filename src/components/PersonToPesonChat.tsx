@@ -137,7 +137,7 @@ const PersonToPersonChat = () => {
           sender_id,
           conversation_id,
           created_at,
-          sender:sender_id(
+          sender:user_profiles!conversation_messages_sender_id_fkey(
             full_name,
             profile_photo
           )
@@ -186,7 +186,7 @@ const PersonToPersonChat = () => {
               sender_id,
               conversation_id,
               created_at,
-              sender:sender_id(
+              sender:user_profiles!conversation_messages_sender_id_fkey(
                 full_name,
                 profile_photo
               )
