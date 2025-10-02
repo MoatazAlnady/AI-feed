@@ -137,7 +137,7 @@ const PersonToPersonChat = () => {
           sender_id,
           conversation_id,
           created_at,
-          sender:user_profiles!conversation_messages_sender_id_fkey(
+          sender:sender_id(
             full_name,
             profile_photo
           )
@@ -148,7 +148,7 @@ const PersonToPersonChat = () => {
       if (error) throw error;
       
       // Map to Message interface format
-      const mappedMessages = (data || []).map(msg => ({
+      const mappedMessages = (data || []).map((msg: any) => ({
         id: msg.id,
         content: msg.body,
         sender_id: msg.sender_id,
@@ -186,7 +186,7 @@ const PersonToPersonChat = () => {
               sender_id,
               conversation_id,
               created_at,
-              sender:user_profiles!conversation_messages_sender_id_fkey(
+              sender:sender_id(
                 full_name,
                 profile_photo
               )
@@ -195,13 +195,13 @@ const PersonToPersonChat = () => {
             .single();
 
           if (data) {
-            const mappedMessage = {
+            const mappedMessage: any = {
               id: data.id,
-              content: data.body,
+              content: (data as any).body,
               sender_id: data.sender_id,
               conversation_id: data.conversation_id,
               created_at: data.created_at,
-              sender: data.sender
+              sender: (data as any).sender
             };
             
             if (activeConversation?.id === data.conversation_id) {
