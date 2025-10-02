@@ -139,6 +139,15 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
 
       setHasRequestPending(true);
       toast.success('Connection request sent!');
+
+      // Auto-follow (ignore duplicates)
+      try {
+        await (supabase as any)
+          .from('follows')
+          .upsert({ follower_id: user.id, following_id: userId }, { onConflict: 'follower_id,following_id', ignoreDuplicates: true } as any);
+      } catch (followErr: any) {
+        console.warn('Auto-follow skipped or failed:', followErr?.message || followErr);
+      }
     } catch (error) {
       console.error('Error sending connection request:', error);
       toast.error('Failed to send connection request');

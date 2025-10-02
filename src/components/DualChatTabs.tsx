@@ -30,9 +30,9 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-24 right-6 z-50 w-96 h-[500px] animate-slide-up">
+    <div className="fixed bottom-24 right-24 z-40 w-96 h-[500px] animate-slide-up">
       <Card className="h-full flex flex-col bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-2xl">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col min-h-0">
           <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-gray-800">
             <TabsTrigger value="creator" className="flex items-center space-x-2">
               <Users className="h-4 w-4" />
@@ -44,8 +44,8 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="creator" className="flex-1 p-0">
-            <div className="h-full flex flex-col">
+          <TabsContent value="creator" className="flex-1 p-0 min-h-0">
+            <div className="h-full flex flex-col min-h-0">
               {!activeThreadId ? (
                 <div className="flex-1 flex flex-col">
                   {/* Search */}
@@ -117,7 +117,7 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
                 </div>
               ) : (
                 /* Chat View */
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col min-h-0">
                   {/* Chat Header */}
                   <div className="p-4 border-b flex items-center justify-between">
                     <div className="flex items-center space-x-3">
@@ -154,7 +154,7 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
                   </div>
                   
                   {/* Messages */}
-                  <div className="flex-1 p-4 overflow-y-auto space-y-3 max-h-[calc(100%-160px)]">
+                  <div className="flex-1 p-4 overflow-y-auto space-y-3 min-h-0">
                     {messages.map((message) => (
                       <div
                         key={message.id}
@@ -210,7 +210,7 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
             </div>
           </TabsContent>
           
-          <TabsContent value="ai" className="flex-1 p-0">
+          <TabsContent value="ai" className="flex-1 p-0 min-h-0">
             <AIChat context="creator" />
           </TabsContent>
         </Tabs>
