@@ -45,13 +45,20 @@ const MentionInput: React.FC<MentionInputProps> = ({
 
     try {
       const { data, error } = await supabase
-        .from('profiles_public_v')
-        .select('id, display_name, avatar_url, handle')
-        .or(`display_name.ilike.%${query}%,handle.ilike.%${query}%`)
+        .from('user_profiles')
+        .select('id, display_name, full_name, avatar_url, profile_photo, handle')
+        .or(`display_name.ilike.%${query}%,full_name.ilike.%${query}%,handle.ilike.%${query}%`)
         .limit(5);
 
       if (!error && data) {
-        setSuggestions(data);
+        // Map fields to match the expected format, with proper fallbacks
+        const mappedData = data.map(profile => ({
+          id: profile.id,
+          display_name: profile.display_name || profile.full_name || 'Unknown',
+          avatar_url: profile.avatar_url || profile.profile_photo,
+          handle: profile.handle
+        }));
+        setSuggestions(mappedData);
       }
     } catch (error) {
       console.error('Error searching users:', error);

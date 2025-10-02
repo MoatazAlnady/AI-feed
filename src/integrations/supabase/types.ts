@@ -113,13 +113,6 @@ export type Database = {
             foreignKeyName: "articles_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "profiles_public_v"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "articles_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
@@ -336,21 +329,7 @@ export type Database = {
             foreignKeyName: "conversations_participant_1_id_fkey"
             columns: ["participant_1_id"]
             isOneToOne: false
-            referencedRelation: "profiles_public_v"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "conversations_participant_1_id_fkey"
-            columns: ["participant_1_id"]
-            isOneToOne: false
             referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "conversations_participant_2_id_fkey"
-            columns: ["participant_2_id"]
-            isOneToOne: false
-            referencedRelation: "profiles_public_v"
             referencedColumns: ["id"]
           },
           {
@@ -416,17 +395,67 @@ export type Database = {
             foreignKeyName: "employer_projects_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "profiles_public_v"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "employer_projects_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
         ]
+      }
+      follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      groups: {
+        Row: {
+          cover_image: string | null
+          created_at: string
+          creator_id: string
+          description: string | null
+          id: string
+          is_private: boolean | null
+          member_count: number | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          cover_image?: string | null
+          created_at?: string
+          creator_id: string
+          description?: string | null
+          id?: string
+          is_private?: boolean | null
+          member_count?: number | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          cover_image?: string | null
+          created_at?: string
+          creator_id?: string
+          description?: string | null
+          id?: string
+          is_private?: boolean | null
+          member_count?: number | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       interests: {
         Row: {
@@ -521,13 +550,6 @@ export type Database = {
             foreignKeyName: "jobs_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "profiles_public_v"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "jobs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
@@ -603,21 +625,7 @@ export type Database = {
             foreignKeyName: "messages_recipient_id_fkey"
             columns: ["recipient_id"]
             isOneToOne: false
-            referencedRelation: "profiles_public_v"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "messages_recipient_id_fkey"
-            columns: ["recipient_id"]
-            isOneToOne: false
             referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "messages_sender_id_fkey"
-            columns: ["sender_id"]
-            isOneToOne: false
-            referencedRelation: "profiles_public_v"
             referencedColumns: ["id"]
           },
           {
@@ -679,13 +687,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "newsletter_content_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles_public_v"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "newsletter_content_created_by_fkey"
             columns: ["created_by"]
@@ -974,13 +975,6 @@ export type Database = {
             foreignKeyName: "organization_members_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "profiles_public_v"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "organization_members_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
@@ -1233,13 +1227,6 @@ export type Database = {
             foreignKeyName: "project_candidates_candidate_id_fkey"
             columns: ["candidate_id"]
             isOneToOne: false
-            referencedRelation: "profiles_public_v"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "project_candidates_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
@@ -1275,13 +1262,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "project_tags_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles_public_v"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "project_tags_user_id_fkey"
             columns: ["user_id"]
@@ -1605,21 +1585,7 @@ export type Database = {
             foreignKeyName: "tool_edit_requests_reviewed_by_fkey"
             columns: ["reviewed_by"]
             isOneToOne: false
-            referencedRelation: "profiles_public_v"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tool_edit_requests_reviewed_by_fkey"
-            columns: ["reviewed_by"]
-            isOneToOne: false
             referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tool_edit_requests_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles_public_v"
             referencedColumns: ["id"]
           },
           {
@@ -1754,13 +1720,6 @@ export type Database = {
             foreignKeyName: "tools_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "profiles_public_v"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tools_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
@@ -1784,6 +1743,8 @@ export type Database = {
           cover_photo: string | null
           created_at: string | null
           display_name: string | null
+          followers_count: number | null
+          following_count: number | null
           full_name: string | null
           gender: string | null
           github: string | null
@@ -1830,6 +1791,8 @@ export type Database = {
           cover_photo?: string | null
           created_at?: string | null
           display_name?: string | null
+          followers_count?: number | null
+          following_count?: number | null
           full_name?: string | null
           gender?: string | null
           github?: string | null
@@ -1876,6 +1839,8 @@ export type Database = {
           cover_photo?: string | null
           created_at?: string | null
           display_name?: string | null
+          followers_count?: number | null
+          following_count?: number | null
           full_name?: string | null
           gender?: string | null
           github?: string | null
@@ -1954,36 +1919,6 @@ export type Database = {
       }
     }
     Views: {
-      profiles_public_v: {
-        Row: {
-          avatar_url: string | null
-          display_name: string | null
-          handle: string | null
-          headline: string | null
-          id: string | null
-          job_title: string | null
-          visibility: string | null
-        }
-        Insert: {
-          avatar_url?: never
-          display_name?: never
-          handle?: string | null
-          headline?: string | null
-          id?: string | null
-          job_title?: string | null
-          visibility?: string | null
-        }
-        Update: {
-          avatar_url?: never
-          display_name?: never
-          handle?: string | null
-          headline?: string | null
-          id?: string | null
-          job_title?: string | null
-          visibility?: string | null
-        }
-        Relationships: []
-      }
       tool_ratings_v: {
         Row: {
           avg_rating: number | null
@@ -2174,6 +2109,10 @@ export type Database = {
       }
       is_admin: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_following: {
+        Args: { follower_uuid: string; following_uuid: string }
         Returns: boolean
       }
       is_user_banned_from_feature: {
