@@ -23,12 +23,10 @@ import {
 
 interface Message {
   id: string;
-  content: string;
+  content: string; // Maps to 'body' in database
   sender_id: string;
-  recipient_id: string;
   conversation_id: string;
   created_at: string;
-  read_at?: string;
   sender?: {
     full_name: string;
     profile_photo?: string;
@@ -132,10 +130,14 @@ const PersonToPersonChat = () => {
   const fetchMessages = async (conversationId: string) => {
     try {
       const { data, error } = await supabase
-        .from('messages')
+        .from('conversation_messages')
         .select(`
-          *,
-          sender:user_profiles!messages_sender_id_fkey(
+          id,
+          body,
+          sender_id,
+          conversation_id,
+          created_at,
+          sender:user_profiles!conversation_messages_sender_id_fkey(
             full_name,
             profile_photo
           )
@@ -144,46 +146,47 @@ const PersonToPersonChat = () => {
         .order('created_at', { ascending: true });
 
       if (error) throw error;
-      setMessages(data || []);
-
-      // Mark messages as read
-      await markMessagesAsRead(conversationId);
+      
+      // Map to Message interface format
+      const mappedMessages = (data || []).map(msg => ({
+        id: msg.id,
+        content: msg.body,
+        sender_id: msg.sender_id,
+        conversation_id: msg.conversation_id,
+        created_at: msg.created_at,
+        sender: msg.sender
+      }));
+      
+      setMessages(mappedMessages);
     } catch (error) {
       console.error('Error fetching messages:', error);
     }
   };
 
-  const markMessagesAsRead = async (conversationId: string) => {
-    try {
-      await supabase
-        .from('messages')
-        .update({ read_at: new Date().toISOString() })
-        .eq('conversation_id', conversationId)
-        .eq('recipient_id', user?.id)
-        .is('read_at', null);
-    } catch (error) {
-      console.error('Error marking messages as read:', error);
-    }
-  };
+  // Removed: conversation_messages table doesn't have read_at column
 
   const subscribeToMessages = () => {
     const channel = supabase
-      .channel('messages')
+      .channel('conversation_messages')
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'messages',
-          filter: `recipient_id=eq.${user?.id}`
+          table: 'conversation_messages',
+          filter: activeConversation ? `conversation_id=eq.${activeConversation.id}` : undefined
         },
         async (payload) => {
           // Fetch the complete message with sender data
           const { data } = await supabase
-            .from('messages')
+            .from('conversation_messages')
             .select(`
-              *,
-              sender:user_profiles!messages_sender_id_fkey(
+              id,
+              body,
+              sender_id,
+              conversation_id,
+              created_at,
+              sender:user_profiles!conversation_messages_sender_id_fkey(
                 full_name,
                 profile_photo
               )
@@ -191,8 +194,19 @@ const PersonToPersonChat = () => {
             .eq('id', payload.new.id)
             .single();
 
-          if (data && activeConversation?.id === data.conversation_id) {
-            setMessages(prev => [...prev, data]);
+          if (data) {
+            const mappedMessage = {
+              id: data.id,
+              content: data.body,
+              sender_id: data.sender_id,
+              conversation_id: data.conversation_id,
+              created_at: data.created_at,
+              sender: data.sender
+            };
+            
+            if (activeConversation?.id === data.conversation_id) {
+              setMessages(prev => [...prev, mappedMessage]);
+            }
           }
 
           // Refresh conversations to update last message time
@@ -255,12 +269,11 @@ const PersonToPersonChat = () => {
 
       // Send initial message
       const { error: messageError } = await supabase
-        .from('messages')
+        .from('conversation_messages')
         .insert({
           sender_id: user?.id,
-          recipient_id: recipientId,
-          conversation_id: conversationData.id,
-          content: 'Hi there! 👋'
+          body: 'Hi there! 👋',
+          conversation_id: conversationData.id
         });
 
       if (messageError) throw messageError;
@@ -288,20 +301,21 @@ const PersonToPersonChat = () => {
 
     setSending(true);
     try {
-      const recipientId = activeConversation.participant_1_id === user?.id 
-        ? activeConversation.participant_2_id 
-        : activeConversation.participant_1_id;
-
       const { error } = await supabase
-        .from('messages')
+        .from('conversation_messages')
         .insert({
           sender_id: user?.id,
-          recipient_id: recipientId,
-          conversation_id: activeConversation.id,
-          content: newMessage.trim()
+          body: newMessage.trim(),
+          conversation_id: activeConversation.id
         });
 
       if (error) throw error;
+      
+      // Update conversation's last_message_at
+      await supabase
+        .from('conversations')
+        .update({ last_message_at: new Date().toISOString() })
+        .eq('id', activeConversation.id);
 
       setNewMessage('');
     } catch (error) {
@@ -368,7 +382,9 @@ const PersonToPersonChat = () => {
                 >
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user.profile_photo} />
-                    <AvatarFallback>{user.full_name[0]}</AvatarFallback>
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {user.full_name?.[0]?.toUpperCase() || <User className="h-4 w-4" />}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1">
@@ -407,7 +423,9 @@ const PersonToPersonChat = () => {
                 >
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={otherParticipant?.profile_photo} />
-                    <AvatarFallback>{otherParticipant?.full_name?.[0] || '?'}</AvatarFallback>
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {otherParticipant?.full_name?.[0]?.toUpperCase() || <User className="h-5 w-5" />}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
@@ -434,7 +452,9 @@ const PersonToPersonChat = () => {
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={getOtherParticipant(activeConversation)?.profile_photo} />
-                  <AvatarFallback>{getOtherParticipant(activeConversation)?.full_name?.[0] || '?'}</AvatarFallback>
+                  <AvatarFallback className="bg-primary text-primary-foreground">
+                    {getOtherParticipant(activeConversation)?.full_name?.[0]?.toUpperCase() || <User className="h-5 w-5" />}
+                  </AvatarFallback>
                 </Avatar>
                 <div>
                   <h3 className="font-semibold">{getOtherParticipant(activeConversation)?.full_name || 'Deleted User'}</h3>
@@ -469,13 +489,7 @@ const PersonToPersonChat = () => {
                         <p className="text-sm">{message.content}</p>
                         <div className={`flex items-center gap-1 mt-1 ${isOwn ? 'justify-end' : 'justify-start'}`}>
                           <span className="text-xs opacity-70">{formatTime(message.created_at)}</span>
-                          {isOwn && (
-                            message.read_at ? (
-                              <CheckCheck className="h-3 w-3 opacity-70" />
-                            ) : (
-                              <Check className="h-3 w-3 opacity-70" />
-                            )
-                          )}
+                          {isOwn && <Check className="h-3 w-3 opacity-70" />}
                         </div>
                       </div>
                     </div>
