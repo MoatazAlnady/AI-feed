@@ -28,10 +28,12 @@ serve(async (req) => {
     // Fetch real platform data to provide context to AI
     console.log('Fetching platform data for AI context...');
     
+    // Fetch ONLY public data - respecting privacy settings
     const [toolsResult, articlesResult, categoriesResult, topCreatorsResult] = await Promise.all([
       supabase.from('tools').select('id, name, description, category:categories(name), pricing, tags').eq('status', 'published').limit(20),
       supabase.from('articles').select('id, title, excerpt, author, category').eq('status', 'published').limit(10),
       supabase.from('categories').select('id, name, description').limit(20),
+      // Only fetch public creator profile fields (no private contact info or sensitive data)
       supabase.rpc('get_top_creators', { limit_param: 10 })
     ]);
 
@@ -63,17 +65,20 @@ serve(async (req) => {
     }
 
     if (topCreatorsResult.data && topCreatorsResult.data.length > 0) {
-      dbContext += '**Top Creators:**\n';
+      dbContext += '**Top Creators (Public Profiles Only):**\n';
       topCreatorsResult.data.forEach((creator: any) => {
+        // Only include publicly visible information
         dbContext += `- ${creator.full_name}${creator.job_title ? ` (${creator.job_title})` : ''} - Engagement: ${creator.total_engagement || 0}\n`;
       });
       dbContext += '\n';
     }
 
-    dbContext += '=== IMPORTANT INSTRUCTIONS ===\n';
+    dbContext += '=== CRITICAL PRIVACY & DATA INSTRUCTIONS ===\n';
     dbContext += 'ONLY reference the tools, articles, categories, and creators listed above.\n';
+    dbContext += 'For creators: ONLY use the public profile data provided. DO NOT make assumptions about or reference any private data such as email, phone, private messages, unpublished content, or personal contact information.\n';
+    dbContext += 'If asked about private creator information, politely explain that you can only provide publicly available information.\n';
     dbContext += 'If asked about something not in the database, politely explain that you can only provide information about published content on the platform.\n';
-    dbContext += 'When recommending tools or articles, cite specific ones from the list above.\n\n';
+    dbContext += 'When recommending tools, articles, or creators, cite specific ones from the list above.\n\n';
 
     // Build context-aware system prompt
     let systemPrompt = `You are an AI assistant for AI Feed, a platform for discovering and sharing AI tools. 
