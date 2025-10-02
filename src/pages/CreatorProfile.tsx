@@ -665,7 +665,7 @@ const CreatorProfile: React.FC = () => {
           {/* Main Content Area */}
           <div className="lg:col-span-2">
             <Tabs defaultValue="activity" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-4 bg-card">
                 <TabsTrigger value="activity">Activity</TabsTrigger>
                 <TabsTrigger value="tools">Tools</TabsTrigger>
                 <TabsTrigger value="articles">Articles</TabsTrigger>
