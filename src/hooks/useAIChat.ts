@@ -40,12 +40,13 @@ export function useAIChat(context: string = 'general') {
         onDelta: updateAssistant,
         onDone: () => setIsLoading(false),
         onError: (err) => {
+          console.error('AI Chat Error:', err);
           setError(err);
           setIsLoading(false);
         },
       });
     } catch (e) {
-      console.error(e);
+      console.error('AI Chat Exception:', e);
       setError(e instanceof Error ? e.message : "Failed to send message");
       setIsLoading(false);
     }

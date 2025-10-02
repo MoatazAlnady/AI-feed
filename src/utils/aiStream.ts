@@ -18,11 +18,19 @@ export async function streamChat({
   const CHAT_URL = `https://fbhhumtpdfalgkhzirew.supabase.co/functions/v1/ai-chat`;
 
   try {
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    // Add authorization header if available
+    const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZiaGh1bXRwZGZhbGdraHppcmV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEyMjQ2MzYsImV4cCI6MjA2NjgwMDYzNn0.xPN8YcVsB_3zIv9tHOju5FuTD9ECLuasnBTVyGWwe88";
+    if (apiKey) {
+      headers.Authorization = `Bearer ${apiKey}`;
+    }
+
     const resp = await fetch(CHAT_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify({ messages, language, context }),
     });
 

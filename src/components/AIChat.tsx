@@ -152,7 +152,8 @@ const AIChat: React.FC<AIChatProps> = ({ context = 'general', initialGreeting })
             type="submit"
             size="sm"
             disabled={!input.trim() || isLoading}
-            className="px-3"
+            className="px-3 flex items-center justify-center"
+            title="Send message"
           >
             <Send className="h-4 w-4" />
           </Button>

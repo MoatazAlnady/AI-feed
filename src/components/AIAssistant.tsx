@@ -57,6 +57,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ mode, className = '' }) => {
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    console.log('AIAssistant: handleSubmit called', { input, isLoading });
     if (!input.trim()) return;
 
     const userMessage: Message = {

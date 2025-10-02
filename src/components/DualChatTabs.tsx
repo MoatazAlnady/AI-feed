@@ -30,7 +30,7 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-24 right-6 z-40 w-96 h-[500px] animate-slide-up">
+    <div className="fixed bottom-24 right-6 z-50 w-96 h-[500px] animate-slide-up">
       <Card className="h-full flex flex-col bg-white dark:bg-[#0a1426] border border-gray-200 dark:border-gray-700 shadow-2xl">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
           <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-gray-800">
