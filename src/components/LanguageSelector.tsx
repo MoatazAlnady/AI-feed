@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Globe, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { toast } from '@/hooks/use-toast';
 
 interface LanguageSelectorProps {
   variant?: 'header' | 'menu';
@@ -24,28 +25,66 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   variant = 'header',
   onLocaleChange 
 }) => {
-  const { i18n, t } = useTranslation();
+  const { i18n, t } = useTranslation('common');
   const [isOpen, setIsOpen] = useState(false);
-  const currentLocale = i18n.language || 'en';
+  const [currentLocale, setCurrentLocale] = useState(i18n.language || 'en');
   const currentLanguage = languages.find(lang => lang.code === currentLocale) || languages[0];
+
+  // Listen for language changes
+  useEffect(() => {
+    const handleLanguageChanged = (lng: string) => {
+      console.log('🌐 LanguageSelector detected change:', lng);
+      setCurrentLocale(lng);
+      
+      // Update document lang and direction
+      document.documentElement.lang = lng;
+      const rtlLanguages = ['ar', 'fa'];
+      document.documentElement.dir = rtlLanguages.includes(lng) ? 'rtl' : 'ltr';
+    };
+
+    i18n.on('languageChanged', handleLanguageChanged);
+    
+    return () => {
+      i18n.off('languageChanged', handleLanguageChanged);
+    };
+  }, [i18n]);
 
   const handleLanguageChange = async (languageCode: string) => {
     try {
+      console.log('🌐 Changing language to:', languageCode);
+      
       // Change i18n language
       await i18n.changeLanguage(languageCode);
       
       // Store in localStorage
       localStorage.setItem('preferredLocale', languageCode);
       
+      // Update local state
+      setCurrentLocale(languageCode);
+      
       // Close popover
       setIsOpen(false);
+      
+      // Show success toast
+      const languageName = languages.find(l => l.code === languageCode)?.nativeName || languageCode;
+      toast({
+        title: "Language changed",
+        description: `Language set to ${languageName}`,
+      });
       
       // Call callback if provided
       if (onLocaleChange) {
         onLocaleChange();
       }
+      
+      console.log('✅ Language change complete:', languageCode);
     } catch (error) {
-      console.error('Error changing language:', error);
+      console.error('❌ Error changing language:', error);
+      toast({
+        title: "Error",
+        description: "Failed to change language. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 

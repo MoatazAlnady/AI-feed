@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { AuthProvider } from "@/context/AuthContext";
 import { ChatDockProvider } from "@/context/ChatDockContext";
+import { I18nextProvider } from "react-i18next";
+import i18n from "@/i18n/config";
 import AppLayout from "@/components/AppLayout";
 import Index from "./pages/Index";
 import Tools from "./pages/Tools";
@@ -38,13 +40,14 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <ChatDockProvider>
-        <ThemeProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
+    <I18nextProvider i18n={i18n}>
+      <AuthProvider>
+        <ChatDockProvider>
+          <ThemeProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
           <Routes>
             <Route path="/" element={<AppLayout />}>
               <Route index element={<Index />} />
@@ -98,6 +101,7 @@ const App = () => (
       </ThemeProvider>
     </ChatDockProvider>
   </AuthProvider>
+  </I18nextProvider>
 </QueryClientProvider>
 );
 

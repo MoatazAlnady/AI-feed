@@ -24,11 +24,21 @@ const resources = {
   ja: { common: jaCommon },
 };
 
+// Safe localStorage access
+const getStoredLanguage = () => {
+  try {
+    return localStorage.getItem('preferredLocale') || 'en';
+  } catch (error) {
+    console.warn('localStorage not available:', error);
+    return 'en';
+  }
+};
+
 i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: localStorage.getItem('preferredLocale') || 'en',
+    lng: getStoredLanguage(),
     fallbackLng: 'en',
     defaultNS: 'common',
     ns: ['common'],
@@ -39,7 +49,23 @@ i18n
     
     react: {
       useSuspense: false,
+      bindI18n: 'languageChanged loaded',
+      bindI18nStore: 'added removed',
     },
+    
+    debug: process.env.NODE_ENV === 'development',
   });
+
+// Log language changes in development
+if (process.env.NODE_ENV === 'development') {
+  i18n.on('languageChanged', (lng) => {
+    console.log('🌐 Language changed to:', lng);
+    document.documentElement.lang = lng;
+    
+    // Handle RTL languages
+    const rtlLanguages = ['ar', 'fa'];
+    document.documentElement.dir = rtlLanguages.includes(lng) ? 'rtl' : 'ltr';
+  });
+}
 
 export default i18n;
