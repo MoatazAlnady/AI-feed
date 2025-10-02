@@ -67,61 +67,53 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ mode, className = '' }) => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const userInput = input;
     setInput('');
     setIsLoading(true);
 
     try {
-      // In a real app, this would be an API call to your AI service
-      // const response = await fetch('/api/ai-assistant', {
-      //   method: 'POST',
-      //   body: JSON.stringify({
-      //     message: input,
-      //     mode,
-      //     history: messages.map(m => ({ role: m.role, content: m.content }))
-      //   })
-      // });
-      // const data = await response.json();
+      const context = mode === 'creator' ? 'creator' : 'employer';
+      const conversationHistory = messages.map(m => ({ role: m.role, content: m.content }));
       
-      // Simulate AI response
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      let aiResponse = '';
-      
-      if (mode === 'creator') {
-        if (input.toLowerCase().includes('tool') && input.toLowerCase().includes('submit')) {
-          aiResponse = "To create a tool, go to the 'Create' menu in the top navigation and select 'AI Tool'. You'll need to provide details like the tool name, description, website URL, category, and pricing model. You can also add pros, cons, and features to help users understand the tool better.";
-        } else if (input.toLowerCase().includes('article') || input.toLowerCase().includes('write')) {
-          aiResponse = "To create an article, click on the 'Create' button in the top navigation and select 'Article'. You can write tutorials, reviews, or insights about AI tools and technologies. Articles go through a review process before being published on the platform.";
-        } else if (input.toLowerCase().includes('analytics') || input.toLowerCase().includes('stats')) {
-          aiResponse = "You can view your content performance in the Analytics dashboard. It shows views, engagement, reach, and other metrics for your submitted tools and articles. You can access it from the main navigation or your profile menu.";
-        } else if (input.toLowerCase().includes('verified') || input.toLowerCase().includes('badge')) {
-          aiResponse = "Verification badges are awarded to trusted members of the community. To get verified, you need to consistently contribute quality content and follow our community guidelines. Top Voice badges are awarded to users who have submitted 50+ tools and 50+ articles with 100,000+ reach and 10,000+ engagement.";
-        } else {
-          aiResponse = "I'm here to help with any questions about AI tools, content creation, or using the AI Feed platform. You can ask about specific tools, how to improve your submissions, or get guidance on AI technologies.";
-        }
-      } else {
-        // Employer mode responses
-        if (input.toLowerCase().includes('talent') && (input.toLowerCase().includes('find') || input.toLowerCase().includes('search'))) {
-          aiResponse = "To find talent, use the Talent Search tab in your dashboard. You can filter by skills, location, experience level, and more. For example, try searching for 'Python AND (Machine Learning OR AI) NOT Junior' to find experienced ML/AI developers.";
-        } else if (input.toLowerCase().includes('job') && input.toLowerCase().includes('post')) {
-          aiResponse = "To post a job, click the 'Post Job' button in your dashboard. You'll need to provide details like job title, description, requirements, location, and salary range. Your job will be visible to relevant candidates based on their skills and interests.";
-        } else if (input.toLowerCase().includes('subscription') || input.toLowerCase().includes('plan')) {
-          aiResponse = "We offer three subscription plans: Basic ($29/month), Professional ($79/month), and Enterprise ($199/month). Each plan offers different levels of access to talent search, candidate contacts, and job postings. You can upgrade your plan anytime from your dashboard.";
-        } else if (input.toLowerCase().includes('message') || input.toLowerCase().includes('contact')) {
-          aiResponse = "You can message candidates directly from their profile in the Talent Search results. Click the 'Message' button to start a conversation. Note that messaging requires an active subscription plan.";
-        } else {
-          aiResponse = "I can help you find the right talent for your needs. Try asking me to create a search query for specific skills or experience levels, or ask about how to optimize your job postings to attract the best candidates.";
-        }
-      }
-
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: aiResponse,
-        timestamp: new Date()
+      let assistantContent = "";
+      const updateAssistant = (chunk: string) => {
+        assistantContent += chunk;
+        setMessages(prev => {
+          const last = prev[prev.length - 1];
+          if (last?.role === "assistant") {
+            return prev.map((m, i) => 
+              i === prev.length - 1 
+                ? { ...m, content: assistantContent, timestamp: new Date() } 
+                : m
+            );
+          }
+          return [...prev, { 
+            id: (Date.now() + 1).toString(), 
+            role: "assistant", 
+            content: assistantContent,
+            timestamp: new Date()
+          }];
+        });
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
+      const { streamChat } = await import('@/utils/aiStream');
+      await streamChat({
+        messages: [...conversationHistory, { role: 'user', content: userInput }],
+        language: localStorage.getItem('preferredLocale') || 'en',
+        context,
+        onDelta: updateAssistant,
+        onDone: () => setIsLoading(false),
+        onError: (err) => {
+          const errorMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: `Error: ${err}`,
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, errorMessage]);
+          setIsLoading(false);
+        },
+      });
     } catch (error) {
       console.error('Error getting AI response:', error);
       
@@ -133,7 +125,6 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ mode, className = '' }) => {
       };
       
       setMessages(prev => [...prev, errorMessage]);
-    } finally {
       setIsLoading(false);
     }
   };

@@ -48,6 +48,22 @@
     "subtitle": "加入成千上万的专业人士，发现、分享并利用尖端AI工具来革新他们的工作流程。",
     "cta": "探索工具"
   },
+  "chat": {
+    "aiAssistant": "AI 助手",
+    "aiThinking": "AI 正在思考...",
+    "typeMessage": "输入您的消息...",
+    "send": "发送",
+    "clearChat": "清除聊天",
+    "errorOccurred": "发生错误",
+    "rateLimitExceeded": "超出速率限制，请稍后重试",
+    "paymentRequired": "需要付费才能继续",
+    "contextMode": {
+      "creator": "创作者模式",
+      "employer": "雇主模式",
+      "toolDiscovery": "工具发现模式",
+      "general": "一般帮助"
+    }
+  },
   "auto": {
     "totalUsers": "",
     "totalTools": "", 

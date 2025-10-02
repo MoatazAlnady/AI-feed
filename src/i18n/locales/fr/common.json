@@ -48,6 +48,22 @@
     "subtitle": "Rejoignez des milliers de professionnels qui découvrent, partagent et exploitent des outils IA de pointe pour révolutionner leurs flux de travail.",
     "cta": "Explorer les outils"
   },
+  "chat": {
+    "aiAssistant": "Assistant IA",
+    "aiThinking": "L'IA réfléchit...",
+    "typeMessage": "Tapez votre message...",
+    "send": "Envoyer",
+    "clearChat": "Effacer le chat",
+    "errorOccurred": "Une erreur s'est produite",
+    "rateLimitExceeded": "Limite de taux dépassée, veuillez réessayer plus tard",
+    "paymentRequired": "Paiement requis pour continuer",
+    "contextMode": {
+      "creator": "Mode créateur",
+      "employer": "Mode employeur",
+      "toolDiscovery": "Mode découverte d'outils",
+      "general": "Aide générale"
+    }
+  },
   "auto": {
     "totalUsers": "",
     "totalTools": "", 

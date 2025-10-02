@@ -48,6 +48,22 @@
     "subtitle": "Schließen Sie sich Tausenden von Fachleuten an, die modernste KI-Tools entdecken, teilen und nutzen, um ihre Arbeitsabläufe zu revolutionieren.",
     "cta": "Tools erkunden"
   },
+  "chat": {
+    "aiAssistant": "KI-Assistent",
+    "aiThinking": "KI denkt nach...",
+    "typeMessage": "Geben Sie Ihre Nachricht ein...",
+    "send": "Senden",
+    "clearChat": "Chat löschen",
+    "errorOccurred": "Ein Fehler ist aufgetreten",
+    "rateLimitExceeded": "Ratenlimit überschritten, bitte versuchen Sie es später erneut",
+    "paymentRequired": "Zahlung erforderlich um fortzufahren",
+    "contextMode": {
+      "creator": "Creator-Modus",
+      "employer": "Arbeitgeber-Modus",
+      "toolDiscovery": "Tool-Entdeckungsmodus",
+      "general": "Allgemeine Hilfe"
+    }
+  },
   "auto": {
     "totalUsers": "",
     "totalTools": "", 

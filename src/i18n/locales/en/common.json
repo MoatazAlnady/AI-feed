@@ -49,6 +49,38 @@
     "subtitle": "Join thousands of professionals discovering, sharing, and leveraging cutting-edge AI tools to revolutionize their workflows.",
     "cta": "Explore Tools"
   },
+  "chat": {
+    "aiAssistant": "AI Assistant",
+    "aiThinking": "AI is thinking...",
+    "typeMessage": "Type your message...",
+    "send": "Send",
+    "clearChat": "Clear chat",
+    "errorOccurred": "An error occurred",
+    "rateLimitExceeded": "Rate limit exceeded, please try again later",
+    "paymentRequired": "Payment required to continue",
+    "contextMode": {
+      "creator": "Creator mode",
+      "employer": "Employer mode",
+      "toolDiscovery": "Tool discovery mode",
+      "general": "General help"
+    }
+  },
+  "chat": {
+    "aiAssistant": "AI Assistant",
+    "aiThinking": "AI is thinking...",
+    "typeMessage": "Type your message...",
+    "send": "Send",
+    "clearChat": "Clear chat",
+    "errorOccurred": "An error occurred",
+    "rateLimitExceeded": "Rate limit exceeded, please try again later",
+    "paymentRequired": "Payment required to continue",
+    "contextMode": {
+      "creator": "Creator mode",
+      "employer": "Employer mode",
+      "toolDiscovery": "Tool discovery mode",
+      "general": "General help"
+    }
+  },
   "auto": {
     "totalUsers": "Total Users",
     "totalTools": "Total Tools", 

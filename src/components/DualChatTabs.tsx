@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { useChatDock } from '@/context/ChatDockContext';
-import AIChatBot from './ChatDock';
+import AIChat from './AIChat';
 
 interface DualChatTabsProps {
   isOpen: boolean;
@@ -211,36 +211,7 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
           </TabsContent>
           
           <TabsContent value="ai" className="flex-1 p-0">
-            <div className="h-full flex flex-col">
-              <div className="p-4 border-b bg-gradient-primary text-white">
-                <div className="flex items-center gap-2">
-                  <Bot className="h-5 w-5" />
-                  <h3 className="font-semibold">AI Assistant</h3>
-                </div>
-                <p className="text-sm opacity-90">Ask me about AI tools and solutions</p>
-              </div>
-              
-              <div className="flex-1 p-4 overflow-y-auto">
-                <div className="text-center text-muted-foreground text-sm">
-                  <Bot className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p>Hi! I'm your AI assistant.</p>
-                  <p>What AI tools are you looking for?</p>
-                </div>
-              </div>
-              
-              <div className="p-4 border-t">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Ask about AI tools..."
-                    className="flex-1 px-3 py-2 text-sm border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
-                  />
-                  <Button size="sm" className="px-3">
-                    <Bot className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
+            <AIChat context="creator" />
           </TabsContent>
         </Tabs>
       </Card>

@@ -48,6 +48,22 @@
     "subtitle": "最先端のAIツールを発見、共有、活用してワークフローに革命を起こす何千もの専門家に参加しましょう。",
     "cta": "ツールを探索"
   },
+  "chat": {
+    "aiAssistant": "AIアシスタント",
+    "aiThinking": "AIが考えています...",
+    "typeMessage": "メッセージを入力してください...",
+    "send": "送信",
+    "clearChat": "チャットをクリア",
+    "errorOccurred": "エラーが発生しました",
+    "rateLimitExceeded": "レート制限を超えました。後でもう一度お試しください",
+    "paymentRequired": "続行するには支払いが必要です",
+    "contextMode": {
+      "creator": "クリエイターモード",
+      "employer": "雇用者モード",
+      "toolDiscovery": "ツール発見モード",
+      "general": "一般的なヘルプ"
+    }
+  },
   "auto": {
     "totalUsers": "",
     "totalTools": "", 
