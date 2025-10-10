@@ -175,5 +175,82 @@
     "loadMore": "さらに記事を読み込む",
     "featured": "注目",
     "readMore": "続きを読む"
+  },
+  "tools": {
+    "title": "AIツールディレクトリ",
+    "subtitle": "さまざまなカテゴリのAIツールを発見して探索する",
+    "submitTool": "新しいAIツールを提出",
+    "compareTools": "ツールを比較",
+    "searchPlaceholder": "AIツールを検索...",
+    "showing": "{{count}}個のツールを表示中",
+    "searchFor": "「{{term}}」の検索結果",
+    "inCategory": "{{category}}カテゴリ内",
+    "noTools": "AIツールはまだありません",
+    "noToolsDesc": "最初にAIツールをディレクトリに提出しましょう！ツールは提出され承認されると、ここに表示されます。",
+    "noResults": "ツールが見つかりませんでした",
+    "adjustFilters": "検索条件やフィルターを調整して、お探しのものを見つけてください。",
+    "learnMore": "詳細を見る"
+  },
+  "categories": {
+    "title": "AIツールカテゴリ",
+    "subtitle": "カテゴリ別に整理されたAIツールの厳選コレクションを探索してください。特定のニーズに最適なツールを見つけましょう。",
+    "toolCount": "{{count}}個のツール",
+    "viewAll": "すべて表示 →",
+    "ctaTitle": "お探しのものが見つかりませんか？",
+    "ctaDesc": "お気に入りのAIツールを提出して、他の人が素晴らしい新しい技術を発見できるようお手伝いしてください。",
+    "submitTool": "ツールを提出"
+  },
+  "jobs": {
+    "title": "AI求人",
+    "subtitle": "人工知能と機械学習のエキサイティングなキャリア機会を発見してください。",
+    "allLocations": "すべての場所",
+    "remote": "リモート",
+    "allTypes": "すべてのタイプ",
+    "fullTime": "フルタイム",
+    "partTime": "パートタイム",
+    "contract": "契約",
+    "allExperience": "すべての経験レベル",
+    "entryLevel": "エントリーレベル",
+    "midLevel": "ミッドレベル",
+    "seniorLevel": "シニアレベル",
+    "applyNow": "今すぐ応募",
+    "loadMore": "さらに求人を読み込む"
+  },
+  "about": {
+    "title": "AI Feedについて",
+    "subtitle": "私たちは、AIツール、才能あるクリエイター、革新的な雇用主がつながり、協力するための世界で最も包括的なプラットフォームを構築しています。",
+    "missionTitle": "私たちの使命",
+    "missionText1": "クリエイターがスキルを披露し、雇用主がトップタレントを見つけ、誰もがニーズに最適なAIツールを発見できる統一されたプラットフォームを作成することで、AI技術へのアクセスを民主化します。",
+    "missionText2": "私たちは、仕事の未来は協力的で、インテリジェントで、すべての人がアクセスできるものだと信じています。",
+    "valueInnovation": "イノベーション",
+    "valueInnovationDesc": "最先端のAIソリューション",
+    "valueCommunity": "コミュニティ",
+    "valueCommunityDesc": "優秀な頭脳をつなぐ",
+    "valuePurpose": "目的",
+    "valuePurposeDesc": "意義のある影響",
+    "valueGlobal": "グローバル",
+    "valueGlobalDesc": "世界中でのアクセシビリティ",
+    "ctaTitle": "私たちのコミュニティに参加",
+    "ctaDesc": "スキルを披露したいクリエイター、才能を求める雇用主、AIツールを探している人など、AI Feedは未来への入り口です。",
+    "getStarted": "今日から始める",
+    "exploreTools": "ツールを探索"
+  },
+  "talent": {
+    "title": "タレントプール",
+    "subtitle": "プロジェクトのために熟練したAIクリエイターと専門家を見つけましょう。"
+  },
+  "footer": {
+    "tagline": "最新のAIツールとテクノロジーを発見、探索、最新情報を入手するための究極の目的地。",
+    "quickLinks": "クイックリンク",
+    "browseTools": "ツールを閲覧",
+    "categories": "カテゴリ",
+    "blog": "ブログ",
+    "about": "について",
+    "resources": "リソース",
+    "apiDocs": "APIドキュメント",
+    "submitTool": "ツールを提出",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "copyright": "© 2025 AI Feed. 無断複写・転載を禁じます。"
   }
 }

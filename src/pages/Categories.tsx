@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ChatDock from '@/components/ChatDock';
+import { useTranslation } from 'react-i18next';
 import { 
   MessageSquare, Image, Video, Code, BarChart3, Music, FileText, 
   Brain, Zap, Gamepad2, Camera, Globe, Wrench, Cpu, Lightbulb,
@@ -10,6 +11,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 
 const Categories: React.FC = () => {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -119,11 +121,10 @@ const Categories: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            AI Tool Categories
+            {t('categories.title')}
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400">
-            Explore our curated collection of AI tools organized by category. 
-            Find the perfect tool for your specific needs.
+            {t('categories.subtitle')}
           </p>
         </div>
 
@@ -151,10 +152,10 @@ const Categories: React.FC = () => {
                       </p>
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-primary-600 dark:text-primary-400">
-                          {category.count} tools
+                          {t('categories.toolCount', { count: category.count })}
                         </span>
                         <span className="text-xs text-gray-500 dark:text-gray-500">
-                          View all →
+                          {t('categories.viewAll')}
                         </span>
                       </div>
                     </div>
@@ -182,16 +183,16 @@ const Categories: React.FC = () => {
         {/* CTA Section */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-8 text-center">
           <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
-            Can't find what you're looking for?
+            {t('categories.ctaTitle')}
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-            Submit your favorite AI tool to help others discover amazing new technologies.
+            {t('categories.ctaDesc')}
           </p>
           <Link
             to="/auth"
             className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-200"
           >
-            Submit a Tool
+            {t('categories.submitTool')}
           </Link>
         </div>
       </div>

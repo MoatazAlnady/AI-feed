@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useTheme } from '@/providers/ThemeProvider';
+import { useTranslation } from 'react-i18next';
 
 interface Tool {
   id: string;
@@ -32,6 +33,7 @@ interface Tool {
 }
 
 const Tools: React.FC = () => {
+  const { t } = useTranslation();
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -139,10 +141,10 @@ const Tools: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                  AI Tools Directory
+                  {t('tools.title')}
                 </h1>
                 <p className="text-xl text-gray-600">
-                  Discover and explore AI tools across various categories
+                  {t('tools.subtitle')}
                 </p>
               </div>
               <div className="flex items-center space-x-4">
@@ -151,7 +153,7 @@ const Tools: React.FC = () => {
                   className="flex items-center space-x-2 px-6 py-3 bg-gradient-primary text-white rounded-xl hover:opacity-90 transition-all duration-200 font-semibold shadow-md"
                 >
                   <Plus className="h-5 w-5" />
-                  <span>Submit A New AI Tool</span>
+                  <span>{t('tools.submitTool')}</span>
                 </Link>
                 <button
                   onClick={() => {
@@ -163,7 +165,7 @@ const Tools: React.FC = () => {
                   className="flex items-center space-x-2 px-6 py-3 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 font-semibold"
                 >
                   <GitCompare className="h-5 w-5" />
-                  <span>Compare Tools</span>
+                  <span>{t('tools.compareTools')}</span>
                 </button>
               </div>
             </div>
@@ -177,7 +179,7 @@ const Tools: React.FC = () => {
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search AI tools..."
+                  placeholder={t('tools.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -220,9 +222,9 @@ const Tools: React.FC = () => {
           {/* Results */}
           <div className="mb-6">
             <p className="text-gray-600">
-              Showing {filteredTools.length} tools
-              {searchTerm && ` for "${searchTerm}"`}
-              {selectedCategory !== 'all' && ` in ${categories.find(c => c.id === selectedCategory)?.name || ''}`}
+              {t('tools.showing', { count: filteredTools.length })}
+              {searchTerm && ` ${t('tools.searchFor', { term: searchTerm })}`}
+              {selectedCategory !== 'all' && ` ${t('tools.inCategory', { category: categories.find(c => c.id === selectedCategory)?.name || '' })}`}
             </p>
           </div>
 
@@ -231,27 +233,27 @@ const Tools: React.FC = () => {
             <div className="text-center py-20">
               <Zap className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                No AI Tools Yet
+                {t('tools.noTools')}
               </h3>
               <p className="text-gray-600 mb-6">
-                Be the first to submit an AI tool to our directory! Tools will appear here once they are submitted and approved.
+                {t('tools.noToolsDesc')}
               </p>
               <Link
                 to="/tools/create"
                 className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-primary text-white font-semibold rounded-xl hover:opacity-90 transition-all duration-200 shadow-md"
               >
                 <Plus className="h-5 w-5" />
-                <span>Submit A New AI Tool</span>
+                <span>{t('tools.submitTool')}</span>
               </Link>
             </div>
           ) : filteredTools.length === 0 ? (
             <div className="text-center py-20">
               <Filter className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                No tools found
+                {t('tools.noResults')}
               </h3>
               <p className="text-gray-600">
-                Try adjusting your search terms or filters to find what you're looking for.
+                {t('tools.adjustFilters')}
               </p>
             </div>
           ) : (
@@ -351,7 +353,7 @@ const Tools: React.FC = () => {
                                color: theme === 'dark' ? '#e2e8f0' : '#111827'
                              }}
                            >
-                             Learn More
+                             {t('tools.learnMore')}
                            </Link>
                            
                            <div className="flex items-center space-x-1">

@@ -1,8 +1,10 @@
 import React from 'react';
 import { MapPin, Clock, Briefcase, ExternalLink } from 'lucide-react';
 import ChatDock from '@/components/ChatDock';
+import { useTranslation } from 'react-i18next';
 
 const Jobs: React.FC = () => {
+  const { t } = useTranslation();
   // Mock jobs data - replace with real data from Supabase
   const jobs = [
     {
@@ -45,9 +47,9 @@ const Jobs: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">AI Jobs</h1>
+          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">{t('jobs.title')}</h1>
           <p className="text-xl text-gray-600 dark:text-gray-400">
-            Discover exciting career opportunities in artificial intelligence and machine learning.
+            {t('jobs.subtitle')}
           </p>
         </div>
 
@@ -55,22 +57,22 @@ const Jobs: React.FC = () => {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 mb-8">
           <div className="flex flex-wrap gap-4">
             <select className="border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-              <option>All Locations</option>
-              <option>Remote</option>
+              <option>{t('jobs.allLocations')}</option>
+              <option>{t('jobs.remote')}</option>
               <option>San Francisco</option>
               <option>New York</option>
             </select>
             <select className="border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-              <option>All Types</option>
-              <option>Full-time</option>
-              <option>Part-time</option>
-              <option>Contract</option>
+              <option>{t('jobs.allTypes')}</option>
+              <option>{t('jobs.fullTime')}</option>
+              <option>{t('jobs.partTime')}</option>
+              <option>{t('jobs.contract')}</option>
             </select>
             <select className="border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-              <option>All Experience Levels</option>
-              <option>Entry Level</option>
-              <option>Mid Level</option>
-              <option>Senior Level</option>
+              <option>{t('jobs.allExperience')}</option>
+              <option>{t('jobs.entryLevel')}</option>
+              <option>{t('jobs.midLevel')}</option>
+              <option>{t('jobs.seniorLevel')}</option>
             </select>
           </div>
         </div>
@@ -105,7 +107,7 @@ const Jobs: React.FC = () => {
                   <div className="text-lg font-semibold text-green-600 dark:text-green-400 mb-2">{job.salary}</div>
                   <div className="text-sm text-gray-500 dark:text-gray-500 mb-4">{job.postedAt}</div>
                   <button className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-xl hover:shadow-lg transition-all duration-200">
-                    Apply Now
+                    {t('jobs.applyNow')}
                     <ExternalLink className="h-4 w-4" />
                   </button>
                 </div>
@@ -117,7 +119,7 @@ const Jobs: React.FC = () => {
         {/* Load More */}
         <div className="text-center mt-8">
           <button className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white px-6 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-            Load More Jobs
+            {t('jobs.loadMore')}
           </button>
         </div>
       </div>

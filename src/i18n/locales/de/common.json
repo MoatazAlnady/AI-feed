@@ -175,5 +175,82 @@
     "loadMore": "Weitere Artikel laden",
     "featured": "Hervorgehoben",
     "readMore": "Mehr lesen"
+  },
+  "tools": {
+    "title": "KI-Tools-Verzeichnis",
+    "subtitle": "Entdecken und erkunden Sie KI-Tools in verschiedenen Kategorien",
+    "submitTool": "Ein neues KI-Tool einreichen",
+    "compareTools": "Tools vergleichen",
+    "searchPlaceholder": "KI-Tools suchen...",
+    "showing": "{{count}} Tools anzeigen",
+    "searchFor": "für \"{{term}}\"",
+    "inCategory": "in {{category}}",
+    "noTools": "Noch keine KI-Tools",
+    "noToolsDesc": "Seien Sie der Erste, der ein KI-Tool in unser Verzeichnis einreicht! Tools werden hier angezeigt, sobald sie eingereicht und genehmigt wurden.",
+    "noResults": "Keine Tools gefunden",
+    "adjustFilters": "Versuchen Sie, Ihre Suchbegriffe oder Filter anzupassen, um zu finden, wonach Sie suchen.",
+    "learnMore": "Mehr erfahren"
+  },
+  "categories": {
+    "title": "KI-Tool-Kategorien",
+    "subtitle": "Erkunden Sie unsere kuratierte Sammlung von KI-Tools, organisiert nach Kategorien. Finden Sie das perfekte Tool für Ihre spezifischen Bedürfnisse.",
+    "toolCount": "{{count}} Tools",
+    "viewAll": "Alle anzeigen →",
+    "ctaTitle": "Können Sie nicht finden, wonach Sie suchen?",
+    "ctaDesc": "Reichen Sie Ihr Lieblings-KI-Tool ein, um anderen zu helfen, erstaunliche neue Technologien zu entdecken.",
+    "submitTool": "Ein Tool einreichen"
+  },
+  "jobs": {
+    "title": "KI-Jobs",
+    "subtitle": "Entdecken Sie spannende Karrieremöglichkeiten in künstlicher Intelligenz und maschinellem Lernen.",
+    "allLocations": "Alle Standorte",
+    "remote": "Remote",
+    "allTypes": "Alle Typen",
+    "fullTime": "Vollzeit",
+    "partTime": "Teilzeit",
+    "contract": "Vertrag",
+    "allExperience": "Alle Erfahrungsstufen",
+    "entryLevel": "Einstiegslevel",
+    "midLevel": "Mittleres Level",
+    "seniorLevel": "Senior Level",
+    "applyNow": "Jetzt bewerben",
+    "loadMore": "Mehr Jobs laden"
+  },
+  "about": {
+    "title": "Über AI Feed",
+    "subtitle": "Wir bauen die umfassendste Plattform der Welt für KI-Tools, talentierte Kreative und innovative Arbeitgeber, um sich zu vernetzen und zusammenzuarbeiten.",
+    "missionTitle": "Unsere Mission",
+    "missionText1": "Den Zugang zu KI-Technologie zu demokratisieren, indem wir eine einheitliche Plattform schaffen, auf der Kreative ihre Fähigkeiten präsentieren, Arbeitgeber Top-Talente finden und jeder die besten KI-Tools für seine Bedürfnisse entdecken kann.",
+    "missionText2": "Wir glauben, dass die Zukunft der Arbeit kollaborativ, intelligent und für alle zugänglich ist.",
+    "valueInnovation": "Innovation",
+    "valueInnovationDesc": "Modernste KI-Lösungen",
+    "valueCommunity": "Gemeinschaft",
+    "valueCommunityDesc": "Brillante Köpfe verbinden",
+    "valuePurpose": "Zweck",
+    "valuePurposeDesc": "Bedeutungsvolle Wirkung",
+    "valueGlobal": "Global",
+    "valueGlobalDesc": "Weltweite Zugänglichkeit",
+    "ctaTitle": "Treten Sie unserer Community bei",
+    "ctaDesc": "Ob Sie ein Kreativer sind, der seine Fähigkeiten präsentieren möchte, ein Arbeitgeber auf der Suche nach Talenten oder jemand, der KI-Tools erkundet – AI Feed ist Ihr Tor zur Zukunft.",
+    "getStarted": "Heute starten",
+    "exploreTools": "Tools erkunden"
+  },
+  "talent": {
+    "title": "Talent-Pool",
+    "subtitle": "Finden Sie qualifizierte KI-Kreative und Fachleute für Ihre Projekte."
+  },
+  "footer": {
+    "tagline": "Ihr ultimatives Ziel zum Entdecken, Erkunden und Auf dem Laufenden bleiben über die neuesten KI-Tools und Technologien.",
+    "quickLinks": "Schnelllinks",
+    "browseTools": "Tools durchsuchen",
+    "categories": "Kategorien",
+    "blog": "Blog",
+    "about": "Über uns",
+    "resources": "Ressourcen",
+    "apiDocs": "API-Dokumentation",
+    "submitTool": "Ein Tool einreichen",
+    "privacy": "Datenschutzrichtlinie",
+    "terms": "Nutzungsbedingungen",
+    "copyright": "© 2025 AI Feed. Alle Rechte vorbehalten."
   }
 }

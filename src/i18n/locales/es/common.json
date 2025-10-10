@@ -175,5 +175,82 @@
     "loadMore": "Cargar más artículos",
     "featured": "Destacado",
     "readMore": "Leer más"
+  },
+  "tools": {
+    "title": "Directorio de Herramientas IA",
+    "subtitle": "Descubre y explora herramientas de IA en varias categorías",
+    "submitTool": "Enviar una nueva herramienta IA",
+    "compareTools": "Comparar herramientas",
+    "searchPlaceholder": "Buscar herramientas de IA...",
+    "showing": "Mostrando {{count}} herramientas",
+    "searchFor": "para \"{{term}}\"",
+    "inCategory": "en {{category}}",
+    "noTools": "Aún no hay herramientas de IA",
+    "noToolsDesc": "¡Sé el primero en enviar una herramienta de IA a nuestro directorio! Las herramientas aparecerán aquí una vez que sean enviadas y aprobadas.",
+    "noResults": "No se encontraron herramientas",
+    "adjustFilters": "Intenta ajustar tus términos de búsqueda o filtros para encontrar lo que buscas.",
+    "learnMore": "Más información"
+  },
+  "categories": {
+    "title": "Categorías de Herramientas IA",
+    "subtitle": "Explora nuestra colección curada de herramientas de IA organizadas por categoría. Encuentra la herramienta perfecta para tus necesidades específicas.",
+    "toolCount": "{{count}} herramientas",
+    "viewAll": "Ver todas →",
+    "ctaTitle": "¿No encuentras lo que buscas?",
+    "ctaDesc": "Envía tu herramienta de IA favorita para ayudar a otros a descubrir nuevas tecnologías increíbles.",
+    "submitTool": "Enviar una herramienta"
+  },
+  "jobs": {
+    "title": "Trabajos de IA",
+    "subtitle": "Descubre emocionantes oportunidades de carrera en inteligencia artificial y aprendizaje automático.",
+    "allLocations": "Todas las ubicaciones",
+    "remote": "Remoto",
+    "allTypes": "Todos los tipos",
+    "fullTime": "Tiempo completo",
+    "partTime": "Medio tiempo",
+    "contract": "Contrato",
+    "allExperience": "Todos los niveles de experiencia",
+    "entryLevel": "Nivel inicial",
+    "midLevel": "Nivel intermedio",
+    "seniorLevel": "Nivel senior",
+    "applyNow": "Aplicar ahora",
+    "loadMore": "Cargar más trabajos"
+  },
+  "about": {
+    "title": "Acerca de AI Feed",
+    "subtitle": "Estamos construyendo la plataforma más completa del mundo para que herramientas de IA, creadores talentosos y empleadores innovadores se conecten y colaboren.",
+    "missionTitle": "Nuestra misión",
+    "missionText1": "Democratizar el acceso a la tecnología de IA creando una plataforma unificada donde los creadores puedan mostrar sus habilidades, los empleadores encuentren el mejor talento y todos descubran las mejores herramientas de IA para sus necesidades.",
+    "missionText2": "Creemos que el futuro del trabajo es colaborativo, inteligente y accesible para todos.",
+    "valueInnovation": "Innovación",
+    "valueInnovationDesc": "Soluciones de IA de vanguardia",
+    "valueCommunity": "Comunidad",
+    "valueCommunityDesc": "Conectando mentes brillantes",
+    "valuePurpose": "Propósito",
+    "valuePurposeDesc": "Impacto significativo",
+    "valueGlobal": "Global",
+    "valueGlobalDesc": "Accesibilidad mundial",
+    "ctaTitle": "Únete a nuestra comunidad",
+    "ctaDesc": "Ya seas un creador que busca mostrar sus habilidades, un empleador en busca de talento o alguien explorando herramientas de IA, AI Feed es tu puerta de entrada al futuro.",
+    "getStarted": "Comienza hoy",
+    "exploreTools": "Explorar herramientas"
+  },
+  "talent": {
+    "title": "Reserva de talentos",
+    "subtitle": "Encuentra creadores y profesionales expertos en IA para tus proyectos."
+  },
+  "footer": {
+    "tagline": "Tu destino definitivo para descubrir, explorar y mantenerte actualizado con las últimas herramientas y tecnologías de IA.",
+    "quickLinks": "Enlaces rápidos",
+    "browseTools": "Explorar herramientas",
+    "categories": "Categorías",
+    "blog": "Blog",
+    "about": "Acerca de",
+    "resources": "Recursos",
+    "apiDocs": "Documentación de API",
+    "submitTool": "Enviar una herramienta",
+    "privacy": "Política de privacidad",
+    "terms": "Términos de servicio",
+    "copyright": "© 2025 AI Feed. Todos los derechos reservados."
   }
 }
