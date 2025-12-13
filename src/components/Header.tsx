@@ -251,7 +251,7 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="w-full bg-white dark:bg-[#091527] shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 backdrop-blur-sm bg-white/95 dark:bg-[#091527]/95">
+      <header className="w-full bg-background shadow-sm border-b border-border sticky top-0 z-40 backdrop-blur-sm bg-background/95">
         <div className="mx-auto flex max-w-[1440px] items-center px-4 h-16">
           {/* Col 1 - Left: Logo + Navigation cluster */}
           <div className="flex items-center gap-x-2">
@@ -273,8 +273,8 @@ const Header: React.FC = () => {
                 to={item.href}
                 className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
                   isActive(item.href)
-                    ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
-                    : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    ? 'text-primary bg-primary/10 active'
+                    : 'text-muted-foreground hover:text-primary hover:bg-muted'
                 } ${item.protected && !user ? 'opacity-50 cursor-not-allowed' : ''}`}
                 onClick={(e) => {
                   if (item.protected && !user) {
@@ -285,7 +285,7 @@ const Header: React.FC = () => {
               >
                 {item.name}
                 {item.protected && !user && (
-                  <span className="ml-1 text-xs text-primary-500 dark:text-primary-400">*</span>
+                  <span className="ml-1 text-xs text-primary">*</span>
                 )}
               </Link>
             ))}
@@ -296,8 +296,8 @@ const Header: React.FC = () => {
                   to="/employer"
                   className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
                     isActive('/employer')
-                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      ? 'text-primary bg-primary/10 active'
+                      : 'text-muted-foreground hover:text-primary hover:bg-muted'
                   }`}
                 >
                    {t('nav.dashboard')}
@@ -306,8 +306,8 @@ const Header: React.FC = () => {
                   to="/employer/talents"
                   className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
                     location.pathname.includes('/employer/talents')
-                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      ? 'text-primary bg-primary/10 active'
+                      : 'text-muted-foreground hover:text-primary hover:bg-muted'
                   }`}
                 >
                   {t('nav.talent')}
@@ -316,8 +316,8 @@ const Header: React.FC = () => {
                   to="/employer/jobs"
                   className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
                     location.pathname.includes('/employer/jobs')
-                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      ? 'text-primary bg-primary/10 active'
+                      : 'text-muted-foreground hover:text-primary hover:bg-muted'
                   }`}
                 >
                   {t('nav.jobs')}
@@ -326,8 +326,8 @@ const Header: React.FC = () => {
                   to="/employer/projects"
                   className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
                     location.pathname.includes('/employer/projects')
-                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      ? 'text-primary bg-primary/10 active'
+                      : 'text-muted-foreground hover:text-primary hover:bg-muted'
                   }`}
                 >
                   {t('dashboard.projects')}
@@ -336,8 +336,8 @@ const Header: React.FC = () => {
                   to="/employer/analytics"
                   className={`nav-link px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 whitespace-nowrap ${
                     location.pathname.includes('/employer/analytics')
-                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 active'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      ? 'text-primary bg-primary/10 active'
+                      : 'text-muted-foreground hover:text-primary hover:bg-muted'
                   }`}
                 >
                   {t('dashboard.analytics')}
@@ -358,7 +358,7 @@ const Header: React.FC = () => {
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-colors"
+              className="p-2 text-muted-foreground hover:text-foreground transition-colors"
               aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -367,13 +367,13 @@ const Header: React.FC = () => {
             {/* Search Button */}
             <form onSubmit={handleSearch} className="hidden md:block">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder={isEmployerView ? "Search talent, jobs..." : "Search AI tools..."}
-                  className="pl-10 pr-4 py-2 border border-gray-200 dark:border-blue-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent w-64 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent w-64 transition-all duration-200 bg-card text-foreground"
                 />
               </div>
             </form>
@@ -381,7 +381,7 @@ const Header: React.FC = () => {
             {/* Mobile Search Button */}
             <button 
               onClick={() => navigate(isEmployerView ? '/employer/talents' : '/tools')}
-              className="md:hidden p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-colors"
+              className="md:hidden p-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <Search className="h-5 w-5" />
             </button>
@@ -392,11 +392,11 @@ const Header: React.FC = () => {
                 {isEmployerView ? (
                   <Link
                     to="/employer/notifications"
-                    className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                    className="relative p-2 text-muted-foreground hover:text-foreground transition-all duration-200 hover:bg-muted rounded-lg"
                   >
                     <Bell className="h-5 w-5" />
                     {notificationCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                      <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
                         {notificationCount}
                       </span>
                     )}
@@ -408,12 +408,12 @@ const Header: React.FC = () => {
                 {/* Messages */}
                 <Link
                   to="/messages"
-                  className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                  className="relative p-2 text-muted-foreground hover:text-foreground transition-all duration-200 hover:bg-muted rounded-lg"
                   title="Messages"
                 >
                   <MessageCircle className="h-5 w-5" />
                   {messageCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
                       {messageCount}
                     </span>
                   )}
@@ -433,17 +433,17 @@ const Header: React.FC = () => {
                     <button
                       ref={createTriggerRef}
                       onClick={() => setShowCreateMenu(!showCreateMenu)}
-                      className="flex items-center space-x-1 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-all duration-200 whitespace-nowrap"
+                      className="flex items-center space-x-1 px-3 py-2 text-muted-foreground hover:text-primary hover:bg-muted rounded-md transition-all duration-200 whitespace-nowrap"
                     >
                       <Plus className="h-4 w-4" />
                       <span className="text-sm font-medium hidden sm:inline">Create</span>
                     </button>
                     
                     {showCreateMenu && (
-                      <div ref={createMenuRef} className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 animate-slide-up">
+                      <div ref={createMenuRef} className="absolute right-0 mt-2 w-48 bg-popover rounded-xl shadow-lg border border-border py-2 z-50 animate-slide-up backdrop-blur-sm">
                         <Link
                           to="/tools/create"
-                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          className="block px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
                             setShowCreateMenu(false);
@@ -453,7 +453,7 @@ const Header: React.FC = () => {
                         </Link>
                         <Link
                           to="/articles/create"
-                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          className="block px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
                             setShowCreateMenu(false);
@@ -465,10 +465,9 @@ const Header: React.FC = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             setShowCreateMenu(false);
-                            // Navigate directly to create post page
                             navigate('/create-post');
                           }}
-                          className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          className="w-full text-left block px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
                         >
                           Post
                         </button>
@@ -482,7 +481,7 @@ const Header: React.FC = () => {
                               window.dispatchEvent(event);
                             }, 100);
                           }}
-                          className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          className="w-full text-left block px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
                         >
                           Event
                         </button>
@@ -496,7 +495,7 @@ const Header: React.FC = () => {
                               window.dispatchEvent(event);
                             }, 100);
                           }}
-                          className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          className="w-full text-left block px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
                         >
                           Group
                         </button>

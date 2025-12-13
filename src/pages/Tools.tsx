@@ -122,10 +122,10 @@ const Tools: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="py-8 bg-gray-50 min-h-screen">
+      <div className="py-8 bg-background min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         </div>
       </div>
@@ -134,16 +134,16 @@ const Tools: React.FC = () => {
 
   return (
     <>
-      <div className="py-8 bg-gray-50 min-h-screen">
+      <div className="py-8 bg-background min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
                   {t('tools.title')}
                 </h1>
-                <p className="text-xl text-gray-600">
+                <p className="text-xl text-muted-foreground">
                   {t('tools.subtitle')}
                 </p>
               </div>
@@ -157,12 +157,11 @@ const Tools: React.FC = () => {
                 </Link>
                 <button
                   onClick={() => {
-                    alert('Compare button clicked!'); // This should show immediately
                     console.log('Compare button clicked, showComparison:', showComparison);
                     setShowComparison(true);
                     console.log('setShowComparison(true) called');
                   }}
-                  className="flex items-center space-x-2 px-6 py-3 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 font-semibold"
+                  className="flex items-center space-x-2 px-6 py-3 border border-border text-foreground bg-card rounded-xl hover:bg-muted transition-all duration-200 font-semibold"
                 >
                   <GitCompare className="h-5 w-5" />
                   <span>{t('tools.compareTools')}</span>
@@ -172,17 +171,17 @@ const Tools: React.FC = () => {
           </div>
 
           {/* Search and Filters */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
+          <div className="bg-card text-card-foreground rounded-2xl shadow-sm p-6 mb-8 border border-border">
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Search */}
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder={t('tools.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full pl-12 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                 />
               </div>
 
@@ -191,7 +190,7 @@ const Tools: React.FC = () => {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3 pr-8 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="appearance-none bg-card border border-border rounded-xl px-4 py-3 pr-8 focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                 >
                   {categories.map((category) => (
                     <option key={category.id} value={category.id}>
@@ -202,16 +201,16 @@ const Tools: React.FC = () => {
               </div>
 
               {/* View Toggle */}
-              <div className="flex border border-gray-200 rounded-xl overflow-hidden">
+              <div className="flex border border-border rounded-xl overflow-hidden">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-3 ${viewMode === 'grid' ? 'bg-primary-500 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+                  className={`p-3 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}
                 >
                   <Grid className="h-5 w-5" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-3 ${viewMode === 'list' ? 'bg-primary-500 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+                  className={`p-3 ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}
                 >
                   <List className="h-5 w-5" />
                 </button>
@@ -221,7 +220,7 @@ const Tools: React.FC = () => {
 
           {/* Results */}
           <div className="mb-6">
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               {t('tools.showing', { count: filteredTools.length })}
               {searchTerm && ` ${t('tools.searchFor', { term: searchTerm })}`}
               {selectedCategory !== 'all' && ` ${t('tools.inCategory', { category: categories.find(c => c.id === selectedCategory)?.name || '' })}`}
@@ -231,11 +230,11 @@ const Tools: React.FC = () => {
           {/* Empty State */}
           {tools.length === 0 ? (
             <div className="text-center py-20">
-              <Zap className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <Zap className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">
                 {t('tools.noTools')}
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 {t('tools.noToolsDesc')}
               </p>
               <Link
@@ -248,11 +247,11 @@ const Tools: React.FC = () => {
             </div>
           ) : filteredTools.length === 0 ? (
             <div className="text-center py-20">
-              <Filter className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <Filter className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">
                 {t('tools.noResults')}
               </h3>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 {t('tools.adjustFilters')}
               </p>
             </div>
@@ -264,28 +263,18 @@ const Tools: React.FC = () => {
                   {filteredTools.map((tool) => (
                     <div
                       key={tool.id}
-                      className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group"
+                      className="bg-card text-card-foreground rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group border border-border"
                     >
-                      <div className="relative h-48 bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center">
-                        <div className="text-6xl text-primary-300">🤖</div>
+                      <div className="relative h-48 bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center">
+                        <div className="text-6xl text-primary/50">🤖</div>
                         <button 
-                          className="absolute top-4 right-4 p-2 rounded-full border transition-colors"
-                          style={{
-                            backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                            borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                            color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                          }}
+                          className="absolute top-4 right-4 p-2 rounded-full border border-border bg-card text-foreground transition-colors hover:bg-muted"
                         >
                           <Bookmark className="h-4 w-4" />
                         </button>
                         <div className="absolute bottom-4 left-4">
                           <span 
-                            className="px-3 py-1 text-sm font-medium rounded-full border"
-                            style={{
-                              backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                              borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                              color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                            }}
+                            className="px-3 py-1 text-sm font-medium rounded-full border border-border bg-card text-foreground"
                           >
                             {tool.category_name}
                           </span>
@@ -295,7 +284,7 @@ const Tools: React.FC = () => {
                       <div className="p-6">
                         <div className="flex items-start justify-between mb-3">
                           <div>
-                            <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors mb-1">
+                            <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-1">
                               {tool.name}
                             </h3>
                             <ToolStars 
@@ -304,12 +293,12 @@ const Tools: React.FC = () => {
                               size="sm"
                             />
                           </div>
-                          <div className="text-sm font-semibold text-gray-900">
+                          <div className="text-sm font-semibold text-foreground">
                             {tool.pricing}
                           </div>
                         </div>
 
-                        <p className="text-gray-600 mb-4 line-clamp-2">
+                        <p className="text-muted-foreground mb-4 line-clamp-2">
                           {tool.description}
                         </p>
 
@@ -318,24 +307,14 @@ const Tools: React.FC = () => {
                              {tool.tags.slice(0, 3).map((tag, index) => (
                                <span
                                  key={index}
-                                 className="px-2 py-1 text-xs font-medium rounded-md border"
-                                 style={{
-                                   backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                                   borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                                   color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                                 }}
+                                 className="px-2 py-1 text-xs font-medium rounded-md border border-border bg-card text-foreground"
                                >
                                  {tag}
                                </span>
                              ))}
                              {tool.tags.length > 3 && (
                                <span 
-                                 className="px-2 py-1 text-xs font-medium rounded-md border"
-                                 style={{
-                                   backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                                   borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                                   color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                                 }}
+                                 className="px-2 py-1 text-xs font-medium rounded-md border border-border bg-card text-foreground"
                                >
                                  +{tool.tags.length - 3} more
                                </span>
@@ -346,12 +325,7 @@ const Tools: React.FC = () => {
                          <div className="flex items-center justify-between space-x-2">
                            <Link
                              to={`/tools/${tool.id}`}
-                             className="flex-1 text-center py-2 px-4 rounded-lg font-medium transition-colors border"
-                             style={{
-                               backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                               borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                               color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                             }}
+                             className="flex-1 text-center py-2 px-4 rounded-lg font-medium transition-colors border border-border bg-card text-foreground hover:bg-muted"
                            >
                              {t('tools.learnMore')}
                            </Link>
@@ -362,12 +336,7 @@ const Tools: React.FC = () => {
                                  setSelectedTool(tool);
                                  setShowPromoteModal(true);
                                }}
-                               className="p-2 border rounded-lg transition-colors"
-                               style={{
-                                 backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                                 borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                                 color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                               }}
+                               className="p-2 border border-border rounded-lg transition-colors bg-card text-foreground hover:bg-muted"
                                title="Promote Tool"
                              >
                                <TrendingUp className="h-4 w-4" />
@@ -388,16 +357,16 @@ const Tools: React.FC = () => {
                   {filteredTools.map((tool) => (
                     <div
                       key={tool.id}
-                      className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 p-6"
+                      className="bg-card text-card-foreground rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 p-6 border border-border"
                     >
                       <div className="flex items-start space-x-6">
-                        <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center flex-shrink-0">
+                        <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center flex-shrink-0">
                           <div className="text-3xl">🤖</div>
                         </div>
                         <div className="flex-1">
                           <div className="flex items-start justify-between mb-2">
                             <div>
-                              <h3 className="text-xl font-bold text-gray-900 mb-1">{tool.name}</h3>
+                              <h3 className="text-xl font-bold text-foreground mb-1">{tool.name}</h3>
                               <div className="flex items-center gap-3 mb-2">
                                 <ToolStars 
                                   value={tool.average_rating || 0}
@@ -405,47 +374,32 @@ const Tools: React.FC = () => {
                                   size="sm"
                                 />
                                 <span 
-                                  className="px-3 py-1 text-sm font-medium rounded-full border"
-                                  style={{
-                                    backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                                    borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                                    color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                                  }}
+                                  className="px-3 py-1 text-sm font-medium rounded-full border border-border bg-card text-foreground"
                                 >
                                   {tool.category_name}
                                 </span>
                               </div>
                             </div>
-                            <div className="text-sm font-semibold text-gray-900">
+                            <div className="text-sm font-semibold text-foreground">
                               {tool.pricing}
                             </div>
                           </div>
                           
-                          <p className="text-gray-600 mb-3">{tool.description}</p>
+                          <p className="text-muted-foreground mb-3">{tool.description}</p>
                           
                           {tool.tags && tool.tags.length > 0 && (
                             <div className="flex flex-wrap gap-2 mb-4">
                                {tool.tags.slice(0, 5).map((tag, index) => (
                                  <span
                                    key={index}
-                                   className="px-2 py-1 text-xs rounded-md border"
-                                   style={{
-                                     backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                                     borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                                     color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                                   }}
+                                   className="px-2 py-1 text-xs rounded-md border border-border bg-card text-foreground"
                                  >
                                    {tag}
                                  </span>
                                ))}
                                {tool.tags.length > 5 && (
                                  <span 
-                                   className="px-2 py-1 text-xs rounded-md border"
-                                   style={{
-                                     backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                                     borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                                     color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                                   }}
+                                   className="px-2 py-1 text-xs rounded-md border border-border bg-card text-foreground"
                                  >
                                    +{tool.tags.length - 5} more
                                  </span>
@@ -457,12 +411,7 @@ const Tools: React.FC = () => {
                              <div className="flex items-center space-x-2">
                                 <Link
                                   to={`/tools/${tool.id}`}
-                                  className="py-2 px-4 rounded-lg font-medium transition-colors border"
-                                  style={{
-                                    backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                                    borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                                    color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                                  }}
+                                  className="py-2 px-4 rounded-lg font-medium transition-colors border border-border bg-card text-foreground hover:bg-muted"
                                 >
                                   Learn More
                                 </Link>
@@ -471,12 +420,7 @@ const Tools: React.FC = () => {
                                     setSelectedTool(tool);
                                     setShowPromoteModal(true);
                                   }}
-                                  className="p-2 border rounded-lg transition-colors"
-                                  style={{
-                                    backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-                                    borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
-                                    color: theme === 'dark' ? '#e2e8f0' : '#111827'
-                                  }}
+                                  className="p-2 border border-border rounded-lg transition-colors bg-card text-foreground hover:bg-muted"
                                   title="Promote Tool"
                                 >
                                   <TrendingUp className="h-4 w-4" />

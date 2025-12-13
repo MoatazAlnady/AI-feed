@@ -93,19 +93,19 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <button
-            className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-between"
+            className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors flex items-center justify-between"
           >
             <div className="flex items-center">
               <Globe className="h-4 w-4 mr-2" />
               {t('common.language')}
             </div>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="text-xs text-muted-foreground">
               {currentLanguage.nativeName}
             </span>
           </button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-40 p-0 z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg" 
+          className="w-40 p-0 z-50 bg-popover border border-border shadow-lg backdrop-blur-sm" 
           side="right" 
           align="start"
           sideOffset={8}
@@ -115,11 +115,11 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
               <button
                 key={language.code}
                 onClick={() => handleLanguageChange(language.code)}
-                className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-between gap-2"
+                className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors flex items-center justify-between gap-2"
               >
                 <span>{language.nativeName}</span>
                 {currentLocale === language.code && (
-                  <Check className="h-3 w-3 text-primary-600 dark:text-primary-400" />
+                  <Check className="h-3 w-3 text-primary" />
                 )}
               </button>
             ))}
@@ -133,7 +133,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
     <select
       value={currentLocale}
       onChange={(e) => handleLanguageChange(e.target.value)}
-      className="px-3 py-1 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+      className="px-3 py-1 text-sm border border-border rounded-lg bg-card text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
     >
       {languages.map((language) => (
         <option key={language.code} value={language.code}>

@@ -348,6 +348,19 @@
     }
   },
   "tools": {
+    "title": "AI Tools Directory",
+    "subtitle": "Discover and compare the best AI tools for your workflow",
+    "submitTool": "Submit Tool",
+    "compareTools": "Compare Tools",
+    "searchPlaceholder": "Search tools by name, description, or tags...",
+    "showing": "Showing {{count}} tools",
+    "searchFor": "for \"{{term}}\"",
+    "inCategory": "in {{category}}",
+    "noTools": "No Tools Yet",
+    "noToolsDesc": "Be the first to submit an AI tool to our directory!",
+    "noResults": "No Results Found",
+    "adjustFilters": "Try adjusting your search or filters to find what you're looking for.",
+    "learnMore": "Learn More",
     "rating": {
       "label": "Rating",
       "noReviews": "— (0)",
