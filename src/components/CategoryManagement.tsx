@@ -246,18 +246,29 @@ const CategoryManagement = () => {
         .delete()
         .eq('id', categoryId);
 
-      if (error) throw error;
+      if (error) {
+        // Check if the error is due to tools being assigned
+        if (error.message.includes('tools are still assigned')) {
+          toast({
+            title: "Cannot Delete Category",
+            description: "This category cannot be deleted because tools are still assigned to it. Please reassign the tools first.",
+            variant: "destructive"
+          });
+          return;
+        }
+        throw error;
+      }
 
       await fetchCategoriesAndSubs(); // Force refresh after deletion
       toast({
         title: "Success",
         description: "Category deleted successfully",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting category:', error);
       toast({
         title: "Error",
-        description: "Failed to delete category",
+        description: error.message || "Failed to delete category",
         variant: "destructive"
       });
     }

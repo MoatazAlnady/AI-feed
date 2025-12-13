@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, ExternalLink, Star, Calendar, User, Tag, CheckCircle, XCircle, Zap } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Star, Calendar, User, Tag, CheckCircle, XCircle, Zap, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,8 @@ import ToolStars from '@/components/ToolStars';
 import ToolReviews from '@/components/ToolReviews';
 import ToolActionButtons from '@/components/ToolActionButtons';
 import { getCreatorProfileLink } from '@/utils/profileUtils';
+import { useAuth } from '@/context/AuthContext';
+import EditToolModal from '@/components/EditToolModal';
 
 interface Tool {
   id: string;
@@ -44,13 +46,24 @@ interface Tool {
 const ToolDetails: React.FC = () => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
+  const { user, isAdmin } = useAuth();
   const [tool, setTool] = useState<Tool | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  const canRequestEdit = user && !isAdmin;
 
   const handleToolDelete = () => {
     // Redirect to tools page after deletion
     window.location.href = '/tools';
+  };
+
+  const handleToolUpdate = () => {
+    // Refetch the tool data after an update
+    if (id) {
+      fetchTool();
+    }
   };
 
   useEffect(() => {
@@ -225,6 +238,16 @@ const ToolDetails: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
+                  {canRequestEdit && (
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowEditModal(true)}
+                      className="flex items-center gap-2"
+                    >
+                      <Edit className="h-4 w-4" />
+                      {t('common.edit', 'Request Edit')}
+                    </Button>
+                  )}
                   <ToolActionButtons 
                     tool={tool} 
                     onDelete={handleToolDelete}
@@ -403,6 +426,16 @@ const ToolDetails: React.FC = () => {
           </Card>
         </div>
       </div>
+
+      {/* Edit Tool Modal */}
+      {tool && (
+        <EditToolModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onToolUpdated={handleToolUpdate}
+          toolId={tool.id}
+        />
+      )}
     </div>
   );
 };
