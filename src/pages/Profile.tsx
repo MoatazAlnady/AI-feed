@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import ChatDock from '@/components/ChatDock';
 import { 
   User, Mail, Calendar, Heart, Bookmark, MessageSquare, Upload, 
@@ -15,6 +16,7 @@ import { Link } from 'react-router-dom';
 import PostsTab from '../components/PostsTab';
 
 const Profile: React.FC = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [userProfile, setUserProfile] = useState<any>({});
   const [loading, setLoading] = useState(true);
@@ -145,10 +147,10 @@ const Profile: React.FC = () => {
   };
 
   const userStats = [
-    { label: 'Tools Submitted', value: stats.toolsSubmitted.toString(), icon: Upload },
-    { label: 'Articles Written', value: stats.articlesWritten.toString(), icon: MessageSquare },
-    { label: 'Likes Received', value: stats.totalEngagement.toString(), icon: Heart },
-    { label: 'Tools Bookmarked', value: '0', icon: Bookmark },
+    { label: t('profile.stats.toolsSubmitted'), value: stats.toolsSubmitted.toString(), icon: Upload },
+    { label: t('profile.stats.articlesWritten'), value: stats.articlesWritten.toString(), icon: MessageSquare },
+    { label: t('profile.stats.likesReceived'), value: stats.totalEngagement.toString(), icon: Heart },
+    { label: t('profile.stats.toolsBookmarked'), value: '0', icon: Bookmark },
   ];
 
   const recentActivity: any[] = [];
@@ -195,7 +197,7 @@ const Profile: React.FC = () => {
                         </div>
                         <div className="flex items-center space-x-1">
                           <Calendar className="h-4 w-4" />
-                          <span>Joined {new Date(profileData.joinedAt).toLocaleDateString()}</span>
+                          <span>{t('profile.joined')} {new Date(profileData.joinedAt).toLocaleDateString()}</span>
                         </div>
                       </div>
                       
@@ -268,7 +270,7 @@ const Profile: React.FC = () => {
                       className="flex items-center space-x-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300"
                     >
                       <Edit className="h-4 w-4" />
-                      <span>Edit Profile</span>
+                      <span>{t('profile.editProfile')}</span>
                     </Link>
                   </div>
                 </div>
@@ -293,11 +295,11 @@ const Profile: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm mb-8">
             <div className="flex border-b border-gray-200 dark:border-gray-700">
               {[
-                { key: 'overview', label: 'Overview' },
-                { key: 'posts', label: 'Posts' },
-                { key: 'content', label: 'My Content' },
-                { key: 'saved', label: 'Saved Items' },
-                { key: 'network', label: 'Network' }
+                { key: 'overview', label: t('profile.tabs.overview') },
+                { key: 'posts', label: t('profile.tabs.posts') },
+                { key: 'content', label: t('profile.tabs.content') },
+                { key: 'saved', label: t('profile.tabs.saved') },
+                { key: 'network', label: t('profile.tabs.network') }
               ].map(({ key, label }) => (
                 <button
                   key={key}
@@ -316,7 +318,7 @@ const Profile: React.FC = () => {
             <div className="p-6">
               {activeTab === 'overview' && (
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Activity</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('profile.overview.recentActivity')}</h3>
                   {recentActivity.length > 0 ? (
                     <div className="space-y-4">
                       {recentActivity.map((activity, index) => (
@@ -339,7 +341,7 @@ const Profile: React.FC = () => {
                     <div className="text-center py-8">
                       <MessageSquare className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
                       <p className="text-gray-600 dark:text-gray-400">
-                        No recent activity. Start creating content or interacting with the community!
+                        {t('profile.overview.noActivity')}
                       </p>
                     </div>
                   )}
@@ -352,7 +354,7 @@ const Profile: React.FC = () => {
 
               {activeTab === 'content' && (
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">My Content</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('profile.content.title')}</h3>
                   {userContent.length > 0 ? (
                     <div className="space-y-4">
                       {userContent.map((content) => (
@@ -380,7 +382,7 @@ const Profile: React.FC = () => {
                                 className="flex items-center space-x-1 px-3 py-2 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-lg hover:bg-primary-200 dark:hover:bg-primary-800/30 transition-colors"
                               >
                                 <Target className="h-4 w-4" />
-                                <span>Promote</span>
+                                <span>{t('profile.content.promote')}</span>
                               </button>
                               <button className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                                 <TrendingUp className="h-4 w-4" />
@@ -394,7 +396,7 @@ const Profile: React.FC = () => {
                     <div className="text-center py-8">
                       <FileText className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
                       <p className="text-gray-600 dark:text-gray-400 mb-4">
-                        You haven't created any content yet.
+                        {t('profile.content.noContent')}
                       </p>
                       <div className="flex flex-wrap justify-center gap-2">
                         <Link
@@ -417,7 +419,7 @@ const Profile: React.FC = () => {
 
               {activeTab === 'saved' && (
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Saved Items</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('profile.saved.title')}</h3>
                   {savedItems.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {savedItems.map((item: any) => (
@@ -476,11 +478,8 @@ const Profile: React.FC = () => {
                     <div className="text-center py-8">
                       <Bookmark className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
                       <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                        No Saved Items Yet
+                        {t('profile.saved.noSaved')}
                       </h3>
-                      <p className="text-gray-600 dark:text-gray-400">
-                        Tools, articles, and jobs you've bookmarked will appear here.
-                      </p>
                     </div>
                   )}
                  </div>

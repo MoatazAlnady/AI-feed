@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, ExternalLink, Star, Calendar, User, Tag, CheckCircle, XCircle, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
@@ -41,6 +42,7 @@ interface Tool {
 }
 
 const ToolDetails: React.FC = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [tool, setTool] = useState<Tool | null>(null);
   const [loading, setLoading] = useState(true);
@@ -127,22 +129,22 @@ const ToolDetails: React.FC = () => {
               className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Tools
+              {t('toolDetails.backToTools')}
             </Link>
           </div>
         </div>
 
         <div className="container max-w-4xl mx-auto px-6 py-16 text-center">
-          <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Tool Not Found</h1>
+          <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">{t('toolDetails.notFound')}</h1>
           <p className="text-gray-600 dark:text-gray-400 mb-8">
-            The tool you're looking for doesn't exist or has been removed.
+            {t('toolDetails.notFoundDesc')}
           </p>
           <Link
             to="/tools"
             className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Tools
+            {t('toolDetails.backToTools')}
           </Link>
         </div>
       </div>
@@ -154,13 +156,13 @@ const ToolDetails: React.FC = () => {
       {/* Navigation */}
       <div className="border-b border-gray-200 dark:border-gray-700">
         <div className="container max-w-6xl mx-auto px-6 py-4">
-          <Link
-            to="/tools"
-            className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Tools
-          </Link>
+            <Link
+              to="/tools"
+              className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              {t('toolDetails.backToTools')}
+            </Link>
         </div>
       </div>
 
@@ -200,7 +202,7 @@ const ToolDetails: React.FC = () => {
                           document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' });
                         }}
                       >
-                        Read all reviews
+                        {t('toolDetails.readAllReviews')}
                       </a>
                     )}
                   </div>
@@ -216,7 +218,7 @@ const ToolDetails: React.FC = () => {
                       <Badge 
                         className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-green-300 dark:border-green-700"
                       >
-                        Free Plan Available
+                        {t('toolDetails.freePlanAvailable')}
                       </Badge>
                     )}
                   </div>
@@ -243,7 +245,7 @@ const ToolDetails: React.FC = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                     <Zap className="h-5 w-5" />
-                    Features
+                    {t('toolDetails.features')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -263,11 +265,11 @@ const ToolDetails: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Pros */}
               {tool.pros && tool.pros.length > 0 && (
-                <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+              <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-green-600 dark:text-green-400">
                       <CheckCircle className="h-5 w-5" />
-                      Pros
+                      {t('toolDetails.pros')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -289,7 +291,7 @@ const ToolDetails: React.FC = () => {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
                       <XCircle className="h-5 w-5" />
-                      Cons
+                      {t('toolDetails.cons')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -312,13 +314,13 @@ const ToolDetails: React.FC = () => {
             {/* Tool Info */}
             <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               <CardHeader>
-                <CardTitle className="text-gray-900 dark:text-white">Tool Information</CardTitle>
+                <CardTitle className="text-gray-900 dark:text-white">{t('toolDetails.toolInfo')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
                   <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-3">
                     <User className="h-4 w-4" />
-                    Submitted by
+                    {t('toolDetails.submittedBy')}
                   </div>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10">
@@ -339,7 +341,7 @@ const ToolDetails: React.FC = () => {
                           {tool.user_profiles.full_name}
                         </Link>
                       ) : (
-                        <span className="font-medium text-gray-500 dark:text-gray-400">Anonymous</span>
+                        <span className="font-medium text-gray-500 dark:text-gray-400">{t('toolDetails.anonymous')}</span>
                       )}
                     </div>
                   </div>
@@ -348,7 +350,7 @@ const ToolDetails: React.FC = () => {
                 <div>
                   <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-1">
                     <Calendar className="h-4 w-4" />
-                    Added on
+                    {t('toolDetails.addedOn')}
                   </div>
                   <p className="font-medium text-gray-900 dark:text-white">
                     {new Date(tool.created_at).toLocaleDateString()}
@@ -359,7 +361,7 @@ const ToolDetails: React.FC = () => {
                   <div>
                     <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-1">
                       <Calendar className="h-4 w-4" />
-                      Last updated
+                      {t('toolDetails.lastUpdated')}
                     </div>
                     <p className="font-medium text-gray-900 dark:text-white">
                       {new Date(tool.updated_at).toLocaleDateString()}
@@ -372,10 +374,10 @@ const ToolDetails: React.FC = () => {
             {/* Tags */}
             {tool.tags && tool.tags.length > 0 && (
               <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                <CardHeader>
+              <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                     <Tag className="h-4 w-4" />
-                    Tags
+                    {t('toolDetails.tags')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>

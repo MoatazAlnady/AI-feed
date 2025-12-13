@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   Users, 
   Briefcase, 
@@ -27,6 +28,7 @@ interface EmployerDashboardProps {
 }
 
 const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ section = 'dashboard' }) => {
+  const { t } = useTranslation();
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [showCreateJob, setShowCreateJob] = useState(false);
@@ -146,9 +148,9 @@ const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ section = 'dashbo
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-900 dark:text-white">Subscription</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-white">{t('employer.subscription')}</h3>
             <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm">
-              {isAdmin ? 'Admin Access' : 'Free Trial'}
+              {isAdmin ? t('employer.adminAccess') : t('employer.freeTrial')}
             </span>
           </div>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
@@ -161,13 +163,13 @@ const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ section = 'dashbo
               onClick={() => setShowSubscriptionModal(true)}
               className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-2 rounded-lg font-medium hover:shadow-lg transition-shadow"
             >
-              Upgrade Now
+              {t('employer.upgradeNow')}
             </button>
           )}
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Active Jobs</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">{t('employer.activeJobs')}</h3>
           <div className="flex items-center justify-between">
             <div className="text-3xl font-bold text-gray-900 dark:text-white">{jobsCount}</div>
             <button
@@ -175,13 +177,13 @@ const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ section = 'dashbo
               className="flex items-center space-x-1 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
             >
               <Plus className="h-4 w-4" />
-              <span className="text-sm">Post Job</span>
+              <span className="text-sm">{t('employer.postJob')}</span>
             </button>
           </div>
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Projects</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">{t('employer.projects')}</h3>
           <div className="flex items-center justify-between">
             <div className="text-3xl font-bold text-gray-900 dark:text-white">{projectsCount}</div>
             {projectsCount > 0 ? (
@@ -189,7 +191,7 @@ const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ section = 'dashbo
                 onClick={() => navigate('/employer/projects')}
                 className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-sm"
               >
-                View Projects →
+                {t('employer.viewProjects')} →
               </button>
             ) : (
               <button
@@ -197,14 +199,14 @@ const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ section = 'dashbo
                 className="flex items-center space-x-1 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
               >
                 <Plus className="h-4 w-4" />
-                <span className="text-sm">Create Project</span>
+                <span className="text-sm">{t('employer.createProject')}</span>
               </button>
             )}
           </div>
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Talent Pool</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">{t('employer.talentPool')}</h3>
           <div className="flex items-center justify-between">
             <div className="text-3xl font-bold text-gray-900 dark:text-white">{talentPoolCount}</div>
             <button
@@ -212,7 +214,7 @@ const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ section = 'dashbo
               className="flex items-center space-x-1 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
             >
               <Search className="h-4 w-4" />
-              <span className="text-sm">Search</span>
+              <span className="text-sm">{t('employer.search')}</span>
             </button>
           </div>
         </div>
@@ -220,7 +222,7 @@ const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ section = 'dashbo
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-6">Recent Job Postings</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-6">{t('employer.recentJobPostings')}</h3>
           {jobs.length > 0 ? (
             <div className="space-y-4">
               {jobs.slice(0, 3).map((job) => (
@@ -254,27 +256,27 @@ const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ section = 'dashbo
                 onClick={() => navigate('/employer/jobs')}
                 className="w-full py-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-sm font-medium"
               >
-                View All Jobs
+                {t('employer.viewAllJobs')}
               </button>
             </div>
           ) : (
             <div className="text-center py-8">
               <Briefcase className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
               <p className="text-gray-600 dark:text-gray-400 mb-4">
-                You haven't posted any jobs yet.
+                {t('employer.noJobsYet')}
               </p>
               <button
                 onClick={() => setShowCreateJob(true)}
                 className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
               >
-                Post Your First Job
+                {t('employer.postFirstJob')}
               </button>
             </div>
           )}
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-6">Recommended Talent</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-6">{t('employer.recommendedTalent')}</h3>
           {isAdmin ? (
             <div className="space-y-4">
               <div className="border border-gray-200 dark:border-gray-700 rounded-xl p-4">
@@ -311,20 +313,20 @@ const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ section = 'dashbo
                 onClick={() => navigate('/employer/talents')}
                 className="w-full py-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-sm font-medium"
               >
-                View All Talent
+                {t('employer.viewAllTalent')}
               </button>
             </div>
           ) : (
             <div className="text-center py-8">
               <Users className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
               <p className="text-gray-600 dark:text-gray-400 mb-4">
-                Upgrade to see AI-matched talent recommendations based on your job postings.
+                {t('employer.upgradeToSee')}
               </p>
               <button
                 onClick={() => setShowSubscriptionModal(true)}
                 className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
               >
-                Upgrade Plan
+                {t('employer.upgradePlan')}
               </button>
             </div>
           )}

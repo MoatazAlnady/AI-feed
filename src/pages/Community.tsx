@@ -490,10 +490,10 @@ const Community: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            AI Feed Community
+            {t('community.title')}
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400">
-            Connect with like-minded AI enthusiasts, share knowledge, and build the future together.
+            {t('community.feed.subtitle')}
           </p>
         </div>
 
@@ -502,17 +502,17 @@ const Community: React.FC = () => {
           <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
             <Users className="h-8 w-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
             <div className="text-2xl font-bold text-gray-900 dark:text-white">10K+</div>
-            <div className="text-sm text-gray-500 dark:text-gray-500">Active Members</div>
+            <div className="text-sm text-gray-500 dark:text-gray-500">{t('community.stats.activeCreators')}</div>
           </div>
           <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
             <MessageSquare className="h-8 w-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
             <div className="text-2xl font-bold text-gray-900 dark:text-white">50K+</div>
-            <div className="text-sm text-gray-500 dark:text-gray-500">Discussions</div>
+            <div className="text-sm text-gray-500 dark:text-gray-500">{t('community.stats.discussionGroups')}</div>
           </div>
           <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
             <Lightbulb className="h-8 w-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
             <div className="text-2xl font-bold text-gray-900 dark:text-white">500+</div>
-            <div className="text-sm text-gray-500 dark:text-gray-500">Shared Projects</div>
+            <div className="text-sm text-gray-500 dark:text-gray-500">{t('community.stats.weeklyEvents')}</div>
           </div>
           <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
             <TrendingUp className="h-8 w-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
@@ -526,10 +526,10 @@ const Community: React.FC = () => {
           <div className="border-b border-gray-200 dark:border-gray-700">
             <nav className="-mb-px flex space-x-0 px-6">
               {[
-                { id: 'networking', label: 'Networking', icon: Users },
-                { id: 'feed', label: 'Feed', icon: MessageSquare },
-                { id: 'events', label: 'Events', icon: Calendar },
-                { id: 'groups', label: 'Groups', icon: Hash }
+                { id: 'networking', label: t('community.tabs.networking'), icon: Users },
+                { id: 'feed', label: t('community.tabs.feed'), icon: MessageSquare },
+                { id: 'events', label: t('community.tabs.events'), icon: Calendar },
+                { id: 'groups', label: t('community.tabs.groups'), icon: Hash }
               ].map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
