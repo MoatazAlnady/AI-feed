@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   ArrowLeft, 
   Check, 
@@ -37,6 +38,7 @@ interface EditRequest {
 }
 
 const AdminToolRequests: React.FC = () => {
+  const { t } = useTranslation();
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -98,7 +100,7 @@ const AdminToolRequests: React.FC = () => {
 
       if (error) throw error;
       
-      setActionSuccess('Edit request approved successfully!');
+      setActionSuccess(t('adminToolRequests.messages.approved'));
       fetchEditRequests();
       
       // Close the detail view after a short delay
@@ -107,7 +109,7 @@ const AdminToolRequests: React.FC = () => {
       }, 2000);
     } catch (error: any) {
       console.error('Error approving edit request:', error);
-      setActionError(error.message || 'Failed to approve edit request');
+      setActionError(error.message || t('adminToolRequests.messages.approveError'));
     } finally {
       setProcessingAction(false);
     }
@@ -121,7 +123,7 @@ const AdminToolRequests: React.FC = () => {
       setActionError('');
       
       if (!adminNotes.trim()) {
-        setActionError('Please provide a reason for rejection');
+        setActionError(t('adminToolRequests.messages.provideReason'));
         setProcessingAction(false);
         return;
       }
@@ -133,7 +135,7 @@ const AdminToolRequests: React.FC = () => {
 
       if (error) throw error;
       
-      setActionSuccess('Edit request rejected successfully!');
+      setActionSuccess(t('adminToolRequests.messages.rejected'));
       fetchEditRequests();
       
       // Close the detail view after a short delay
@@ -142,7 +144,7 @@ const AdminToolRequests: React.FC = () => {
       }, 2000);
     } catch (error: any) {
       console.error('Error rejecting edit request:', error);
-      setActionError(error.message || 'Failed to reject edit request');
+      setActionError(error.message || t('adminToolRequests.messages.rejectError'));
     } finally {
       setProcessingAction(false);
     }
@@ -166,14 +168,14 @@ const AdminToolRequests: React.FC = () => {
             className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors mb-4"
           >
             <ArrowLeft className="h-5 w-5" />
-            <span>Back to Admin Dashboard</span>
+            <span>{t('adminToolRequests.backToAdmin')}</span>
           </button>
           
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Tool Edit Requests
+            {t('adminToolRequests.title')}
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400">
-            Review and manage user-submitted edit requests for AI tools
+            {t('adminToolRequests.subtitle')}
           </p>
         </div>
 
@@ -184,7 +186,7 @@ const AdminToolRequests: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
-                placeholder="Search by tool or user name..."
+                placeholder={t('adminToolRequests.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -197,8 +199,8 @@ const AdminToolRequests: React.FC = () => {
                 onChange={(e) => setStatusFilter(e.target.value as 'all' | 'pending')}
                 className="border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
-                <option value="pending">Pending Requests</option>
-                <option value="all">All Requests</option>
+                <option value="pending">{t('adminToolRequests.filters.pending')}</option>
+                <option value="all">{t('adminToolRequests.filters.all')}</option>
               </select>
             </div>
           </div>
@@ -211,7 +213,7 @@ const AdminToolRequests: React.FC = () => {
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
               <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                 <h2 className="font-semibold text-gray-900 dark:text-white">
-                  {statusFilter === 'pending' ? 'Pending Requests' : 'All Requests'}
+                  {statusFilter === 'pending' ? t('adminToolRequests.filters.pending') : t('adminToolRequests.filters.all')}
                   {filteredRequests.length > 0 && ` (${filteredRequests.length})`}
                 </h2>
               </div>
@@ -236,7 +238,7 @@ const AdminToolRequests: React.FC = () => {
                             {request.tool_name}
                           </h3>
                           <p className="text-sm text-gray-500 dark:text-gray-400">
-                            Edited by {request.user_name}
+                            {t('adminToolRequests.list.editedBy')} {request.user_name}
                           </p>
                           <div className="flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
                             <Clock className="h-3 w-3 mr-1" />
@@ -244,7 +246,7 @@ const AdminToolRequests: React.FC = () => {
                           </div>
                         </div>
                         <span className="px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded-full text-xs">
-                          Pending
+                          {t('adminToolRequests.list.pending')}
                         </span>
                       </div>
                     </button>
@@ -255,8 +257,8 @@ const AdminToolRequests: React.FC = () => {
                   <AlertTriangle className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
                   <p className="text-gray-600 dark:text-gray-400">
                     {searchTerm 
-                      ? 'No edit requests match your search' 
-                      : 'No pending edit requests found'}
+                      ? t('adminToolRequests.empty.noMatches')
+                      : t('adminToolRequests.empty.noPending')}
                   </p>
                 </div>
               )}
@@ -269,10 +271,10 @@ const AdminToolRequests: React.FC = () => {
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
                 <div className="mb-6">
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                    Edit Request for {selectedRequest.tool_name}
+                    {t('adminToolRequests.details.title', { name: selectedRequest.tool_name })}
                   </h2>
                   <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                    <span>Submitted by {selectedRequest.user_name}</span>
+                    <span>{t('adminToolRequests.details.submittedBy')} {selectedRequest.user_name}</span>
                     <span>•</span>
                     <span>{new Date(selectedRequest.created_at).toLocaleString()}</span>
                   </div>
@@ -295,7 +297,7 @@ const AdminToolRequests: React.FC = () => {
                   {/* Name */}
                   {selectedRequest.name && (
                     <div>
-                      <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</h3>
+                      <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('adminToolRequests.details.fields.name')}</h3>
                       <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <p className="text-gray-900 dark:text-white">{selectedRequest.name}</p>
                       </div>
@@ -305,7 +307,7 @@ const AdminToolRequests: React.FC = () => {
                   {/* Description */}
                   {selectedRequest.description && (
                     <div>
-                      <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</h3>
+                      <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('adminToolRequests.details.fields.description')}</h3>
                       <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <p className="text-gray-900 dark:text-white whitespace-pre-wrap">{selectedRequest.description}</p>
                       </div>

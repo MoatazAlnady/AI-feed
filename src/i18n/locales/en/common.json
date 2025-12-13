@@ -725,5 +725,364 @@
       "submitting": "Submitting...",
       "disclaimer": "By submitting, you agree to our content guidelines and grant us permission to publish your work."
     }
+  },
+  "creatorProfile": {
+    "notFound": {
+      "title": "User Not Found",
+      "description": "The profile you're looking for doesn't exist or has been removed.",
+      "returnHome": "Return Home"
+    },
+    "private": {
+      "title": "This Profile is Private",
+      "description": "{{name}} has set their profile to private. You can send them a connection request to view their profile.",
+      "sendRequest": "Send Connection Request",
+      "requestSent": "Request Sent",
+      "requestPending": "Connection request pending"
+    },
+    "stats": {
+      "toolsSubmitted": "Tools Submitted",
+      "articlesWritten": "Articles Written",
+      "totalEngagement": "Total Engagement"
+    },
+    "badges": {
+      "topVoice": "Top Voice"
+    },
+    "actions": {
+      "following": "Following",
+      "follow": "Follow",
+      "connected": "Connected",
+      "requestSent": "Request Sent",
+      "connect": "Connect",
+      "message": "Message",
+      "editProfile": "Edit Profile"
+    },
+    "sections": {
+      "about": "About",
+      "noBio": "No bio available",
+      "stats": "Stats",
+      "contact": "Contact",
+      "interests": "Interests",
+      "noInterests": "No interests listed"
+    },
+    "tabs": {
+      "tools": "Tools",
+      "articles": "Articles",
+      "activity": "Activity"
+    },
+    "empty": {
+      "noTools": "No tools submitted yet",
+      "noArticles": "No articles written yet",
+      "noActivity": "No recent activity"
+    },
+    "toast": {
+      "loginToFollow": "Please log in to follow users",
+      "unfollowed": "Unfollowed successfully",
+      "following": "Following successfully",
+      "failedFollow": "Failed to update follow status",
+      "connectionSent": "Connection request sent!",
+      "connectionExists": "Connection request already exists",
+      "connectionFailed": "Failed to send connection request",
+      "connectionWithdrawn": "Connection request withdrawn",
+      "withdrawFailed": "Failed to withdraw connection request",
+      "openingChat": "Opening chat with {{name}}",
+      "chatFailed": "Failed to open chat. Please try again.",
+      "chatNotReady": "Chat system not ready. Please try again."
+    }
+  },
+  "analytics": {
+    "title": "Content Analytics",
+    "subtitle": "Track your content performance and audience insights",
+    "timeRanges": {
+      "7d": "Last 7 days",
+      "30d": "Last 30 days",
+      "90d": "Last 90 days",
+      "1y": "Last year"
+    },
+    "contentTypes": {
+      "all": "All Content",
+      "tool": "Tools",
+      "article": "Articles",
+      "post": "Posts"
+    },
+    "overview": {
+      "totalViews": "Total Views",
+      "totalLikes": "Total Likes",
+      "totalComments": "Total Comments",
+      "totalShares": "Total Shares",
+      "totalReach": "Total Reach",
+      "totalEngagement": "Total Engagement",
+      "growthRate": "Growth Rate",
+      "comparedToLast": "compared to last period"
+    },
+    "performance": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "average": "Average",
+      "poor": "Poor"
+    },
+    "demographics": {
+      "ageGroups": "Age Groups",
+      "topLocations": "Top Locations",
+      "interests": "Interests"
+    },
+    "contentPerformance": "Content Performance",
+    "exportData": "Export Data"
+  },
+  "upgrade": {
+    "title": "Premium Membership",
+    "heroTitle": "Unlock Your Full",
+    "heroTitleHighlight": "Creative Potential",
+    "heroSubtitle": "Join thousands of creators who have upgraded to premium for unlimited access to all features.",
+    "compareTitle": "Compare Plans",
+    "free": "Free",
+    "premium": "Premium",
+    "features": {
+      "unlimitedMessaging": {
+        "title": "Unlimited Messaging",
+        "description": "Send unlimited messages to your connections",
+        "freeLimit": "10 messages/month",
+        "premiumLimit": "Unlimited"
+      },
+      "unlimitedConnections": {
+        "title": "Unlimited Connection Requests",
+        "description": "Connect with anyone in the community",
+        "freeLimit": "50 requests/month",
+        "premiumLimit": "Unlimited"
+      },
+      "prioritySupport": {
+        "title": "Priority Support",
+        "description": "Get faster response times from our team",
+        "freeLimit": "Standard",
+        "premiumLimit": "Priority"
+      },
+      "premiumBadge": {
+        "title": "Premium Badge",
+        "description": "Stand out with a verified premium badge",
+        "freeLimit": "No",
+        "premiumLimit": "Yes"
+      },
+      "advancedAnalytics": {
+        "title": "Advanced Analytics",
+        "description": "Detailed insights on your content performance",
+        "freeLimit": "Basic",
+        "premiumLimit": "Advanced"
+      }
+    },
+    "plans": {
+      "monthly": {
+        "title": "Monthly",
+        "price": "$9.99",
+        "period": "/month"
+      },
+      "yearly": {
+        "title": "Yearly",
+        "price": "$79.99",
+        "period": "/year",
+        "discount": "Save 33%"
+      }
+    },
+    "cta": "Upgrade Now",
+    "faq": {
+      "title": "Have questions?",
+      "contact": "Contact our support team"
+    },
+    "toast": {
+      "signInRequired": "Please sign in to upgrade",
+      "paymentFailed": "Failed to create payment session. Please try again."
+    }
+  },
+  "createPost": {
+    "title": "Create Post",
+    "placeholder": "What's on your mind about AI?",
+    "labels": {
+      "videoUrl": "Video URL",
+      "linkUrl": "Link URL",
+      "scheduleForLater": "Schedule for later",
+      "date": "Date",
+      "time": "Time"
+    },
+    "placeholders": {
+      "videoUrl": "https://youtube.com/watch?v=...",
+      "linkUrl": "https://example.com"
+    },
+    "hints": {
+      "videoUrl": "Paste a YouTube, Vimeo, or other video embed URL"
+    },
+    "buttons": {
+      "removeImage": "Remove image",
+      "cancel": "Cancel",
+      "posting": "Posting...",
+      "schedulePost": "Schedule Post",
+      "sharePost": "Share Post"
+    }
+  },
+  "notificationsPage": {
+    "title": "Notifications",
+    "filters": {
+      "all": "All",
+      "unread": "Unread",
+      "mentions": "Mentions"
+    },
+    "buttons": {
+      "markAllRead": "Mark all as read"
+    },
+    "empty": {
+      "title": "No notifications yet",
+      "description": "When you receive notifications, they'll appear here."
+    },
+    "types": {
+      "like": "Like",
+      "comment": "Comment",
+      "follow": "Follow",
+      "share": "Share",
+      "mention": "Mention",
+      "system": "System"
+    },
+    "unreadCount": "{{count}} unread"
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Oops! Page not found",
+    "returnHome": "Return to Home"
+  },
+  "chatPage": {
+    "title": "Messages",
+    "subtitle": "Connect and chat with other members of the community"
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Organize candidates and streamline your hiring process",
+    "searchPlaceholder": "Search projects...",
+    "manageTags": "Manage Tags",
+    "newProject": "New Project",
+    "createProject": "Create Project",
+    "viewProject": "View Project",
+    "deleteProject": "Delete Project",
+    "noProjectsYet": "No Projects Yet",
+    "noProjectsDescription": "Create your first project to organize candidates and streamline your hiring process.",
+    "createFirstProject": "Create Your First Project",
+    "candidates": "candidates",
+    "updated": "Updated",
+    "form": {
+      "projectTitle": "Project Title",
+      "projectTitlePlaceholder": "e.g., Senior AI Engineer Hiring",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe the purpose of this project..."
+    },
+    "tags": {
+      "title": "Manage Tags",
+      "newTagPlaceholder": "New tag name",
+      "add": "Add",
+      "defaultTags": {
+        "contacted": "Contacted",
+        "responded": "Responded",
+        "refused": "Refused",
+        "noResponse": "No response"
+      }
+    }
+  },
+  "userView": {
+    "title": "User Profile",
+    "viewingProfile": "Viewing profile for {{name}}",
+    "notFound": {
+      "title": "User Not Found",
+      "description": "The user you're looking for doesn't exist or has been removed.",
+      "backToCommunity": "Back to Community"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "banned": "Banned"
+    },
+    "verification": {
+      "verified": "Verified",
+      "unverified": "Unverified"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "activity": "Recent Activity",
+      "content": "Content"
+    },
+    "sections": {
+      "personalInfo": "Personal Information",
+      "accountInfo": "Account Information"
+    },
+    "fields": {
+      "email": "Email",
+      "phone": "Phone",
+      "born": "Born",
+      "age": "Age",
+      "gender": "Gender",
+      "country": "Country",
+      "city": "City",
+      "memberSince": "Member since",
+      "accountType": "Account type",
+      "verified": "Verified"
+    },
+    "stats": {
+      "toolsSubmitted": "Tools Submitted",
+      "articlesWritten": "Articles Written",
+      "postsCreated": "Posts Created",
+      "likesReceived": "Likes Received",
+      "followers": "Followers",
+      "following": "Following"
+    },
+    "activity": {
+      "noActivity": "No recent activity for this user."
+    },
+    "content": {
+      "noContent": "No content available for this user."
+    },
+    "back": "Back to Community"
+  },
+  "adminToolRequests": {
+    "title": "Tool Edit Requests",
+    "subtitle": "Review and manage user-submitted edit requests for AI tools",
+    "backToAdmin": "Back to Admin Dashboard",
+    "searchPlaceholder": "Search by tool or user name...",
+    "filters": {
+      "pending": "Pending Requests",
+      "all": "All Requests"
+    },
+    "list": {
+      "editedBy": "Edited by",
+      "pending": "Pending"
+    },
+    "details": {
+      "title": "Edit Request for {{name}}",
+      "submittedBy": "Submitted by",
+      "fields": {
+        "name": "Name",
+        "description": "Description",
+        "category": "Category",
+        "subcategory": "Subcategory",
+        "website": "Website",
+        "pricing": "Pricing",
+        "features": "Features",
+        "pros": "Pros",
+        "cons": "Cons",
+        "tags": "Tags"
+      },
+      "adminNotes": "Admin Notes",
+      "adminNotesRequired": "Required for rejection",
+      "adminNotesPlaceholder": "Add notes about your decision (required for rejection)"
+    },
+    "actions": {
+      "approve": "Approve Request",
+      "reject": "Reject Request",
+      "processing": "Processing..."
+    },
+    "messages": {
+      "approved": "Edit request approved successfully!",
+      "rejected": "Edit request rejected successfully!",
+      "approveError": "Failed to approve edit request",
+      "rejectError": "Failed to reject edit request",
+      "provideReason": "Please provide a reason for rejection"
+    },
+    "empty": {
+      "noMatches": "No edit requests match your search",
+      "noPending": "No pending edit requests found"
+    },
+    "selectRequest": "Select a request from the list to view details"
   }
 }
