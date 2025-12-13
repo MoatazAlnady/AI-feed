@@ -137,7 +137,7 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
               <Button
                 variant="ghost"
                 className={cn(
-                  "w-full justify-start h-10 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700",
+                  "w-full justify-start h-10 text-foreground hover:bg-muted",
                   level > 0 && "pl-8",
                   isActive && "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
                 )}
@@ -159,9 +159,9 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
           <Button
             variant="ghost"
             className={cn(
-              "w-full justify-start h-10 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700",
+              "w-full justify-start h-10 text-foreground hover:bg-muted",
               level > 0 && "pl-8",
-              isActive && "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+              isActive && "bg-primary/10 text-primary"
             )}
             onClick={() => onSectionChange(item.id)}
           >
@@ -174,10 +174,10 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
   };
 
   return (
-    <div className="w-64 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Admin Panel</h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400">Manage your platform</p>
+    <div className="w-64 border-r border-border bg-card">
+      <div className="p-6 border-b border-border">
+        <h2 className="text-lg font-semibold text-foreground">Admin Panel</h2>
+        <p className="text-sm text-muted-foreground">Manage your platform</p>
       </div>
       <ScrollArea className="h-[calc(100vh-120px)] px-3">
         <div className="space-y-1 py-4">
