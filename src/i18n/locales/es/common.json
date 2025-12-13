@@ -17,7 +17,8 @@
     "admin": "Admin",
     "signIn": "Iniciar sesión",
     "signUp": "Registrarse",
-    "signOut": "Cerrar sesión"
+    "signOut": "Cerrar sesión",
+    "guidelines": "Normas y Directrices"
   },
   "auth": {
     "signOut": "Cerrar sesión"
@@ -264,29 +265,77 @@
   "settings": {
     "title": "Configuración",
     "subtitle": "Gestiona las preferencias e información de tu cuenta",
-    "profileInfo": "Información del perfil",
-    "profileInfoDesc": "Actualiza tu información personal y profesional",
+    "profile": "Perfil",
+    "notifications": "Notificaciones",
+    "privacy": "Privacidad",
+    "security": "Seguridad",
+    "basicInfo": "Información Básica",
+    "basicInfoDesc": "Tu información básica visible para otros usuarios",
     "fullName": "Nombre completo",
-    "jobTitle": "Cargo",
-    "company": "Empresa",
-    "location": "Ubicación",
+    "displayName": "Nombre de visualización",
+    "displayNamePlaceholder": "Cómo quieres que te llamen",
+    "handle": "Usuario",
+    "handlePlaceholder": "Tu identificador único",
+    "headline": "Titular",
+    "headlinePlaceholder": "ej: Desarrollador Senior de IA en TechCorp",
     "bio": "Sobre mí",
-    "bioPlaceholder": "Cuéntanos sobre ti, tus habilidades e intereses...",
-    "socialLinks": "Enlaces sociales",
-    "socialLinksDesc": "Añade los enlaces de tus perfiles sociales",
+    "bioPlaceholder": "Cuéntanos sobre ti...",
+    "professionalInfo": "Información Profesional",
+    "professionalInfoDesc": "Tu experiencia profesional y puesto actual",
+    "jobTitle": "Cargo",
+    "jobTitlePlaceholder": "ej: Ingeniero Senior de IA",
+    "company": "Empresa",
+    "companyPlaceholder": "Dónde trabajas actualmente",
+    "website": "Sitio web",
+    "websitePlaceholder": "https://tuweb.com",
+    "locationInfo": "Información de Ubicación",
+    "locationInfoDesc": "Tu ubicación para oportunidades y networking",
+    "country": "País",
+    "selectCountry": "Seleccionar país",
+    "city": "Ciudad",
+    "cityPlaceholder": "ej: Madrid",
+    "location": "Ubicación",
+    "locationPlaceholder": "ej: España",
+    "contactInfo": "Información de Contacto",
+    "contactInfoDesc": "Cómo otros pueden contactarte",
+    "phone": "Número de teléfono",
+    "phonePlaceholder": "Tu número de teléfono",
+    "socialLinks": "Enlaces Sociales",
+    "socialLinksDesc": "Añade los enlaces de tus perfiles",
+    "github": "GitHub",
+    "githubPlaceholder": "Usuario de GitHub",
+    "linkedin": "LinkedIn",
+    "linkedinPlaceholder": "Usuario de LinkedIn",
+    "twitter": "X (Twitter)",
+    "twitterPlaceholder": "Tu usuario de X",
+    "personalDetails": "Detalles Personales",
+    "personalDetailsDesc": "Información personal opcional",
+    "birthDate": "Fecha de nacimiento",
+    "gender": "Género",
+    "selectGender": "Seleccionar género",
+    "genderOptions": {
+      "prefer_not_to_say": "Prefiero no decir",
+      "male": "Masculino",
+      "female": "Femenino",
+      "non_binary": "No binario",
+      "other": "Otro"
+    },
+    "interestsSkills": "Intereses y Habilidades",
+    "interestsSkillsDesc": "Añade tus intereses y áreas de experiencia",
+    "privacySettings": "Configuración de Privacidad",
+    "privacySettingsDesc": "Controla cómo se muestra tu información",
+    "profileVisibility": "Visibilidad del Perfil",
+    "profileVisibilityDesc": "Controla quién puede ver tu perfil",
+    "visibilityOptions": {
+      "public": "Público - Cualquiera puede ver tu perfil",
+      "private": "Privado - Solo tú puedes ver tu perfil",
+      "connections": "Solo Conexiones - Solo tus contactos pueden ver"
+    },
+    "contactVisible": "Información de contacto visible",
+    "contactVisibleDesc": "Permitir que otros vean tu información de contacto",
     "saveProfile": "Guardar perfil",
     "savingProfile": "Guardando...",
-    "notificationPrefs": "Preferencias de notificaciones",
-    "notificationPrefsDesc": "Elige cómo quieres recibir notificaciones",
-    "emailNotifications": "Notificaciones por email",
-    "emailNotificationsDesc": "Recibe notificaciones por correo electrónico",
-    "pushNotifications": "Notificaciones push",
-    "pushNotificationsDesc": "Recibe notificaciones push en el navegador",
-    "marketingEmails": "Emails de marketing",
-    "marketingEmailsDesc": "Recibe actualizaciones y ofertas",
-    "weeklyDigest": "Resumen semanal",
-    "weeklyDigestDesc": "Recibe un resumen semanal del contenido destacado",
-    "saveNotifications": "Guardar preferencias",
+    "savePrivacy": "Guardar configuración de privacidad",
     "success": "Éxito",
     "profileUpdated": "Tu perfil ha sido actualizado correctamente",
     "notificationsUpdated": "Preferencias de notificaciones actualizadas",
@@ -892,5 +941,92 @@
       "noPending": "No hay solicitudes de edición pendientes"
     },
     "selectRequest": "Selecciona una solicitud de la lista para ver los detalles"
+  },
+  "guidelines": {
+    "title": "Normas, Reglas y Estándares",
+    "subtitle": "Por favor lee estas directrices cuidadosamente para mantener una comunidad positiva y profesional",
+    "creatorTitle": "Directrices para Creadores",
+    "creatorSubtitle": "Estándares para creadores de contenido y contribuidores",
+    "employerTitle": "Directrices para Empleadores",
+    "employerSubtitle": "Reglas para empresas y reclutadores",
+    "generalTitle": "Reglas Generales de la Plataforma",
+    "generalSubtitle": "Reglas que aplican a todos los usuarios",
+    "toolSubmission": {
+      "title": "Envío de Herramientas",
+      "rules": [
+        "Proporcionar información precisa y actualizada para cada herramienta",
+        "Incluir sitio web oficial válido y detalles de precios",
+        "No enviar herramientas fraudulentas o maliciosas",
+        "Asegurar que las descripciones reflejen las capacidades reales"
+      ]
+    },
+    "articleWriting": {
+      "title": "Escritura de Artículos",
+      "rules": [
+        "Publicar solo contenido original o dar atribución adecuada",
+        "Verificar hechos y afirmaciones antes de publicar",
+        "Mantener un tono profesional y objetivo",
+        "No se permite contenido promocional"
+      ]
+    },
+    "communityBehavior": {
+      "title": "Comportamiento Comunitario",
+      "rules": [
+        "Respetar a todos los miembros de la comunidad",
+        "No acoso, intimidación o discurso de odio",
+        "Mantener discusiones profesionales y constructivas",
+        "Reportar contenido inapropiado"
+      ]
+    },
+    "jobPosting": {
+      "title": "Publicación de Empleos",
+      "rules": [
+        "Proporcionar detalles precisos del trabajo incluyendo rango salarial",
+        "No publicar oportunidades engañosas o fraudulentas",
+        "Responder a los solicitantes de manera oportuna",
+        "Asegurar que los puestos son reales y actualmente disponibles"
+      ]
+    },
+    "talentEngagement": {
+      "title": "Interacción con Talento",
+      "rules": [
+        "Respetar la privacidad y preferencias de los candidatos",
+        "No enviar mensajes spam o acoso",
+        "Mantener comunicación clara y profesional",
+        "Proporcionar retroalimentación cuando se solicite"
+      ]
+    },
+    "communication": {
+      "title": "Estándares de Comunicación",
+      "rules": [
+        "Usar lenguaje profesional en todas las interacciones",
+        "No spam o mensajes de marketing agresivos",
+        "Respetar los tiempos de respuesta",
+        "Mantener confidencialidad cuando sea necesario"
+      ]
+    },
+    "terms": {
+      "title": "Resumen de Términos",
+      "content": "Al usar AI Feed, aceptas nuestros términos de servicio. Nos reservamos el derecho de suspender o terminar cuentas que violen estas directrices."
+    },
+    "prohibited": {
+      "title": "Contenido Prohibido",
+      "items": [
+        "Malware o contenido dañino",
+        "Contenido ilegal o fraudulento",
+        "Discurso de odio o acoso",
+        "Spam o contenido automatizado",
+        "Suplantación de identidad o engaño",
+        "Violación de propiedad intelectual"
+      ]
+    },
+    "privacy": {
+      "title": "Expectativas de Privacidad",
+      "content": "Respetamos la privacidad de los usuarios y esperamos que todos los miembros hagan lo mismo. No compartas información personal sin consentimiento."
+    },
+    "consequences": {
+      "title": "Consecuencias",
+      "content": "Las violaciones de estas directrices pueden resultar en advertencias, suspensión de cuenta o prohibición permanente dependiendo de la gravedad."
+    }
   }
 }

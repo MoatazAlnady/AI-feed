@@ -17,7 +17,8 @@
     "admin": "管理者",
     "signIn": "ログイン",
     "signUp": "サインアップ",
-    "signOut": "ログアウト"
+    "signOut": "ログアウト",
+    "guidelines": "ガイドラインとルール"
   },
   "auth": {
     "signOut": "ログアウト"
