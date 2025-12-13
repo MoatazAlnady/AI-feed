@@ -251,7 +251,7 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="w-full bg-background shadow-sm border-b border-border sticky top-0 z-40 backdrop-blur-sm bg-background/95">
+      <header className="w-full bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 backdrop-blur-sm">
         <div className="mx-auto flex max-w-[1440px] items-center px-4 h-16">
           {/* Col 1 - Left: Logo + Navigation cluster */}
           <div className="flex items-center gap-x-2">
