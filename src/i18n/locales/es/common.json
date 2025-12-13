@@ -453,6 +453,9 @@
     "successTitle": "¡Herramienta enviada con éxito!",
     "successMessage": "Gracias por enviar tu herramienta de IA. Nuestro equipo la revisará en 24-48 horas.",
     "submitAnother": "Enviar otra herramienta",
+    "chooseMethod": "Elegir método de envío",
+    "singleToolForm": "Formulario de herramienta individual",
+    "csvUpload": "Carga de CSV",
     "form": {
       "name": "Nombre de la herramienta",
       "namePlaceholder": "Ingresa el nombre de la herramienta",
@@ -463,9 +466,9 @@
       "subcategory": "Subcategoría",
       "selectSubcategory": "Selecciona una subcategoría",
       "toolType": "Tipo de herramienta",
-      "selectToolType": "Selecciona tipos de herramientas",
+      "selectToolType": "Selecciona tipos de herramienta",
       "website": "URL del sitio web",
-      "websitePlaceholder": "https://example.com",
+      "websitePlaceholder": "https://ejemplo.com",
       "pricing": "Precios",
       "freePlan": "Plan gratuito disponible",
       "logo": "Logo",
@@ -487,5 +490,400 @@
       "subcategoryRequired": "Por favor selecciona una subcategoría.",
       "toolTypeRequired": "Por favor selecciona al menos un tipo de herramienta."
     }
+  },
+  "submitArticle": {
+    "title": "Enviar artículo",
+    "subtitle": "Comparte tus conocimientos, tutoriales e investigaciones sobre IA con nuestra comunidad.",
+    "successTitle": "¡Artículo enviado con éxito!",
+    "successMessage": "Gracias por contribuir a nuestra comunidad de IA. Tu artículo será revisado en 24-48 horas.",
+    "submitAnother": "Enviar otro artículo",
+    "form": {
+      "authorName": "Nombre del autor",
+      "authorPlaceholder": "Tu nombre completo",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "tu@email.com",
+      "contentType": "Tipo de contenido",
+      "article": "Artículo",
+      "video": "Video",
+      "titleLabel": "Título",
+      "titlePlaceholder": "Ingresa un título atractivo para tu contenido",
+      "excerpt": "Extracto",
+      "excerptPlaceholder": "Escribe un resumen atractivo (150-200 caracteres)",
+      "videoUrl": "URL del video",
+      "videoUrlPlaceholder": "https://youtube.com/watch?v=...",
+      "content": "Contenido",
+      "contentPlaceholder": "Escribe el contenido completo de tu artículo aquí. Usa formato markdown si es necesario.",
+      "category": "Categoría",
+      "selectCategory": "Selecciona una categoría",
+      "tags": "Etiquetas",
+      "tagsPlaceholder": "IA, GPT, Tutorial (separadas por comas)",
+      "featuredImage": "Imagen destacada",
+      "uploadFeaturedImage": "Sube una imagen destacada para tu artículo",
+      "imageSpecs": "PNG, JPG hasta 5MB (recomendado: 1200x630px)",
+      "chooseImage": "Elegir imagen",
+      "selected": "Seleccionado",
+      "submit": "Enviar artículo para revisión",
+      "submitting": "Enviando...",
+      "disclaimer": "Al enviar, aceptas nuestras directrices de contenido y nos otorgas permiso para publicar tu trabajo."
+    }
+  },
+  "creatorProfile": {
+    "notFound": {
+      "title": "Usuario no encontrado",
+      "description": "El perfil que buscas no existe o ha sido eliminado.",
+      "returnHome": "Volver al inicio"
+    },
+    "private": {
+      "title": "Este perfil es privado",
+      "description": "{{name}} ha configurado su perfil como privado. Puedes enviarle una solicitud de conexión para ver su perfil.",
+      "sendRequest": "Enviar solicitud de conexión",
+      "requestSent": "Solicitud enviada",
+      "requestPending": "Solicitud de conexión pendiente"
+    },
+    "stats": {
+      "toolsSubmitted": "Herramientas enviadas",
+      "articlesWritten": "Artículos escritos",
+      "totalEngagement": "Engagement total"
+    },
+    "badges": {
+      "topVoice": "Top Voice"
+    },
+    "actions": {
+      "following": "Siguiendo",
+      "follow": "Seguir",
+      "connected": "Conectado",
+      "requestSent": "Solicitud enviada",
+      "connect": "Conectar",
+      "message": "Mensaje",
+      "editProfile": "Editar perfil"
+    },
+    "sections": {
+      "about": "Acerca de",
+      "noBio": "No hay biografía disponible",
+      "stats": "Estadísticas",
+      "contact": "Contacto",
+      "interests": "Intereses",
+      "noInterests": "No hay intereses listados"
+    },
+    "tabs": {
+      "tools": "Herramientas",
+      "articles": "Artículos",
+      "activity": "Actividad"
+    },
+    "empty": {
+      "noTools": "Aún no hay herramientas enviadas",
+      "noArticles": "Aún no hay artículos escritos",
+      "noActivity": "Sin actividad reciente"
+    },
+    "toast": {
+      "loginToFollow": "Por favor inicia sesión para seguir usuarios",
+      "unfollowed": "Dejaste de seguir exitosamente",
+      "following": "Siguiendo exitosamente",
+      "failedFollow": "Error al actualizar el estado de seguimiento",
+      "connectionSent": "¡Solicitud de conexión enviada!",
+      "connectionExists": "La solicitud de conexión ya existe",
+      "connectionFailed": "Error al enviar la solicitud de conexión",
+      "connectionWithdrawn": "Solicitud de conexión retirada",
+      "withdrawFailed": "Error al retirar la solicitud de conexión",
+      "openingChat": "Abriendo chat con {{name}}",
+      "chatFailed": "Error al abrir el chat. Por favor intenta de nuevo.",
+      "chatNotReady": "El sistema de chat no está listo. Por favor intenta de nuevo."
+    }
+  },
+  "analytics": {
+    "title": "Análisis de contenido",
+    "subtitle": "Rastrea el rendimiento de tu contenido y los insights de tu audiencia",
+    "timeRanges": {
+      "7d": "Últimos 7 días",
+      "30d": "Últimos 30 días",
+      "90d": "Últimos 90 días",
+      "1y": "Último año"
+    },
+    "contentTypes": {
+      "all": "Todo el contenido",
+      "tool": "Herramientas",
+      "article": "Artículos",
+      "post": "Publicaciones"
+    },
+    "overview": {
+      "totalViews": "Vistas totales",
+      "totalLikes": "Me gusta totales",
+      "totalComments": "Comentarios totales",
+      "totalShares": "Compartidos totales",
+      "totalReach": "Alcance total",
+      "totalEngagement": "Engagement total",
+      "growthRate": "Tasa de crecimiento",
+      "comparedToLast": "comparado con el período anterior"
+    },
+    "performance": {
+      "excellent": "Excelente",
+      "good": "Bueno",
+      "average": "Promedio",
+      "poor": "Bajo"
+    },
+    "demographics": {
+      "ageGroups": "Grupos de edad",
+      "topLocations": "Principales ubicaciones",
+      "interests": "Intereses"
+    },
+    "contentPerformance": "Rendimiento del contenido",
+    "exportData": "Exportar datos"
+  },
+  "upgrade": {
+    "title": "Membresía Premium",
+    "heroTitle": "Desbloquea tu máximo",
+    "heroTitleHighlight": "Potencial creativo",
+    "heroSubtitle": "Únete a miles de creadores que han actualizado a premium para acceso ilimitado a todas las funciones.",
+    "compareTitle": "Comparar planes",
+    "free": "Gratis",
+    "premium": "Premium",
+    "features": {
+      "unlimitedMessaging": {
+        "title": "Mensajería ilimitada",
+        "description": "Envía mensajes ilimitados a tus conexiones",
+        "freeLimit": "10 mensajes/mes",
+        "premiumLimit": "Ilimitado"
+      },
+      "unlimitedConnections": {
+        "title": "Solicitudes de conexión ilimitadas",
+        "description": "Conecta con cualquier persona de la comunidad",
+        "freeLimit": "50 solicitudes/mes",
+        "premiumLimit": "Ilimitado"
+      },
+      "prioritySupport": {
+        "title": "Soporte prioritario",
+        "description": "Obtén tiempos de respuesta más rápidos de nuestro equipo",
+        "freeLimit": "Estándar",
+        "premiumLimit": "Prioritario"
+      },
+      "premiumBadge": {
+        "title": "Insignia Premium",
+        "description": "Destaca con una insignia premium verificada",
+        "freeLimit": "No",
+        "premiumLimit": "Sí"
+      },
+      "advancedAnalytics": {
+        "title": "Análisis avanzados",
+        "description": "Insights detallados sobre el rendimiento de tu contenido",
+        "freeLimit": "Básico",
+        "premiumLimit": "Avanzado"
+      }
+    },
+    "plans": {
+      "monthly": {
+        "title": "Mensual",
+        "price": "$9.99",
+        "period": "/mes"
+      },
+      "yearly": {
+        "title": "Anual",
+        "price": "$79.99",
+        "period": "/año",
+        "discount": "Ahorra 33%"
+      }
+    },
+    "cta": "Actualizar ahora",
+    "faq": {
+      "title": "¿Tienes preguntas?",
+      "contact": "Contacta a nuestro equipo de soporte"
+    },
+    "toast": {
+      "signInRequired": "Por favor inicia sesión para actualizar",
+      "paymentFailed": "Error al crear la sesión de pago. Por favor intenta de nuevo."
+    }
+  },
+  "createPost": {
+    "title": "Crear publicación",
+    "placeholder": "¿Qué piensas sobre IA?",
+    "labels": {
+      "videoUrl": "URL del video",
+      "linkUrl": "URL del enlace",
+      "scheduleForLater": "Programar para después",
+      "date": "Fecha",
+      "time": "Hora"
+    },
+    "placeholders": {
+      "videoUrl": "https://youtube.com/watch?v=...",
+      "linkUrl": "https://ejemplo.com"
+    },
+    "hints": {
+      "videoUrl": "Pega una URL de inserción de YouTube, Vimeo u otro video"
+    },
+    "buttons": {
+      "removeImage": "Eliminar imagen",
+      "cancel": "Cancelar",
+      "posting": "Publicando...",
+      "schedulePost": "Programar publicación",
+      "sharePost": "Compartir publicación"
+    }
+  },
+  "notificationsPage": {
+    "title": "Notificaciones",
+    "filters": {
+      "all": "Todas",
+      "unread": "No leídas",
+      "mentions": "Menciones"
+    },
+    "buttons": {
+      "markAllRead": "Marcar todo como leído"
+    },
+    "empty": {
+      "title": "Aún no hay notificaciones",
+      "description": "Cuando recibas notificaciones, aparecerán aquí."
+    },
+    "types": {
+      "like": "Me gusta",
+      "comment": "Comentario",
+      "follow": "Seguir",
+      "share": "Compartir",
+      "mention": "Mención",
+      "system": "Sistema"
+    },
+    "unreadCount": "{{count}} sin leer"
+  },
+  "notFound": {
+    "title": "404",
+    "message": "¡Ups! Página no encontrada",
+    "returnHome": "Volver al inicio"
+  },
+  "chatPage": {
+    "title": "Mensajes",
+    "subtitle": "Conecta y chatea con otros miembros de la comunidad"
+  },
+  "projects": {
+    "title": "Proyectos",
+    "subtitle": "Organiza candidatos y optimiza tu proceso de contratación",
+    "searchPlaceholder": "Buscar proyectos...",
+    "manageTags": "Gestionar etiquetas",
+    "newProject": "Nuevo proyecto",
+    "createProject": "Crear proyecto",
+    "viewProject": "Ver proyecto",
+    "deleteProject": "Eliminar proyecto",
+    "noProjectsYet": "Aún no hay proyectos",
+    "noProjectsDescription": "Crea tu primer proyecto para organizar candidatos y optimizar tu proceso de contratación.",
+    "createFirstProject": "Crear tu primer proyecto",
+    "candidates": "candidatos",
+    "updated": "Actualizado",
+    "form": {
+      "projectTitle": "Título del proyecto",
+      "projectTitlePlaceholder": "ej., Contratación Ingeniero IA Senior",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Describe el propósito de este proyecto..."
+    },
+    "tags": {
+      "title": "Gestionar etiquetas",
+      "newTagPlaceholder": "Nombre de nueva etiqueta",
+      "add": "Agregar",
+      "defaultTags": {
+        "contacted": "Contactado",
+        "responded": "Respondió",
+        "refused": "Rechazado",
+        "noResponse": "Sin respuesta"
+      }
+    }
+  },
+  "userView": {
+    "title": "Perfil de usuario",
+    "viewingProfile": "Viendo perfil de {{name}}",
+    "notFound": {
+      "title": "Usuario no encontrado",
+      "description": "El usuario que buscas no existe o ha sido eliminado.",
+      "backToCommunity": "Volver a la comunidad"
+    },
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "banned": "Baneado"
+    },
+    "verification": {
+      "verified": "Verificado",
+      "unverified": "No verificado"
+    },
+    "tabs": {
+      "overview": "Resumen",
+      "activity": "Actividad reciente",
+      "content": "Contenido"
+    },
+    "sections": {
+      "personalInfo": "Información personal",
+      "accountInfo": "Información de cuenta"
+    },
+    "fields": {
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "born": "Fecha de nacimiento",
+      "age": "Edad",
+      "gender": "Género",
+      "country": "País",
+      "city": "Ciudad",
+      "memberSince": "Miembro desde",
+      "accountType": "Tipo de cuenta",
+      "verified": "Verificado"
+    },
+    "stats": {
+      "toolsSubmitted": "Herramientas enviadas",
+      "articlesWritten": "Artículos escritos",
+      "postsCreated": "Publicaciones creadas",
+      "likesReceived": "Me gusta recibidos",
+      "followers": "Seguidores",
+      "following": "Siguiendo"
+    },
+    "activity": {
+      "noActivity": "No hay actividad reciente para este usuario."
+    },
+    "content": {
+      "noContent": "No hay contenido disponible para este usuario."
+    },
+    "back": "Volver a la comunidad"
+  },
+  "adminToolRequests": {
+    "title": "Solicitudes de edición de herramientas",
+    "subtitle": "Revisa y gestiona las solicitudes de edición enviadas por usuarios para herramientas de IA",
+    "backToAdmin": "Volver al panel de administración",
+    "searchPlaceholder": "Buscar por nombre de herramienta o usuario...",
+    "filters": {
+      "pending": "Solicitudes pendientes",
+      "all": "Todas las solicitudes"
+    },
+    "list": {
+      "editedBy": "Editado por",
+      "pending": "Pendiente"
+    },
+    "details": {
+      "title": "Solicitud de edición para {{name}}",
+      "submittedBy": "Enviado por",
+      "fields": {
+        "name": "Nombre",
+        "description": "Descripción",
+        "category": "Categoría",
+        "subcategory": "Subcategoría",
+        "website": "Sitio web",
+        "pricing": "Precios",
+        "features": "Características",
+        "pros": "Ventajas",
+        "cons": "Desventajas",
+        "tags": "Etiquetas"
+      },
+      "adminNotes": "Notas del administrador",
+      "adminNotesRequired": "Requerido para rechazo",
+      "adminNotesPlaceholder": "Agrega notas sobre tu decisión (requerido para rechazo)"
+    },
+    "actions": {
+      "approve": "Aprobar solicitud",
+      "reject": "Rechazar solicitud",
+      "processing": "Procesando..."
+    },
+    "messages": {
+      "approved": "¡Solicitud de edición aprobada exitosamente!",
+      "rejected": "¡Solicitud de edición rechazada exitosamente!",
+      "approveError": "Error al aprobar la solicitud de edición",
+      "rejectError": "Error al rechazar la solicitud de edición",
+      "provideReason": "Por favor proporciona una razón para el rechazo"
+    },
+    "empty": {
+      "noMatches": "No hay solicitudes de edición que coincidan con tu búsqueda",
+      "noPending": "No hay solicitudes de edición pendientes"
+    },
+    "selectRequest": "Selecciona una solicitud de la lista para ver los detalles"
   }
 }
