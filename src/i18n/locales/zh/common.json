@@ -451,7 +451,14 @@
     "noTalentsFound": "未找到人才",
     "adjustCriteria": "请尝试调整搜索条件或筛选器。",
     "noTalentsYet": "系统中暂无人才。",
-    "verified": "已验证"
+    "verified": "已验证",
+    "proficiency": {
+      "beginner": "初级",
+      "elementary": "基础",
+      "intermediate": "中级",
+      "advanced": "高级",
+      "native": "母语/流利"
+    }
   },
   "toolDetails": {
     "backToTools": "返回工具列表",
@@ -475,6 +482,40 @@
     "subtitle": "与社区分享AI工具",
     "successTitle": "工具提交成功！",
     "successMessage": "感谢您提交AI工具。我们的团队将在24-48小时内审核。",
-    "submitAnother": "提交另一个工具"
+    "submitAnother": "提交另一个工具",
+    "form": {
+      "name": "工具名称",
+      "namePlaceholder": "输入工具名称",
+      "description": "描述",
+      "descriptionPlaceholder": "描述此工具的功能",
+      "category": "分类",
+      "selectCategory": "选择分类",
+      "subcategory": "子分类",
+      "selectSubcategory": "选择子分类",
+      "toolType": "工具类型",
+      "selectToolType": "选择工具类型",
+      "website": "网站URL",
+      "websitePlaceholder": "https://example.com",
+      "pricing": "定价",
+      "freePlan": "提供免费计划",
+      "logo": "Logo",
+      "uploadLogo": "上传Logo",
+      "tags": "标签",
+      "tagsPlaceholder": "输入标签，用逗号分隔",
+      "features": "功能特点",
+      "addFeature": "添加功能",
+      "pros": "优点",
+      "addPro": "添加优点",
+      "cons": "缺点",
+      "addCon": "添加缺点",
+      "submit": "提交工具",
+      "submitting": "提交中..."
+    },
+    "validation": {
+      "authRequired": "您必须登录才能提交工具。",
+      "duplicateDetected": "已存在具有此名称和网站的工具。",
+      "subcategoryRequired": "请选择子分类。",
+      "toolTypeRequired": "请选择至少一种工具类型。"
+    }
   }
 }

@@ -421,7 +421,14 @@
     "noTalentsFound": "Aucun talent trouvé",
     "adjustCriteria": "Essayez d'ajuster vos critères de recherche ou vos filtres.",
     "noTalentsYet": "Il n'y a pas encore de talents dans le système.",
-    "verified": "Vérifié"
+    "verified": "Vérifié",
+    "proficiency": {
+      "beginner": "Débutant",
+      "elementary": "Élémentaire",
+      "intermediate": "Intermédiaire",
+      "advanced": "Avancé",
+      "native": "Natif/Courant"
+    }
   },
   "toolDetails": {
     "backToTools": "Retour aux outils",
@@ -445,6 +452,40 @@
     "subtitle": "Partagez un outil IA avec la communauté",
     "successTitle": "Outil soumis avec succès !",
     "successMessage": "Merci d'avoir soumis votre outil IA. Notre équipe l'examinera dans les 24-48 heures.",
-    "submitAnother": "Soumettre un autre outil"
+    "submitAnother": "Soumettre un autre outil",
+    "form": {
+      "name": "Nom de l'outil",
+      "namePlaceholder": "Entrez le nom de l'outil",
+      "description": "Description",
+      "descriptionPlaceholder": "Décrivez ce que fait cet outil",
+      "category": "Catégorie",
+      "selectCategory": "Sélectionnez une catégorie",
+      "subcategory": "Sous-catégorie",
+      "selectSubcategory": "Sélectionnez une sous-catégorie",
+      "toolType": "Type d'outil",
+      "selectToolType": "Sélectionnez les types d'outils",
+      "website": "URL du site web",
+      "websitePlaceholder": "https://example.com",
+      "pricing": "Tarification",
+      "freePlan": "Plan gratuit disponible",
+      "logo": "Logo",
+      "uploadLogo": "Télécharger le logo",
+      "tags": "Tags",
+      "tagsPlaceholder": "Entrez les tags séparés par des virgules",
+      "features": "Fonctionnalités",
+      "addFeature": "Ajouter une fonctionnalité",
+      "pros": "Avantages",
+      "addPro": "Ajouter un avantage",
+      "cons": "Inconvénients",
+      "addCon": "Ajouter un inconvénient",
+      "submit": "Soumettre l'outil",
+      "submitting": "Soumission..."
+    },
+    "validation": {
+      "authRequired": "Vous devez être connecté pour soumettre un outil.",
+      "duplicateDetected": "Un outil avec ce nom et ce site web existe déjà.",
+      "subcategoryRequired": "Veuillez sélectionner une sous-catégorie.",
+      "toolTypeRequired": "Veuillez sélectionner au moins un type d'outil."
+    }
   }
 }

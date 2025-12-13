@@ -421,7 +421,14 @@
     "noTalentsFound": "Keine Talente gefunden",
     "adjustCriteria": "Versuchen Sie, Ihre Suchkriterien oder Filter anzupassen.",
     "noTalentsYet": "Es gibt noch keine Talente im System.",
-    "verified": "Verifiziert"
+    "verified": "Verifiziert",
+    "proficiency": {
+      "beginner": "Anfänger",
+      "elementary": "Grundlegend",
+      "intermediate": "Mittelstufe",
+      "advanced": "Fortgeschritten",
+      "native": "Muttersprachler/Fließend"
+    }
   },
   "toolDetails": {
     "backToTools": "Zurück zu Tools",
@@ -445,6 +452,40 @@
     "subtitle": "Teilen Sie ein KI-Tool mit der Community",
     "successTitle": "Tool erfolgreich eingereicht!",
     "successMessage": "Vielen Dank für die Einreichung Ihres KI-Tools. Unser Team wird es innerhalb von 24-48 Stunden überprüfen.",
-    "submitAnother": "Weiteres Tool einreichen"
+    "submitAnother": "Weiteres Tool einreichen",
+    "form": {
+      "name": "Tool-Name",
+      "namePlaceholder": "Geben Sie den Tool-Namen ein",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Beschreiben Sie, was dieses Tool macht",
+      "category": "Kategorie",
+      "selectCategory": "Wählen Sie eine Kategorie",
+      "subcategory": "Unterkategorie",
+      "selectSubcategory": "Wählen Sie eine Unterkategorie",
+      "toolType": "Tool-Typ",
+      "selectToolType": "Wählen Sie Tool-Typen",
+      "website": "Website-URL",
+      "websitePlaceholder": "https://example.com",
+      "pricing": "Preisgestaltung",
+      "freePlan": "Kostenloser Plan verfügbar",
+      "logo": "Logo",
+      "uploadLogo": "Logo hochladen",
+      "tags": "Tags",
+      "tagsPlaceholder": "Geben Sie Tags getrennt durch Kommas ein",
+      "features": "Funktionen",
+      "addFeature": "Funktion hinzufügen",
+      "pros": "Vorteile",
+      "addPro": "Vorteil hinzufügen",
+      "cons": "Nachteile",
+      "addCon": "Nachteil hinzufügen",
+      "submit": "Tool einreichen",
+      "submitting": "Wird eingereicht..."
+    },
+    "validation": {
+      "authRequired": "Sie müssen angemeldet sein, um ein Tool einzureichen.",
+      "duplicateDetected": "Ein Tool mit diesem Namen und dieser Website existiert bereits.",
+      "subcategoryRequired": "Bitte wählen Sie eine Unterkategorie.",
+      "toolTypeRequired": "Bitte wählen Sie mindestens einen Tool-Typ."
+    }
   }
 }

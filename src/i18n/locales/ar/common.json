@@ -392,7 +392,14 @@
     "noTalentsFound": "لم يتم العثور على مواهب",
     "adjustCriteria": "حاول تعديل معايير البحث أو الفلاتر.",
     "noTalentsYet": "لا توجد مواهب في النظام حتى الآن.",
-    "verified": "موثق"
+    "verified": "موثق",
+    "proficiency": {
+      "beginner": "مبتدئ",
+      "elementary": "أساسي",
+      "intermediate": "متوسط",
+      "advanced": "متقدم",
+      "native": "أصلي/طليق"
+    }
   },
   "toolDetails": {
     "backToTools": "العودة إلى الأدوات",
@@ -416,6 +423,40 @@
     "subtitle": "شارك أداة ذكاء اصطناعي مع المجتمع",
     "successTitle": "تم إرسال الأداة بنجاح!",
     "successMessage": "شكرًا لإرسال أداة الذكاء الاصطناعي. سيقوم فريقنا بمراجعتها خلال 24-48 ساعة.",
-    "submitAnother": "إرسال أداة أخرى"
+    "submitAnother": "إرسال أداة أخرى",
+    "form": {
+      "name": "اسم الأداة",
+      "namePlaceholder": "أدخل اسم الأداة",
+      "description": "الوصف",
+      "descriptionPlaceholder": "وصف ما تفعله هذه الأداة",
+      "category": "الفئة",
+      "selectCategory": "اختر فئة",
+      "subcategory": "الفئة الفرعية",
+      "selectSubcategory": "اختر فئة فرعية",
+      "toolType": "نوع الأداة",
+      "selectToolType": "اختر أنواع الأدوات",
+      "website": "رابط الموقع",
+      "websitePlaceholder": "https://example.com",
+      "pricing": "التسعير",
+      "freePlan": "خطة مجانية متاحة",
+      "logo": "الشعار",
+      "uploadLogo": "تحميل الشعار",
+      "tags": "الوسوم",
+      "tagsPlaceholder": "أدخل الوسوم مفصولة بفواصل",
+      "features": "الميزات",
+      "addFeature": "إضافة ميزة",
+      "pros": "المميزات",
+      "addPro": "إضافة ميزة",
+      "cons": "العيوب",
+      "addCon": "إضافة عيب",
+      "submit": "إرسال الأداة",
+      "submitting": "جاري الإرسال..."
+    },
+    "validation": {
+      "authRequired": "يجب تسجيل الدخول لإرسال أداة.",
+      "duplicateDetected": "توجد أداة بهذا الاسم والموقع بالفعل.",
+      "subcategoryRequired": "يرجى اختيار فئة فرعية.",
+      "toolTypeRequired": "يرجى اختيار نوع أداة واحد على الأقل."
+    }
   }
 }

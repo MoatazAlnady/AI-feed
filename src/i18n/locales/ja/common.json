@@ -421,7 +421,14 @@
     "noTalentsFound": "タレントが見つかりません",
     "adjustCriteria": "検索条件やフィルターを調整してみてください。",
     "noTalentsYet": "システムにまだタレントがいません。",
-    "verified": "認証済み"
+    "verified": "認証済み",
+    "proficiency": {
+      "beginner": "初心者",
+      "elementary": "初級",
+      "intermediate": "中級",
+      "advanced": "上級",
+      "native": "ネイティブ/流暢"
+    }
   },
   "toolDetails": {
     "backToTools": "ツールに戻る",
@@ -445,6 +452,40 @@
     "subtitle": "AIツールをコミュニティと共有しましょう",
     "successTitle": "ツールが正常に提出されました！",
     "successMessage": "AIツールを提出いただきありがとうございます。24〜48時間以内にチームが審査します。",
-    "submitAnother": "別のツールを提出"
+    "submitAnother": "別のツールを提出",
+    "form": {
+      "name": "ツール名",
+      "namePlaceholder": "ツール名を入力",
+      "description": "説明",
+      "descriptionPlaceholder": "このツールの機能を説明してください",
+      "category": "カテゴリ",
+      "selectCategory": "カテゴリを選択",
+      "subcategory": "サブカテゴリ",
+      "selectSubcategory": "サブカテゴリを選択",
+      "toolType": "ツールタイプ",
+      "selectToolType": "ツールタイプを選択",
+      "website": "ウェブサイトURL",
+      "websitePlaceholder": "https://example.com",
+      "pricing": "価格設定",
+      "freePlan": "無料プランあり",
+      "logo": "ロゴ",
+      "uploadLogo": "ロゴをアップロード",
+      "tags": "タグ",
+      "tagsPlaceholder": "タグをカンマで区切って入力",
+      "features": "機能",
+      "addFeature": "機能を追加",
+      "pros": "メリット",
+      "addPro": "メリットを追加",
+      "cons": "デメリット",
+      "addCon": "デメリットを追加",
+      "submit": "ツールを提出",
+      "submitting": "提出中..."
+    },
+    "validation": {
+      "authRequired": "ツールを提出するにはログインが必要です。",
+      "duplicateDetected": "この名前とウェブサイトのツールは既に存在します。",
+      "subcategoryRequired": "サブカテゴリを選択してください。",
+      "toolTypeRequired": "少なくとも1つのツールタイプを選択してください。"
+    }
   }
 }
