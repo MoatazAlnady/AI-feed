@@ -335,5 +335,116 @@
     "applicants": "Bewerber",
     "upgradeToSee": "Upgraden Sie, um KI-basierte Talentempfehlungen basierend auf Ihren Stellenausschreibungen zu sehen.",
     "upgradePlan": "Plan upgraden"
+  },
+  "community": {
+    "title": "Community",
+    "tabs": {
+      "networking": "Netzwerken",
+      "feed": "Feed",
+      "events": "Veranstaltungen",
+      "groups": "Gruppen"
+    },
+    "feed": {
+      "title": "Community-Feed",
+      "subtitle": "Verbinden Sie sich mit anderen Kreativen, teilen Sie Erkenntnisse und entdecken Sie neue Möglichkeiten."
+    },
+    "events": {
+      "title": "Community-Veranstaltungen",
+      "createEvent": "Veranstaltung erstellen",
+      "joinEvent": "Teilnehmen",
+      "rsvp": "Zusagen"
+    },
+    "groups": {
+      "title": "Diskussionsgruppen",
+      "createGroup": "Gruppe erstellen",
+      "joinDiscussion": "Diskussion beitreten",
+      "members": "Mitglieder"
+    },
+    "networking": {
+      "title": "Kreative finden",
+      "searchPlaceholder": "Kreative suchen...",
+      "noCreatorsFound": "Keine Kreativen gefunden, die Ihrer Suche entsprechen.",
+      "noCreatorsYet": "Noch keine Kreativen verfügbar.",
+      "connect": "Verbinden",
+      "pending": "Ausstehend",
+      "connected": "Verbunden",
+      "message": "Nachricht",
+      "connectionRequestSent": "Verbindungsanfrage gesendet!",
+      "connectionLimitReached": "Monatliches Limit für Verbindungsanfragen erreicht (50). Upgraden Sie für unbegrenzte Anfragen.",
+      "pleaseLogIn": "Bitte melden Sie sich an, um Nachrichten zu senden",
+      "failedToOpenChat": "Chat konnte nicht geöffnet werden"
+    },
+    "stats": {
+      "activeCreators": "Aktive Kreative",
+      "discussionGroups": "Diskussionsgruppen",
+      "weeklyEvents": "Wöchentliche Veranstaltungen"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "editProfile": "Profil bearbeiten",
+    "joined": "Beigetreten",
+    "tabs": {
+      "overview": "Übersicht",
+      "posts": "Beiträge",
+      "content": "Meine Inhalte",
+      "saved": "Gespeichert",
+      "network": "Netzwerk"
+    },
+    "stats": {
+      "toolsSubmitted": "Eingereichte Tools",
+      "articlesWritten": "Geschriebene Artikel",
+      "likesReceived": "Erhaltene Likes",
+      "toolsBookmarked": "Gespeicherte Tools"
+    },
+    "overview": {
+      "recentActivity": "Letzte Aktivität",
+      "noActivity": "Keine aktuelle Aktivität. Beginnen Sie, Inhalte zu erstellen oder mit der Community zu interagieren!"
+    },
+    "content": {
+      "title": "Meine Inhalte",
+      "noContent": "Sie haben noch keine Inhalte erstellt.",
+      "promote": "Bewerben"
+    },
+    "saved": {
+      "title": "Gespeicherte Elemente",
+      "noSaved": "Noch keine gespeicherten Elemente.",
+      "remove": "Entfernen"
+    }
+  },
+  "talentSearch": {
+    "title": "Talentsuche",
+    "subtitle": "Finden Sie das perfekte KI-Talent für Ihr Team",
+    "searchPlaceholder": "Suche nach Name, Fähigkeiten oder Position...",
+    "showingResults": "Zeige {{count}} von {{total}} Talenten",
+    "loading": "Lade Talente...",
+    "noTalentsFound": "Keine Talente gefunden",
+    "adjustCriteria": "Versuchen Sie, Ihre Suchkriterien oder Filter anzupassen.",
+    "noTalentsYet": "Es gibt noch keine Talente im System.",
+    "verified": "Verifiziert"
+  },
+  "toolDetails": {
+    "backToTools": "Zurück zu Tools",
+    "notFound": "Tool nicht gefunden",
+    "notFoundDesc": "Das gesuchte Tool existiert nicht oder wurde entfernt.",
+    "features": "Funktionen",
+    "pros": "Vorteile",
+    "cons": "Nachteile",
+    "toolInfo": "Tool-Informationen",
+    "submittedBy": "Eingereicht von",
+    "anonymous": "Anonym",
+    "addedOn": "Hinzugefügt am",
+    "lastUpdated": "Zuletzt aktualisiert",
+    "tags": "Tags",
+    "freePlanAvailable": "Kostenloser Plan verfügbar",
+    "readAllReviews": "Alle Bewertungen lesen"
+  },
+  "submitTool": {
+    "title": "KI-Tool einreichen",
+    "editTitle": "KI-Tool bearbeiten",
+    "subtitle": "Teilen Sie ein KI-Tool mit der Community",
+    "successTitle": "Tool erfolgreich eingereicht!",
+    "successMessage": "Vielen Dank für die Einreichung Ihres KI-Tools. Unser Team wird es innerhalb von 24-48 Stunden überprüfen.",
+    "submitAnother": "Weiteres Tool einreichen"
   }
 }

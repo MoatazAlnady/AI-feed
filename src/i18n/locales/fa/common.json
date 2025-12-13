@@ -335,5 +335,116 @@
     "applicants": "متقاضی",
     "upgradeToSee": "برای دیدن توصیه‌های استعداد مطابق با هوش مصنوعی بر اساس آگهی‌های شغلی خود ارتقا دهید.",
     "upgradePlan": "ارتقای طرح"
+  },
+  "community": {
+    "title": "جامعه",
+    "tabs": {
+      "networking": "شبکه‌سازی",
+      "feed": "فید",
+      "events": "رویدادها",
+      "groups": "گروه‌ها"
+    },
+    "feed": {
+      "title": "فید جامعه",
+      "subtitle": "با سایر سازندگان ارتباط برقرار کنید، ایده‌ها را به اشتراک بگذارید و فرصت‌های جدید کشف کنید."
+    },
+    "events": {
+      "title": "رویدادهای جامعه",
+      "createEvent": "ایجاد رویداد",
+      "joinEvent": "پیوستن به رویداد",
+      "rsvp": "تأیید حضور"
+    },
+    "groups": {
+      "title": "گروه‌های بحث",
+      "createGroup": "ایجاد گروه",
+      "joinDiscussion": "پیوستن به بحث",
+      "members": "اعضا"
+    },
+    "networking": {
+      "title": "یافتن سازندگان",
+      "searchPlaceholder": "جستجوی سازندگان...",
+      "noCreatorsFound": "هیچ سازنده‌ای مطابق با جستجوی شما یافت نشد.",
+      "noCreatorsYet": "هنوز سازنده‌ای در دسترس نیست.",
+      "connect": "اتصال",
+      "pending": "در انتظار",
+      "connected": "متصل",
+      "message": "پیام",
+      "connectionRequestSent": "درخواست اتصال ارسال شد!",
+      "connectionLimitReached": "به حد ماهانه درخواست اتصال (۵۰) رسیده‌اید. برای درخواست‌های نامحدود ارتقا دهید.",
+      "pleaseLogIn": "لطفاً برای ارسال پیام وارد شوید",
+      "failedToOpenChat": "باز کردن چت ناموفق بود"
+    },
+    "stats": {
+      "activeCreators": "سازندگان فعال",
+      "discussionGroups": "گروه‌های بحث",
+      "weeklyEvents": "رویدادهای هفتگی"
+    }
+  },
+  "profile": {
+    "title": "پروفایل",
+    "editProfile": "ویرایش پروفایل",
+    "joined": "عضویت",
+    "tabs": {
+      "overview": "نمای کلی",
+      "posts": "پست‌ها",
+      "content": "محتوای من",
+      "saved": "ذخیره شده",
+      "network": "شبکه"
+    },
+    "stats": {
+      "toolsSubmitted": "ابزارهای ارسالی",
+      "articlesWritten": "مقالات نوشته شده",
+      "likesReceived": "لایک‌های دریافتی",
+      "toolsBookmarked": "ابزارهای نشانه‌گذاری شده"
+    },
+    "overview": {
+      "recentActivity": "فعالیت اخیر",
+      "noActivity": "هیچ فعالیت اخیری وجود ندارد. شروع به ایجاد محتوا یا تعامل با جامعه کنید!"
+    },
+    "content": {
+      "title": "محتوای من",
+      "noContent": "شما هنوز محتوایی ایجاد نکرده‌اید.",
+      "promote": "ترویج"
+    },
+    "saved": {
+      "title": "موارد ذخیره شده",
+      "noSaved": "هنوز موردی ذخیره نشده است.",
+      "remove": "حذف"
+    }
+  },
+  "talentSearch": {
+    "title": "جستجوی استعداد",
+    "subtitle": "استعداد هوش مصنوعی مناسب برای تیم خود را پیدا کنید",
+    "searchPlaceholder": "جستجو بر اساس نام، مهارت‌ها یا عنوان شغلی...",
+    "showingResults": "نمایش {{count}} از {{total}} استعداد",
+    "loading": "در حال بارگذاری استعدادها...",
+    "noTalentsFound": "استعدادی یافت نشد",
+    "adjustCriteria": "سعی کنید معیارهای جستجو یا فیلترها را تنظیم کنید.",
+    "noTalentsYet": "هنوز استعدادی در سیستم وجود ندارد.",
+    "verified": "تأیید شده"
+  },
+  "toolDetails": {
+    "backToTools": "بازگشت به ابزارها",
+    "notFound": "ابزار یافت نشد",
+    "notFoundDesc": "ابزار مورد نظر شما وجود ندارد یا حذف شده است.",
+    "features": "ویژگی‌ها",
+    "pros": "مزایا",
+    "cons": "معایب",
+    "toolInfo": "اطلاعات ابزار",
+    "submittedBy": "ارسال شده توسط",
+    "anonymous": "ناشناس",
+    "addedOn": "اضافه شده در",
+    "lastUpdated": "آخرین به‌روزرسانی",
+    "tags": "برچسب‌ها",
+    "freePlanAvailable": "طرح رایگان موجود است",
+    "readAllReviews": "خواندن همه نظرات"
+  },
+  "submitTool": {
+    "title": "ارسال ابزار هوش مصنوعی",
+    "editTitle": "ویرایش ابزار هوش مصنوعی",
+    "subtitle": "یک ابزار هوش مصنوعی را با جامعه به اشتراک بگذارید",
+    "successTitle": "ابزار با موفقیت ارسال شد!",
+    "successMessage": "از ارسال ابزار هوش مصنوعی شما متشکریم. تیم ما ظرف ۲۴-۴۸ ساعت آن را بررسی خواهد کرد.",
+    "submitAnother": "ارسال ابزار دیگر"
   }
 }

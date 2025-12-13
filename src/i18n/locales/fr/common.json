@@ -335,5 +335,116 @@
     "viewProfile": "Voir le profil",
     "message": "Message",
     "unfollow": "Se désabonner"
+  },
+  "community": {
+    "title": "Communauté",
+    "tabs": {
+      "networking": "Réseautage",
+      "feed": "Fil d'actualité",
+      "events": "Événements",
+      "groups": "Groupes"
+    },
+    "feed": {
+      "title": "Fil de la communauté",
+      "subtitle": "Connectez-vous avec d'autres créateurs, partagez des idées et découvrez de nouvelles opportunités."
+    },
+    "events": {
+      "title": "Événements communautaires",
+      "createEvent": "Créer un événement",
+      "joinEvent": "Rejoindre l'événement",
+      "rsvp": "RSVP"
+    },
+    "groups": {
+      "title": "Groupes de discussion",
+      "createGroup": "Créer un groupe",
+      "joinDiscussion": "Rejoindre la discussion",
+      "members": "membres"
+    },
+    "networking": {
+      "title": "Trouver des créateurs",
+      "searchPlaceholder": "Rechercher des créateurs...",
+      "noCreatorsFound": "Aucun créateur trouvé correspondant à votre recherche.",
+      "noCreatorsYet": "Aucun créateur disponible pour le moment.",
+      "connect": "Se connecter",
+      "pending": "En attente",
+      "connected": "Connecté",
+      "message": "Message",
+      "connectionRequestSent": "Demande de connexion envoyée !",
+      "connectionLimitReached": "Limite mensuelle de demandes de connexion atteinte (50). Passez à premium pour des demandes illimitées.",
+      "pleaseLogIn": "Veuillez vous connecter pour envoyer des messages",
+      "failedToOpenChat": "Échec de l'ouverture du chat"
+    },
+    "stats": {
+      "activeCreators": "Créateurs actifs",
+      "discussionGroups": "Groupes de discussion",
+      "weeklyEvents": "Événements hebdomadaires"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "editProfile": "Modifier le profil",
+    "joined": "Inscrit",
+    "tabs": {
+      "overview": "Aperçu",
+      "posts": "Publications",
+      "content": "Mon contenu",
+      "saved": "Éléments sauvegardés",
+      "network": "Réseau"
+    },
+    "stats": {
+      "toolsSubmitted": "Outils soumis",
+      "articlesWritten": "Articles écrits",
+      "likesReceived": "J'aime reçus",
+      "toolsBookmarked": "Outils favoris"
+    },
+    "overview": {
+      "recentActivity": "Activité récente",
+      "noActivity": "Aucune activité récente. Commencez à créer du contenu ou à interagir avec la communauté !"
+    },
+    "content": {
+      "title": "Mon contenu",
+      "noContent": "Vous n'avez pas encore créé de contenu.",
+      "promote": "Promouvoir"
+    },
+    "saved": {
+      "title": "Éléments sauvegardés",
+      "noSaved": "Aucun élément sauvegardé pour le moment.",
+      "remove": "Supprimer"
+    }
+  },
+  "talentSearch": {
+    "title": "Recherche de talents",
+    "subtitle": "Trouvez le talent IA parfait pour votre équipe",
+    "searchPlaceholder": "Rechercher par nom, compétences ou titre de poste...",
+    "showingResults": "Affichage de {{count}} sur {{total}} talents",
+    "loading": "Chargement des talents...",
+    "noTalentsFound": "Aucun talent trouvé",
+    "adjustCriteria": "Essayez d'ajuster vos critères de recherche ou vos filtres.",
+    "noTalentsYet": "Il n'y a pas encore de talents dans le système.",
+    "verified": "Vérifié"
+  },
+  "toolDetails": {
+    "backToTools": "Retour aux outils",
+    "notFound": "Outil non trouvé",
+    "notFoundDesc": "L'outil que vous recherchez n'existe pas ou a été supprimé.",
+    "features": "Fonctionnalités",
+    "pros": "Avantages",
+    "cons": "Inconvénients",
+    "toolInfo": "Informations sur l'outil",
+    "submittedBy": "Soumis par",
+    "anonymous": "Anonyme",
+    "addedOn": "Ajouté le",
+    "lastUpdated": "Dernière mise à jour",
+    "tags": "Tags",
+    "freePlanAvailable": "Plan gratuit disponible",
+    "readAllReviews": "Lire tous les avis"
+  },
+  "submitTool": {
+    "title": "Soumettre un outil IA",
+    "editTitle": "Modifier l'outil IA",
+    "subtitle": "Partagez un outil IA avec la communauté",
+    "successTitle": "Outil soumis avec succès !",
+    "successMessage": "Merci d'avoir soumis votre outil IA. Notre équipe l'examinera dans les 24-48 heures.",
+    "submitAnother": "Soumettre un autre outil"
   }
 }

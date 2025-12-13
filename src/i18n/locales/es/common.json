@@ -335,5 +335,116 @@
     "applicants": "candidatos",
     "upgradeToSee": "Actualiza para ver recomendaciones de talento basadas en IA según tus ofertas de trabajo.",
     "upgradePlan": "Actualizar plan"
+  },
+  "community": {
+    "title": "Comunidad",
+    "tabs": {
+      "networking": "Networking",
+      "feed": "Feed",
+      "events": "Eventos",
+      "groups": "Grupos"
+    },
+    "feed": {
+      "title": "Feed de la comunidad",
+      "subtitle": "Conecta con otros creadores, comparte ideas y descubre nuevas oportunidades."
+    },
+    "events": {
+      "title": "Eventos de la comunidad",
+      "createEvent": "Crear evento",
+      "joinEvent": "Unirse al evento",
+      "rsvp": "Confirmar asistencia"
+    },
+    "groups": {
+      "title": "Grupos de discusión",
+      "createGroup": "Crear grupo",
+      "joinDiscussion": "Unirse a la discusión",
+      "members": "miembros"
+    },
+    "networking": {
+      "title": "Encontrar creadores",
+      "searchPlaceholder": "Buscar creadores...",
+      "noCreatorsFound": "No se encontraron creadores que coincidan con tu búsqueda.",
+      "noCreatorsYet": "Aún no hay creadores disponibles.",
+      "connect": "Conectar",
+      "pending": "Pendiente",
+      "connected": "Conectado",
+      "message": "Mensaje",
+      "connectionRequestSent": "¡Solicitud de conexión enviada!",
+      "connectionLimitReached": "Límite mensual de solicitudes de conexión alcanzado (50). Actualiza a premium para solicitudes ilimitadas.",
+      "pleaseLogIn": "Por favor inicia sesión para enviar mensajes",
+      "failedToOpenChat": "Error al abrir el chat"
+    },
+    "stats": {
+      "activeCreators": "Creadores activos",
+      "discussionGroups": "Grupos de discusión",
+      "weeklyEvents": "Eventos semanales"
+    }
+  },
+  "profile": {
+    "title": "Perfil",
+    "editProfile": "Editar perfil",
+    "joined": "Se unió",
+    "tabs": {
+      "overview": "Resumen",
+      "posts": "Publicaciones",
+      "content": "Mi contenido",
+      "saved": "Guardados",
+      "network": "Red"
+    },
+    "stats": {
+      "toolsSubmitted": "Herramientas enviadas",
+      "articlesWritten": "Artículos escritos",
+      "likesReceived": "Me gusta recibidos",
+      "toolsBookmarked": "Herramientas guardadas"
+    },
+    "overview": {
+      "recentActivity": "Actividad reciente",
+      "noActivity": "Sin actividad reciente. ¡Comienza a crear contenido o interactuar con la comunidad!"
+    },
+    "content": {
+      "title": "Mi contenido",
+      "noContent": "Aún no has creado ningún contenido.",
+      "promote": "Promocionar"
+    },
+    "saved": {
+      "title": "Elementos guardados",
+      "noSaved": "Aún no hay elementos guardados.",
+      "remove": "Eliminar"
+    }
+  },
+  "talentSearch": {
+    "title": "Búsqueda de talento",
+    "subtitle": "Encuentra el talento de IA perfecto para tu equipo",
+    "searchPlaceholder": "Buscar por nombre, habilidades o puesto...",
+    "showingResults": "Mostrando {{count}} de {{total}} talentos",
+    "loading": "Cargando talentos...",
+    "noTalentsFound": "No se encontraron talentos",
+    "adjustCriteria": "Intenta ajustar tus criterios de búsqueda o filtros.",
+    "noTalentsYet": "Aún no hay talentos en el sistema.",
+    "verified": "Verificado"
+  },
+  "toolDetails": {
+    "backToTools": "Volver a herramientas",
+    "notFound": "Herramienta no encontrada",
+    "notFoundDesc": "La herramienta que buscas no existe o ha sido eliminada.",
+    "features": "Características",
+    "pros": "Ventajas",
+    "cons": "Desventajas",
+    "toolInfo": "Información de la herramienta",
+    "submittedBy": "Enviado por",
+    "anonymous": "Anónimo",
+    "addedOn": "Añadido el",
+    "lastUpdated": "Última actualización",
+    "tags": "Etiquetas",
+    "freePlanAvailable": "Plan gratuito disponible",
+    "readAllReviews": "Leer todas las reseñas"
+  },
+  "submitTool": {
+    "title": "Enviar herramienta de IA",
+    "editTitle": "Editar herramienta de IA",
+    "subtitle": "Comparte una herramienta de IA con la comunidad",
+    "successTitle": "¡Herramienta enviada con éxito!",
+    "successMessage": "Gracias por enviar tu herramienta de IA. Nuestro equipo la revisará en 24-48 horas.",
+    "submitAnother": "Enviar otra herramienta"
   }
 }
