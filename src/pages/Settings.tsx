@@ -13,10 +13,12 @@ import { Separator } from '@/components/ui/separator';
 import { Bell, User, Mail, Globe, Shield, Settings as SettingsIcon } from 'lucide-react';
 import NotificationSettings from '@/components/NotificationSettings';
 import SecuritySettings from '@/components/SecuritySettings';
+import { useTranslation } from 'react-i18next';
 
 const Settings = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({
     full_name: '',
@@ -56,8 +58,8 @@ const Settings = () => {
     } catch (error) {
       console.error('Error fetching profile:', error);
       toast({
-        title: "Error",
-        description: "Failed to load profile settings",
+        title: t('common.error'),
+        description: t('settings.loadError'),
         variant: "destructive"
       });
     }
@@ -83,14 +85,14 @@ const Settings = () => {
       if (error) throw error;
 
       toast({
-        title: "Success",
-        description: "Settings saved successfully",
+        title: t('common.success'),
+        description: t('settings.settingsSaved'),
       });
     } catch (error) {
       console.error('Error saving settings:', error);
       toast({
-        title: "Error",
-        description: "Failed to save settings",
+        title: t('common.error'),
+        description: t('settings.saveError'),
         variant: "destructive"
       });
     } finally {
@@ -101,7 +103,6 @@ const Settings = () => {
   const handleNewsletterToggle = async (checked: boolean) => {
     setProfile(prev => ({ ...prev, newsletter_subscription: checked }));
     
-    // Auto-save newsletter preference
     if (!user) return;
 
     try {
@@ -116,19 +117,18 @@ const Settings = () => {
       if (error) throw error;
 
       toast({
-        title: checked ? "Subscribed" : "Unsubscribed",
+        title: checked ? t('settings.subscribed') : t('settings.unsubscribed'),
         description: checked 
-          ? "You'll receive our newsletter updates" 
-          : "You won't receive newsletter updates anymore",
+          ? t('settings.subscribeSuccess')
+          : t('settings.unsubscribeSuccess'),
       });
     } catch (error) {
       console.error('Error updating newsletter subscription:', error);
       toast({
-        title: "Error",
-        description: "Failed to update newsletter subscription",
+        title: t('common.error'),
+        description: t('settings.newsletterError'),
         variant: "destructive"
       });
-      // Revert the change
       setProfile(prev => ({ ...prev, newsletter_subscription: !checked }));
     }
   };
@@ -137,8 +137,8 @@ const Settings = () => {
     return (
       <div className="container max-w-4xl mx-auto py-8 px-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Settings</h1>
-          <p className="text-muted-foreground">Please log in to access your settings.</p>
+          <h1 className="text-2xl font-bold mb-4">{t('settings.title')}</h1>
+          <p className="text-muted-foreground">{t('settings.pleaseLogIn')}</p>
         </div>
       </div>
     );
@@ -147,27 +147,27 @@ const Settings = () => {
   return (
     <div className="container max-w-4xl mx-auto py-8 px-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Settings</h1>
-        <p className="text-muted-foreground">Manage your account settings and preferences.</p>
+        <h1 className="text-3xl font-bold mb-2">{t('settings.title')}</h1>
+        <p className="text-muted-foreground">{t('settings.subtitle')}</p>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="h-4 w-4" />
-            Profile
+            {t('settings.profile')}
           </TabsTrigger>
           <TabsTrigger value="notifications" className="flex items-center gap-2">
             <Bell className="h-4 w-4" />
-            Notifications
+            {t('settings.notifications')}
           </TabsTrigger>
           <TabsTrigger value="privacy" className="flex items-center gap-2">
             <Globe className="h-4 w-4" />
-            Privacy
+            {t('settings.privacy')}
           </TabsTrigger>
           <TabsTrigger value="security" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
-            Security
+            {t('settings.security')}
           </TabsTrigger>
         </TabsList>
 
@@ -177,40 +177,40 @@ const Settings = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5" />
-                Profile Information
+                {t('settings.profileInfo')}
               </CardTitle>
               <CardDescription>
-                Update your personal information and public profile.
+                {t('settings.profileInfoDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="full_name">Full Name</Label>
+                <Label htmlFor="full_name">{t('settings.fullName')}</Label>
                 <Input
                   id="full_name"
                   value={profile.full_name}
                   onChange={(e) => setProfile(prev => ({ ...prev, full_name: e.target.value }))}
-                  placeholder="Enter your full name"
+                  placeholder={t('settings.fullNamePlaceholder')}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="bio">Bio</Label>
+                <Label htmlFor="bio">{t('settings.bio')}</Label>
                 <Textarea
                   id="bio"
                   value={profile.bio}
                   onChange={(e) => setProfile(prev => ({ ...prev, bio: e.target.value }))}
-                  placeholder="Tell us about yourself"
+                  placeholder={t('settings.bioPlaceholder')}
                   rows={3}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="website">Website</Label>
+                <Label htmlFor="website">{t('settings.websiteLabel')}</Label>
                 <Input
                   id="website"
                   type="url"
                   value={profile.website}
                   onChange={(e) => setProfile(prev => ({ ...prev, website: e.target.value }))}
-                  placeholder="https://your-website.com"
+                  placeholder={t('settings.websitePlaceholder')}
                 />
               </div>
             </CardContent>
@@ -220,18 +220,18 @@ const Settings = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Mail className="h-5 w-5" />
-                Newsletter Subscription
+                {t('settings.newsletterSubscription')}
               </CardTitle>
               <CardDescription>
-                Basic newsletter preferences.
+                {t('settings.newsletterBasic')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label htmlFor="newsletter">Newsletter Updates</Label>
+                  <Label htmlFor="newsletter">{t('settings.newsletterUpdates')}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Receive updates about new AI tools, features, and industry insights.
+                    {t('settings.newsletterUpdatesDesc')}
                   </p>
                 </div>
                 <Switch
@@ -245,7 +245,7 @@ const Settings = () => {
 
           <div className="flex justify-end">
             <Button onClick={handleSave} disabled={loading}>
-              {loading ? "Saving..." : "Save Profile Changes"}
+              {loading ? t('settings.saving') : t('settings.saveProfileChanges')}
             </Button>
           </div>
         </TabsContent>
@@ -261,18 +261,18 @@ const Settings = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Globe className="h-5 w-5" />
-                Privacy Settings
+                {t('settings.privacySettings')}
               </CardTitle>
               <CardDescription>
-                Control how your information is displayed to other users.
+                {t('settings.privacySettingsDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label htmlFor="contact_visible">Contact Information Visible</Label>
+                  <Label htmlFor="contact_visible">{t('settings.contactVisible')}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Allow other users to see your contact information in your profile.
+                    {t('settings.contactVisibleDesc')}
                   </p>
                 </div>
                 <Switch
@@ -286,7 +286,7 @@ const Settings = () => {
 
           <div className="flex justify-end">
             <Button onClick={handleSave} disabled={loading}>
-              {loading ? "Saving..." : "Save Privacy Settings"}
+              {loading ? t('settings.saving') : t('settings.savePrivacySettings')}
             </Button>
           </div>
         </TabsContent>

@@ -6,6 +6,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
 import { toast } from 'sonner';
 import { Search } from 'lucide-react';
 import UserProfileCard from './UserProfileCard';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 interface Connection {
   id: string;
@@ -21,6 +23,8 @@ interface Connection {
 
 const NetworkTab: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const [connections, setConnections] = useState<Connection[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
@@ -75,7 +79,7 @@ const NetworkTab: React.FC = () => {
       setConnections(connectionsWithUser);
     } catch (error) {
       console.error('Error fetching connections:', error);
-      toast.error('Failed to load connections');
+      toast.error(t('network.loadError'));
     } finally {
       setLoading(false);
     }
@@ -91,10 +95,27 @@ const NetworkTab: React.FC = () => {
       if (error) throw error;
 
       setConnections(prev => prev.filter(c => c.id !== connectionId));
-      toast.success('Connection removed');
+      toast.success(t('network.connectionRemoved'));
     } catch (error) {
       console.error('Error removing connection:', error);
-      toast.error('Failed to remove connection');
+      toast.error(t('network.connectionRemovedError'));
+    }
+  };
+
+  const handleMessage = async (userId: string) => {
+    try {
+      // Use find_or_create_dm to get or create conversation
+      const { data: conversationId, error } = await supabase.rpc('find_or_create_dm', {
+        other_user_id: userId
+      });
+
+      if (error) throw error;
+
+      // Navigate to messages with the conversation
+      navigate(`/messages?conversation=${conversationId}`);
+    } catch (error) {
+      console.error('Error starting conversation:', error);
+      toast.error('Failed to start conversation');
     }
   };
 
@@ -117,11 +138,11 @@ const NetworkTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">My Network ({connections.length})</h3>
+        <h3 className="text-lg font-semibold">{t('network.myNetwork')} ({connections.length})</h3>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search connections..."
+            placeholder={t('network.searchConnections')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 w-64"
@@ -130,18 +151,18 @@ const NetworkTab: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="text-center py-8">Loading connections...</div>
+        <div className="text-center py-8">{t('network.loadingConnections')}</div>
       ) : (
         <Tabs defaultValue="recent" className="w-full" dir="ltr">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="recent">Recent ({recentConnections.length})</TabsTrigger>
-            <TabsTrigger value="all">All ({allConnections.length})</TabsTrigger>
+            <TabsTrigger value="recent">{t('network.recent')} ({recentConnections.length})</TabsTrigger>
+            <TabsTrigger value="all">{t('network.all')} ({allConnections.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="recent" className="space-y-4">
             {recentConnections.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                {searchTerm ? 'No recent connections found matching your search' : 'No recent connections in the last 30 days'}
+                {searchTerm ? t('network.noRecentConnectionsSearch') : t('network.noRecentConnections')}
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
@@ -153,10 +174,7 @@ const NetworkTab: React.FC = () => {
                     title={connection.connected_user.job_title}
                     company={connection.connected_user.company}
                     profilePhoto={connection.connected_user.profile_photo}
-                    onMessage={() => {
-                      // Handle message action
-                      toast.info('Message functionality coming soon');
-                    }}
+                    onMessage={() => handleMessage(connection.connected_user.id)}
                     onConnect={() => removeConnection(connection.id)}
                     className="bg-primary/5 border-primary/20"
                   />
@@ -168,7 +186,7 @@ const NetworkTab: React.FC = () => {
           <TabsContent value="all" className="space-y-4">
             {allConnections.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                {searchTerm ? 'No connections found matching your search' : 'No connections yet'}
+                {searchTerm ? t('network.noConnectionsSearch') : t('network.noConnections')}
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
@@ -180,10 +198,7 @@ const NetworkTab: React.FC = () => {
                     title={connection.connected_user.job_title}
                     company={connection.connected_user.company}
                     profilePhoto={connection.connected_user.profile_photo}
-                    onMessage={() => {
-                      // Handle message action
-                      toast.info('Message functionality coming soon');
-                    }}
+                    onMessage={() => handleMessage(connection.connected_user.id)}
                     onConnect={() => removeConnection(connection.id)}
                   />
                 ))}
