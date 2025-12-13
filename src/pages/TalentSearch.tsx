@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   Search, 
   Users, 
@@ -42,8 +43,8 @@ interface TalentSearchProps {
 }
 
 const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
-  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [talents, setTalents] = useState<Talent[]>([]);
   const [filteredTalents, setFilteredTalents] = useState<Talent[]>([]);
@@ -201,10 +202,10 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Talent Search
+            {t('talentSearch.title')}
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400">
-            Find the perfect AI talent for your team
+            {t('talentSearch.subtitle')}
           </p>
         </div>
 
@@ -214,7 +215,7 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
-              placeholder="Search by name, skills, or job title..."
+              placeholder={t('talentSearch.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -228,7 +229,7 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
         {/* Results */}
         <div className="mb-6">
           <p className="text-gray-600 dark:text-gray-400">
-            {loading ? 'Loading talents...' : `Showing ${filteredTalents.length} of ${totalTalents} talents`}
+            {loading ? t('talentSearch.loading') : t('talentSearch.showingResults', { count: filteredTalents.length, total: totalTalents })}
           </p>
         </div>
 
@@ -263,7 +264,7 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
                         {talent.full_name}
                         {talent.verified && (
                           <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400">
-                            Verified
+                            {t('talentSearch.verified')}
                           </span>
                         )}
                       </h3>
@@ -372,12 +373,12 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-12 text-center">
             <Users className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              No Talents Found
+              {t('talentSearch.noTalentsFound')}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
               {searchTerm || Object.values(filters).some(v => v && (Array.isArray(v) ? v.length > 0 : true))
-                ? 'Try adjusting your search criteria or filters.'
-                : 'There are no talents in the system yet.'}
+                ? t('talentSearch.adjustCriteria')
+                : t('talentSearch.noTalentsYet')}
             </p>
           </div>
         )}
@@ -388,14 +389,14 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
 
 // Helper function to get proficiency label
 function getProficiencyLabel(level: number): string {
-  switch (level) {
-    case 1: return 'Beginner';
-    case 2: return 'Elementary';
-    case 3: return 'Intermediate';
-    case 4: return 'Advanced';
-    case 5: return 'Native/Fluent';
-    default: return 'Unknown';
-  }
+  const labels: { [key: number]: string } = {
+    1: 'Beginner',
+    2: 'Elementary',
+    3: 'Intermediate',
+    4: 'Advanced',
+    5: 'Native/Fluent'
+  };
+  return labels[level] || 'Unknown';
 }
 
 export default TalentSearch;
