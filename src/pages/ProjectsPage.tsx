@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   Briefcase, 
   Plus, 
@@ -34,6 +35,7 @@ interface ProjectTag {
 }
 
 const ProjectsPage: React.FC = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -210,10 +212,10 @@ const ProjectsPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Projects
+                {t('projects.title')}
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-400">
-                Organize candidates and streamline your hiring process
+                {t('projects.subtitle')}
               </p>
             </div>
             <div className="flex space-x-3">
@@ -222,14 +224,14 @@ const ProjectsPage: React.FC = () => {
                 className="flex items-center space-x-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 <Tag className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-                <span className="text-gray-700 dark:text-gray-300">Manage Tags</span>
+                <span className="text-gray-700 dark:text-gray-300">{t('projects.manageTags')}</span>
               </button>
               <button
                 onClick={() => setShowCreateModal(true)}
                 className="flex items-center space-x-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
               >
                 <Plus className="h-5 w-5" />
-                <span>New Project</span>
+                <span>{t('projects.newProject')}</span>
               </button>
             </div>
           </div>
@@ -241,7 +243,7 @@ const ProjectsPage: React.FC = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
-              placeholder="Search projects..."
+              placeholder={t('projects.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -278,14 +280,14 @@ const ProjectsPage: React.FC = () => {
                     <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">{project.description}</p>
                   )}
                   
-                  <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                     <div className="flex items-center space-x-2">
                       <Users className="h-4 w-4" />
-                      <span>{project.candidate_count} candidates</span>
+                      <span>{project.candidate_count} {t('projects.candidates')}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4" />
-                      <span>Updated {new Date(project.updated_at).toLocaleDateString()}</span>
+                      <span>{t('projects.updated')} {new Date(project.updated_at).toLocaleDateString()}</span>
                     </div>
                   </div>
                   
@@ -294,12 +296,12 @@ const ProjectsPage: React.FC = () => {
                       onClick={() => navigate(`/employer/projects/${project.id}`)}
                       className="flex-1 bg-primary-500 text-white py-2 rounded-lg hover:bg-primary-600 transition-colors"
                     >
-                      View Project
+                      {t('projects.viewProject')}
                     </button>
                     <button
                       onClick={() => handleDeleteProject(project.id)}
                       className="p-2 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                      title="Delete Project"
+                      title={t('projects.deleteProject')}
                     >
                       <Trash className="h-5 w-5" />
                     </button>
@@ -312,16 +314,16 @@ const ProjectsPage: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-12 text-center">
             <Briefcase className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              No Projects Yet
+              {t('projects.noProjectsYet')}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              Create your first project to organize candidates and streamline your hiring process.
+              {t('projects.noProjectsDescription')}
             </p>
             <button
               onClick={() => setShowCreateModal(true)}
               className="px-6 py-3 bg-primary-500 text-white rounded-xl font-medium hover:bg-primary-600 transition-colors"
             >
-              Create Your First Project
+              {t('projects.createFirstProject')}
             </button>
           </div>
         )}
@@ -333,7 +335,7 @@ const ProjectsPage: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Create Project</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('projects.createProject')}</h2>
                 <button
                   onClick={() => setShowCreateModal(false)}
                   className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
@@ -345,7 +347,7 @@ const ProjectsPage: React.FC = () => {
               <div className="space-y-4">
                 <div>
                   <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Project Title *
+                    {t('projects.form.projectTitle')} *
                   </label>
                   <input
                     type="text"
@@ -353,14 +355,14 @@ const ProjectsPage: React.FC = () => {
                     value={newProject.title}
                     onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    placeholder="e.g., Senior AI Engineer Hiring"
+                    placeholder={t('projects.form.projectTitlePlaceholder')}
                     required
                   />
                 </div>
                 
                 <div>
                   <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Description
+                    {t('projects.form.description')}
                   </label>
                   <textarea
                     id="description"
@@ -368,7 +370,7 @@ const ProjectsPage: React.FC = () => {
                     onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
                     rows={3}
                     className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    placeholder="Describe the purpose of this project..."
+                    placeholder={t('projects.form.descriptionPlaceholder')}
                   />
                 </div>
                 
@@ -378,7 +380,7 @@ const ProjectsPage: React.FC = () => {
                     onClick={() => setShowCreateModal(false)}
                     className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="button"
@@ -386,7 +388,7 @@ const ProjectsPage: React.FC = () => {
                     disabled={!newProject.title.trim()}
                     className="flex-1 bg-primary-500 text-white px-4 py-3 rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Create Project
+                    {t('projects.createProject')}
                   </button>
                 </div>
               </div>
@@ -401,7 +403,7 @@ const ProjectsPage: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Manage Tags</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('projects.tags.title')}</h2>
                 <button
                   onClick={() => setShowTagsModal(false)}
                   className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
@@ -417,7 +419,7 @@ const ProjectsPage: React.FC = () => {
                     value={newTag.name}
                     onChange={(e) => setNewTag({ ...newTag, name: e.target.value })}
                     className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    placeholder="New tag name"
+                    placeholder={t('projects.tags.newTagPlaceholder')}
                   />
                   <input
                     type="color"
@@ -430,7 +432,7 @@ const ProjectsPage: React.FC = () => {
                     disabled={!newTag.name.trim()}
                     className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Add
+                    {t('projects.tags.add')}
                   </button>
                 </div>
 

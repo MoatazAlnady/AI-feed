@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   ArrowLeft, 
   User, 
@@ -64,6 +65,7 @@ interface UserProfile {
 }
 
 const UserView: React.FC = () => {
+  const { t } = useTranslation();
   const { userId, handle } = useParams(); // Support both userId and handle params
   const navigate = useNavigate();
   const { user: currentUser, isAdmin } = useAuth();
@@ -222,16 +224,16 @@ const UserView: React.FC = () => {
           <div className="text-center py-20">
             <User className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              User Not Found
+              {t('userView.notFound.title')}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              The user you're looking for doesn't exist or has been removed.
+              {t('userView.notFound.description')}
             </p>
             <button
               onClick={() => navigate('/community')}
               className="bg-primary-500 text-white px-6 py-3 rounded-xl font-medium hover:bg-primary-600 transition-colors"
             >
-              Back to Community
+              {t('userView.notFound.backToCommunity')}
             </button>
           </div>
         </div>
@@ -249,16 +251,16 @@ const UserView: React.FC = () => {
             className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4"
           >
             <ArrowLeft className="h-5 w-5" />
-            <span>Back to Community</span>
+            <span>{t('userView.back')}</span>
           </button>
           
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                User Profile
+                {t('userView.title')}
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-400">
-                Viewing profile for {userProfile.fullName}
+                {t('userView.viewingProfile', { name: userProfile.fullName })}
               </p>
             </div>
             
@@ -274,9 +276,9 @@ const UserView: React.FC = () => {
                     'border-red-300 text-red-700 bg-red-50'
                   }`}
                 >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                  <option value="banned">Banned</option>
+                  <option value="active">{t('userView.status.active')}</option>
+                  <option value="inactive">{t('userView.status.inactive')}</option>
+                  <option value="banned">{t('userView.status.banned')}</option>
                 </select>
                 
                 <button
@@ -288,7 +290,7 @@ const UserView: React.FC = () => {
                   }`}
                 >
                   <Shield className="h-4 w-4" />
-                  <span>{userProfile.verified ? 'Verified' : 'Unverified'}</span>
+                  <span>{userProfile.verified ? t('userView.verification.verified') : t('userView.verification.unverified')}</span>
                 </button>
               </div>
             )}
@@ -411,9 +413,9 @@ const UserView: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-sm mb-8">
           <div className="flex border-b border-gray-200">
             {[
-              { key: 'overview', label: 'Overview' },
-              { key: 'activity', label: 'Recent Activity' },
-              { key: 'content', label: 'Content' }
+              { key: 'overview', label: t('userView.tabs.overview') },
+              { key: 'activity', label: t('userView.tabs.activity') },
+              { key: 'content', label: t('userView.tabs.content') }
             ].map(({ key, label }) => (
               <button
                 key={key}
@@ -434,7 +436,7 @@ const UserView: React.FC = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Personal Information */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('userView.sections.personalInfo')}</h3>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3">
                       <Mail className="h-4 w-4 text-gray-400" />
