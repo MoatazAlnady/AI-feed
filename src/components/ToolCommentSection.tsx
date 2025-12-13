@@ -74,7 +74,7 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
         userName: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
         userPhoto: user.user_metadata?.profile_photo,
         userVerified: user.user_metadata?.verified || false,
-        userTopVoice: user.user_metadata?.ai_nexus_top_voice || false,
+        userTopVoice: user.user_metadata?.ai_feed_top_voice || false,
         content: newComment,
         timestamp: 'Just now',
         likes: 0,

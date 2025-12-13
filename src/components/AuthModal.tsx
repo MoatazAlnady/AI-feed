@@ -316,7 +316,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
             account_type: accountType,
             location: `${city}, ${country}`,
             verified: false,
-            ai_nexus_top_voice: false,
+            ai_feed_top_voice: false,
             tools_submitted: 0,
             articles_written: 0,
             total_reach: 0,

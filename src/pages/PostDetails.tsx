@@ -126,7 +126,7 @@ const PostDetails: React.FC = () => {
           avatar: userProfile?.profile_photo || '',
           title: userProfile?.job_title || 'AI Enthusiast',
           verified: userProfile?.verified || false,
-          topVoice: userProfile?.ai_nexus_top_voice || false,
+          topVoice: userProfile?.ai_feed_top_voice || false,
           handle: userProfile?.handle || `user-${data.user_id.slice(0, 8)}`
         },
         liked: userLiked,
