@@ -17,7 +17,7 @@ interface TopCreator {
   articles_written: number;
   total_reach: number;
   verified: boolean;
-  ai_nexus_top_voice: boolean;
+  ai_feed_top_voice: boolean;
 }
 
 interface TopCreatorsModalProps {
@@ -169,7 +169,7 @@ const TopCreatorsModal: React.FC<TopCreatorsModalProps> = ({
                               ✓
                             </Badge>
                           )}
-                          {creator.ai_nexus_top_voice && (
+                          {creator.ai_feed_top_voice && (
                             <Badge variant="default" className="px-1 py-0 text-xs">
                               <Star className="h-2 w-2 mr-1" />
                               Top Voice

@@ -21,7 +21,7 @@ interface TopCreator {
   tools_submitted?: number;
   articles_written?: number;
   verified?: boolean;
-  ai_nexus_top_voice?: boolean;
+  ai_feed_top_voice?: boolean;
 }
 
 interface OnboardingFlowProps {
@@ -57,7 +57,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
         .select('*')
         .overlaps('interests', userInterests)
         .eq('verified', true)
-        .or('ai_nexus_top_voice.eq.true,tools_submitted.gte.5,articles_written.gte.3')
+        .or('ai_feed_top_voice.eq.true,tools_submitted.gte.5,articles_written.gte.3')
         .limit(6);
 
       if (error) throw error;
@@ -192,7 +192,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
                             {creator.verified && (
                               <Badge variant="secondary" className="text-xs">✓</Badge>
                             )}
-                            {creator.ai_nexus_top_voice && (
+                            {creator.ai_feed_top_voice && (
                               <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
                                 Top Voice
                               </Badge>

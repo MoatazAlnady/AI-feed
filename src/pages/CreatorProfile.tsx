@@ -41,7 +41,7 @@ interface CreatorProfile {
   profile_photo: string;
   cover_photo: string;
   verified: boolean;
-  ai_nexus_top_voice: boolean;
+  ai_feed_top_voice: boolean;
   visibility: string;
   total_engagement: number;
   total_reach: number;
@@ -415,7 +415,7 @@ const CreatorProfile: React.FC = () => {
                     {profile.verified && (
                       <Shield className="h-6 w-6 text-blue-500" />
                     )}
-                    {profile.ai_nexus_top_voice && (
+                    {profile.ai_feed_top_voice && (
                       <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
                         {t('creatorProfile.badges.topVoice')}
                       </Badge>

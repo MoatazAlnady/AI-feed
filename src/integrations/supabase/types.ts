@@ -1761,7 +1761,7 @@ export type Database = {
           account_type: string | null
           admin_access_level: string | null
           age: number | null
-          ai_nexus_top_voice: boolean | null
+          ai_feed_top_voice: boolean | null
           articles_written: number | null
           avatar_url: string | null
           banned_features: Json | null
@@ -1809,7 +1809,7 @@ export type Database = {
           account_type?: string | null
           admin_access_level?: string | null
           age?: number | null
-          ai_nexus_top_voice?: boolean | null
+          ai_feed_top_voice?: boolean | null
           articles_written?: number | null
           avatar_url?: string | null
           banned_features?: Json | null
@@ -1857,7 +1857,7 @@ export type Database = {
           account_type?: string | null
           admin_access_level?: string | null
           age?: number | null
-          ai_nexus_top_voice?: boolean | null
+          ai_feed_top_voice?: boolean | null
           articles_written?: number | null
           avatar_url?: string | null
           banned_features?: Json | null
@@ -2043,7 +2043,7 @@ export type Database = {
       get_profile_by_handle_or_id: {
         Args: { identifier: string }
         Returns: {
-          ai_nexus_top_voice: boolean
+          ai_feed_top_voice: boolean
           articles_written: number
           bio: string
           company: string
@@ -2070,7 +2070,7 @@ export type Database = {
       get_public_profiles_by_ids: {
         Args: { ids: string[] }
         Returns: {
-          ai_nexus_top_voice: boolean
+          ai_feed_top_voice: boolean
           full_name: string
           handle: string
           id: string
@@ -2084,7 +2084,7 @@ export type Database = {
       get_public_user_profiles: {
         Args: { limit_param?: number; offset_param?: number; search?: string }
         Returns: {
-          ai_nexus_top_voice: boolean
+          ai_feed_top_voice: boolean
           bio: string
           city: string
           company: string
@@ -2108,7 +2108,7 @@ export type Database = {
       get_top_creators: {
         Args: { limit_param?: number }
         Returns: {
-          ai_nexus_top_voice: boolean
+          ai_feed_top_voice: boolean
           full_name: string
           handle: string
           id: string

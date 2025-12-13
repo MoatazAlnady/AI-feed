@@ -315,7 +315,7 @@ const NewsFeed: React.FC = () => {
             avatar: profile?.profile_photo || '',
             title: authorTitle,
             verified: profile?.verified || false,
-            topVoice: profile?.ai_nexus_top_voice || false,
+            topVoice: profile?.ai_feed_top_voice || false,
             handle: profile?.handle // Add handle for profile linking
           },
           content: post.content,

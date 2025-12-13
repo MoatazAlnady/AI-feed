@@ -135,7 +135,7 @@ const ToolReviewSystem: React.FC<ToolReviewSystemProps> = ({ toolId, toolName, c
         userPhoto: user.user_metadata?.profile_photo,
         userTitle: user.user_metadata?.job_title,
         userVerified: user.user_metadata?.verified || false,
-        userTopVoice: user.user_metadata?.ai_nexus_top_voice || false,
+        userTopVoice: user.user_metadata?.ai_feed_top_voice || false,
         rating: formData.rating,
         comment: formData.comment,
         pros: filteredPros,

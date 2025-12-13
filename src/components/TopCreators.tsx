@@ -42,10 +42,10 @@ export default function TopCreators() {
                     {creator.full_name?.charAt(0)?.toUpperCase() || 'U'}
                   </AvatarFallback>
                 </Avatar>
-                {(creator.verified || creator.ai_nexus_top_voice) && (
+                {(creator.verified || creator.ai_feed_top_voice) && (
                   <div className="absolute -top-1 -right-1">
                     <VerificationBadge 
-                      type={creator.verified && creator.ai_nexus_top_voice ? 'both' : creator.ai_nexus_top_voice ? 'top-voice' : 'verified'}
+                      type={creator.verified && creator.ai_feed_top_voice ? 'both' : creator.ai_feed_top_voice ? 'top-voice' : 'verified'}
                       size="sm"
                     />
                   </div>
