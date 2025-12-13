@@ -10,8 +10,10 @@ import PromoteContentModal from '../components/PromoteContentModal';
 import InterestManagement from '../components/InterestManagement';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 const Profile: React.FC = () => {
+  const { t } = useTranslation('common');
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'overview' | 'posts' | 'saved' | 'interests'>('overview');
@@ -382,7 +384,7 @@ const Profile: React.FC = () => {
                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                   content.type === 'tool' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
                                 }`}>
-                                  {content.type}
+                                  {t(`common.contentTypes.${content.type}`, { defaultValue: content.type })}
                                 </span>
                                 <span className="text-sm text-gray-500 dark:text-gray-400">{content.createdAt}</span>
                               </div>

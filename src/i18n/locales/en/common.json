@@ -45,7 +45,14 @@
     "returnToNewsfeed": "Return to newsfeed",
     "postNotFound": "Post not found",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "contentTypes": {
+      "tool": "Tool",
+      "article": "Article",
+      "post": "Post",
+      "event": "Event",
+      "job": "Job"
+    }
   },
   "dashboard": {
     "talentPool": "Talent Pool",

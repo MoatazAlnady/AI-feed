@@ -191,28 +191,28 @@ const Newsfeed: React.FC = () => {
                       className="flex flex-col items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-800/20 transition-colors"
                     >
                       <MessageCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mb-1" />
-                      <span className="text-xs font-medium text-blue-700 dark:text-blue-300 dark:text-white">Post</span>
+                      <span className="text-xs font-medium text-blue-700 dark:text-blue-300 dark:text-white">{t('feed.create.post.label')}</span>
                     </button>
                     <button
                       onClick={() => window.location.href = '/tools/create'}
                       className="flex flex-col items-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-800/20 transition-colors"
                     >
                       <Zap className="h-5 w-5 text-purple-600 dark:text-purple-400 mb-1" />
-                      <span className="text-xs font-medium text-purple-700 dark:text-purple-300">Tool</span>
+                      <span className="text-xs font-medium text-purple-700 dark:text-purple-300">{t('feed.create.tool.label')}</span>
                     </button>
                     <button
                       onClick={() => window.location.href = '/articles/create'}
                       className="flex flex-col items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl hover:bg-green-100 dark:hover:bg-green-800/20 transition-colors"
                     >
                       <FileText className="h-5 w-5 text-green-600 dark:text-green-400 mb-1" />
-                      <span className="text-xs font-medium text-green-700 dark:text-green-300">Article</span>
+                      <span className="text-xs font-medium text-green-700 dark:text-green-300">{t('feed.create.article.label')}</span>
                     </button>
                     <button
                       onClick={() => setShowCreateEvent(true)}
                       className="flex flex-col items-center p-3 bg-red-50 dark:bg-red-900/20 rounded-xl hover:bg-red-100 dark:hover:bg-red-800/20 transition-colors"
                     >
                       <Calendar className="h-5 w-5 text-red-600 dark:text-red-400 mb-1" />
-                      <span className="text-xs font-medium text-red-700 dark:text-red-300">Event</span>
+                      <span className="text-xs font-medium text-red-700 dark:text-red-300">{t('feed.create.event.label')}</span>
                     </button>
                   </div>
                 )}
