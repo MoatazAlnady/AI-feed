@@ -30,10 +30,35 @@ const Profile: React.FC = () => {
       if (!user) return;
 
       try {
-        // Fetch saved items (assuming we have a saved_items table or similar)
-        // This is a placeholder - you may need to implement the actual saved items logic
-        const savedItemsData: any[] = [];
-        setSavedItems(savedItemsData);
+        // Fetch saved items from the saved_items table
+        const { data: savedData } = await supabase
+          .from('saved_items')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        // Fetch the actual content for each saved item
+        const enrichedItems = await Promise.all(
+          (savedData || []).map(async (item) => {
+            let content = null;
+            if (item.content_type === 'tool') {
+              const { data } = await supabase.from('tools').select('id, name, description, logo_url').eq('id', item.content_id).single();
+              content = data ? { ...data, title: data.name, type: 'tool', url: `/tools/${data.id}` } : null;
+            } else if (item.content_type === 'article') {
+              const { data } = await supabase.from('articles').select('id, title, excerpt').eq('id', item.content_id).single();
+              content = data ? { ...data, type: 'article', url: `/blog/${data.id}` } : null;
+            } else if (item.content_type === 'job') {
+              const { data } = await supabase.from('jobs').select('id, title, company').eq('id', item.content_id).single();
+              content = data ? { ...data, type: 'job', url: `/jobs/${data.id}` } : null;
+            } else if (item.content_type === 'post') {
+              const { data } = await supabase.from('posts').select('id, content').eq('id', item.content_id).single();
+              content = data ? { ...data, title: data.content?.substring(0, 50) + '...', type: 'post', url: `/posts/${data.id}` } : null;
+            }
+            return content ? { ...item, content } : null;
+          })
+        );
+        
+        setSavedItems(enrichedItems.filter(Boolean));
 
         // Fetch user's tools and articles
         const [toolsResponse, articlesResponse] = await Promise.all([
@@ -395,37 +420,52 @@ const Profile: React.FC = () => {
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Saved Items</h3>
                   {savedItems.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {savedItems.map((item) => (
+                      {savedItems.map((item: any) => (
                         <div key={item.id} className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-md transition-shadow">
                           <div className="flex items-start space-x-3">
                             <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
-                              {item.type === 'tool' ? (
+                              {item.content?.type === 'tool' ? (
                                 <Zap className="h-6 w-6 text-white" />
+                              ) : item.content?.type === 'job' ? (
+                                <Briefcase className="h-6 w-6 text-white" />
                               ) : (
                                 <FileText className="h-6 w-6 text-white" />
                               )}
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center justify-between">
-                                <h4 className="font-medium text-gray-900 dark:text-white">{item.title}</h4>
+                                <h4 className="font-medium text-gray-900 dark:text-white">{item.content?.title}</h4>
                                 <button 
-                                  onClick={() => {
-                                    setSavedItems(savedItems.filter(i => i.id !== item.id));
+                                  onClick={async () => {
+                                    await supabase.from('saved_items').delete().eq('id', item.id);
+                                    setSavedItems(savedItems.filter((i: any) => i.id !== item.id));
                                   }}
                                   className="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400"
                                 >
                                   <Bookmark className="h-4 w-4 fill-current" />
                                 </button>
                               </div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">{item.description}</p>
+                              <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium mt-1 ${
+                                item.content?.type === 'tool' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
+                                item.content?.type === 'job' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' :
+                                item.content?.type === 'article' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
+                                'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-400'
+                              }`}>
+                                {item.content?.type}
+                              </span>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">
+                                {item.content?.description || item.content?.excerpt || item.content?.company}
+                              </p>
                               <div className="flex items-center justify-between mt-2">
-                                <span className="text-xs text-gray-500 dark:text-gray-400">Saved on {item.savedAt}</span>
-                                <a 
-                                  href={item.url} 
+                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                  Saved {new Date(item.created_at).toLocaleDateString()}
+                                </span>
+                                <Link 
+                                  to={item.content?.url || '#'} 
                                   className="text-primary-600 dark:text-primary-400 text-sm hover:underline"
                                 >
                                   View
-                                </a>
+                                </Link>
                               </div>
                             </div>
                           </div>
@@ -436,10 +476,10 @@ const Profile: React.FC = () => {
                     <div className="text-center py-8">
                       <Bookmark className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
                       <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                        Saved Items
+                        No Saved Items Yet
                       </h3>
                       <p className="text-gray-600 dark:text-gray-400">
-                        Tools and articles you've bookmarked will appear here.
+                        Tools, articles, and jobs you've bookmarked will appear here.
                       </p>
                     </div>
                   )}

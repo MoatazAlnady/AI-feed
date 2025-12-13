@@ -15,7 +15,7 @@ const AIChatBot = ({ initialMessage, autoOpen }: AIChatBotProps) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Array<{id: number, text: string, sender: 'user' | 'ai'}>>([]);
 
-  // Handle initial message from search
+  // Handle initial message from search - stream real AI response
   React.useEffect(() => {
     if (initialMessage && initialMessage.trim()) {
       const newMessage = {
@@ -25,16 +25,7 @@ const AIChatBot = ({ initialMessage, autoOpen }: AIChatBotProps) => {
       };
       setMessages([newMessage]);
       setIsOpen(true);
-      
-      // Simulate AI response
-      setTimeout(() => {
-        const aiResponse = {
-          id: Date.now() + 1,
-          text: `I understand you're looking for: "${initialMessage}". AI-powered search responses coming soon! I'll help you find the perfect tools and solutions.`,
-          sender: 'ai' as const
-        };
-        setMessages(prev => [...prev, aiResponse]);
-      }, 1000);
+      setShowDualChat(true);
     }
   }, [initialMessage]);
 
