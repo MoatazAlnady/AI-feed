@@ -309,18 +309,86 @@
     "profileInfoDesc": "更新您的个人信息和公开资料。",
     "fullName": "全名",
     "fullNamePlaceholder": "输入您的全名",
+    "displayName": "显示名称",
+    "displayNamePlaceholder": "输入显示名称",
+    "handle": "用户名",
+    "handlePlaceholder": "@用户名",
+    "handleDesc": "您的用户名将用于个人资料链接",
+    "headline": "个人标语",
+    "headlinePlaceholder": "AI开发者 | 机器学习工程师",
+    "professionalInfo": "职业信息",
+    "professionalInfoDesc": "添加职业信息以拓展您的专业网络",
+    "jobTitle": "职位",
+    "jobTitlePlaceholder": "高级AI开发者",
+    "company": "公司",
+    "companyPlaceholder": "公司名称",
+    "website": "网站",
+    "websitePlaceholder": "https://your-website.com",
+    "websiteLabel": "网站",
+    "locationInfo": "位置信息",
+    "locationInfoDesc": "分享您的位置以与附近的创作者联系",
+    "country": "国家",
+    "selectCountry": "选择国家",
+    "city": "城市",
+    "cityPlaceholder": "您所在的城市",
+    "location": "位置",
+    "locationPlaceholder": "北京，中国",
+    "contactInfo": "联系信息",
+    "contactInfoDesc": "添加联系方式（可在隐私设置中控制可见性）",
+    "phone": "电话",
+    "phonePlaceholder": "输入您的电话号码",
+    "phoneCountryCode": "国家代码",
+    "socialLinks": "社交链接",
+    "socialLinksDesc": "添加您的社交资料链接",
+    "githubUrl": "GitHub URL",
+    "linkedinUrl": "LinkedIn URL",
+    "twitterUrl": "Twitter URL",
+    "personalDetails": "个人详情",
+    "personalDetailsDesc": "可选的个人信息",
+    "birthDate": "出生日期",
+    "gender": "性别",
+    "genderOptions": {
+      "preferNotToSay": "不愿透露",
+      "male": "男",
+      "female": "女",
+      "nonBinary": "非二元",
+      "other": "其他"
+    },
+    "interestsSkills": "兴趣与技能",
+    "interestsSkillsDesc": "添加兴趣以发现相关机会",
     "bio": "简介",
     "bioPlaceholder": "介绍一下您自己",
-    "websiteLabel": "网站",
-    "websitePlaceholder": "https://your-website.com",
+    "saveProfile": "保存资料",
+    "savingProfile": "保存中...",
+    "saveProfileChanges": "保存个人资料更改",
+    "saving": "保存中...",
+    "notificationPrefs": "通知偏好",
+    "notificationPrefsDesc": "选择您接收通知的方式",
+    "emailNotifications": "邮件通知",
+    "emailNotificationsDesc": "通过邮件接收通知",
+    "pushNotifications": "推送通知",
+    "pushNotificationsDesc": "在浏览器中接收推送通知",
+    "marketingEmails": "营销邮件",
+    "marketingEmailsDesc": "接收更新和优惠信息",
+    "weeklyDigest": "每周摘要",
+    "weeklyDigestDesc": "接收每周精选内容汇总",
+    "saveNotifications": "保存设置",
     "newsletterSubscription": "新闻通讯订阅",
     "newsletterBasic": "基本新闻通讯偏好。",
     "newsletterUpdates": "新闻通讯更新",
     "newsletterUpdatesDesc": "接收有关新AI工具、功能和行业洞察的更新。",
-    "saveProfileChanges": "保存个人资料更改",
-    "saving": "保存中...",
     "privacySettings": "隐私设置",
-    "privacySettingsDesc": "控制您的信息如何向其他用户显示。",
+    "privacySettingsDesc": "管理您的资料可见性",
+    "profileVisibility": "资料可见性",
+    "profileVisibilityDesc": "控制谁可以查看您的资料",
+    "visibilityOptions": {
+      "public": "公开",
+      "publicDesc": "所有人可见",
+      "private": "私密",
+      "privateDesc": "仅自己可见",
+      "connectionsOnly": "仅联系人",
+      "connectionsOnlyDesc": "仅您的联系人可见"
+    },
     "contactVisible": "联系信息可见",
     "contactVisibleDesc": "允许其他用户在您的个人资料中查看您的联系信息。",
     "savePrivacySettings": "保存隐私设置",
@@ -331,7 +399,107 @@
     "settingsSaved": "设置保存成功",
     "loadError": "加载个人资料设置失败",
     "saveError": "保存设置失败",
-    "newsletterError": "更新新闻通讯订阅失败"
+    "newsletterError": "更新新闻通讯订阅失败",
+    "success": "成功",
+    "profileUpdated": "您的资料已成功更新",
+    "notificationsUpdated": "通知设置已更新",
+    "error": "错误",
+    "updateFailed": "更新设置失败"
+  },
+  "guidelines": {
+    "title": "平台准则与规范",
+    "subtitle": "创作者、雇主和所有用户的社区标准",
+    "forCreators": {
+      "title": "创作者指南",
+      "toolSubmission": {
+        "title": "工具提交指南",
+        "rules": [
+          "确保工具名称和描述准确",
+          "为功能选择适当的类别",
+          "如有免费计划请注明",
+          "添加相关标签以便更好地被发现",
+          "使用官方网站URL"
+        ]
+      },
+      "articles": {
+        "title": "文章写作指南",
+        "rules": [
+          "撰写与平台相关的原创内容",
+          "核实所有信息",
+          "禁止抄袭或未经授权的复制",
+          "使用适当的标题和引用",
+          "内容应保持专业和建设性"
+        ]
+      },
+      "community": {
+        "title": "社区行为规范",
+        "rules": [
+          "尊重其他成员",
+          "提供建设性的反馈和评论",
+          "禁止骚扰和垃圾信息",
+          "使用适当的语言",
+          "分享知识并帮助他人"
+        ]
+      }
+    },
+    "forEmployers": {
+      "title": "雇主指南",
+      "jobPosting": {
+        "title": "职位发布指南",
+        "rules": [
+          "提供准确的职位详情和要求",
+          "明确薪资范围和福利",
+          "选择正确的工作模式（远程、现场、混合）",
+          "提供清晰详细的申请说明",
+          "保持职位信息最新"
+        ]
+      },
+      "talentEngagement": {
+        "title": "人才互动规则",
+        "rules": [
+          "专业地对待所有候选人",
+          "在合理时间内回复申请",
+          "尊重候选人的联系信息",
+          "对职位保持诚实和透明",
+          "保守个人信息"
+        ]
+      },
+      "communication": {
+        "title": "沟通标准",
+        "rules": [
+          "在所有沟通中保持专业",
+          "不发送不当信息或请求",
+          "尊重候选人的隐私设置",
+          "仅将平台用于就业目的",
+          "禁止垃圾邮件或营销推广"
+        ]
+      }
+    },
+    "generalRules": {
+      "title": "平台通用规则",
+      "terms": {
+        "title": "条款摘要",
+        "content": "使用AI Feed即表示您同意遵守我们的社区标准。违规可能导致账户暂停或永久封禁。"
+      },
+      "prohibited": {
+        "title": "禁止内容",
+        "items": [
+          "有害、冒犯或非法内容",
+          "垃圾信息、欺诈或误导性信息",
+          "暴力、仇恨言论或歧视",
+          "侵犯隐私或知识产权",
+          "促进非法活动或违反条款"
+        ]
+      },
+      "privacy": {
+        "title": "隐私期望",
+        "content": "我们致力于保护您的数据。您的信息将被安全存储，仅根据您的资料设置进行共享。"
+      },
+      "consequences": {
+        "title": "违规后果",
+        "content": "违反准则可能导致警告、功能限制、临时暂停或永久封禁，具体取决于严重程度。"
+      }
+    }
   },
   "network": {
     "myNetwork": "我的人脉",

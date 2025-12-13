@@ -268,13 +268,55 @@
     "profileInfo": "プロフィール情報",
     "profileInfoDesc": "個人情報と職業情報を更新",
     "fullName": "フルネーム",
+    "fullNamePlaceholder": "フルネームを入力",
+    "displayName": "表示名",
+    "displayNamePlaceholder": "表示名を入力",
+    "handle": "ハンドル",
+    "handlePlaceholder": "@ハンドル",
+    "handleDesc": "ハンドルはプロフィールURLに使用されます",
+    "headline": "見出し",
+    "headlinePlaceholder": "AI開発者 | 機械学習エンジニア",
+    "professionalInfo": "職業情報",
+    "professionalInfoDesc": "キャリア情報を追加してプロフェッショナルネットワークを構築",
     "jobTitle": "役職",
+    "jobTitlePlaceholder": "シニアAI開発者",
     "company": "会社",
+    "companyPlaceholder": "会社名",
+    "website": "ウェブサイト",
+    "websitePlaceholder": "https://your-website.com",
+    "locationInfo": "所在地情報",
+    "locationInfoDesc": "所在地を共有して近くのクリエイターとつながる",
+    "country": "国",
+    "selectCountry": "国を選択",
+    "city": "都市",
+    "cityPlaceholder": "お住まいの都市",
     "location": "所在地",
-    "bio": "自己紹介",
-    "bioPlaceholder": "あなたのスキルや興味について教えてください...",
+    "locationPlaceholder": "東京、日本",
+    "contactInfo": "連絡先情報",
+    "contactInfoDesc": "連絡先を追加（プライバシー設定で公開/非公開を制御可能）",
+    "phone": "電話番号",
+    "phonePlaceholder": "電話番号を入力",
+    "phoneCountryCode": "国番号",
     "socialLinks": "ソーシャルリンク",
     "socialLinksDesc": "ソーシャルプロフィールのリンクを追加",
+    "githubUrl": "GitHub URL",
+    "linkedinUrl": "LinkedIn URL",
+    "twitterUrl": "Twitter URL",
+    "personalDetails": "個人詳細",
+    "personalDetailsDesc": "オプションの個人情報",
+    "birthDate": "生年月日",
+    "gender": "性別",
+    "genderOptions": {
+      "preferNotToSay": "回答しない",
+      "male": "男性",
+      "female": "女性",
+      "nonBinary": "ノンバイナリー",
+      "other": "その他"
+    },
+    "interestsSkills": "興味・スキル",
+    "interestsSkillsDesc": "関連する機会を発見するために興味を追加",
+    "bio": "自己紹介",
+    "bioPlaceholder": "あなたのスキルや興味について教えてください...",
     "saveProfile": "プロフィールを保存",
     "savingProfile": "保存中...",
     "notificationPrefs": "通知設定",
@@ -288,11 +330,118 @@
     "weeklyDigest": "週刊ダイジェスト",
     "weeklyDigestDesc": "トップコンテンツの週刊まとめを受け取る",
     "saveNotifications": "設定を保存",
+    "privacySettings": "プライバシー設定",
+    "privacySettingsDesc": "プロフィールの公開設定を管理",
+    "profileVisibility": "プロフィールの公開範囲",
+    "profileVisibilityDesc": "プロフィールを閲覧できる人を制御",
+    "visibilityOptions": {
+      "public": "公開",
+      "publicDesc": "誰でも閲覧可能",
+      "private": "非公開",
+      "privateDesc": "自分のみ閲覧可能",
+      "connectionsOnly": "つながりのみ",
+      "connectionsOnlyDesc": "つながりのある人のみ閲覧可能"
+    },
     "success": "成功",
     "profileUpdated": "プロフィールが正常に更新されました",
     "notificationsUpdated": "通知設定が更新されました",
     "error": "エラー",
     "updateFailed": "設定の更新に失敗しました"
+  },
+  "guidelines": {
+    "title": "プラットフォームガイドラインとルール",
+    "subtitle": "クリエイター、雇用主、すべてのユーザーのためのコミュニティスタンダード",
+    "forCreators": {
+      "title": "クリエイター向けガイドライン",
+      "toolSubmission": {
+        "title": "ツール提出ガイドライン",
+        "rules": [
+          "ツールの名前と説明が正確であることを確認してください",
+          "機能に対して適切なカテゴリを選択してください",
+          "無料プランが利用可能な場合は明記してください",
+          "より良い発見のために関連タグを追加してください",
+          "公式ウェブサイトのURLを使用してください"
+        ]
+      },
+      "articles": {
+        "title": "記事作成ガイドライン",
+        "rules": [
+          "プラットフォームに関連するオリジナルコンテンツを書いてください",
+          "すべての情報を事実確認してください",
+          "盗作や無断コピーは禁止です",
+          "適切な見出しと引用を使用してください",
+          "コンテンツはプロフェッショナルで建設的であるべきです"
+        ]
+      },
+      "community": {
+        "title": "コミュニティ行動",
+        "rules": [
+          "他のメンバーを尊重してください",
+          "建設的なフィードバックとコメントを提供してください",
+          "ハラスメントやスパムは禁止です",
+          "適切な言葉遣いをしてください",
+          "知識を共有し、他者を助けてください"
+        ]
+      }
+    },
+    "forEmployers": {
+      "title": "雇用主向けガイドライン",
+      "jobPosting": {
+        "title": "求人掲載ガイドライン",
+        "rules": [
+          "正確な求人詳細と要件を記載してください",
+          "給与範囲と福利厚生を明確にしてください",
+          "正しい勤務形態を選択してください（リモート、出社、ハイブリッド）",
+          "明確で詳細な応募手順を提供してください",
+          "求人情報を最新の状態に保ってください"
+        ]
+      },
+      "talentEngagement": {
+        "title": "タレント活用ルール",
+        "rules": [
+          "すべての候補者をプロフェッショナルに扱ってください",
+          "応募には妥当な時間内に返信してください",
+          "候補者の連絡先情報を尊重してください",
+          "役割について誠実で透明性を保ってください",
+          "個人情報をプライベートに保管してください"
+        ]
+      },
+      "communication": {
+        "title": "コミュニケーションスタンダード",
+        "rules": [
+          "すべてのコミュニケーションでプロフェッショナルな態度を維持してください",
+          "不適切なメッセージや要求を送らないでください",
+          "候補者のプライバシー設定を尊重してください",
+          "雇用機会のためにのみプラットフォームを使用してください",
+          "スパム行為やマーケティング行為は禁止です"
+        ]
+      }
+    },
+    "generalRules": {
+      "title": "一般プラットフォームルール",
+      "terms": {
+        "title": "利用規約の概要",
+        "content": "AI Feedを使用することにより、コミュニティスタンダードに従うことに同意します。違反するとアカウントの停止や凍結につながる可能性があります。"
+      },
+      "prohibited": {
+        "title": "禁止コンテンツ",
+        "items": [
+          "有害、攻撃的、または違法なコンテンツ",
+          "スパム、詐欺、または誤解を招く情報",
+          "暴力、ヘイトスピーチ、または差別",
+          "プライバシーまたは知的財産権の侵害",
+          "違法行為や規約違反の促進"
+        ]
+      },
+      "privacy": {
+        "title": "プライバシーへの期待",
+        "content": "私たちはあなたのデータを保護することに尽力しています。あなたの情報は安全に保管され、プロフィール設定に基づいてのみ共有されます。"
+      },
+      "consequences": {
+        "title": "違反の結果",
+        "content": "ガイドラインの違反は、重大さに応じて警告、機能制限、一時停止、または永久凍結につながる可能性があります。"
+      }
+    }
   },
   "postDetails": {
     "loading": "投稿を読み込み中...",
