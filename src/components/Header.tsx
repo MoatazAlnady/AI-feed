@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Search, Zap, Plus, Settings, User, LogOut, Bell, MessageCircle, Building, BarChart3, Moon, Sun, Briefcase, Users, Crown } from 'lucide-react';
+import { Menu, X, Search, Zap, Plus, Settings, User, LogOut, Bell, MessageCircle, Building, BarChart3, Moon, Sun, Briefcase, Users, Crown, BookOpen } from 'lucide-react';
 import ChatDock from './ChatDock';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
@@ -582,6 +582,16 @@ const Header: React.FC = () => {
                             variant="menu" 
                             onLocaleChange={() => setShowUserMenu(false)} 
                           />
+                          <Link
+                            to="/guidelines"
+                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                            onClick={() => setShowUserMenu(false)}
+                          >
+                            <div className="flex items-center">
+                              <BookOpen className="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" />
+                              {t('nav.guidelines')}
+                            </div>
+                          </Link>
                            {isCreator && (
                               <Link
                                 to="/upgrade"

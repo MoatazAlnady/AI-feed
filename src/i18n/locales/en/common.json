@@ -15,6 +15,7 @@
     "messages": "Messages",
     "notifications": "Notifications",
     "admin": "Admin",
+    "guidelines": "Guidelines & Rules",
     "signIn": "Sign In",
     "signUp": "Sign Up",
     "signOut": "Sign Out"
@@ -458,33 +459,169 @@
     "notifications": "Notifications",
     "privacy": "Privacy",
     "security": "Security",
-    "profileInfo": "Profile Information",
-    "profileInfoDesc": "Update your personal information and public profile.",
+    "basicInfo": "Basic Information",
+    "basicInfoDesc": "Your public profile information.",
     "fullName": "Full Name",
     "fullNamePlaceholder": "Enter your full name",
+    "displayName": "Display Name",
+    "displayNamePlaceholder": "How you want to be called",
+    "handle": "Username",
+    "handlePlaceholder": "your_username",
+    "handleHelp": "Your unique identifier. Only lowercase letters, numbers, and underscores.",
+    "headline": "Headline",
+    "headlinePlaceholder": "e.g., AI Developer | Tech Enthusiast",
     "bio": "Bio",
     "bioPlaceholder": "Tell us about yourself",
+    "professionalInfo": "Professional Information",
+    "professionalInfoDesc": "Your work and career details.",
+    "jobTitle": "Job Title",
+    "jobTitlePlaceholder": "e.g., Software Engineer",
+    "company": "Company",
+    "companyPlaceholder": "Where you work",
     "websiteLabel": "Website",
     "websitePlaceholder": "https://your-website.com",
-    "newsletterSubscription": "Newsletter Subscription",
-    "newsletterBasic": "Basic newsletter preferences.",
-    "newsletterUpdates": "Newsletter Updates",
-    "newsletterUpdatesDesc": "Receive updates about new AI tools, features, and industry insights.",
-    "saveProfileChanges": "Save Profile Changes",
-    "saving": "Saving...",
+    "locationInfo": "Location",
+    "locationInfoDesc": "Where you're based.",
+    "country": "Country",
+    "countryPlaceholder": "Select your country",
+    "city": "City",
+    "cityPlaceholder": "Your city",
+    "locationDisplay": "Display Location",
+    "locationDisplayPlaceholder": "e.g., San Francisco, CA",
+    "locationDisplayHelp": "This is what others will see on your profile.",
+    "contactInfo": "Contact Information",
+    "contactInfoDesc": "How people can reach you.",
+    "email": "Email Address",
+    "emailHelp": "Your email is managed through account settings.",
+    "phone": "Phone Number",
+    "phonePlaceholder": "Your phone number",
+    "socialLinks": "Social Links",
+    "socialLinksDesc": "Connect your social profiles.",
+    "github": "GitHub",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter/X",
+    "personalDetails": "Personal Details",
+    "personalDetailsDesc": "Optional personal information.",
+    "birthDate": "Date of Birth",
+    "gender": "Gender",
+    "genderPlaceholder": "Select gender",
+    "genderOptions": {
+      "preferNotToSay": "Prefer not to say",
+      "male": "Male",
+      "female": "Female",
+      "nonBinary": "Non-binary",
+      "other": "Other"
+    },
+    "interestsSkills": "Interests & Skills",
+    "interestsSkillsDesc": "What you're passionate about.",
+    "profileVisibility": "Profile Visibility",
+    "profileVisibilityDesc": "Control who can see your profile.",
+    "whoCanSee": "Who can see your profile?",
+    "visibilityOptions": {
+      "public": "Public - Everyone can see your profile",
+      "connections": "Connections Only - Only your connections can see your profile",
+      "private": "Private - Your profile is hidden from others"
+    },
     "privacySettings": "Privacy Settings",
     "privacySettingsDesc": "Control how your information is displayed to other users.",
     "contactVisible": "Contact Information Visible",
     "contactVisibleDesc": "Allow other users to see your contact information in your profile.",
+    "saveProfileChanges": "Save Profile Changes",
     "savePrivacySettings": "Save Privacy Settings",
-    "subscribed": "Subscribed",
-    "unsubscribed": "Unsubscribed",
-    "subscribeSuccess": "You'll receive our newsletter updates",
-    "unsubscribeSuccess": "You won't receive newsletter updates anymore",
+    "saving": "Saving...",
     "settingsSaved": "Settings saved successfully",
     "loadError": "Failed to load profile settings",
-    "saveError": "Failed to save settings",
-    "newsletterError": "Failed to update newsletter subscription"
+    "saveError": "Failed to save settings"
+  },
+  "guidelines": {
+    "title": "Guidelines, Rules & Standards",
+    "subtitle": "Platform policies and best practices for all users",
+    "forCreators": "For Creators",
+    "forEmployers": "For Employers",
+    "generalRules": "General Rules",
+    "creators": {
+      "toolSubmission": {
+        "title": "Tool Submission Guidelines",
+        "desc": "Standards for submitting AI tools to our directory.",
+        "rule1": "Provide accurate and complete information about the tool.",
+        "rule2": "Include working website links and up-to-date pricing information.",
+        "rule3": "Use appropriate categories and tags for better discoverability.",
+        "rule4": "Do not submit duplicate tools or spam submissions."
+      },
+      "articles": {
+        "title": "Article Writing Guidelines",
+        "desc": "Quality standards for publishing articles.",
+        "rule1": "Write original, well-researched content with proper citations.",
+        "rule2": "Use clear, professional language and proper formatting.",
+        "rule3": "Include relevant images and media to enhance your content.",
+        "rule4": "Do not plagiarize or publish misleading information."
+      },
+      "community": {
+        "title": "Community Behavior",
+        "desc": "Expected conduct when interacting with others.",
+        "rule1": "Be respectful and constructive in all interactions.",
+        "rule2": "Provide helpful feedback and support to fellow creators.",
+        "rule3": "Do not engage in harassment, trolling, or personal attacks.",
+        "rule4": "Do not spam or self-promote excessively."
+      }
+    },
+    "employers": {
+      "jobPosting": {
+        "title": "Job Posting Guidelines",
+        "desc": "Standards for posting job opportunities.",
+        "rule1": "Provide accurate job descriptions with clear requirements.",
+        "rule2": "Include transparent salary ranges and benefits information.",
+        "rule3": "Specify work location, remote options, and job type clearly.",
+        "rule4": "Do not post fake jobs or misleading opportunities."
+      },
+      "talentEngagement": {
+        "title": "Talent Engagement Rules",
+        "desc": "How to interact with potential candidates.",
+        "rule1": "Respect candidates' time and respond to applications promptly.",
+        "rule2": "Provide constructive feedback when declining candidates.",
+        "rule3": "Do not contact candidates for positions they haven't applied for without consent."
+      },
+      "communication": {
+        "title": "Communication Standards",
+        "desc": "Professional communication expectations.",
+        "rule1": "Maintain professional and respectful communication at all times.",
+        "rule2": "Respond to candidate inquiries within a reasonable timeframe.",
+        "rule3": "Keep all candidate information confidential and secure."
+      }
+    },
+    "general": {
+      "terms": {
+        "title": "Terms of Service Summary",
+        "desc": "Key points from our terms of service.",
+        "rule1": "You must be at least 18 years old to use this platform.",
+        "rule2": "You are responsible for maintaining the security of your account.",
+        "rule3": "Content you post remains your property but you grant us license to display it."
+      },
+      "prohibited": {
+        "title": "Prohibited Content & Behavior",
+        "desc": "Content and actions that are not allowed on our platform.",
+        "rule1": "Hate speech, discrimination, or content promoting violence.",
+        "rule2": "Spam, phishing, or malicious links and content.",
+        "rule3": "Impersonation or misrepresentation of identity.",
+        "rule4": "Copyright infringement or unauthorized use of intellectual property.",
+        "rule5": "Adult content, illegal activities, or harmful material."
+      },
+      "privacy": {
+        "title": "Privacy & Data Protection",
+        "desc": "How we handle your data and privacy.",
+        "rule1": "We collect only necessary data to provide our services.",
+        "rule2": "Your data is encrypted and stored securely.",
+        "rule3": "You can request deletion of your data at any time."
+      },
+      "consequences": {
+        "title": "Violation Consequences",
+        "desc": "What happens when rules are violated.",
+        "item1": "First violation: Warning and content removal",
+        "item2": "Second violation: Temporary suspension (7 days)",
+        "item3": "Third violation: Extended suspension (30 days)",
+        "item4": "Severe or repeated violations: Permanent account termination"
+      }
+    }
   },
   "post": {
     "comments": "Comments",

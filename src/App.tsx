@@ -35,6 +35,7 @@ import ToolComparison from "./pages/ToolComparison";
 import AdminNewsletter from "./pages/AdminNewsletter";
 import Notifications from "./pages/Notifications";
 import ConnectionRequests from './pages/ConnectionRequests';
+import Guidelines from "./pages/Guidelines";
 
 const queryClient = new QueryClient();
 
@@ -93,6 +94,7 @@ const App = () => (
                   <Route path="messages" element={<Messages />} />
                   <Route path="notifications" element={<Notifications />} />
                   <Route path="connection-requests" element={<ConnectionRequests />} />
+                  <Route path="guidelines" element={<Guidelines />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
