@@ -491,5 +491,27 @@
     "loadError": "Failed to load connections",
     "message": "Message",
     "remove": "Remove"
+  },
+  "employer": {
+    "subscription": "Subscription",
+    "freeTrial": "Free Trial",
+    "adminAccess": "Admin Access",
+    "upgradeNow": "Upgrade Now",
+    "activeJobs": "Active Jobs",
+    "postJob": "Post Job",
+    "projects": "Projects",
+    "viewProjects": "View Projects",
+    "createProject": "Create Project",
+    "talentPool": "Talent Pool",
+    "search": "Search",
+    "recentJobPostings": "Recent Job Postings",
+    "noJobsYet": "You haven't posted any jobs yet.",
+    "postFirstJob": "Post Your First Job",
+    "recommendedTalent": "Recommended Talent",
+    "viewAllJobs": "View All Jobs",
+    "viewAllTalent": "View All Talent",
+    "applicants": "applicants",
+    "upgradeToSee": "Upgrade to see AI-matched talent recommendations based on your job postings.",
+    "upgradePlan": "Upgrade Plan"
   }
 }

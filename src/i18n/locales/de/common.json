@@ -313,5 +313,27 @@
     "viewProfile": "Profil anzeigen",
     "message": "Nachricht",
     "unfollow": "Entfolgen"
+  },
+  "employer": {
+    "subscription": "Abonnement",
+    "freeTrial": "Kostenlose Testversion",
+    "adminAccess": "Admin-Zugang",
+    "upgradeNow": "Jetzt upgraden",
+    "activeJobs": "Aktive Jobs",
+    "postJob": "Job veröffentlichen",
+    "projects": "Projekte",
+    "viewProjects": "Projekte anzeigen",
+    "createProject": "Projekt erstellen",
+    "talentPool": "Talent-Pool",
+    "search": "Suchen",
+    "recentJobPostings": "Aktuelle Stellenausschreibungen",
+    "noJobsYet": "Sie haben noch keine Jobs veröffentlicht.",
+    "postFirstJob": "Veröffentlichen Sie Ihren ersten Job",
+    "recommendedTalent": "Empfohlene Talente",
+    "viewAllJobs": "Alle Jobs anzeigen",
+    "viewAllTalent": "Alle Talente anzeigen",
+    "applicants": "Bewerber",
+    "upgradeToSee": "Upgraden Sie, um KI-basierte Talentempfehlungen basierend auf Ihren Stellenausschreibungen zu sehen.",
+    "upgradePlan": "Plan upgraden"
   }
 }

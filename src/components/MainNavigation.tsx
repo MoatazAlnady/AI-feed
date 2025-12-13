@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { 
   Home, 
@@ -11,16 +12,18 @@ import {
 } from "lucide-react";
 
 const navigationItems = [
-  { to: "/", icon: Home, label: "Home" },
-  { to: "/tools", icon: Wrench, label: "AI Tools" },
-  { to: "/talent", icon: Users, label: "Talent Pool" },
-  { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/admin", icon: Shield, label: "Admin" },
-  { to: "/messages", icon: MessageCircle, label: "Messages" },
-  { to: "/auth", icon: LogIn, label: "Sign In" },
+  { to: "/", icon: Home, labelKey: "nav.home" },
+  { to: "/tools", icon: Wrench, labelKey: "nav.tools" },
+  { to: "/talent", icon: Users, labelKey: "dashboard.talentPool" },
+  { to: "/dashboard", icon: LayoutDashboard, labelKey: "nav.dashboard" },
+  { to: "/admin", icon: Shield, labelKey: "nav.admin" },
+  { to: "/messages", icon: MessageCircle, labelKey: "nav.messages" },
+  { to: "/auth", icon: LogIn, labelKey: "nav.signIn" },
 ];
 
 export const MainNavigation = () => {
+  const { t } = useTranslation();
+  
   return (
     <nav className="w-64 border-r bg-card p-4">
       <div className="space-y-2">
@@ -41,7 +44,7 @@ export const MainNavigation = () => {
               }
             >
               <Icon className="h-4 w-4" />
-              {item.label}
+              {t(item.labelKey)}
             </NavLink>
           );
         })}
