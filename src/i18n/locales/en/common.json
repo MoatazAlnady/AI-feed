@@ -530,13 +530,29 @@
       "title": "Community Events",
       "createEvent": "Create Event",
       "joinEvent": "Join Event",
-      "rsvp": "RSVP"
+      "rsvp": "RSVP",
+      "sample": {
+        "tomorrow": "Tomorrow, 2:00 PM",
+        "friday": "Friday, 5:00 PM",
+        "aiToolsShowcase": "AI Tools Showcase",
+        "aiToolsShowcaseDesc": "Discover the latest AI tools and their real-world applications.",
+        "networkingMixer": "Networking Mixer",
+        "networkingMixerDesc": "Connect with fellow AI enthusiasts and industry professionals."
+      }
     },
     "groups": {
       "title": "Discussion Groups",
       "createGroup": "Create Group",
       "joinDiscussion": "Join Discussion",
-      "members": "members"
+      "members": "members",
+      "sample": {
+        "machineLearning": "Machine Learning",
+        "machineLearningDesc": "Discuss ML algorithms, techniques, and latest research.",
+        "aiTools": "AI Tools",
+        "aiToolsDesc": "Share and discover new AI tools and platforms.",
+        "startupsAI": "Startups & AI",
+        "startupsAIDesc": "Connect with AI startup founders and innovators."
+      }
     },
     "networking": {
       "title": "Find Creators",
@@ -547,15 +563,20 @@
       "pending": "Pending",
       "connected": "Connected",
       "message": "Message",
+      "requestSent": "Request Sent",
       "connectionRequestSent": "Connection request sent!",
       "connectionLimitReached": "Monthly connection request limit reached (50). Upgrade to premium for unlimited requests.",
       "pleaseLogIn": "Please log in to send messages",
-      "failedToOpenChat": "Failed to open chat"
+      "failedToOpenChat": "Failed to open chat",
+      "anonymousUser": "Anonymous User",
+      "aiEnthusiast": "AI Enthusiast",
+      "defaultBio": "Passionate about AI and technology."
     },
     "stats": {
       "activeCreators": "Active Creators",
       "discussionGroups": "Discussion Groups",
-      "weeklyEvents": "Weekly Events"
+      "weeklyEvents": "Weekly Events",
+      "successRate": "Success Rate"
     }
   },
   "profile": {
@@ -631,6 +652,9 @@
     "successTitle": "Tool Submitted Successfully!",
     "successMessage": "Thank you for submitting your AI tool. Our team will review it within 24-48 hours.",
     "submitAnother": "Submit Another Tool",
+    "chooseMethod": "Choose Submission Method",
+    "singleToolForm": "Single Tool Form",
+    "csvUpload": "CSV Upload",
     "form": {
       "name": "Tool Name",
       "namePlaceholder": "Enter tool name",
@@ -664,6 +688,42 @@
       "duplicateDetected": "A tool with this name and website already exists.",
       "subcategoryRequired": "Please select a subcategory.",
       "toolTypeRequired": "Please select at least one tool type."
+    }
+  },
+  "submitArticle": {
+    "title": "Submit Article",
+    "subtitle": "Share your AI insights, tutorials, and research with our community.",
+    "successTitle": "Article Submitted Successfully!",
+    "successMessage": "Thank you for contributing to our AI community. Your article will be reviewed within 24-48 hours.",
+    "submitAnother": "Submit Another Article",
+    "form": {
+      "authorName": "Author Name",
+      "authorPlaceholder": "Your full name",
+      "email": "Email Address",
+      "emailPlaceholder": "your@email.com",
+      "contentType": "Content Type",
+      "article": "Article",
+      "video": "Video",
+      "titleLabel": "Title",
+      "titlePlaceholder": "Enter an engaging title for your content",
+      "excerpt": "Excerpt",
+      "excerptPlaceholder": "Write a compelling summary (150-200 characters)",
+      "videoUrl": "Video URL",
+      "videoUrlPlaceholder": "https://youtube.com/watch?v=...",
+      "content": "Content",
+      "contentPlaceholder": "Write your full article content here. Use markdown formatting if needed.",
+      "category": "Category",
+      "selectCategory": "Select a category",
+      "tags": "Tags",
+      "tagsPlaceholder": "AI, GPT, Tutorial (comma separated)",
+      "featuredImage": "Featured Image",
+      "uploadFeaturedImage": "Upload a featured image for your article",
+      "imageSpecs": "PNG, JPG up to 5MB (recommended: 1200x630px)",
+      "chooseImage": "Choose Image",
+      "selected": "Selected",
+      "submit": "Submit Article for Review",
+      "submitting": "Submitting...",
+      "disclaimer": "By submitting, you agree to our content guidelines and grant us permission to publish your work."
     }
   }
 }

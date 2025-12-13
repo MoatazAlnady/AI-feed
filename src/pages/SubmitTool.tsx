@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Upload, Link, Tag, DollarSign, Star, Send, Plus, Minus, Download, FileText, AlertCircle } from 'lucide-react';
 import { generateCSVTemplate } from '../utils/csvTemplate';
 import { useAuth } from '../context/AuthContext';
@@ -8,6 +9,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ChatDock from '../components/ChatDock';
 
 const SubmitTool: React.FC = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { toast } = useToast();
   const { id } = useParams<{ id: string }>();
@@ -269,8 +271,8 @@ const SubmitTool: React.FC = () => {
       // Check if user is authenticated
       if (!user || !user.id) {
         toast({
-          title: "Authentication Error",
-          description: "You must be logged in to submit a tool. Please log in and try again.",
+          title: t('common.error'),
+          description: t('submitTool.validation.authRequired'),
           variant: "destructive"
         });
         setIsSubmitting(false);
@@ -289,8 +291,8 @@ const SubmitTool: React.FC = () => {
 
         if (count && count > 0) {
           toast({
-            title: "Duplicate Tool Detected",
-            description: "A tool with this name and website already exists in our database.",
+            title: t('common.error'),
+            description: t('submitTool.validation.duplicateDetected'),
             variant: "destructive"
           });
           setIsSubmitting(false);
@@ -310,8 +312,8 @@ const SubmitTool: React.FC = () => {
       // Validation
       if (!formData.subcategory.trim()) {
         toast({
-          title: "Validation Error",
-          description: "Please select a subcategory.",
+          title: t('common.error'),
+          description: t('submitTool.validation.subcategoryRequired'),
           variant: "destructive"
         });
         setIsSubmitting(false);
@@ -320,8 +322,8 @@ const SubmitTool: React.FC = () => {
 
       if (formData.toolType.length === 0) {
         toast({
-          title: "Validation Error",
-          description: "Please select at least one tool type.",
+          title: t('common.error'),
+          description: t('submitTool.validation.toolTypeRequired'),
           variant: "destructive"
         });
         setIsSubmitting(false);
@@ -484,21 +486,19 @@ const SubmitTool: React.FC = () => {
               <Star className="h-8 w-8 text-green-600" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              {submissionMode === 'csv' ? 'Tools' : 'Tool'} Submitted Successfully!
+              {t('submitTool.successTitle')}
             </h2>
             <p className="text-gray-600 mb-6">
-              Thank you for submitting {submissionMode === 'csv' ? `${csvData.length} AI tools` : 'your AI tool'}. 
-              Our team will review {submissionMode === 'csv' ? 'them' : 'it'} within 24-48 hours. 
-              Once approved, {submissionMode === 'csv' ? 'they' : 'it'} will be featured in our directory and included in our newsletter.
+              {t('submitTool.successMessage')}
             </p>
             <p className="text-sm text-gray-500 mb-6">
-              Posted by: {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Anonymous'}
+              {t('toolDetails.submittedBy')}: {user?.user_metadata?.full_name || user?.email?.split('@')[0] || t('toolDetails.anonymous')}
             </p>
             <button
               onClick={resetForm}
               className="bg-primary-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary-600 transition-colors"
             >
-              Submit More Tools
+              {t('submitTool.submitAnother')}
             </button>
           </div>
         </div>
@@ -511,20 +511,17 @@ const SubmitTool: React.FC = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            {isEditMode ? 'Edit AI Tool' : 'Submit AI Tools'}
+            {isEditMode ? t('submitTool.editTitle') : t('submitTool.title')}
           </h1>
           <p className="text-xl text-gray-600">
-            {isEditMode 
-              ? 'Update the details of your AI tool.'
-              : 'Share amazing AI tools with our community. Submit individual tools or upload multiple tools via CSV.'
-            }
+            {t('submitTool.subtitle')}
           </p>
         </div>
 
         {/* Submission Mode Toggle - Hide in edit mode */}
         {!isEditMode && (
         <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Choose Submission Method</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('submitTool.chooseMethod')}</h3>
           <div className="flex space-x-4">
             <button
               onClick={() => setSubmissionMode('form')}
@@ -535,7 +532,7 @@ const SubmitTool: React.FC = () => {
               }`}
             >
               <FileText className="h-5 w-5" />
-              <span>Single Tool Form</span>
+              <span>{t('submitTool.singleToolForm')}</span>
             </button>
             <button
               onClick={() => setSubmissionMode('csv')}
@@ -546,7 +543,7 @@ const SubmitTool: React.FC = () => {
               }`}
             >
               <Upload className="h-5 w-5" />
-              <span>CSV Upload</span>
+              <span>{t('submitTool.csvUpload')}</span>
             </button>
           </div>
         </div>
@@ -567,7 +564,7 @@ const SubmitTool: React.FC = () => {
             {/* Tool Name */}
             <div className="mb-6">
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Tool Name *
+                {t('submitTool.form.name')} *
               </label>
               <input
                 type="text"
@@ -577,14 +574,14 @@ const SubmitTool: React.FC = () => {
                 onChange={handleInputChange}
                 required
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                placeholder="Enter the AI tool name"
+                placeholder={t('submitTool.form.namePlaceholder')}
               />
             </div>
 
             {/* Description */}
             <div className="mb-6">
               <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                Description *
+                {t('submitTool.form.description')} *
               </label>
               <textarea
                 id="description"
@@ -594,7 +591,7 @@ const SubmitTool: React.FC = () => {
                 required
                 rows={4}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-                placeholder="Describe what this AI tool does and its main features"
+                placeholder={t('submitTool.form.descriptionPlaceholder')}
               />
             </div>
 

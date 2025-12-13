@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
@@ -55,6 +56,7 @@ interface CreatorProfile {
 }
 
 const CreatorProfile: React.FC = () => {
+  const { t } = useTranslation();
   const { handleOrId, id, handle, userId } = useParams<{ handleOrId?: string; id?: string; handle?: string; userId?: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
