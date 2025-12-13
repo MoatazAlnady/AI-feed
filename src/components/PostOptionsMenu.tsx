@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { MoreHorizontal, Edit, Trash2, Share, Flag, Copy, BookmarkPlus, Eye, EyeOff, TrendingUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MoreHorizontal, Edit, Trash2, Share, Flag, Copy, BookmarkPlus, Eye, EyeOff, TrendingUp, Bookmark } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +11,7 @@ import ReportModal from './ReportModal';
 import PromoteContentModal from './PromoteContentModal';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface PostOptionsMenuProps {
   postId: string;
@@ -34,7 +35,7 @@ const PostOptionsMenu: React.FC<PostOptionsMenuProps> = ({
   onEdit,
   onDelete,
   onShare,
-  isBookmarked = false,
+  isBookmarked: initialBookmarked = false,
   onBookmark,
   isHidden = false,
   onHide
@@ -44,8 +45,26 @@ const PostOptionsMenu: React.FC<PostOptionsMenuProps> = ({
   const [showReportModal, setShowReportModal] = useState(false);
   const [showPromoteModal, setShowPromoteModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
+  const [bookmarkLoading, setBookmarkLoading] = useState(false);
 
   const isOwner = user?.id === authorId;
+
+  // Check if item is already bookmarked
+  useEffect(() => {
+    const checkBookmark = async () => {
+      if (!user?.id) return;
+      const { data } = await supabase
+        .from('saved_items')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('content_type', contentType)
+        .eq('content_id', postId)
+        .maybeSingle();
+      setIsBookmarked(!!data);
+    };
+    checkBookmark();
+  }, [user?.id, contentType, postId]);
 
   const handleCopyLink = async () => {
     try {
@@ -88,15 +107,58 @@ const PostOptionsMenu: React.FC<PostOptionsMenuProps> = ({
     setIsOpen(false);
   };
 
-  const handleBookmark = () => {
-    if (onBookmark) {
-      onBookmark();
+  const handleBookmark = async () => {
+    if (!user?.id) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to save items",
+        variant: "destructive"
+      });
+      setIsOpen(false);
+      return;
     }
-    toast({
-      title: isBookmarked ? "Removed from bookmarks" : "Added to bookmarks",
-      description: `${contentType.charAt(0).toUpperCase() + contentType.slice(1)} ${isBookmarked ? 'removed from' : 'added to'} your bookmarks`
-    });
-    setIsOpen(false);
+
+    setBookmarkLoading(true);
+    try {
+      if (isBookmarked) {
+        // Remove bookmark
+        await supabase
+          .from('saved_items')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('content_type', contentType)
+          .eq('content_id', postId);
+        setIsBookmarked(false);
+        toast({
+          title: "Removed from bookmarks",
+          description: `${contentType.charAt(0).toUpperCase() + contentType.slice(1)} removed from your saved items`
+        });
+      } else {
+        // Add bookmark
+        await supabase
+          .from('saved_items')
+          .insert({
+            user_id: user.id,
+            content_type: contentType,
+            content_id: postId
+          });
+        setIsBookmarked(true);
+        toast({
+          title: "Added to bookmarks",
+          description: `${contentType.charAt(0).toUpperCase() + contentType.slice(1)} saved for later`
+        });
+      }
+      if (onBookmark) onBookmark();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update bookmark",
+        variant: "destructive"
+      });
+    } finally {
+      setBookmarkLoading(false);
+      setIsOpen(false);
+    }
   };
 
   const handleHide = () => {
@@ -169,9 +231,9 @@ const PostOptionsMenu: React.FC<PostOptionsMenuProps> = ({
           </DropdownMenuItem>
 
           {/* Bookmark action */}
-          <DropdownMenuItem onClick={handleBookmark} className="flex items-center gap-2">
-            <BookmarkPlus className="h-4 w-4" />
-            {isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
+          <DropdownMenuItem onClick={handleBookmark} disabled={bookmarkLoading} className="flex items-center gap-2">
+            {isBookmarked ? <Bookmark className="h-4 w-4 fill-current" /> : <BookmarkPlus className="h-4 w-4" />}
+            {bookmarkLoading ? 'Saving...' : isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
           </DropdownMenuItem>
 
           {/* Hide/Show content */}
