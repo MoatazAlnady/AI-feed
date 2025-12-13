@@ -1,5 +1,6 @@
 {
   "nav": {
+    "home": "ホーム",
     "tools": "ツール",
     "categories": "カテゴリー",
     "talent": "タレント",
@@ -312,5 +313,27 @@
     "viewProfile": "プロフィールを見る",
     "message": "メッセージ",
     "unfollow": "フォロー解除"
+  },
+  "employer": {
+    "subscription": "サブスクリプション",
+    "freeTrial": "無料トライアル",
+    "adminAccess": "管理者アクセス",
+    "upgradeNow": "今すぐアップグレード",
+    "activeJobs": "アクティブな求人",
+    "postJob": "求人を投稿",
+    "projects": "プロジェクト",
+    "viewProjects": "プロジェクトを見る",
+    "createProject": "プロジェクトを作成",
+    "talentPool": "タレントプール",
+    "search": "検索",
+    "recentJobPostings": "最近の求人投稿",
+    "noJobsYet": "まだ求人を投稿していません。",
+    "postFirstJob": "最初の求人を投稿",
+    "recommendedTalent": "おすすめのタレント",
+    "viewAllJobs": "すべての求人を見る",
+    "viewAllTalent": "すべてのタレントを見る",
+    "applicants": "応募者",
+    "upgradeToSee": "求人投稿に基づいたAIマッチングの人材推薦を見るにはアップグレードしてください。",
+    "upgradePlan": "プランをアップグレード"
   }
 }

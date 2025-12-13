@@ -1,5 +1,6 @@
 {
   "nav": {
+    "home": "خانه",
     "tools": "ابزارها",
     "categories": "دسته‌بندی‌ها",
     "talent": "استعداد",
@@ -312,5 +313,27 @@
     "viewProfile": "مشاهده پروفایل",
     "message": "پیام",
     "unfollow": "لغو دنبال"
+  },
+  "employer": {
+    "subscription": "اشتراک",
+    "freeTrial": "آزمایش رایگان",
+    "adminAccess": "دسترسی مدیر",
+    "upgradeNow": "ارتقا دهید",
+    "activeJobs": "مشاغل فعال",
+    "postJob": "انتشار شغل",
+    "projects": "پروژه‌ها",
+    "viewProjects": "مشاهده پروژه‌ها",
+    "createProject": "ایجاد پروژه",
+    "talentPool": "مخزن استعداد",
+    "search": "جستجو",
+    "recentJobPostings": "آگهی‌های شغلی اخیر",
+    "noJobsYet": "شما هنوز هیچ شغلی منتشر نکرده‌اید.",
+    "postFirstJob": "اولین شغل خود را منتشر کنید",
+    "recommendedTalent": "استعدادهای پیشنهادی",
+    "viewAllJobs": "مشاهده همه مشاغل",
+    "viewAllTalent": "مشاهده همه استعدادها",
+    "applicants": "متقاضی",
+    "upgradeToSee": "برای دیدن توصیه‌های استعداد مطابق با هوش مصنوعی بر اساس آگهی‌های شغلی خود ارتقا دهید.",
+    "upgradePlan": "ارتقای طرح"
   }
 }

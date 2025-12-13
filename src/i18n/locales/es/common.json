@@ -1,5 +1,6 @@
 {
   "nav": {
+    "home": "Inicio",
     "tools": "Herramientas",
     "categories": "Categorías",
     "talent": "Talento",
@@ -312,5 +313,27 @@
     "viewProfile": "Ver perfil",
     "message": "Mensaje",
     "unfollow": "Dejar de seguir"
+  },
+  "employer": {
+    "subscription": "Suscripción",
+    "freeTrial": "Prueba gratuita",
+    "adminAccess": "Acceso de administrador",
+    "upgradeNow": "Actualizar ahora",
+    "activeJobs": "Trabajos activos",
+    "postJob": "Publicar trabajo",
+    "projects": "Proyectos",
+    "viewProjects": "Ver proyectos",
+    "createProject": "Crear proyecto",
+    "talentPool": "Reserva de talentos",
+    "search": "Buscar",
+    "recentJobPostings": "Ofertas de trabajo recientes",
+    "noJobsYet": "Aún no has publicado ningún trabajo.",
+    "postFirstJob": "Publica tu primer trabajo",
+    "recommendedTalent": "Talento recomendado",
+    "viewAllJobs": "Ver todos los trabajos",
+    "viewAllTalent": "Ver todo el talento",
+    "applicants": "candidatos",
+    "upgradeToSee": "Actualiza para ver recomendaciones de talento basadas en IA según tus ofertas de trabajo.",
+    "upgradePlan": "Actualizar plan"
   }
 }
