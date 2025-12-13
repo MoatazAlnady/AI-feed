@@ -471,21 +471,227 @@
       "logo": "ロゴ",
       "uploadLogo": "ロゴをアップロード",
       "tags": "タグ",
-      "tagsPlaceholder": "タグをカンマで区切って入力",
-      "features": "機能",
-      "addFeature": "機能を追加",
-      "pros": "メリット",
-      "addPro": "メリットを追加",
-      "cons": "デメリット",
-      "addCon": "デメリットを追加",
-      "submit": "ツールを提出",
-      "submitting": "提出中..."
-    },
-    "validation": {
-      "authRequired": "ツールを提出するにはログインが必要です。",
-      "duplicateDetected": "この名前とウェブサイトのツールは既に存在します。",
-      "subcategoryRequired": "サブカテゴリを選択してください。",
-      "toolTypeRequired": "少なくとも1つのツールタイプを選択してください。"
+      "tagsPlaceholder": "タグを追加（Enterで追加）"
     }
+  },
+  "submitArticle": {
+    "title": "記事を提出",
+    "subtitle": "AIコミュニティと知識やインサイトを共有しましょう",
+    "successTitle": "記事が正常に提出されました！",
+    "successMessage": "記事を提出していただきありがとうございます。チームが24-48時間以内に審査します。",
+    "submitAnother": "別の記事を提出",
+    "form": {
+      "title": "記事タイトル",
+      "titlePlaceholder": "記事のタイトルを入力",
+      "category": "カテゴリ",
+      "selectCategory": "カテゴリを選択",
+      "content": "コンテンツ",
+      "contentPlaceholder": "ここに記事を書いてください...",
+      "excerpt": "概要",
+      "excerptPlaceholder": "記事の簡単な説明",
+      "featuredImage": "アイキャッチ画像URL",
+      "featuredImagePlaceholder": "https://example.com/image.jpg",
+      "videoUrl": "動画URL（オプション）",
+      "videoUrlPlaceholder": "https://youtube.com/watch?v=...",
+      "tags": "タグ",
+      "tagsPlaceholder": "タグを追加（Enterで追加）",
+      "submit": "記事を提出",
+      "submitting": "提出中..."
+    }
+  },
+  "creatorProfile": {
+    "title": "クリエイタープロフィール",
+    "backToCreators": "クリエイター一覧に戻る",
+    "notFound": "クリエイターが見つかりません",
+    "notFoundDesc": "お探しのクリエイタープロフィールは存在しないか、削除されました。",
+    "verified": "認証済み",
+    "topVoice": "AI Nexus トップボイス",
+    "connect": "つながる",
+    "message": "メッセージを送る",
+    "following": "フォロー中",
+    "about": "について",
+    "skills": "スキルと興味",
+    "stats": {
+      "tools": "提出したツール",
+      "articles": "執筆した記事",
+      "engagement": "総エンゲージメント",
+      "reach": "総リーチ"
+    },
+    "activity": {
+      "title": "最近のアクティビティ",
+      "noActivity": "まだアクティビティがありません"
+    },
+    "contact": {
+      "title": "連絡先情報",
+      "website": "ウェブサイト",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter",
+      "github": "GitHub"
+    }
+  },
+  "analytics": {
+    "title": "コンテンツ分析",
+    "subtitle": "コンテンツのパフォーマンスとエンゲージメントを追跡",
+    "overview": "概要",
+    "posts": "投稿",
+    "tools": "ツール",
+    "articles": "記事",
+    "metrics": {
+      "totalViews": "総閲覧数",
+      "totalLikes": "総いいね数",
+      "totalComments": "総コメント数",
+      "totalShares": "総シェア数",
+      "engagementRate": "エンゲージメント率",
+      "avgViewsPerPost": "投稿あたりの平均閲覧数"
+    },
+    "charts": {
+      "viewsOverTime": "期間別閲覧数",
+      "engagementByType": "タイプ別エンゲージメント",
+      "topPerforming": "最も人気のコンテンツ"
+    },
+    "period": {
+      "7days": "過去7日間",
+      "30days": "過去30日間",
+      "90days": "過去90日間",
+      "allTime": "全期間"
+    },
+    "noData": "分析データがありません",
+    "noDataDesc": "分析を表示するにはコンテンツを作成してください。"
+  },
+  "upgrade": {
+    "title": "メンバーシップをアップグレード",
+    "subtitle": "プレミアム機能をアンロックしてAIジャーニーを向上させましょう",
+    "currentPlan": "現在のプラン",
+    "free": "無料",
+    "premium": "プレミアム",
+    "enterprise": "エンタープライズ",
+    "popular": "最も人気",
+    "features": {
+      "title": "プレミアム機能",
+      "unlimitedConnections": "無制限の接続リクエスト",
+      "advancedAnalytics": "高度な分析",
+      "prioritySupport": "優先サポート",
+      "featuredProfile": "注目のプロフィール",
+      "aiRecommendations": "AIによる推奨",
+      "customBranding": "カスタムブランディング",
+      "apiAccess": "APIアクセス",
+      "dedicatedManager": "専任アカウントマネージャー"
+    },
+    "pricing": {
+      "monthly": "月額",
+      "yearly": "年額",
+      "savePercent": "{{percent}}%節約"
+    },
+    "cta": {
+      "upgrade": "今すぐアップグレード",
+      "contact": "営業に連絡",
+      "startTrial": "無料トライアルを開始"
+    },
+    "faq": {
+      "title": "よくある質問",
+      "q1": "いつでもキャンセルできますか？",
+      "a1": "はい、いつでも隠れた料金なしでサブスクリプションをキャンセルできます。",
+      "q2": "返金ポリシーはありますか？",
+      "a2": "30日間の返金保証を提供しています。",
+      "q3": "プランを変更できますか？",
+      "a3": "はい、いつでもアップグレードまたはダウングレードできます。"
+    }
+  },
+  "createPost": {
+    "title": "投稿を作成",
+    "placeholder": "何を考えていますか？",
+    "addImage": "画像を追加",
+    "addVideo": "動画を追加",
+    "addLink": "リンクを追加",
+    "post": "投稿",
+    "posting": "投稿中...",
+    "cancel": "キャンセル",
+    "imageUrl": "画像URL",
+    "videoUrl": "動画URL",
+    "linkUrl": "リンクURL",
+    "success": "投稿が正常に公開されました！",
+    "error": "投稿の公開に失敗しました"
+  },
+  "notificationsPage": {
+    "title": "通知",
+    "markAllRead": "すべて既読にする",
+    "noNotifications": "通知はありません",
+    "noNotificationsDesc": "新しい通知はここに表示されます。",
+    "types": {
+      "like": "あなたの投稿にいいねしました",
+      "comment": "あなたの投稿にコメントしました",
+      "follow": "あなたをフォローし始めました",
+      "mention": "投稿であなたをメンションしました",
+      "connection": "接続リクエストを承認しました"
+    }
+  },
+  "notFound": {
+    "title": "ページが見つかりません",
+    "subtitle": "申し訳ありませんが、お探しのページは存在しないか移動されました。",
+    "backHome": "ホームに戻る",
+    "searchInstead": "または検索してみてください"
+  },
+  "chatPage": {
+    "title": "メッセージ",
+    "subtitle": "連絡先とチャット"
+  },
+  "projects": {
+    "title": "プロジェクト",
+    "createProject": "プロジェクトを作成",
+    "noProjects": "プロジェクトがありません",
+    "noProjectsDesc": "候補者を整理するための最初のプロジェクトを作成してください。",
+    "projectName": "プロジェクト名",
+    "projectDescription": "プロジェクトの説明",
+    "candidates": "候補者",
+    "addCandidate": "候補者を追加",
+    "removeCandidate": "候補者を削除",
+    "notes": "メモ",
+    "tags": "タグ",
+    "createTag": "タグを作成",
+    "deleteProject": "プロジェクトを削除",
+    "confirmDelete": "このプロジェクトを削除してもよろしいですか？"
+  },
+  "userView": {
+    "title": "ユーザープロフィール",
+    "backToUsers": "ユーザー一覧に戻る",
+    "accountInfo": "アカウント情報",
+    "email": "メールアドレス",
+    "role": "役割",
+    "status": "ステータス",
+    "joined": "参加日",
+    "lastActive": "最終アクティブ",
+    "actions": {
+      "ban": "ユーザーをBAN",
+      "unban": "BANを解除",
+      "changeRole": "役割を変更",
+      "resetPassword": "パスワードをリセット",
+      "deleteAccount": "アカウントを削除"
+    },
+    "activity": {
+      "title": "ユーザーアクティビティ",
+      "posts": "投稿",
+      "comments": "コメント",
+      "tools": "ツール",
+      "articles": "記事"
+    }
+  },
+  "adminToolRequests": {
+    "title": "ツール編集リクエスト",
+    "subtitle": "ツール編集リクエストを審査・管理",
+    "pending": "保留中",
+    "approved": "承認済み",
+    "rejected": "却下",
+    "noRequests": "編集リクエストがありません",
+    "noRequestsDesc": "ツール編集リクエストはここに表示されます。",
+    "requestedBy": "リクエスト者",
+    "requestedOn": "リクエスト日",
+    "currentValues": "現在の値",
+    "requestedChanges": "リクエストされた変更",
+    "approve": "承認",
+    "reject": "却下",
+    "adminNotes": "管理者メモ",
+    "addNotes": "メモを追加...",
+    "confirmApprove": "この編集リクエストを承認しますか？",
+    "confirmReject": "この編集リクエストを却下しますか？"
   }
 }

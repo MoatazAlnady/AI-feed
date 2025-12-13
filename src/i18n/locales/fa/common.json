@@ -471,21 +471,227 @@
       "logo": "لوگو",
       "uploadLogo": "بارگذاری لوگو",
       "tags": "برچسب‌ها",
-      "tagsPlaceholder": "برچسب‌ها را با کاما جدا وارد کنید",
-      "features": "ویژگی‌ها",
-      "addFeature": "افزودن ویژگی",
-      "pros": "مزایا",
-      "addPro": "افزودن مزیت",
-      "cons": "معایب",
-      "addCon": "افزودن عیب",
-      "submit": "ارسال ابزار",
-      "submitting": "در حال ارسال..."
-    },
-    "validation": {
-      "authRequired": "برای ارسال ابزار باید وارد شوید.",
-      "duplicateDetected": "ابزاری با این نام و وب‌سایت از قبل وجود دارد.",
-      "subcategoryRequired": "لطفاً یک زیر دسته‌بندی انتخاب کنید.",
-      "toolTypeRequired": "لطفاً حداقل یک نوع ابزار انتخاب کنید."
+      "tagsPlaceholder": "برچسب اضافه کنید (Enter برای افزودن)"
     }
+  },
+  "submitArticle": {
+    "title": "ارسال مقاله",
+    "subtitle": "دانش و بینش خود را با جامعه هوش مصنوعی به اشتراک بگذارید",
+    "successTitle": "مقاله با موفقیت ارسال شد!",
+    "successMessage": "با تشکر از ارسال مقاله. تیم ما ظرف ۲۴-۴۸ ساعت آن را بررسی خواهد کرد.",
+    "submitAnother": "ارسال مقاله دیگر",
+    "form": {
+      "title": "عنوان مقاله",
+      "titlePlaceholder": "عنوان مقاله خود را وارد کنید",
+      "category": "دسته‌بندی",
+      "selectCategory": "دسته‌بندی را انتخاب کنید",
+      "content": "محتوا",
+      "contentPlaceholder": "مقاله خود را اینجا بنویسید...",
+      "excerpt": "خلاصه",
+      "excerptPlaceholder": "توضیح کوتاه درباره مقاله‌تان",
+      "featuredImage": "لینک تصویر شاخص",
+      "featuredImagePlaceholder": "https://example.com/image.jpg",
+      "videoUrl": "لینک ویدیو (اختیاری)",
+      "videoUrlPlaceholder": "https://youtube.com/watch?v=...",
+      "tags": "برچسب‌ها",
+      "tagsPlaceholder": "برچسب اضافه کنید (Enter برای افزودن)",
+      "submit": "ارسال مقاله",
+      "submitting": "در حال ارسال..."
+    }
+  },
+  "creatorProfile": {
+    "title": "پروفایل سازنده",
+    "backToCreators": "بازگشت به سازندگان",
+    "notFound": "سازنده یافت نشد",
+    "notFoundDesc": "پروفایل سازنده‌ای که به دنبال آن هستید وجود ندارد یا حذف شده است.",
+    "verified": "تأیید شده",
+    "topVoice": "صدای برتر AI Nexus",
+    "connect": "اتصال",
+    "message": "ارسال پیام",
+    "following": "دنبال می‌شود",
+    "about": "درباره",
+    "skills": "مهارت‌ها و علایق",
+    "stats": {
+      "tools": "ابزارهای ارسال شده",
+      "articles": "مقالات نوشته شده",
+      "engagement": "کل تعامل",
+      "reach": "کل دسترسی"
+    },
+    "activity": {
+      "title": "فعالیت اخیر",
+      "noActivity": "هنوز فعالیتی وجود ندارد"
+    },
+    "contact": {
+      "title": "اطلاعات تماس",
+      "website": "وب‌سایت",
+      "linkedin": "لینکدین",
+      "twitter": "توییتر",
+      "github": "گیت‌هاب"
+    }
+  },
+  "analytics": {
+    "title": "تحلیل محتوا",
+    "subtitle": "عملکرد و تعامل محتوای خود را پیگیری کنید",
+    "overview": "نمای کلی",
+    "posts": "پست‌ها",
+    "tools": "ابزارها",
+    "articles": "مقالات",
+    "metrics": {
+      "totalViews": "کل بازدیدها",
+      "totalLikes": "کل پسندها",
+      "totalComments": "کل نظرات",
+      "totalShares": "کل اشتراک‌گذاری‌ها",
+      "engagementRate": "نرخ تعامل",
+      "avgViewsPerPost": "میانگین بازدید هر پست"
+    },
+    "charts": {
+      "viewsOverTime": "بازدیدها در طول زمان",
+      "engagementByType": "تعامل بر اساس نوع",
+      "topPerforming": "محتوای پرعملکرد"
+    },
+    "period": {
+      "7days": "۷ روز گذشته",
+      "30days": "۳۰ روز گذشته",
+      "90days": "۹۰ روز گذشته",
+      "allTime": "همه زمان‌ها"
+    },
+    "noData": "داده تحلیلی موجود نیست",
+    "noDataDesc": "برای دیدن تحلیل‌ها، شروع به ایجاد محتوا کنید."
+  },
+  "upgrade": {
+    "title": "ارتقای عضویت",
+    "subtitle": "قابلیت‌های پیشرفته را باز کنید و سفر هوش مصنوعی خود را ارتقا دهید",
+    "currentPlan": "طرح فعلی",
+    "free": "رایگان",
+    "premium": "ممتاز",
+    "enterprise": "سازمانی",
+    "popular": "محبوب‌ترین",
+    "features": {
+      "title": "ویژگی‌های ممتاز",
+      "unlimitedConnections": "درخواست‌های اتصال نامحدود",
+      "advancedAnalytics": "تحلیل پیشرفته",
+      "prioritySupport": "پشتیبانی اولویت‌دار",
+      "featuredProfile": "پروفایل برجسته",
+      "aiRecommendations": "پیشنهادات مبتنی بر هوش مصنوعی",
+      "customBranding": "برندسازی سفارشی",
+      "apiAccess": "دسترسی به API",
+      "dedicatedManager": "مدیر اختصاصی حساب"
+    },
+    "pricing": {
+      "monthly": "ماهانه",
+      "yearly": "سالانه",
+      "savePercent": "{{percent}}% صرفه‌جویی"
+    },
+    "cta": {
+      "upgrade": "همین حالا ارتقا دهید",
+      "contact": "تماس با فروش",
+      "startTrial": "شروع آزمایش رایگان"
+    },
+    "faq": {
+      "title": "سؤالات متداول",
+      "q1": "آیا می‌توانم هر زمان لغو کنم؟",
+      "a1": "بله، می‌توانید هر زمان اشتراک خود را بدون هزینه پنهان لغو کنید.",
+      "q2": "آیا سیاست بازپرداخت وجود دارد؟",
+      "a2": "ما ضمانت بازپرداخت ۳۰ روزه ارائه می‌دهیم.",
+      "q3": "آیا می‌توانم طرح خود را تغییر دهم؟",
+      "a3": "بله، می‌توانید هر زمان ارتقا یا کاهش طرح دهید."
+    }
+  },
+  "createPost": {
+    "title": "ایجاد پست",
+    "placeholder": "به چه چیزی فکر می‌کنید؟",
+    "addImage": "افزودن تصویر",
+    "addVideo": "افزودن ویدیو",
+    "addLink": "افزودن لینک",
+    "post": "انتشار",
+    "posting": "در حال انتشار...",
+    "cancel": "لغو",
+    "imageUrl": "لینک تصویر",
+    "videoUrl": "لینک ویدیو",
+    "linkUrl": "لینک",
+    "success": "پست با موفقیت منتشر شد!",
+    "error": "انتشار پست ناموفق بود"
+  },
+  "notificationsPage": {
+    "title": "اعلان‌ها",
+    "markAllRead": "همه را خوانده شده علامت بزن",
+    "noNotifications": "اعلانی وجود ندارد",
+    "noNotificationsDesc": "اعلان‌های جدید اینجا نمایش داده می‌شوند.",
+    "types": {
+      "like": "پست شما را پسندید",
+      "comment": "روی پست شما نظر داد",
+      "follow": "شروع به دنبال کردن شما کرد",
+      "mention": "شما را در پستی ذکر کرد",
+      "connection": "درخواست اتصال شما را پذیرفت"
+    }
+  },
+  "notFound": {
+    "title": "صفحه یافت نشد",
+    "subtitle": "متأسفیم، صفحه‌ای که به دنبال آن هستید وجود ندارد یا منتقل شده است.",
+    "backHome": "بازگشت به خانه",
+    "searchInstead": "یا جستجو کنید"
+  },
+  "chatPage": {
+    "title": "پیام‌ها",
+    "subtitle": "با مخاطبین خود گفتگو کنید"
+  },
+  "projects": {
+    "title": "پروژه‌ها",
+    "createProject": "ایجاد پروژه",
+    "noProjects": "پروژه‌ای وجود ندارد",
+    "noProjectsDesc": "اولین پروژه خود را برای سازماندهی نامزدها ایجاد کنید.",
+    "projectName": "نام پروژه",
+    "projectDescription": "توضیحات پروژه",
+    "candidates": "نامزدها",
+    "addCandidate": "افزودن نامزد",
+    "removeCandidate": "حذف نامزد",
+    "notes": "یادداشت‌ها",
+    "tags": "برچسب‌ها",
+    "createTag": "ایجاد برچسب",
+    "deleteProject": "حذف پروژه",
+    "confirmDelete": "آیا مطمئن هستید که می‌خواهید این پروژه را حذف کنید؟"
+  },
+  "userView": {
+    "title": "پروفایل کاربر",
+    "backToUsers": "بازگشت به کاربران",
+    "accountInfo": "اطلاعات حساب",
+    "email": "ایمیل",
+    "role": "نقش",
+    "status": "وضعیت",
+    "joined": "تاریخ عضویت",
+    "lastActive": "آخرین فعالیت",
+    "actions": {
+      "ban": "مسدود کردن کاربر",
+      "unban": "رفع مسدودیت",
+      "changeRole": "تغییر نقش",
+      "resetPassword": "بازنشانی رمز عبور",
+      "deleteAccount": "حذف حساب"
+    },
+    "activity": {
+      "title": "فعالیت کاربر",
+      "posts": "پست‌ها",
+      "comments": "نظرات",
+      "tools": "ابزارها",
+      "articles": "مقالات"
+    }
+  },
+  "adminToolRequests": {
+    "title": "درخواست‌های ویرایش ابزار",
+    "subtitle": "بررسی و مدیریت درخواست‌های ویرایش ابزار",
+    "pending": "در انتظار",
+    "approved": "تأیید شده",
+    "rejected": "رد شده",
+    "noRequests": "درخواست ویرایشی وجود ندارد",
+    "noRequestsDesc": "درخواست‌های ویرایش ابزار اینجا نمایش داده می‌شوند.",
+    "requestedBy": "درخواست‌دهنده",
+    "requestedOn": "تاریخ درخواست",
+    "currentValues": "مقادیر فعلی",
+    "requestedChanges": "تغییرات درخواستی",
+    "approve": "تأیید",
+    "reject": "رد",
+    "adminNotes": "یادداشت‌های مدیر",
+    "addNotes": "افزودن یادداشت...",
+    "confirmApprove": "تأیید درخواست ویرایش؟",
+    "confirmReject": "رد درخواست ویرایش؟"
   }
 }

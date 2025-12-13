@@ -442,21 +442,227 @@
       "logo": "الشعار",
       "uploadLogo": "تحميل الشعار",
       "tags": "الوسوم",
-      "tagsPlaceholder": "أدخل الوسوم مفصولة بفواصل",
-      "features": "الميزات",
-      "addFeature": "إضافة ميزة",
-      "pros": "المميزات",
-      "addPro": "إضافة ميزة",
-      "cons": "العيوب",
-      "addCon": "إضافة عيب",
-      "submit": "إرسال الأداة",
-      "submitting": "جاري الإرسال..."
-    },
-    "validation": {
-      "authRequired": "يجب تسجيل الدخول لإرسال أداة.",
-      "duplicateDetected": "توجد أداة بهذا الاسم والموقع بالفعل.",
-      "subcategoryRequired": "يرجى اختيار فئة فرعية.",
-      "toolTypeRequired": "يرجى اختيار نوع أداة واحد على الأقل."
+      "tagsPlaceholder": "أضف الوسوم (اضغط Enter للإضافة)"
     }
+  },
+  "submitArticle": {
+    "title": "إرسال مقالة",
+    "subtitle": "شارك معرفتك ورؤيتك مع مجتمع الذكاء الاصطناعي",
+    "successTitle": "تم إرسال المقالة بنجاح!",
+    "successMessage": "شكراً لإرسال المقالة. سيقوم فريقنا بمراجعتها خلال 24-48 ساعة.",
+    "submitAnother": "إرسال مقالة أخرى",
+    "form": {
+      "title": "عنوان المقالة",
+      "titlePlaceholder": "أدخل عنوان مقالتك",
+      "category": "الفئة",
+      "selectCategory": "اختر فئة",
+      "content": "المحتوى",
+      "contentPlaceholder": "اكتب مقالتك هنا...",
+      "excerpt": "ملخص",
+      "excerptPlaceholder": "وصف موجز لمقالتك",
+      "featuredImage": "رابط الصورة المميزة",
+      "featuredImagePlaceholder": "https://example.com/image.jpg",
+      "videoUrl": "رابط الفيديو (اختياري)",
+      "videoUrlPlaceholder": "https://youtube.com/watch?v=...",
+      "tags": "الوسوم",
+      "tagsPlaceholder": "أضف الوسوم (اضغط Enter للإضافة)",
+      "submit": "إرسال المقالة",
+      "submitting": "جاري الإرسال..."
+    }
+  },
+  "creatorProfile": {
+    "title": "ملف المنشئ",
+    "backToCreators": "العودة إلى المنشئين",
+    "notFound": "المنشئ غير موجود",
+    "notFoundDesc": "ملف المنشئ الذي تبحث عنه غير موجود أو تمت إزالته.",
+    "verified": "موثق",
+    "topVoice": "صوت AI Nexus الرائد",
+    "connect": "تواصل",
+    "message": "أرسل رسالة",
+    "following": "متابَع",
+    "about": "نبذة",
+    "skills": "المهارات والاهتمامات",
+    "stats": {
+      "tools": "الأدوات المقدمة",
+      "articles": "المقالات المكتوبة",
+      "engagement": "إجمالي التفاعل",
+      "reach": "إجمالي الوصول"
+    },
+    "activity": {
+      "title": "النشاط الأخير",
+      "noActivity": "لا يوجد نشاط حتى الآن"
+    },
+    "contact": {
+      "title": "معلومات الاتصال",
+      "website": "الموقع الإلكتروني",
+      "linkedin": "لينكد إن",
+      "twitter": "تويتر",
+      "github": "جيت هاب"
+    }
+  },
+  "analytics": {
+    "title": "تحليلات المحتوى",
+    "subtitle": "تتبع أداء وتفاعل محتواك",
+    "overview": "نظرة عامة",
+    "posts": "المنشورات",
+    "tools": "الأدوات",
+    "articles": "المقالات",
+    "metrics": {
+      "totalViews": "إجمالي المشاهدات",
+      "totalLikes": "إجمالي الإعجابات",
+      "totalComments": "إجمالي التعليقات",
+      "totalShares": "إجمالي المشاركات",
+      "engagementRate": "معدل التفاعل",
+      "avgViewsPerPost": "متوسط المشاهدات لكل منشور"
+    },
+    "charts": {
+      "viewsOverTime": "المشاهدات عبر الزمن",
+      "engagementByType": "التفاعل حسب النوع",
+      "topPerforming": "أفضل المحتوى أداءً"
+    },
+    "period": {
+      "7days": "آخر 7 أيام",
+      "30days": "آخر 30 يوماً",
+      "90days": "آخر 90 يوماً",
+      "allTime": "كل الوقت"
+    },
+    "noData": "لا توجد بيانات تحليلية",
+    "noDataDesc": "ابدأ بإنشاء محتوى لرؤية تحليلاتك."
+  },
+  "upgrade": {
+    "title": "ترقية عضويتك",
+    "subtitle": "افتح الميزات المتقدمة وارتقِ برحلتك في الذكاء الاصطناعي",
+    "currentPlan": "الخطة الحالية",
+    "free": "مجاني",
+    "premium": "مميز",
+    "enterprise": "مؤسسات",
+    "popular": "الأكثر شعبية",
+    "features": {
+      "title": "الميزات المميزة",
+      "unlimitedConnections": "طلبات اتصال غير محدودة",
+      "advancedAnalytics": "تحليلات متقدمة",
+      "prioritySupport": "دعم ذو أولوية",
+      "featuredProfile": "ملف شخصي مميز",
+      "aiRecommendations": "توصيات مدعومة بالذكاء الاصطناعي",
+      "customBranding": "علامة تجارية مخصصة",
+      "apiAccess": "الوصول إلى API",
+      "dedicatedManager": "مدير حساب مخصص"
+    },
+    "pricing": {
+      "monthly": "شهرياً",
+      "yearly": "سنوياً",
+      "savePercent": "وفر {{percent}}%"
+    },
+    "cta": {
+      "upgrade": "ترقية الآن",
+      "contact": "اتصل بالمبيعات",
+      "startTrial": "ابدأ النسخة التجريبية المجانية"
+    },
+    "faq": {
+      "title": "الأسئلة الشائعة",
+      "q1": "هل يمكنني الإلغاء في أي وقت؟",
+      "a1": "نعم، يمكنك إلغاء اشتراكك في أي وقت بدون رسوم مخفية.",
+      "q2": "هل هناك سياسة استرداد؟",
+      "a2": "نقدم ضمان استرداد الأموال لمدة 30 يوماً.",
+      "q3": "هل يمكنني تغيير خطتي؟",
+      "a3": "نعم، يمكنك الترقية أو التخفيض في أي وقت."
+    }
+  },
+  "createPost": {
+    "title": "إنشاء منشور",
+    "placeholder": "بماذا تفكر؟",
+    "addImage": "إضافة صورة",
+    "addVideo": "إضافة فيديو",
+    "addLink": "إضافة رابط",
+    "post": "نشر",
+    "posting": "جاري النشر...",
+    "cancel": "إلغاء",
+    "imageUrl": "رابط الصورة",
+    "videoUrl": "رابط الفيديو",
+    "linkUrl": "الرابط",
+    "success": "تم نشر المنشور بنجاح!",
+    "error": "فشل في نشر المنشور"
+  },
+  "notificationsPage": {
+    "title": "الإشعارات",
+    "markAllRead": "تحديد الكل كمقروء",
+    "noNotifications": "لا توجد إشعارات",
+    "noNotificationsDesc": "ستظهر الإشعارات الجديدة هنا.",
+    "types": {
+      "like": "أعجب بمنشورك",
+      "comment": "علّق على منشورك",
+      "follow": "بدأ بمتابعتك",
+      "mention": "أشار إليك في منشور",
+      "connection": "قبل طلب الاتصال الخاص بك"
+    }
+  },
+  "notFound": {
+    "title": "الصفحة غير موجودة",
+    "subtitle": "عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها.",
+    "backHome": "العودة للرئيسية",
+    "searchInstead": "أو حاول البحث"
+  },
+  "chatPage": {
+    "title": "الرسائل",
+    "subtitle": "تواصل مع جهات اتصالك"
+  },
+  "projects": {
+    "title": "المشاريع",
+    "createProject": "إنشاء مشروع",
+    "noProjects": "لا توجد مشاريع",
+    "noProjectsDesc": "أنشئ مشروعك الأول لتنظيم المرشحين.",
+    "projectName": "اسم المشروع",
+    "projectDescription": "وصف المشروع",
+    "candidates": "المرشحون",
+    "addCandidate": "إضافة مرشح",
+    "removeCandidate": "إزالة مرشح",
+    "notes": "ملاحظات",
+    "tags": "الوسوم",
+    "createTag": "إنشاء وسم",
+    "deleteProject": "حذف المشروع",
+    "confirmDelete": "هل أنت متأكد من حذف هذا المشروع؟"
+  },
+  "userView": {
+    "title": "ملف المستخدم",
+    "backToUsers": "العودة إلى المستخدمين",
+    "accountInfo": "معلومات الحساب",
+    "email": "البريد الإلكتروني",
+    "role": "الدور",
+    "status": "الحالة",
+    "joined": "تاريخ الانضمام",
+    "lastActive": "آخر نشاط",
+    "actions": {
+      "ban": "حظر المستخدم",
+      "unban": "رفع الحظر",
+      "changeRole": "تغيير الدور",
+      "resetPassword": "إعادة تعيين كلمة المرور",
+      "deleteAccount": "حذف الحساب"
+    },
+    "activity": {
+      "title": "نشاط المستخدم",
+      "posts": "المنشورات",
+      "comments": "التعليقات",
+      "tools": "الأدوات",
+      "articles": "المقالات"
+    }
+  },
+  "adminToolRequests": {
+    "title": "طلبات تعديل الأدوات",
+    "subtitle": "مراجعة وإدارة طلبات تعديل الأدوات",
+    "pending": "قيد الانتظار",
+    "approved": "موافق عليها",
+    "rejected": "مرفوضة",
+    "noRequests": "لا توجد طلبات تعديل",
+    "noRequestsDesc": "ستظهر طلبات تعديل الأدوات هنا.",
+    "requestedBy": "مقدم الطلب",
+    "requestedOn": "تاريخ الطلب",
+    "currentValues": "القيم الحالية",
+    "requestedChanges": "التغييرات المطلوبة",
+    "approve": "موافقة",
+    "reject": "رفض",
+    "adminNotes": "ملاحظات المشرف",
+    "addNotes": "إضافة ملاحظات...",
+    "confirmApprove": "تأكيد الموافقة على طلب التعديل؟",
+    "confirmReject": "تأكيد رفض طلب التعديل؟"
   }
 }
