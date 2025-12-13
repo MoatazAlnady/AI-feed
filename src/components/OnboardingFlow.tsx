@@ -88,11 +88,33 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
       return;
     }
 
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to follow creators.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      // Here you would implement the follow functionality
-      // For now, we'll just simulate it
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Insert follow records for each selected creator
+      const followPromises = selectedCreators.map(async (creatorId) => {
+        const { error } = await supabase
+          .from('follows')
+          .insert({
+            follower_id: user.id,
+            following_id: creatorId
+          });
+        
+        // Ignore duplicate errors (user already following)
+        if (error && error.code !== '23505') {
+          throw error;
+        }
+      });
+
+      await Promise.all(followPromises);
       
       toast({
         title: "Success!",
