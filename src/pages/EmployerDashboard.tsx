@@ -20,6 +20,7 @@ import EmployerAnalytics from '../components/EmployerAnalytics';
 import EmployerProjects from '../components/EmployerProjects';
 import EmployerMessages from '../components/EmployerMessages';
 import TalentSearch from './TalentSearch';
+import OrganizationManagement from '../components/OrganizationManagement';
 
 const EmployerDashboard = () => {
   const { t } = useTranslation();
@@ -48,41 +49,41 @@ const EmployerDashboard = () => {
   const DashboardOverview = () => (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+        <div className="bg-card p-6 rounded-xl shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Active Jobs</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">12</p>
+              <p className="text-sm text-muted-foreground">Active Jobs</p>
+              <p className="text-2xl font-bold">12</p>
             </div>
             <Briefcase className="h-8 w-8 text-blue-500" />
           </div>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+        <div className="bg-card p-6 rounded-xl shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Applicants</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">156</p>
+              <p className="text-sm text-muted-foreground">Total Applicants</p>
+              <p className="text-2xl font-bold">156</p>
             </div>
             <Users className="h-8 w-8 text-green-500" />
           </div>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+        <div className="bg-card p-6 rounded-xl shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Projects</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">8</p>
+              <p className="text-sm text-muted-foreground">Projects</p>
+              <p className="text-2xl font-bold">8</p>
             </div>
             <FileText className="h-8 w-8 text-purple-500" />
           </div>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+        <div className="bg-card p-6 rounded-xl shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Success Rate</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">87%</p>
+              <p className="text-sm text-muted-foreground">Success Rate</p>
+              <p className="text-2xl font-bold">87%</p>
             </div>
             <Star className="h-8 w-8 text-yellow-500" />
           </div>
@@ -90,65 +91,65 @@ const EmployerDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Applications</h3>
+        <div className="bg-card p-6 rounded-xl shadow-sm">
+          <h3 className="text-lg font-semibold mb-4">Recent Applications</h3>
           <div className="space-y-4">
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="flex items-center space-x-3 p-3 bg-muted rounded-lg">
               <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
                 <span className="text-white font-semibold">JD</span>
               </div>
               <div className="flex-1">
-                <p className="font-medium text-gray-900 dark:text-white">John Doe</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Applied for Senior Developer</p>
+                <p className="font-medium">John Doe</p>
+                <p className="text-sm text-muted-foreground">Applied for Senior Developer</p>
               </div>
-              <span className="text-sm text-gray-500 dark:text-gray-400">2h ago</span>
+              <span className="text-sm text-muted-foreground">2h ago</span>
             </div>
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="flex items-center space-x-3 p-3 bg-muted rounded-lg">
               <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
                 <span className="text-white font-semibold">AS</span>
               </div>
               <div className="flex-1">
-                <p className="font-medium text-gray-900 dark:text-white">Alice Smith</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Applied for UI/UX Designer</p>
+                <p className="font-medium">Alice Smith</p>
+                <p className="text-sm text-muted-foreground">Applied for UI/UX Designer</p>
               </div>
-              <span className="text-sm text-gray-500 dark:text-gray-400">1d ago</span>
+              <span className="text-sm text-muted-foreground">1d ago</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Analytics</h3>
+        <div className="bg-card p-6 rounded-xl shadow-sm">
+          <h3 className="text-lg font-semibold mb-4">Quick Analytics</h3>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                   <TrendingUp className="h-4 w-4 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">This Week</p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">Job views</p>
+                  <p className="text-sm font-medium">This Week</p>
+                  <p className="text-xs text-muted-foreground">Job views</p>
                 </div>
               </div>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">2.4k</span>
+              <span className="text-lg font-bold">2.4k</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
                   <Users className="h-4 w-4 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">Applications</p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">This month</p>
+                  <p className="text-sm font-medium">Applications</p>
+                  <p className="text-xs text-muted-foreground">This month</p>
                 </div>
               </div>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">67</span>
+              <span className="text-lg font-bold">67</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Todo System */}
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+      <div className="bg-card p-6 rounded-xl shadow-sm">
         <TodoSystem />
       </div>
     </div>
@@ -171,10 +172,8 @@ const EmployerDashboard = () => {
 
   const SettingsPage = () => (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h2>
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-        <p className="text-gray-600 dark:text-gray-400">Settings and configuration options will be implemented here.</p>
-      </div>
+      <h2 className="text-2xl font-bold">Settings</h2>
+      <OrganizationManagement />
     </div>
   );
 

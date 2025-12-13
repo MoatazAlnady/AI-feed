@@ -12,6 +12,7 @@ import { Settings, FileText, Layout, BarChart, Users, Wrench, Mail, Building } f
 import AdminToolRequests from './AdminToolRequests';
 import AdvancedUserManagement from './AdvancedUserManagement';
 import NewsletterManagement from './NewsletterManagement';
+import OrganizationManagement from './OrganizationManagement';
 import InterestManagement from './InterestManagement';
 import PricingManagement from './PricingManagement';
 
@@ -323,7 +324,7 @@ const ContentManagement = () => {
         </TabsContent>
 
         <TabsContent value="orgs" className="space-y-4">
-          <AdvancedUserManagement />
+          <OrganizationManagement />
         </TabsContent>
 
         <TabsContent value="newsletter" className="space-y-4">
