@@ -7,18 +7,11 @@ import {
   Users,
   Wrench,
   FileText,
-  Briefcase,
   CreditCard,
   Mail,
   Settings,
-  TrendingUp,
-  MessageSquare,
-  Globe,
-  Home,
   ChevronDown,
   ChevronRight,
-  Eye,
-  Zap,
   Flag,
   Shield
 } from 'lucide-react';
@@ -37,7 +30,7 @@ interface MenuItem {
 }
 
 const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }) => {
-  const [openSections, setOpenSections] = React.useState<string[]>(['landing']);
+  const [openSections, setOpenSections] = React.useState<string[]>(['users', 'tools']);
 
   const menuItems: MenuItem[] = [
     {
@@ -46,22 +39,12 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
       icon: LayoutDashboard
     },
     {
-      id: 'landing',
-      label: 'Landing Page',
-      icon: Home,
+      id: 'users',
+      label: 'User Management',
+      icon: Users,
       children: [
-        { id: 'hero', label: 'Hero Section', icon: Eye },
-        { id: 'trending', label: 'Trending Tools', icon: TrendingUp }
-      ]
-    },
-    {
-      id: 'community',
-      label: 'Community',
-      icon: MessageSquare,
-      children: [
-        { id: 'posts', label: 'Posts', icon: FileText },
-        { id: 'moderation', label: 'Moderation', icon: Eye },
-        { id: 'reports', label: 'Reports', icon: Flag }
+        { id: 'user-list', label: 'All Users', icon: Users },
+        { id: 'role-assignment', label: 'Role Assignment', icon: Shield }
       ]
     },
     {
@@ -72,18 +55,13 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
         { id: 'categories', label: 'Categories', icon: FileText },
         { id: 'sub-categories', label: 'Sub-Categories', icon: FileText },
         { id: 'pending-tools', label: 'Pending Tools', icon: Wrench },
-        { id: 'tool-requests', label: 'Tool Edit Requests', icon: Wrench },
-        { id: 'featured', label: 'Featured Tools', icon: Zap }
+        { id: 'tool-requests', label: 'Tool Edit Requests', icon: Wrench }
       ]
     },
     {
-      id: 'jobs',
-      label: 'Jobs Board',
-      icon: Briefcase,
-      children: [
-        { id: 'job-management', label: 'Job Management', icon: Briefcase },
-        { id: 'employers', label: 'Employers', icon: Users }
-      ]
+      id: 'reports',
+      label: 'Content Reports',
+      icon: Flag
     },
     {
       id: 'pricing',
@@ -96,22 +74,11 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
       icon: Mail
     },
     {
-      id: 'users',
-      label: 'User Management',
-      icon: Users,
-      children: [
-        { id: 'user-list', label: 'All Users', icon: Users },
-        { id: 'role-assignment', label: 'Role Assignment', icon: Shield }
-      ]
-    },
-    {
       id: 'settings',
       label: 'Settings',
       icon: Settings,
       children: [
-        { id: 'roles-permissions', label: 'Roles & Permissions', icon: Shield },
-        { id: 'site-config', label: 'Site Configuration', icon: Globe },
-        { id: 'system', label: 'System Settings', icon: Settings }
+        { id: 'roles-permissions', label: 'Roles & Permissions', icon: Shield }
       ]
     }
   ];
