@@ -65,22 +65,6 @@
       "general": "General help"
     }
   },
-  "chat": {
-    "aiAssistant": "AI Assistant",
-    "aiThinking": "AI is thinking...",
-    "typeMessage": "Type your message...",
-    "send": "Send",
-    "clearChat": "Clear chat",
-    "errorOccurred": "An error occurred",
-    "rateLimitExceeded": "Rate limit exceeded, please try again later",
-    "paymentRequired": "Payment required to continue",
-    "contextMode": {
-      "creator": "Creator mode",
-      "employer": "Employer mode",
-      "toolDiscovery": "Tool discovery mode",
-      "general": "General help"
-    }
-  },
   "auto": {
     "totalUsers": "Total Users",
     "totalTools": "Total Tools", 
@@ -219,9 +203,17 @@
     "worldwideAccessibility": "Worldwide accessibility",
     "joinOurCommunity": "Join Our Community"
   },
-  "chat": {
-    "messages": "Messages",
-    "connectAndChat": "Connect and chat with other members of the community"
+  "messages": {
+    "title": "Messages",
+    "subtitle": "Connect and chat with other members of the community",
+    "searchPlaceholder": "Search conversations...",
+    "noConversations": "No conversations yet",
+    "startConnecting": "Start connecting with other AI enthusiasts to begin messaging.",
+    "selectConversation": "Select a conversation",
+    "chooseConversation": "Choose a conversation from the list to start messaging.",
+    "typeMessage": "Type a message...",
+    "online": "Online",
+    "offline": "Offline"
   },
   "blog": {
     "title": "AI Insights Blog",

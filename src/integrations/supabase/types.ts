@@ -1091,7 +1091,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           post_id: string
           user_agent: string | null
           user_id: string | null
@@ -1099,7 +1099,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           post_id: string
           user_agent?: string | null
           user_id?: string | null
@@ -1107,7 +1107,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           post_id?: string
           user_agent?: string | null
           user_id?: string | null
@@ -1948,10 +1948,7 @@ export type Database = {
         Args: { user1_id: string; user2_id: string }
         Returns: boolean
       }
-      backfill_user_handles: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      backfill_user_handles: { Args: never; Returns: undefined }
       calculate_post_reach_score: {
         Args: { post_id_param: string }
         Returns: number
@@ -1972,10 +1969,7 @@ export type Database = {
         }
         Returns: string
       }
-      find_or_create_dm: {
-        Args: { other_user_id: string }
-        Returns: string
-      }
+      find_or_create_dm: { Args: { other_user_id: string }; Returns: string }
       generate_unique_handle: {
         Args: { base_name: string; user_id: string }
         Returns: string
@@ -2062,10 +2056,7 @@ export type Database = {
           verified: boolean
         }[]
       }
-      get_public_profiles_count: {
-        Args: { search?: string }
-        Returns: number
-      }
+      get_public_profiles_count: { Args: { search?: string }; Returns: number }
       get_public_user_profiles: {
         Args: { limit_param?: number; offset_param?: number; search?: string }
         Returns: {
@@ -2115,10 +2106,7 @@ export type Database = {
         Args: { permission_key_param: string; user_id_param: string }
         Returns: boolean
       }
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      is_admin: { Args: never; Returns: boolean }
       is_following: {
         Args: { follower_uuid: string; following_uuid: string }
         Returns: boolean
@@ -2127,10 +2115,7 @@ export type Database = {
         Args: { feature_param: string; user_id_param: string }
         Returns: boolean
       }
-      recalc_post_shares: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      recalc_post_shares: { Args: never; Returns: undefined }
       reject_pending_tool: {
         Args: { admin_notes_param: string; tool_id_param: string }
         Returns: undefined
@@ -2156,14 +2141,8 @@ export type Database = {
         Args: { tool_id_param: string }
         Returns: undefined
       }
-      update_trending_tools: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      update_trending_tools_weekly: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      update_trending_tools: { Args: never; Returns: undefined }
+      update_trending_tools_weekly: { Args: never; Returns: undefined }
       update_user_ban_features: {
         Args: {
           admin_user_id: string
@@ -2176,10 +2155,7 @@ export type Database = {
         Args: { conversation_uuid: string; user_uuid: string }
         Returns: boolean
       }
-      user_profile_exists: {
-        Args: { user_id_param: string }
-        Returns: boolean
-      }
+      user_profile_exists: { Args: { user_id_param: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
