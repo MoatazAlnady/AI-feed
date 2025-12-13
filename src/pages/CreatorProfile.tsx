@@ -68,7 +68,6 @@ const CreatorProfile: React.FC = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
 
-  // Combine all possible URL parameter names
   const identifier = handleOrId || id || handle || userId;
 
   useEffect(() => {
@@ -83,7 +82,6 @@ const CreatorProfile: React.FC = () => {
       checkFollowStatus();
     }
     
-    // Listen for connection request processing events
     const handleConnectionRequestProcessed = () => {
       if (user && profile) {
         checkConnectionStatus();
@@ -102,50 +100,34 @@ const CreatorProfile: React.FC = () => {
       setNotFound(false);
       setIsPrivate(false);
 
-      console.log('CreatorProfile: Fetching profile for identifier:', id);
-
-      // Use the safe RPC function to get profile by handle or ID
       const { data, error } = await supabase.rpc('get_profile_by_handle_or_id', {
         identifier: id
       });
 
-      console.log('CreatorProfile: Profile fetch result:', { data, error, identifier: id });
-
       if (error) {
-        console.error('Error fetching profile:', error);
-        console.log('Will fallback to get_public_profiles for UUID:', id);
-        // Fallback to get_public_profiles if UUID
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
         if (uuidRegex.test(id)) {
           const { data: fallbackData, error: fallbackError } = await supabase.rpc('get_public_profiles_by_ids', {
             ids: [id]
           });
           
-          if (fallbackError) {
-            console.error('Fallback profile fetch failed:', fallbackError);
+          if (fallbackError || !Array.isArray(fallbackData) || fallbackData.length === 0) {
             setNotFound(true);
             return;
           }
           
-          if (!Array.isArray(fallbackData) || fallbackData.length === 0) {
-            setNotFound(true);
-            return;
-          }
-          
-          // Convert to full profile format
           const publicProfile = fallbackData[0];
           const fullProfile = {
             ...publicProfile,
-            handle: `user-${publicProfile.id.slice(0, 8)}`, // Generate a handle for display
+            handle: `user-${publicProfile.id.slice(0, 8)}`,
             visibility: 'public',
-            // Set other fields to defaults
             job_title: publicProfile.job_title || '',
             company: '',
             bio: '',
             location: '',
             cover_photo: '',
-            total_engagement: 0, // Default values for missing fields
-            total_reach: 0, // Default values for missing fields
+            total_engagement: 0,
+            total_reach: 0,
             tools_submitted: 0,
             articles_written: 0,
             website: '',
@@ -155,7 +137,6 @@ const CreatorProfile: React.FC = () => {
             contact_visible: false
           };
           
-          console.log('CreatorProfile: Using fallback profile data:', fullProfile);
           setProfile(fullProfile);
           return;
         } else {
@@ -165,22 +146,17 @@ const CreatorProfile: React.FC = () => {
       }
 
       if (!data || data.length === 0) {
-        console.log('CreatorProfile: No data returned from RPC');
         setNotFound(true);
         return;
       }
 
       const profileData = data[0];
-      console.log('CreatorProfile: Using profile data:', profileData);
 
-      // Check if we found by ID and need to redirect to handle
       if (id !== profileData.handle && profileData.handle) {
-        console.log('CreatorProfile: Redirecting to handle:', profileData.handle);
         navigate(`/creator/${profileData.handle}`, { replace: true });
         return;
       }
 
-      // Check if profile is private
       if (profileData.visibility === 'private' && user?.id !== profileData.id) {
         setIsPrivate(true);
       }
@@ -198,7 +174,6 @@ const CreatorProfile: React.FC = () => {
     if (!user || !profile) return;
 
     try {
-      // Check if connected
       const { data: connection } = await supabase
         .from('connections')
         .select('id')
@@ -210,7 +185,6 @@ const CreatorProfile: React.FC = () => {
         return;
       }
 
-      // Check if pending request exists
       const { data: request } = await supabase
         .from('connection_requests')
         .select('id')
@@ -248,7 +222,7 @@ const CreatorProfile: React.FC = () => {
 
   const handleFollow = async () => {
     if (!user || !profile) {
-      toast.error('Please log in to follow users');
+      toast.error(t('creatorProfile.toast.loginToFollow'));
       return;
     }
 
@@ -261,12 +235,9 @@ const CreatorProfile: React.FC = () => {
           .eq('follower_id', user.id)
           .eq('following_id', profile.id);
 
-        if (error) {
-          console.error('Unfollow error:', error);
-          throw error;
-        }
+        if (error) throw error;
         setIsFollowing(false);
-        toast.success('Unfollowed successfully');
+        toast.success(t('creatorProfile.toast.unfollowed'));
       } else {
         const { error } = await (supabase as any)
           .from('follows')
@@ -275,16 +246,13 @@ const CreatorProfile: React.FC = () => {
             following_id: profile.id
           }]);
 
-        if (error) {
-          console.error('Follow error:', error);
-          throw error;
-        }
+        if (error) throw error;
         setIsFollowing(true);
-        toast.success('Following successfully');
+        toast.success(t('creatorProfile.toast.following'));
       }
     } catch (error: any) {
       console.error('Error toggling follow:', error);
-      toast.error(error?.message || 'Failed to update follow status');
+      toast.error(error?.message || t('creatorProfile.toast.failedFollow'));
     } finally {
       setFollowLoading(false);
     }
@@ -304,20 +272,19 @@ const CreatorProfile: React.FC = () => {
         });
 
       if (error) {
-        // If duplicate key error, re-check status and update UI
         if (error.code === '23505') {
           await checkConnectionStatus();
-          toast.info('Connection request already exists');
+          toast.info(t('creatorProfile.toast.connectionExists'));
           return;
         }
         throw error;
       }
 
       setConnectionStatus('pending');
-      toast.success('Connection request sent!');
+      toast.success(t('creatorProfile.toast.connectionSent'));
     } catch (error) {
       console.error('Error sending connection request:', error);
-      toast.error('Failed to send connection request');
+      toast.error(t('creatorProfile.toast.connectionFailed'));
     }
   };
 
@@ -335,10 +302,10 @@ const CreatorProfile: React.FC = () => {
       if (error) throw error;
 
       setConnectionStatus('none');
-      toast.success('Connection request withdrawn');
+      toast.success(t('creatorProfile.toast.connectionWithdrawn'));
     } catch (error) {
       console.error('Error withdrawing connection request:', error);
-      toast.error('Failed to withdraw connection request');
+      toast.error(t('creatorProfile.toast.withdrawFailed'));
     }
   };
 
@@ -355,12 +322,12 @@ const CreatorProfile: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <User className="h-16 w-16 text-gray-400 mx-auto" />
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">User Not Found</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('creatorProfile.notFound.title')}</h2>
           <p className="text-gray-600 dark:text-gray-400">
-            The profile you're looking for doesn't exist or has been removed.
+            {t('creatorProfile.notFound.description')}
           </p>
           <Button onClick={() => navigate('/')} variant="outline">
-            Return Home
+            {t('creatorProfile.notFound.returnHome')}
           </Button>
         </div>
       </div>
@@ -372,10 +339,9 @@ const CreatorProfile: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md">
           <Lock className="h-16 w-16 text-gray-400 mx-auto" />
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">This Profile is Private</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('creatorProfile.private.title')}</h2>
           <p className="text-gray-600 dark:text-gray-400">
-            {profile?.full_name || 'This user'} has set their profile to private. 
-            You can send them a connection request to view their profile.
+            {t('creatorProfile.private.description', { name: profile?.full_name || 'This user' })}
           </p>
           {user && user.id !== profile?.id && (
             <div className="space-y-2">
@@ -385,10 +351,10 @@ const CreatorProfile: React.FC = () => {
                 className="w-full"
               >
                 <UserPlus className="h-4 w-4 mr-2" />
-                {connectionStatus === 'pending' ? 'Request Sent' : 'Send Connection Request'}
+                {connectionStatus === 'pending' ? t('creatorProfile.private.requestSent') : t('creatorProfile.private.sendRequest')}
               </Button>
               {connectionStatus === 'pending' && (
-                <p className="text-sm text-gray-500">Connection request pending</p>
+                <p className="text-sm text-gray-500">{t('creatorProfile.private.requestPending')}</p>
               )}
             </div>
           )}
@@ -401,16 +367,15 @@ const CreatorProfile: React.FC = () => {
 
   const isOwnProfile = user?.id === profile.id;
   const displayStats = [
-    { label: 'Tools Submitted', value: profile.tools_submitted || 0, icon: Wrench },
-    { label: 'Articles Written', value: profile.articles_written || 0, icon: FileText },
-    { label: 'Total Engagement', value: profile.total_engagement || 0, icon: Star },
+    { label: t('creatorProfile.stats.toolsSubmitted'), value: profile.tools_submitted || 0, icon: Wrench },
+    { label: t('creatorProfile.stats.articlesWritten'), value: profile.articles_written || 0, icon: FileText },
+    { label: t('creatorProfile.stats.totalEngagement'), value: profile.total_engagement || 0, icon: Star },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Cover & Profile Header */}
       <div className="relative">
-        {/* Cover Photo */}
         <div className="h-48 md:h-64 bg-gradient-to-r from-primary-600 to-primary-800 relative">
           {profile.cover_photo && (
             <img 
@@ -422,10 +387,8 @@ const CreatorProfile: React.FC = () => {
           <div className="absolute inset-0 bg-black/20" />
         </div>
 
-        {/* Profile Info */}
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end md:space-x-6 pb-6">
-            {/* Profile Picture */}
             <div className="relative -mt-16 md:-mt-20">
               <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white dark:border-gray-800 bg-white dark:bg-gray-800 overflow-hidden">
                 {profile.profile_photo ? (
@@ -442,20 +405,19 @@ const CreatorProfile: React.FC = () => {
               </div>
             </div>
 
-            {/* Name & Basic Info */}
             <div className="flex-1 mt-4 md:mt-0">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                 <div>
                   <div className="flex items-center space-x-2">
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-                      {profile.full_name || 'AI Enthusiast'}
+                      {profile.full_name || t('community.networking.aiEnthusiast')}
                     </h1>
                     {profile.verified && (
                       <Shield className="h-6 w-6 text-blue-500" />
                     )}
                     {profile.ai_nexus_top_voice && (
                       <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                        Top Voice
+                        {t('creatorProfile.badges.topVoice')}
                       </Badge>
                     )}
                   </div>
@@ -473,7 +435,6 @@ const CreatorProfile: React.FC = () => {
                   )}
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex items-center space-x-3 mt-4 md:mt-0">
                   {!isOwnProfile && user && (
                     <>
@@ -485,12 +446,12 @@ const CreatorProfile: React.FC = () => {
                         {isFollowing ? (
                           <>
                             <UserCheck className="h-4 w-4 mr-2" />
-                            Following
+                            {t('creatorProfile.actions.following')}
                           </>
                         ) : (
                           <>
                             <UserPlus className="h-4 w-4 mr-2" />
-                            Follow
+                            {t('creatorProfile.actions.follow')}
                           </>
                         )}
                       </Button>
@@ -502,17 +463,17 @@ const CreatorProfile: React.FC = () => {
                         {connectionStatus === 'connected' ? (
                           <>
                             <UserCheck className="h-4 w-4 mr-2" />
-                            Connected
+                            {t('creatorProfile.actions.connected')}
                           </>
                         ) : connectionStatus === 'pending' ? (
                           <>
                             <Check className="h-4 w-4 mr-2" />
-                            Request Sent
+                            {t('creatorProfile.actions.requestSent')}
                           </>
                         ) : (
                           <>
                             <UserPlus className="h-4 w-4 mr-2" />
-                            Connect
+                            {t('creatorProfile.actions.connect')}
                           </>
                         )}
                       </Button>
@@ -525,27 +486,27 @@ const CreatorProfile: React.FC = () => {
                             if (typeof window !== 'undefined' && (window as any).chatDock?.open) {
                               const success = await (window as any).chatDock.open(profile.id);
                               if (success) {
-                                toast.success(`Opening chat with ${profile.full_name}`);
+                                toast.success(t('creatorProfile.toast.openingChat', { name: profile.full_name }));
                               } else {
-                                toast.error('Failed to open chat. Please try again.');
+                                toast.error(t('creatorProfile.toast.chatFailed'));
                               }
                             } else {
-                              toast.error('Chat system not ready. Please try again.');
+                              toast.error(t('creatorProfile.toast.chatNotReady'));
                             }
                           } catch (error) {
                             console.error('Error opening chat:', error);
-                            toast.error('Failed to open chat');
+                            toast.error(t('creatorProfile.toast.chatFailed'));
                           }
                         }}
                       >
                         <MessageCircle className="h-4 w-4 mr-2" />
-                        Message
+                        {t('creatorProfile.actions.message')}
                       </Button>
                     </>
                   )}
                   {isOwnProfile && (
                     <Button asChild variant="outline">
-                      <Link to="/profile">Edit Profile</Link>
+                      <Link to="/profile">{t('creatorProfile.actions.editProfile')}</Link>
                     </Button>
                   )}
                 </div>
@@ -560,24 +521,22 @@ const CreatorProfile: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Sidebar */}
           <div className="space-y-6">
-            {/* About */}
             <Card>
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-4">About</h2>
+                <h2 className="text-xl font-semibold mb-4">{t('creatorProfile.sections.about')}</h2>
                 {profile.bio ? (
                   <p className="text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
                     {profile.bio}
                   </p>
                 ) : (
-                  <p className="text-gray-500 italic">No bio available</p>
+                  <p className="text-gray-500 italic">{t('creatorProfile.sections.noBio')}</p>
                 )}
               </CardContent>
             </Card>
 
-            {/* Stats */}
             <Card>
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Stats</h2>
+                <h2 className="text-xl font-semibold mb-4">{t('creatorProfile.sections.stats')}</h2>
                 <div className="space-y-4">
                   {displayStats.map((stat, index) => (
                     <div key={index} className="flex items-center justify-between">
@@ -592,11 +551,10 @@ const CreatorProfile: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* Contact Info */}
             {(profile.contact_visible || isOwnProfile) && (
               <Card>
                 <CardContent className="p-6">
-                  <h2 className="text-xl font-semibold mb-4">Contact</h2>
+                  <h2 className="text-xl font-semibold mb-4">{t('creatorProfile.sections.contact')}</h2>
                   <div className="space-y-3">
                     {profile.website && (
                       <a 
@@ -647,11 +605,10 @@ const CreatorProfile: React.FC = () => {
               </Card>
             )}
 
-            {/* Interests */}
             {profile.interests && profile.interests.length > 0 && (
               <Card>
                 <CardContent className="p-6">
-                  <h2 className="text-xl font-semibold mb-4">Interests</h2>
+                  <h2 className="text-xl font-semibold mb-4">{t('creatorProfile.sections.interests')}</h2>
                   <div className="flex flex-wrap gap-2">
                     {profile.interests.map((interest, index) => (
                       <Badge key={index} variant="secondary">
@@ -668,10 +625,10 @@ const CreatorProfile: React.FC = () => {
           <div className="lg:col-span-2">
             <Tabs defaultValue="activity" className="w-full">
               <TabsList className="grid w-full grid-cols-4 bg-card">
-                <TabsTrigger value="activity">Activity</TabsTrigger>
-                <TabsTrigger value="tools">Tools</TabsTrigger>
-                <TabsTrigger value="articles">Articles</TabsTrigger>
-                <TabsTrigger value="groups">Groups</TabsTrigger>
+                <TabsTrigger value="activity">{t('creatorProfile.tabs.activity')}</TabsTrigger>
+                <TabsTrigger value="tools">{t('creatorProfile.tabs.tools')}</TabsTrigger>
+                <TabsTrigger value="articles">{t('creatorProfile.tabs.articles')}</TabsTrigger>
+                <TabsTrigger value="groups">{t('creatorProfile.tabs.groups')}</TabsTrigger>
               </TabsList>
               
               <TabsContent value="activity" className="mt-6">
@@ -679,8 +636,8 @@ const CreatorProfile: React.FC = () => {
                   <CardContent className="p-6">
                     <div className="text-center py-12">
                       <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 dark:text-white">No Recent Activity</h3>
-                      <p className="text-gray-500">Activity feed will appear here</p>
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('creatorProfile.empty.noActivity')}</h3>
+                      <p className="text-gray-500">{t('creatorProfile.empty.activityAppear')}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -691,9 +648,9 @@ const CreatorProfile: React.FC = () => {
                   <CardContent className="p-6">
                     <div className="text-center py-12">
                       <Wrench className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 dark:text-white">No Tools Yet</h3>
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('creatorProfile.empty.noTools')}</h3>
                       <p className="text-gray-500">
-                        {isOwnProfile ? "Tools you submit will appear here" : "No tools submitted yet"}
+                        {isOwnProfile ? t('creatorProfile.empty.toolsAppearOwn') : t('creatorProfile.empty.toolsAppear')}
                       </p>
                     </div>
                   </CardContent>
@@ -705,9 +662,9 @@ const CreatorProfile: React.FC = () => {
                   <CardContent className="p-6">
                     <div className="text-center py-12">
                       <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 dark:text-white">No Articles Yet</h3>
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('creatorProfile.empty.noArticles')}</h3>
                       <p className="text-gray-500">
-                        {isOwnProfile ? "Articles you write will appear here" : "No articles published yet"}
+                        {isOwnProfile ? t('creatorProfile.empty.articlesAppearOwn') : t('creatorProfile.empty.articlesAppear')}
                       </p>
                     </div>
                   </CardContent>
@@ -719,9 +676,9 @@ const CreatorProfile: React.FC = () => {
                   <CardContent className="p-6">
                     <div className="text-center py-12">
                       <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 dark:text-white">No Groups Yet</h3>
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('creatorProfile.empty.noGroups')}</h3>
                       <p className="text-gray-500">
-                        {isOwnProfile ? "Groups you create or join will appear here" : "No groups to display"}
+                        {isOwnProfile ? t('creatorProfile.empty.groupsAppearOwn') : t('creatorProfile.empty.groupsAppear')}
                       </p>
                     </div>
                   </CardContent>
