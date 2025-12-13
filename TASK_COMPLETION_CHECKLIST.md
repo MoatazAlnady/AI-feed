@@ -80,6 +80,28 @@
 - ✅ Added `common.contentTypes` keys for tool, article, post, event, job
 - ✅ Cleaned up autoKeys_pending_translation.txt file
 
+### OnboardingFlow Follow Functionality
+- ✅ Fixed `handleFollowCreators` to actually insert records into `follows` table
+- ✅ Handles duplicate follow errors gracefully
+- ✅ Real database integration (no more simulation)
+
+### Chat/Message Button Integration
+- ✅ Added "Message" button to UserView.tsx profile page
+- ✅ Uses window.chatDock.open() for opening chat with specific user
+- ✅ CreatorProfile.tsx already had Message button integrated
+
+### Organization Management
+- ✅ Created OrganizationManagement component
+- ✅ Organization creation for employers
+- ✅ Organization settings (name, max users, features)
+- ✅ Team member management with invite/remove functionality
+
+### Dropdown Styling Improvements
+- ✅ All dropdown components use `bg-popover` semantic token
+- ✅ z-index properly set to 50 for all dropdowns
+- ✅ `backdrop-blur-sm` added for visual polish
+- ✅ SelectContent, DropdownMenuContent, PopoverContent all fixed
+
 ## 🚀 All Major Tasks Completed Successfully!
 
 The AI Feed platform is now fully operational with:
@@ -89,3 +111,7 @@ The AI Feed platform is now fully operational with:
 - ✅ All translation files updated for all 9 supported languages
 - ✅ Icon file renamed
 - ✅ Site content updated
+- ✅ OnboardingFlow follow functionality working with real database
+- ✅ Message button on profile pages
+- ✅ Organization management for employers
+- ✅ Dropdown styling consistent across app

@@ -23,6 +23,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 interface UserProfile {
   id: string;
@@ -326,10 +328,10 @@ const UserView: React.FC = () => {
               <div className="flex-1 pt-16">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                       {userProfile.fullName}
                     </h2>
-                    <div className="flex items-center space-x-4 text-gray-600 mb-3">
+                    <div className="flex items-center space-x-4 text-gray-600 dark:text-gray-400 mb-3">
                       {userProfile.jobTitle && userProfile.company && (
                         <div className="flex items-center space-x-1">
                           <Briefcase className="h-4 w-4" />
@@ -342,7 +344,7 @@ const UserView: React.FC = () => {
                       </div>
                     </div>
                     {userProfile.bio && (
-                      <p className="text-gray-600 mb-4 max-w-2xl">{userProfile.bio}</p>
+                      <p className="text-gray-600 dark:text-gray-400 mb-4 max-w-2xl">{userProfile.bio}</p>
                     )}
                     
                     {/* Interests */}
@@ -350,7 +352,7 @@ const UserView: React.FC = () => {
                       {userProfile.interests.map((interest, index) => (
                         <span
                           key={index}
-                          className="px-3 py-1 bg-primary-50 text-primary-600 rounded-full text-sm font-medium"
+                          className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium"
                         >
                           {interest}
                         </span>
@@ -364,7 +366,7 @@ const UserView: React.FC = () => {
                           href={userProfile.website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-gray-400 hover:text-gray-600 transition-colors"
+                          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                         >
                           <Globe className="h-5 w-5" />
                         </a>
@@ -374,7 +376,7 @@ const UserView: React.FC = () => {
                           href={userProfile.github}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-gray-400 hover:text-gray-600 transition-colors"
+                          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                         >
                           <Github className="h-5 w-5" />
                         </a>
@@ -384,13 +386,41 @@ const UserView: React.FC = () => {
                           href={userProfile.linkedin}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-gray-400 hover:text-gray-600 transition-colors"
+                          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                         >
                           <Linkedin className="h-5 w-5" />
                         </a>
                       )}
                     </div>
                   </div>
+
+                  {/* Message Button */}
+                  {currentUser && currentUser.id !== userProfile.id && (
+                    <Button
+                      onClick={async () => {
+                        try {
+                          if (typeof window !== 'undefined' && (window as any).chatDock?.open) {
+                            const success = await (window as any).chatDock.open(userProfile.id);
+                            if (success) {
+                              toast.success(`Opening chat with ${userProfile.fullName}`);
+                            } else {
+                              toast.error('Failed to open chat');
+                            }
+                          } else {
+                            toast.error('Chat is not ready yet');
+                          }
+                        } catch (error) {
+                          console.error('Error opening chat:', error);
+                          toast.error('Failed to open chat');
+                        }
+                      }}
+                      variant="outline"
+                      className="flex items-center gap-2"
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                      Message
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
