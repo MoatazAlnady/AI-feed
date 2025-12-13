@@ -453,6 +453,9 @@
     "successTitle": "Tool erfolgreich eingereicht!",
     "successMessage": "Vielen Dank für die Einreichung Ihres KI-Tools. Unser Team wird es innerhalb von 24-48 Stunden überprüfen.",
     "submitAnother": "Weiteres Tool einreichen",
+    "chooseMethod": "Einreichungsmethode wählen",
+    "singleToolForm": "Einzelnes Tool-Formular",
+    "csvUpload": "CSV-Upload",
     "form": {
       "name": "Tool-Name",
       "namePlaceholder": "Geben Sie den Tool-Namen ein",
@@ -465,13 +468,13 @@
       "toolType": "Tool-Typ",
       "selectToolType": "Wählen Sie Tool-Typen",
       "website": "Website-URL",
-      "websitePlaceholder": "https://example.com",
+      "websitePlaceholder": "https://beispiel.com",
       "pricing": "Preisgestaltung",
       "freePlan": "Kostenloser Plan verfügbar",
       "logo": "Logo",
       "uploadLogo": "Logo hochladen",
       "tags": "Tags",
-      "tagsPlaceholder": "Geben Sie Tags getrennt durch Kommas ein",
+      "tagsPlaceholder": "Geben Sie Tags durch Kommas getrennt ein",
       "features": "Funktionen",
       "addFeature": "Funktion hinzufügen",
       "pros": "Vorteile",
@@ -487,5 +490,400 @@
       "subcategoryRequired": "Bitte wählen Sie eine Unterkategorie.",
       "toolTypeRequired": "Bitte wählen Sie mindestens einen Tool-Typ."
     }
+  },
+  "submitArticle": {
+    "title": "Artikel einreichen",
+    "subtitle": "Teilen Sie Ihre KI-Erkenntnisse, Tutorials und Forschung mit unserer Community.",
+    "successTitle": "Artikel erfolgreich eingereicht!",
+    "successMessage": "Vielen Dank für Ihren Beitrag zu unserer KI-Community. Ihr Artikel wird innerhalb von 24-48 Stunden überprüft.",
+    "submitAnother": "Weiteren Artikel einreichen",
+    "form": {
+      "authorName": "Autorenname",
+      "authorPlaceholder": "Ihr vollständiger Name",
+      "email": "E-Mail-Adresse",
+      "emailPlaceholder": "ihre@email.com",
+      "contentType": "Inhaltstyp",
+      "article": "Artikel",
+      "video": "Video",
+      "titleLabel": "Titel",
+      "titlePlaceholder": "Geben Sie einen ansprechenden Titel für Ihren Inhalt ein",
+      "excerpt": "Auszug",
+      "excerptPlaceholder": "Schreiben Sie eine überzeugende Zusammenfassung (150-200 Zeichen)",
+      "videoUrl": "Video-URL",
+      "videoUrlPlaceholder": "https://youtube.com/watch?v=...",
+      "content": "Inhalt",
+      "contentPlaceholder": "Schreiben Sie hier Ihren vollständigen Artikelinhalt. Verwenden Sie bei Bedarf Markdown-Formatierung.",
+      "category": "Kategorie",
+      "selectCategory": "Wählen Sie eine Kategorie",
+      "tags": "Tags",
+      "tagsPlaceholder": "KI, GPT, Tutorial (durch Kommas getrennt)",
+      "featuredImage": "Titelbild",
+      "uploadFeaturedImage": "Laden Sie ein Titelbild für Ihren Artikel hoch",
+      "imageSpecs": "PNG, JPG bis zu 5 MB (empfohlen: 1200x630px)",
+      "chooseImage": "Bild auswählen",
+      "selected": "Ausgewählt",
+      "submit": "Artikel zur Überprüfung einreichen",
+      "submitting": "Wird eingereicht...",
+      "disclaimer": "Mit dem Einreichen stimmen Sie unseren Inhaltsrichtlinien zu und erteilen uns die Erlaubnis, Ihre Arbeit zu veröffentlichen."
+    }
+  },
+  "creatorProfile": {
+    "notFound": {
+      "title": "Benutzer nicht gefunden",
+      "description": "Das gesuchte Profil existiert nicht oder wurde entfernt.",
+      "returnHome": "Zur Startseite"
+    },
+    "private": {
+      "title": "Dieses Profil ist privat",
+      "description": "{{name}} hat sein Profil auf privat gestellt. Sie können eine Verbindungsanfrage senden, um das Profil anzuzeigen.",
+      "sendRequest": "Verbindungsanfrage senden",
+      "requestSent": "Anfrage gesendet",
+      "requestPending": "Verbindungsanfrage ausstehend"
+    },
+    "stats": {
+      "toolsSubmitted": "Eingereichte Tools",
+      "articlesWritten": "Geschriebene Artikel",
+      "totalEngagement": "Gesamtes Engagement"
+    },
+    "badges": {
+      "topVoice": "Top-Stimme"
+    },
+    "actions": {
+      "following": "Folge ich",
+      "follow": "Folgen",
+      "connected": "Verbunden",
+      "requestSent": "Anfrage gesendet",
+      "connect": "Verbinden",
+      "message": "Nachricht",
+      "editProfile": "Profil bearbeiten"
+    },
+    "sections": {
+      "about": "Über",
+      "noBio": "Keine Biografie verfügbar",
+      "stats": "Statistiken",
+      "contact": "Kontakt",
+      "interests": "Interessen",
+      "noInterests": "Keine Interessen aufgelistet"
+    },
+    "tabs": {
+      "tools": "Tools",
+      "articles": "Artikel",
+      "activity": "Aktivität"
+    },
+    "empty": {
+      "noTools": "Noch keine Tools eingereicht",
+      "noArticles": "Noch keine Artikel geschrieben",
+      "noActivity": "Keine aktuelle Aktivität"
+    },
+    "toast": {
+      "loginToFollow": "Bitte melden Sie sich an, um Benutzern zu folgen",
+      "unfollowed": "Erfolgreich entfolgt",
+      "following": "Erfolgreich gefolgt",
+      "failedFollow": "Fehler beim Aktualisieren des Folgestatus",
+      "connectionSent": "Verbindungsanfrage gesendet!",
+      "connectionExists": "Verbindungsanfrage existiert bereits",
+      "connectionFailed": "Fehler beim Senden der Verbindungsanfrage",
+      "connectionWithdrawn": "Verbindungsanfrage zurückgezogen",
+      "withdrawFailed": "Fehler beim Zurückziehen der Verbindungsanfrage",
+      "openingChat": "Chat mit {{name}} wird geöffnet",
+      "chatFailed": "Fehler beim Öffnen des Chats. Bitte versuchen Sie es erneut.",
+      "chatNotReady": "Chat-System nicht bereit. Bitte versuchen Sie es erneut."
+    }
+  },
+  "analytics": {
+    "title": "Inhaltsanalysen",
+    "subtitle": "Verfolgen Sie Ihre Inhaltsleistung und Zielgruppen-Insights",
+    "timeRanges": {
+      "7d": "Letzte 7 Tage",
+      "30d": "Letzte 30 Tage",
+      "90d": "Letzte 90 Tage",
+      "1y": "Letztes Jahr"
+    },
+    "contentTypes": {
+      "all": "Alle Inhalte",
+      "tool": "Tools",
+      "article": "Artikel",
+      "post": "Beiträge"
+    },
+    "overview": {
+      "totalViews": "Gesamtaufrufe",
+      "totalLikes": "Gesamt-Likes",
+      "totalComments": "Gesamtkommentare",
+      "totalShares": "Gesamte Shares",
+      "totalReach": "Gesamtreichweite",
+      "totalEngagement": "Gesamtes Engagement",
+      "growthRate": "Wachstumsrate",
+      "comparedToLast": "im Vergleich zum letzten Zeitraum"
+    },
+    "performance": {
+      "excellent": "Ausgezeichnet",
+      "good": "Gut",
+      "average": "Durchschnittlich",
+      "poor": "Schwach"
+    },
+    "demographics": {
+      "ageGroups": "Altersgruppen",
+      "topLocations": "Top-Standorte",
+      "interests": "Interessen"
+    },
+    "contentPerformance": "Inhaltsleistung",
+    "exportData": "Daten exportieren"
+  },
+  "upgrade": {
+    "title": "Premium-Mitgliedschaft",
+    "heroTitle": "Entfalten Sie Ihr volles",
+    "heroTitleHighlight": "Kreatives Potenzial",
+    "heroSubtitle": "Schließen Sie sich Tausenden von Kreativen an, die auf Premium umgestiegen sind, für unbegrenzten Zugang zu allen Funktionen.",
+    "compareTitle": "Pläne vergleichen",
+    "free": "Kostenlos",
+    "premium": "Premium",
+    "features": {
+      "unlimitedMessaging": {
+        "title": "Unbegrenzte Nachrichten",
+        "description": "Senden Sie unbegrenzt Nachrichten an Ihre Verbindungen",
+        "freeLimit": "10 Nachrichten/Monat",
+        "premiumLimit": "Unbegrenzt"
+      },
+      "unlimitedConnections": {
+        "title": "Unbegrenzte Verbindungsanfragen",
+        "description": "Verbinden Sie sich mit jedem in der Community",
+        "freeLimit": "50 Anfragen/Monat",
+        "premiumLimit": "Unbegrenzt"
+      },
+      "prioritySupport": {
+        "title": "Prioritäts-Support",
+        "description": "Erhalten Sie schnellere Antwortzeiten von unserem Team",
+        "freeLimit": "Standard",
+        "premiumLimit": "Priorität"
+      },
+      "premiumBadge": {
+        "title": "Premium-Abzeichen",
+        "description": "Heben Sie sich mit einem verifizierten Premium-Abzeichen ab",
+        "freeLimit": "Nein",
+        "premiumLimit": "Ja"
+      },
+      "advancedAnalytics": {
+        "title": "Erweiterte Analysen",
+        "description": "Detaillierte Einblicke in Ihre Inhaltsleistung",
+        "freeLimit": "Basis",
+        "premiumLimit": "Erweitert"
+      }
+    },
+    "plans": {
+      "monthly": {
+        "title": "Monatlich",
+        "price": "9,99 €",
+        "period": "/Monat"
+      },
+      "yearly": {
+        "title": "Jährlich",
+        "price": "79,99 €",
+        "period": "/Jahr",
+        "discount": "33% sparen"
+      }
+    },
+    "cta": "Jetzt upgraden",
+    "faq": {
+      "title": "Haben Sie Fragen?",
+      "contact": "Kontaktieren Sie unser Support-Team"
+    },
+    "toast": {
+      "signInRequired": "Bitte melden Sie sich an, um zu upgraden",
+      "paymentFailed": "Fehler beim Erstellen der Zahlungssitzung. Bitte versuchen Sie es erneut."
+    }
+  },
+  "createPost": {
+    "title": "Beitrag erstellen",
+    "placeholder": "Was denken Sie über KI?",
+    "labels": {
+      "videoUrl": "Video-URL",
+      "linkUrl": "Link-URL",
+      "scheduleForLater": "Für später planen",
+      "date": "Datum",
+      "time": "Uhrzeit"
+    },
+    "placeholders": {
+      "videoUrl": "https://youtube.com/watch?v=...",
+      "linkUrl": "https://beispiel.com"
+    },
+    "hints": {
+      "videoUrl": "Fügen Sie eine YouTube-, Vimeo- oder andere Video-Embed-URL ein"
+    },
+    "buttons": {
+      "removeImage": "Bild entfernen",
+      "cancel": "Abbrechen",
+      "posting": "Wird gepostet...",
+      "schedulePost": "Beitrag planen",
+      "sharePost": "Beitrag teilen"
+    }
+  },
+  "notificationsPage": {
+    "title": "Benachrichtigungen",
+    "filters": {
+      "all": "Alle",
+      "unread": "Ungelesen",
+      "mentions": "Erwähnungen"
+    },
+    "buttons": {
+      "markAllRead": "Alle als gelesen markieren"
+    },
+    "empty": {
+      "title": "Noch keine Benachrichtigungen",
+      "description": "Wenn Sie Benachrichtigungen erhalten, erscheinen sie hier."
+    },
+    "types": {
+      "like": "Gefällt mir",
+      "comment": "Kommentar",
+      "follow": "Folgen",
+      "share": "Teilen",
+      "mention": "Erwähnung",
+      "system": "System"
+    },
+    "unreadCount": "{{count}} ungelesen"
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Hoppla! Seite nicht gefunden",
+    "returnHome": "Zur Startseite"
+  },
+  "chatPage": {
+    "title": "Nachrichten",
+    "subtitle": "Verbinden Sie sich und chatten Sie mit anderen Mitgliedern der Community"
+  },
+  "projects": {
+    "title": "Projekte",
+    "subtitle": "Organisieren Sie Kandidaten und optimieren Sie Ihren Einstellungsprozess",
+    "searchPlaceholder": "Projekte durchsuchen...",
+    "manageTags": "Tags verwalten",
+    "newProject": "Neues Projekt",
+    "createProject": "Projekt erstellen",
+    "viewProject": "Projekt anzeigen",
+    "deleteProject": "Projekt löschen",
+    "noProjectsYet": "Noch keine Projekte",
+    "noProjectsDescription": "Erstellen Sie Ihr erstes Projekt, um Kandidaten zu organisieren und Ihren Einstellungsprozess zu optimieren.",
+    "createFirstProject": "Ihr erstes Projekt erstellen",
+    "candidates": "Kandidaten",
+    "updated": "Aktualisiert",
+    "form": {
+      "projectTitle": "Projekttitel",
+      "projectTitlePlaceholder": "z.B. Senior KI-Ingenieur Einstellung",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Beschreiben Sie den Zweck dieses Projekts..."
+    },
+    "tags": {
+      "title": "Tags verwalten",
+      "newTagPlaceholder": "Neuer Tag-Name",
+      "add": "Hinzufügen",
+      "defaultTags": {
+        "contacted": "Kontaktiert",
+        "responded": "Geantwortet",
+        "refused": "Abgelehnt",
+        "noResponse": "Keine Antwort"
+      }
+    }
+  },
+  "userView": {
+    "title": "Benutzerprofil",
+    "viewingProfile": "Profil von {{name}} anzeigen",
+    "notFound": {
+      "title": "Benutzer nicht gefunden",
+      "description": "Der gesuchte Benutzer existiert nicht oder wurde entfernt.",
+      "backToCommunity": "Zurück zur Community"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "banned": "Gesperrt"
+    },
+    "verification": {
+      "verified": "Verifiziert",
+      "unverified": "Nicht verifiziert"
+    },
+    "tabs": {
+      "overview": "Übersicht",
+      "activity": "Letzte Aktivität",
+      "content": "Inhalte"
+    },
+    "sections": {
+      "personalInfo": "Persönliche Informationen",
+      "accountInfo": "Kontoinformationen"
+    },
+    "fields": {
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "born": "Geboren",
+      "age": "Alter",
+      "gender": "Geschlecht",
+      "country": "Land",
+      "city": "Stadt",
+      "memberSince": "Mitglied seit",
+      "accountType": "Kontotyp",
+      "verified": "Verifiziert"
+    },
+    "stats": {
+      "toolsSubmitted": "Eingereichte Tools",
+      "articlesWritten": "Geschriebene Artikel",
+      "postsCreated": "Erstellte Beiträge",
+      "likesReceived": "Erhaltene Likes",
+      "followers": "Follower",
+      "following": "Folge ich"
+    },
+    "activity": {
+      "noActivity": "Keine aktuelle Aktivität für diesen Benutzer."
+    },
+    "content": {
+      "noContent": "Keine Inhalte für diesen Benutzer verfügbar."
+    },
+    "back": "Zurück zur Community"
+  },
+  "adminToolRequests": {
+    "title": "Tool-Bearbeitungsanfragen",
+    "subtitle": "Überprüfen und verwalten Sie von Benutzern eingereichte Bearbeitungsanfragen für KI-Tools",
+    "backToAdmin": "Zurück zum Admin-Dashboard",
+    "searchPlaceholder": "Nach Tool- oder Benutzername suchen...",
+    "filters": {
+      "pending": "Ausstehende Anfragen",
+      "all": "Alle Anfragen"
+    },
+    "list": {
+      "editedBy": "Bearbeitet von",
+      "pending": "Ausstehend"
+    },
+    "details": {
+      "title": "Bearbeitungsanfrage für {{name}}",
+      "submittedBy": "Eingereicht von",
+      "fields": {
+        "name": "Name",
+        "description": "Beschreibung",
+        "category": "Kategorie",
+        "subcategory": "Unterkategorie",
+        "website": "Website",
+        "pricing": "Preisgestaltung",
+        "features": "Funktionen",
+        "pros": "Vorteile",
+        "cons": "Nachteile",
+        "tags": "Tags"
+      },
+      "adminNotes": "Admin-Notizen",
+      "adminNotesRequired": "Erforderlich für Ablehnung",
+      "adminNotesPlaceholder": "Fügen Sie Notizen zu Ihrer Entscheidung hinzu (erforderlich für Ablehnung)"
+    },
+    "actions": {
+      "approve": "Anfrage genehmigen",
+      "reject": "Anfrage ablehnen",
+      "processing": "Wird verarbeitet..."
+    },
+    "messages": {
+      "approved": "Bearbeitungsanfrage erfolgreich genehmigt!",
+      "rejected": "Bearbeitungsanfrage erfolgreich abgelehnt!",
+      "approveError": "Fehler beim Genehmigen der Bearbeitungsanfrage",
+      "rejectError": "Fehler beim Ablehnen der Bearbeitungsanfrage",
+      "provideReason": "Bitte geben Sie einen Grund für die Ablehnung an"
+    },
+    "empty": {
+      "noMatches": "Keine Bearbeitungsanfragen entsprechen Ihrer Suche",
+      "noPending": "Keine ausstehenden Bearbeitungsanfragen gefunden"
+    },
+    "selectRequest": "Wählen Sie eine Anfrage aus der Liste, um Details anzuzeigen"
   }
 }
