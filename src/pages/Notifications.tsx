@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import ChatDock from '@/components/ChatDock';
 import { 
   Bell, 
@@ -28,6 +29,7 @@ interface Notification {
 }
 
 const Notifications: React.FC = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [filter, setFilter] = useState<'all' | 'unread' | 'mentions'>('all');
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -36,11 +38,7 @@ const Notifications: React.FC = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        // In real app, fetch from API
-        // const response = await fetch('/api/notifications');
-        // const data = await response.json();
-        // setNotifications(data);
-        setNotifications([]); // No dummy data
+        setNotifications([]);
       } catch (error) {
         console.error('Error fetching notifications:', error);
       } finally {
@@ -119,10 +117,13 @@ const Notifications: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
-                Notifications
+                {t('notifications.title')}
               </h1>
               <p className="text-gray-600">
-                {unreadCount > 0 ? `${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}` : 'All caught up!'}
+                {unreadCount > 0 
+                  ? t('notifications.unreadCount', { count: unreadCount })
+                  : t('notifications.noNotificationsDesc')
+                }
               </p>
             </div>
             
@@ -131,7 +132,7 @@ const Notifications: React.FC = () => {
                 onClick={markAllAsRead}
                 className="px-4 py-2 text-primary-600 hover:text-primary-700 font-medium"
               >
-                Mark all as read
+                {t('notifications.markAllRead')}
               </button>
             )}
           </div>
@@ -143,9 +144,9 @@ const Notifications: React.FC = () => {
             <Filter className="h-5 w-5 text-gray-400" />
             <div className="flex space-x-2">
               {[
-                { key: 'all', label: 'All' },
-                { key: 'unread', label: 'Unread' },
-                { key: 'mentions', label: 'Mentions' }
+                { key: 'all', label: t('notifications.filters.all') },
+                { key: 'unread', label: t('notifications.filters.unread') },
+                { key: 'mentions', label: t('notifications.filters.mentions') }
               ].map(({ key, label }) => (
                 <button
                   key={key}
@@ -178,12 +179,10 @@ const Notifications: React.FC = () => {
                   }`}
                 >
                   <div className="flex items-start space-x-4">
-                    {/* Notification Icon */}
                     <div className={`p-2 rounded-full ${colorClasses}`}>
                       <Icon className="h-5 w-5" />
                     </div>
 
-                    {/* User Avatar (if applicable) */}
                     {notification.user?.avatar && (
                       <img
                         src={notification.user.avatar}
@@ -192,7 +191,6 @@ const Notifications: React.FC = () => {
                       />
                     )}
 
-                    {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between">
                         <div>
@@ -235,7 +233,7 @@ const Notifications: React.FC = () => {
                           }}
                           className="mt-3 text-primary-600 hover:text-primary-700 text-sm font-medium"
                         >
-                          View →
+                          {t('common.view')} →
                         </button>
                       )}
                     </div>
@@ -247,22 +245,16 @@ const Notifications: React.FC = () => {
             <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
               <Bell className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                No notifications
+                {t('notifications.noNotifications')}
               </h3>
               <p className="text-gray-600">
-                {filter === 'unread' 
-                  ? "You're all caught up! No unread notifications."
-                  : filter === 'mentions'
-                  ? "No mentions yet."
-                  : "You don't have any notifications yet. Notifications will appear here when other users interact with your content."
-                }
+                {t('notifications.noNotificationsDesc')}
               </p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Chat Dock */}
       <ChatDock />
     </div>
   );

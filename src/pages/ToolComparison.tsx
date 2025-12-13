@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -42,6 +43,7 @@ interface ToolComparisonData {
 }
 
 const ToolComparison: React.FC = () => {
+  const { t } = useTranslation();
   const { toolIds } = useParams<{ toolIds: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -55,8 +57,8 @@ const ToolComparison: React.FC = () => {
       const ids = toolIds.split(',');
       if (ids.length > 5) {
         toast({
-          title: "Too many tools",
-          description: "Maximum 5 tools can be compared at once",
+          title: t('toolComparison.tooManyTools'),
+          description: t('toolComparison.maxTools'),
           variant: "destructive"
         });
         navigate('/tools');
@@ -70,7 +72,6 @@ const ToolComparison: React.FC = () => {
     try {
       setLoading(true);
       
-      // Fetch tools data without reviews initially
       const { data: toolsData, error: toolsError } = await supabase
         .from('tools')
         .select('*')
@@ -79,14 +80,12 @@ const ToolComparison: React.FC = () => {
 
       if (toolsError) throw toolsError;
 
-      // Fetch categories separately
       const { data: categoriesData, error: categoriesError } = await supabase
         .from('categories')
         .select('id, name');
 
       if (categoriesError) throw categoriesError;
 
-      // Fetch reviews separately for each tool
       const toolsWithReviews = await Promise.all(
         toolsData.map(async (tool) => {
           const { data: reviews } = await supabase
@@ -102,7 +101,6 @@ const ToolComparison: React.FC = () => {
             .order('created_at', { ascending: false })
             .limit(10);
 
-          // Format reviews to match expected interface
           const formattedReviews = (reviews || []).map(review => ({
             ...review,
             user_profiles: { full_name: 'Anonymous' }
@@ -129,8 +127,8 @@ const ToolComparison: React.FC = () => {
     } catch (error) {
       console.error('Error fetching tools data:', error);
       toast({
-        title: "Error",
-        description: "Failed to load tools for comparison",
+        title: t('common.error'),
+        description: t('toolComparison.loadError'),
         variant: "destructive"
       });
     } finally {
@@ -141,17 +139,14 @@ const ToolComparison: React.FC = () => {
   const generateAIInsight = async (toolsData: ToolComparisonData[]) => {
     setGeneratingInsight(true);
     try {
-      // Create a comprehensive comparison summary
       const toolNames = toolsData.map(t => t.name).join(', ');
       const avgRatings = toolsData.map(t => `${t.name}: ${t.average_rating.toFixed(1)}/5`).join(', ');
       const pricingComparison = toolsData.map(t => `${t.name}: ${t.pricing}`).join(', ');
       
-      // Find the highest rated tool
       const topRated = toolsData.reduce((prev, current) => 
         prev.average_rating > current.average_rating ? prev : current
       );
       
-      // Find most reviewed tool
       const mostReviewed = toolsData.reduce((prev, current) => 
         prev.review_count > current.review_count ? prev : current
       );
@@ -182,7 +177,7 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
       setAiInsight(insight);
     } catch (error) {
       console.error('Error generating AI insight:', error);
-      setAiInsight('Unable to generate AI insights at this time.');
+      setAiInsight(t('toolComparison.aiInsights.error'));
     } finally {
       setGeneratingInsight(false);
     }
@@ -206,7 +201,7 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
       <div className="container max-w-7xl mx-auto py-8 px-6">
         <div className="text-center">
           <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p>Loading tool comparison...</p>
+          <p>{t('toolComparison.loading')}</p>
         </div>
       </div>
     );
@@ -223,13 +218,13 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
             className="mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Tools
+            {t('toolComparison.backToTools')}
           </Button>
           <h1 className="text-3xl lg:text-4xl font-bold text-foreground">
-            Tool Comparison
+            {t('toolComparison.title')}
           </h1>
           <p className="text-xl text-muted-foreground mt-2">
-            Comparing {tools.length} AI tools side by side
+            {t('toolComparison.subtitle', { count: tools.length })}
           </p>
         </div>
       </div>
@@ -239,7 +234,7 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b">
-              <th className="text-left p-4 font-medium text-muted-foreground min-w-[150px]">Tool</th>
+              <th className="text-left p-4 font-medium text-muted-foreground min-w-[150px]">{t('toolComparison.table.tool')}</th>
               {tools.map(tool => (
                 <th key={tool.id} className="text-center p-4 min-w-[250px]">
                   <div className="flex flex-col items-center gap-2">
@@ -266,9 +261,8 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
             </tr>
           </thead>
           <tbody>
-            {/* Rating Row */}
             <tr className="border-b bg-muted/20">
-              <td className="p-4 font-medium">Rating</td>
+              <td className="p-4 font-medium">{t('toolComparison.table.rating')}</td>
               {tools.map(tool => (
                 <td key={tool.id} className="p-4 text-center">
                   <div className="flex items-center justify-center gap-2">
@@ -284,9 +278,8 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
               ))}
             </tr>
             
-            {/* Pricing Row */}
             <tr className="border-b">
-              <td className="p-4 font-medium">Pricing</td>
+              <td className="p-4 font-medium">{t('toolComparison.table.pricing')}</td>
               {tools.map(tool => (
                 <td key={tool.id} className="p-4 text-center">
                   <Badge variant="secondary">{tool.pricing}</Badge>
@@ -294,9 +287,8 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
               ))}
             </tr>
             
-            {/* Description Row */}
             <tr className="border-b bg-muted/20">
-              <td className="p-4 font-medium">Description</td>
+              <td className="p-4 font-medium">{t('toolComparison.table.description')}</td>
               {tools.map(tool => (
                 <td key={tool.id} className="p-4">
                   <p className="text-sm text-muted-foreground">{tool.description}</p>
@@ -304,9 +296,8 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
               ))}
             </tr>
             
-            {/* Key Features Row */}
             <tr className="border-b">
-              <td className="p-4 font-medium">Key Features</td>
+              <td className="p-4 font-medium">{t('toolComparison.table.keyFeatures')}</td>
               {tools.map(tool => (
                 <td key={tool.id} className="p-4">
                   <div className="space-y-1">
@@ -321,9 +312,8 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
               ))}
             </tr>
             
-            {/* Pros Row */}
             <tr className="border-b bg-muted/20">
-              <td className="p-4 font-medium text-green-600">Pros</td>
+              <td className="p-4 font-medium text-green-600">{t('toolComparison.table.pros')}</td>
               {tools.map(tool => (
                 <td key={tool.id} className="p-4">
                   <div className="space-y-1">
@@ -338,9 +328,8 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
               ))}
             </tr>
             
-            {/* Cons Row */}
             <tr className="border-b">
-              <td className="p-4 font-medium text-orange-600">Cons</td>
+              <td className="p-4 font-medium text-orange-600">{t('toolComparison.table.cons')}</td>
               {tools.map(tool => (
                 <td key={tool.id} className="p-4">
                   <div className="space-y-1">
@@ -355,36 +344,33 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
               ))}
             </tr>
             
-            {/* Free Plan Row */}
             <tr className="border-b">
-              <td className="p-4 font-medium">Free Plan</td>
+              <td className="p-4 font-medium">{t('toolComparison.table.freePlan')}</td>
               {tools.map(tool => (
                 <td key={tool.id} className="p-4 text-center">
                   <Badge variant={tool.pricing.toLowerCase().includes('free') ? 'default' : 'secondary'}>
-                    {tool.pricing.toLowerCase().includes('free') ? 'Yes' : 'No'}
+                    {tool.pricing.toLowerCase().includes('free') ? t('common.yes') : t('common.no')}
                   </Badge>
                 </td>
               ))}
             </tr>
             
-            {/* Website Row */}
             <tr className="border-b bg-muted/20">
-              <td className="p-4 font-medium">Website</td>
+              <td className="p-4 font-medium">{t('toolComparison.table.website')}</td>
               {tools.map(tool => (
                 <td key={tool.id} className="p-4 text-center">
                   <Button size="sm" variant="outline" asChild>
                     <a href={tool.website} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4 mr-2" />
-                      Visit
+                      {t('toolComparison.table.visit')}
                     </a>
                   </Button>
                 </td>
               ))}
             </tr>
             
-            {/* Tags Row */}
             <tr className="border-b">
-              <td className="p-4 font-medium">Tags</td>
+              <td className="p-4 font-medium">{t('toolComparison.table.tags')}</td>
               {tools.map(tool => (
                 <td key={tool.id} className="p-4">
                   <div className="flex flex-wrap gap-1">
@@ -406,17 +392,17 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
         <CardHeader>
           <div className="flex items-center gap-2">
             <Bot className="h-5 w-5" />
-            <CardTitle>AI-Generated Comparison Insights</CardTitle>
+            <CardTitle>{t('toolComparison.aiInsights.title')}</CardTitle>
           </div>
           <CardDescription>
-            Intelligent analysis based on features, ratings, and user reviews
+            {t('toolComparison.aiInsights.subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {generatingInsight ? (
             <div className="flex items-center gap-2 text-muted-foreground">
               <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
-              Generating AI insights...
+              {t('toolComparison.aiInsights.generating')}
             </div>
           ) : (
             <div className="prose prose-sm max-w-none dark:prose-invert">

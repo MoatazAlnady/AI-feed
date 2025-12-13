@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { X, Image, Video, Link as LinkIcon, Send, User, Plus, Hash, Calendar, Clock, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -7,6 +8,7 @@ import InterestTagSelector from '../components/InterestTagSelector';
 
 const CreatePost: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [content, setContent] = useState('');
   const [tags, setTags] = useState<string[]>([]);
@@ -28,7 +30,6 @@ const CreatePost: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Create post in Supabase
       const { data: newPostData, error } = await supabase
         .from('posts')
         .insert({
@@ -43,7 +44,6 @@ const CreatePost: React.FC = () => {
 
       if (error) throw error;
 
-      // Navigate to the individual post page
       navigate(`/posts/${newPostData.id}`);
     } catch (error) {
       console.error('Error creating post:', error);
@@ -90,7 +90,7 @@ const CreatePost: React.FC = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Create Post</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('createPost.title')}</h1>
           </div>
         </div>
 
@@ -105,7 +105,7 @@ const CreatePost: React.FC = () => {
               <h3 className="font-semibold text-gray-900 dark:text-white">
                 {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Anonymous'}
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{user?.user_metadata?.job_title || 'AI Enthusiast'}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{user?.user_metadata?.job_title || t('community.networking.aiEnthusiast')}</p>
             </div>
           </div>
 
@@ -115,7 +115,7 @@ const CreatePost: React.FC = () => {
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="What's on your mind about AI?"
+                placeholder={t('createPost.placeholder')}
                 className="w-full p-4 border border-gray-200 dark:border-gray-700 rounded-xl resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 rows={8}
                 required
@@ -126,14 +126,14 @@ const CreatePost: React.FC = () => {
             {showVideoInput && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Video URL
+                  {t('createPost.labels.videoUrl')}
                 </label>
                 <div className="flex space-x-2">
                   <input
                     type="url"
                     value={videoUrl}
                     onChange={(e) => setVideoUrl(e.target.value)}
-                    placeholder="https://youtube.com/watch?v=..."
+                    placeholder={t('createPost.placeholders.videoUrl')}
                     className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                   <button
@@ -148,7 +148,7 @@ const CreatePost: React.FC = () => {
                   </button>
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Paste a YouTube, Vimeo, or other video embed URL
+                  {t('createPost.hints.videoUrl')}
                 </p>
               </div>
             )}
@@ -157,14 +157,14 @@ const CreatePost: React.FC = () => {
             {showLinkInput && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Link URL
+                  {t('createPost.labels.linkUrl')}
                 </label>
                 <div className="flex space-x-2">
                   <input
                     type="url"
                     value={linkUrl}
                     onChange={(e) => setLinkUrl(e.target.value)}
-                    placeholder="https://example.com"
+                    placeholder={t('createPost.placeholders.linkUrl')}
                     className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                   <button
@@ -200,7 +200,7 @@ const CreatePost: React.FC = () => {
                   onClick={() => setImage(null)}
                   className="mt-2 text-red-500 dark:text-red-400 text-sm hover:text-red-700 dark:hover:text-red-300"
                 >
-                  Remove image
+                  {t('createPost.buttons.removeImage')}
                 </button>
               </div>
             )}
@@ -216,7 +216,7 @@ const CreatePost: React.FC = () => {
                   className="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500"
                 />
                 <label htmlFor="schedule-post" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Schedule for later
+                  {t('createPost.labels.scheduleForLater')}
                 </label>
               </div>
               
@@ -224,7 +224,7 @@ const CreatePost: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Date
+                      {t('createPost.labels.date')}
                     </label>
                     <div className="relative">
                       <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
@@ -239,7 +239,7 @@ const CreatePost: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Time
+                      {t('createPost.labels.time')}
                     </label>
                     <div className="relative">
                       <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
@@ -306,7 +306,7 @@ const CreatePost: React.FC = () => {
                 onClick={() => navigate(-1)}
                 className="px-6 py-3 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
               >
-                Cancel
+                {t('createPost.buttons.cancel')}
               </button>
               <button
                 type="submit"
@@ -316,12 +316,12 @@ const CreatePost: React.FC = () => {
                 {isSubmitting ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    <span>Posting...</span>
+                    <span>{t('createPost.buttons.posting')}</span>
                   </>
                 ) : (
                   <>
                     <Send className="h-5 w-5" />
-                    <span>{isScheduled ? 'Schedule Post' : 'Share Post'}</span>
+                    <span>{isScheduled ? t('createPost.buttons.schedulePost') : t('createPost.buttons.sharePost')}</span>
                   </>
                 )}
               </button>
