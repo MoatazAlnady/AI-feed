@@ -246,25 +246,25 @@ const Community: React.FC = () => {
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
               <div className="flex items-center space-x-2 mb-3">
                 <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                <span className="text-sm text-gray-500 dark:text-gray-500">Tomorrow, 2:00 PM</span>
+                <span className="text-sm text-gray-500 dark:text-gray-500">{t('community.events.sample.tomorrow')}</span>
               </div>
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">AI Tools Showcase</h4>
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{t('community.events.sample.aiToolsShowcase')}</h4>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Discover the latest AI tools and their real-world applications.
+                {t('community.events.sample.aiToolsShowcaseDesc')}
               </p>
-              <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Event →</button>
+              <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">{t('community.events.joinEvent')} →</button>
             </div>
             
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
               <div className="flex items-center space-x-2 mb-3">
                 <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                <span className="text-sm text-gray-500 dark:text-gray-500">Friday, 5:00 PM</span>
+                <span className="text-sm text-gray-500 dark:text-gray-500">{t('community.events.sample.friday')}</span>
               </div>
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Networking Mixer</h4>
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{t('community.events.sample.networkingMixer')}</h4>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Connect with fellow AI enthusiasts and industry professionals.
+                {t('community.events.sample.networkingMixerDesc')}
               </p>
-              <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">RSVP →</button>
+              <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">{t('community.events.rsvp')} →</button>
             </div>
           </>
         ) : (
@@ -307,42 +307,42 @@ const Community: React.FC = () => {
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
               <div className="flex items-center space-x-2 mb-3">
                 <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                <span className="font-semibold text-gray-900 dark:text-white">Machine Learning</span>
+                <span className="font-semibold text-gray-900 dark:text-white">{t('community.groups.sample.machineLearning')}</span>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Discuss ML algorithms, techniques, and latest research.
+                {t('community.groups.sample.machineLearningDesc')}
               </p>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500 dark:text-gray-500">2.4k members</span>
-                <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Discussion →</button>
+                <span className="text-sm text-gray-500 dark:text-gray-500">2.4k {t('community.groups.members')}</span>
+                <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">{t('community.groups.joinDiscussion')} →</button>
               </div>
             </div>
             
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
               <div className="flex items-center space-x-2 mb-3">
                 <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                <span className="font-semibold text-gray-900 dark:text-white">AI Tools</span>
+                <span className="font-semibold text-gray-900 dark:text-white">{t('community.groups.sample.aiTools')}</span>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Share and discover new AI tools and platforms.
+                {t('community.groups.sample.aiToolsDesc')}
               </p>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500 dark:text-gray-500">5.1k members</span>
-                <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Discussion →</button>
+                <span className="text-sm text-gray-500 dark:text-gray-500">5.1k {t('community.groups.members')}</span>
+                <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">{t('community.groups.joinDiscussion')} →</button>
               </div>
             </div>
             
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
               <div className="flex items-center space-x-2 mb-3">
                 <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                <span className="font-semibold text-gray-900 dark:text-white">Startups & AI</span>
+                <span className="font-semibold text-gray-900 dark:text-white">{t('community.groups.sample.startupsAI')}</span>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Connect with AI startup founders and innovators.
+                {t('community.groups.sample.startupsAIDesc')}
               </p>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500 dark:text-gray-500">1.8k members</span>
-                <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Discussion →</button>
+                <span className="text-sm text-gray-500 dark:text-gray-500">1.8k {t('community.groups.members')}</span>
+                <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">{t('community.groups.joinDiscussion')} →</button>
               </div>
             </div>
           </>
@@ -422,32 +422,32 @@ const Community: React.FC = () => {
                       className="font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                       onClick={() => navigate(`/profile/${creator.id}`)}
                     >
-                      {creator.full_name || 'Anonymous User'}
-                    </h4>
-                    {creator.verified && (
-                      <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">✓</span>
-                      </div>
-                    )}
-                    {creator.ai_nexus_top_voice && (
-                      <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {creator.job_title || 'AI Enthusiast'}
-                  </p>
+                    {creator.full_name || t('community.networking.anonymousUser')}
+                  </h4>
+                  {creator.verified && (
+                    <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                  )}
+                  {creator.ai_nexus_top_voice && (
+                    <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                  )}
                 </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {creator.job_title || t('community.networking.aiEnthusiast')}
+                </p>
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                {creator.bio || 'Passionate about AI and technology.'}
-              </p>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              {creator.bio || t('community.networking.defaultBio')}
+            </p>
               {user?.id !== creator.id && (
                 <div className="mt-6 flex w-full items-center justify-center gap-3">
                   {/* Connection status button */}
                   {connectionStates[creator.id]?.isConnected ? (
                     <div className="flex items-center space-x-1 px-3 py-2 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-lg text-sm font-medium">
                       <UserCheck className="h-4 w-4" />
-                      <span>Connected</span>
+                      <span>{t('community.networking.connected')}</span>
                     </div>
                   ) : connectionStates[creator.id]?.hasPendingRequest ? (
                     <button 
@@ -455,7 +455,7 @@ const Community: React.FC = () => {
                       className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors disabled:opacity-50 bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200"
                     >
                       <UserCheck className="h-4 w-4 inline mr-1" />
-                      Request Sent
+                      {t('community.networking.requestSent')}
                     </button>
                   ) : (
                     <button 
@@ -463,7 +463,7 @@ const Community: React.FC = () => {
                       className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
                     >
                       <UserPlus className="h-4 w-4 inline mr-1" />
-                      Connect
+                      {t('community.networking.connect')}
                     </button>
                   )}
                   
@@ -473,7 +473,7 @@ const Community: React.FC = () => {
                     className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
                   >
                     <MessageCircle className="h-4 w-4 inline mr-1" />
-                    Message
+                    {t('community.networking.message')}
                   </button>
                 </div>
               )}
@@ -517,7 +517,7 @@ const Community: React.FC = () => {
           <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
             <TrendingUp className="h-8 w-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
             <div className="text-2xl font-bold text-gray-900 dark:text-white">95%</div>
-            <div className="text-sm text-gray-500 dark:text-gray-500">Success Rate</div>
+            <div className="text-sm text-gray-500 dark:text-gray-500">{t('community.stats.successRate')}</div>
           </div>
         </div>
 
