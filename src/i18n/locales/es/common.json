@@ -421,7 +421,14 @@
     "noTalentsFound": "No se encontraron talentos",
     "adjustCriteria": "Intenta ajustar tus criterios de búsqueda o filtros.",
     "noTalentsYet": "Aún no hay talentos en el sistema.",
-    "verified": "Verificado"
+    "verified": "Verificado",
+    "proficiency": {
+      "beginner": "Principiante",
+      "elementary": "Elemental",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzado",
+      "native": "Nativo/Fluido"
+    }
   },
   "toolDetails": {
     "backToTools": "Volver a herramientas",
@@ -445,6 +452,40 @@
     "subtitle": "Comparte una herramienta de IA con la comunidad",
     "successTitle": "¡Herramienta enviada con éxito!",
     "successMessage": "Gracias por enviar tu herramienta de IA. Nuestro equipo la revisará en 24-48 horas.",
-    "submitAnother": "Enviar otra herramienta"
+    "submitAnother": "Enviar otra herramienta",
+    "form": {
+      "name": "Nombre de la herramienta",
+      "namePlaceholder": "Ingresa el nombre de la herramienta",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Describe lo que hace esta herramienta",
+      "category": "Categoría",
+      "selectCategory": "Selecciona una categoría",
+      "subcategory": "Subcategoría",
+      "selectSubcategory": "Selecciona una subcategoría",
+      "toolType": "Tipo de herramienta",
+      "selectToolType": "Selecciona tipos de herramientas",
+      "website": "URL del sitio web",
+      "websitePlaceholder": "https://example.com",
+      "pricing": "Precios",
+      "freePlan": "Plan gratuito disponible",
+      "logo": "Logo",
+      "uploadLogo": "Subir logo",
+      "tags": "Etiquetas",
+      "tagsPlaceholder": "Ingresa etiquetas separadas por comas",
+      "features": "Características",
+      "addFeature": "Agregar característica",
+      "pros": "Ventajas",
+      "addPro": "Agregar ventaja",
+      "cons": "Desventajas",
+      "addCon": "Agregar desventaja",
+      "submit": "Enviar herramienta",
+      "submitting": "Enviando..."
+    },
+    "validation": {
+      "authRequired": "Debes iniciar sesión para enviar una herramienta.",
+      "duplicateDetected": "Ya existe una herramienta con este nombre y sitio web.",
+      "subcategoryRequired": "Por favor selecciona una subcategoría.",
+      "toolTypeRequired": "Por favor selecciona al menos un tipo de herramienta."
+    }
   }
 }

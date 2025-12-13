@@ -421,7 +421,14 @@
     "noTalentsFound": "استعدادی یافت نشد",
     "adjustCriteria": "سعی کنید معیارهای جستجو یا فیلترها را تنظیم کنید.",
     "noTalentsYet": "هنوز استعدادی در سیستم وجود ندارد.",
-    "verified": "تأیید شده"
+    "verified": "تأیید شده",
+    "proficiency": {
+      "beginner": "مبتدی",
+      "elementary": "ابتدایی",
+      "intermediate": "متوسط",
+      "advanced": "پیشرفته",
+      "native": "زبان مادری/روان"
+    }
   },
   "toolDetails": {
     "backToTools": "بازگشت به ابزارها",
@@ -445,6 +452,40 @@
     "subtitle": "یک ابزار هوش مصنوعی را با جامعه به اشتراک بگذارید",
     "successTitle": "ابزار با موفقیت ارسال شد!",
     "successMessage": "از ارسال ابزار هوش مصنوعی شما متشکریم. تیم ما ظرف ۲۴-۴۸ ساعت آن را بررسی خواهد کرد.",
-    "submitAnother": "ارسال ابزار دیگر"
+    "submitAnother": "ارسال ابزار دیگر",
+    "form": {
+      "name": "نام ابزار",
+      "namePlaceholder": "نام ابزار را وارد کنید",
+      "description": "توضیحات",
+      "descriptionPlaceholder": "کاری که این ابزار انجام می‌دهد را توضیح دهید",
+      "category": "دسته‌بندی",
+      "selectCategory": "یک دسته‌بندی انتخاب کنید",
+      "subcategory": "زیر دسته‌بندی",
+      "selectSubcategory": "یک زیر دسته‌بندی انتخاب کنید",
+      "toolType": "نوع ابزار",
+      "selectToolType": "انواع ابزار را انتخاب کنید",
+      "website": "آدرس وب‌سایت",
+      "websitePlaceholder": "https://example.com",
+      "pricing": "قیمت‌گذاری",
+      "freePlan": "طرح رایگان موجود است",
+      "logo": "لوگو",
+      "uploadLogo": "بارگذاری لوگو",
+      "tags": "برچسب‌ها",
+      "tagsPlaceholder": "برچسب‌ها را با کاما جدا وارد کنید",
+      "features": "ویژگی‌ها",
+      "addFeature": "افزودن ویژگی",
+      "pros": "مزایا",
+      "addPro": "افزودن مزیت",
+      "cons": "معایب",
+      "addCon": "افزودن عیب",
+      "submit": "ارسال ابزار",
+      "submitting": "در حال ارسال..."
+    },
+    "validation": {
+      "authRequired": "برای ارسال ابزار باید وارد شوید.",
+      "duplicateDetected": "ابزاری با این نام و وب‌سایت از قبل وجود دارد.",
+      "subcategoryRequired": "لطفاً یک زیر دسته‌بندی انتخاب کنید.",
+      "toolTypeRequired": "لطفاً حداقل یک نوع ابزار انتخاب کنید."
+    }
   }
 }
