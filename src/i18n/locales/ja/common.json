@@ -335,5 +335,116 @@
     "applicants": "応募者",
     "upgradeToSee": "求人投稿に基づいたAIマッチングの人材推薦を見るにはアップグレードしてください。",
     "upgradePlan": "プランをアップグレード"
+  },
+  "community": {
+    "title": "コミュニティ",
+    "tabs": {
+      "networking": "ネットワーキング",
+      "feed": "フィード",
+      "events": "イベント",
+      "groups": "グループ"
+    },
+    "feed": {
+      "title": "コミュニティフィード",
+      "subtitle": "他のクリエイターとつながり、アイデアを共有し、新しい機会を発見しましょう。"
+    },
+    "events": {
+      "title": "コミュニティイベント",
+      "createEvent": "イベントを作成",
+      "joinEvent": "イベントに参加",
+      "rsvp": "出欠確認"
+    },
+    "groups": {
+      "title": "ディスカッショングループ",
+      "createGroup": "グループを作成",
+      "joinDiscussion": "ディスカッションに参加",
+      "members": "メンバー"
+    },
+    "networking": {
+      "title": "クリエイターを探す",
+      "searchPlaceholder": "クリエイターを検索...",
+      "noCreatorsFound": "検索に一致するクリエイターが見つかりませんでした。",
+      "noCreatorsYet": "まだクリエイターがいません。",
+      "connect": "つながる",
+      "pending": "保留中",
+      "connected": "接続済み",
+      "message": "メッセージ",
+      "connectionRequestSent": "接続リクエストを送信しました！",
+      "connectionLimitReached": "月間接続リクエスト制限（50件）に達しました。無制限にするにはアップグレードしてください。",
+      "pleaseLogIn": "メッセージを送信するにはログインしてください",
+      "failedToOpenChat": "チャットを開けませんでした"
+    },
+    "stats": {
+      "activeCreators": "アクティブなクリエイター",
+      "discussionGroups": "ディスカッショングループ",
+      "weeklyEvents": "週間イベント"
+    }
+  },
+  "profile": {
+    "title": "プロフィール",
+    "editProfile": "プロフィールを編集",
+    "joined": "参加日",
+    "tabs": {
+      "overview": "概要",
+      "posts": "投稿",
+      "content": "マイコンテンツ",
+      "saved": "保存済み",
+      "network": "ネットワーク"
+    },
+    "stats": {
+      "toolsSubmitted": "提出したツール",
+      "articlesWritten": "執筆した記事",
+      "likesReceived": "受け取ったいいね",
+      "toolsBookmarked": "ブックマークしたツール"
+    },
+    "overview": {
+      "recentActivity": "最近のアクティビティ",
+      "noActivity": "最近のアクティビティはありません。コンテンツを作成したり、コミュニティと交流を始めましょう！"
+    },
+    "content": {
+      "title": "マイコンテンツ",
+      "noContent": "まだコンテンツを作成していません。",
+      "promote": "プロモート"
+    },
+    "saved": {
+      "title": "保存したアイテム",
+      "noSaved": "保存したアイテムはまだありません。",
+      "remove": "削除"
+    }
+  },
+  "talentSearch": {
+    "title": "タレント検索",
+    "subtitle": "チームに最適なAIタレントを見つけましょう",
+    "searchPlaceholder": "名前、スキル、または職種で検索...",
+    "showingResults": "{{total}}件中{{count}}件のタレントを表示",
+    "loading": "タレントを読み込み中...",
+    "noTalentsFound": "タレントが見つかりません",
+    "adjustCriteria": "検索条件やフィルターを調整してみてください。",
+    "noTalentsYet": "システムにまだタレントがいません。",
+    "verified": "認証済み"
+  },
+  "toolDetails": {
+    "backToTools": "ツールに戻る",
+    "notFound": "ツールが見つかりません",
+    "notFoundDesc": "お探しのツールは存在しないか、削除されました。",
+    "features": "機能",
+    "pros": "メリット",
+    "cons": "デメリット",
+    "toolInfo": "ツール情報",
+    "submittedBy": "提出者",
+    "anonymous": "匿名",
+    "addedOn": "追加日",
+    "lastUpdated": "最終更新",
+    "tags": "タグ",
+    "freePlanAvailable": "無料プランあり",
+    "readAllReviews": "すべてのレビューを読む"
+  },
+  "submitTool": {
+    "title": "AIツールを提出",
+    "editTitle": "AIツールを編集",
+    "subtitle": "AIツールをコミュニティと共有しましょう",
+    "successTitle": "ツールが正常に提出されました！",
+    "successMessage": "AIツールを提出いただきありがとうございます。24〜48時間以内にチームが審査します。",
+    "submitAnother": "別のツールを提出"
   }
 }

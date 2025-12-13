@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   MessageSquare, 
   Users, 
@@ -23,8 +24,9 @@ import { useChatDock } from '../context/ChatDockContext';
 import { toast } from 'sonner';
 
 const Community: React.FC = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
-  const { openChatWith } = useChatDock(); // Move hook to component level
+  const { openChatWith } = useChatDock();
   const navigate = useNavigate();
   
   const [activeTab, setActiveTab] = useState<'networking' | 'feed' | 'events' | 'groups'>('networking');
@@ -123,7 +125,7 @@ const Community: React.FC = () => {
 
       const currentRequests = usageData?.connection_requests_sent || 0;
       if (currentRequests >= 50) {
-        toast.error('Monthly connection request limit reached (50). Upgrade to premium for unlimited requests.');
+        toast.error(t('community.networking.connectionLimitReached'));
         return;
       }
 
@@ -153,7 +155,7 @@ const Community: React.FC = () => {
         [creatorId]: { ...prev[creatorId], hasPendingRequest: true }
       }));
 
-      toast.success('Connection request sent!');
+      toast.success(t('community.networking.connectionRequestSent'));
     } catch (error) {
       console.error('Error sending connection request:', error);
       toast.error('Failed to send connection request');
@@ -162,15 +164,14 @@ const Community: React.FC = () => {
 
   const handleMessage = async (userId: string, userName: string) => {
     if (!user) {
-      toast.error('Please log in to send messages');
+      toast.error(t('community.networking.pleaseLogIn'));
       return;
     }
 
     const success = await openChatWith(userId, { createIfMissing: true });
     if (!success) {
-      toast.error('Failed to open chat');
+      toast.error(t('community.networking.failedToOpenChat'));
     }
-    // Silent on success - chat opening should be silent
   };
 
   const getProfileLink = (creator: any) => {
@@ -218,9 +219,9 @@ const Community: React.FC = () => {
   const renderFeed = () => (
     <div className="space-y-6">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-        <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Community Feed</h3>
+        <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">{t('community.feed.title')}</h3>
         <p className="text-gray-600 dark:text-gray-400">
-          Connect with other creators, share insights, and discover new opportunities.
+          {t('community.feed.subtitle')}
         </p>
       </div>
     </div>
@@ -229,13 +230,13 @@ const Community: React.FC = () => {
   const renderEvents = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Community Events</h3>
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{t('community.events.title')}</h3>
         <button 
           onClick={() => setShowCreateEventModal(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200"
         >
           <Plus className="h-4 w-4" />
-          <span>Create Event</span>
+          <span>{t('community.events.createEvent')}</span>
         </button>
       </div>
       
@@ -290,13 +291,13 @@ const Community: React.FC = () => {
   const renderGroups = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Discussion Groups</h3>
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{t('community.groups.title')}</h3>
         <button 
           onClick={() => setShowCreateGroupModal(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200"
         >
           <Plus className="h-4 w-4" />
-          <span>Create Group</span>
+          <span>{t('community.groups.createGroup')}</span>
         </button>
       </div>
       
@@ -369,12 +370,12 @@ const Community: React.FC = () => {
   const renderNetworking = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Find Creators</h3>
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{t('community.networking.title')}</h3>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Search creators..."
+            placeholder={t('community.networking.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
@@ -390,7 +391,7 @@ const Community: React.FC = () => {
         <div className="text-center py-8">
           <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500 dark:text-gray-500">
-            {searchTerm ? 'No creators found matching your search.' : 'No creators available yet.'}
+            {searchTerm ? t('community.networking.noCreatorsFound') : t('community.networking.noCreatorsYet')}
           </p>
         </div>
       ) : (

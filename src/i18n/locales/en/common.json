@@ -513,5 +513,157 @@
     "applicants": "applicants",
     "upgradeToSee": "Upgrade to see AI-matched talent recommendations based on your job postings.",
     "upgradePlan": "Upgrade Plan"
+  },
+  "community": {
+    "title": "Community",
+    "tabs": {
+      "networking": "Networking",
+      "feed": "Feed",
+      "events": "Events",
+      "groups": "Groups"
+    },
+    "feed": {
+      "title": "Community Feed",
+      "subtitle": "Connect with other creators, share insights, and discover new opportunities."
+    },
+    "events": {
+      "title": "Community Events",
+      "createEvent": "Create Event",
+      "joinEvent": "Join Event",
+      "rsvp": "RSVP"
+    },
+    "groups": {
+      "title": "Discussion Groups",
+      "createGroup": "Create Group",
+      "joinDiscussion": "Join Discussion",
+      "members": "members"
+    },
+    "networking": {
+      "title": "Find Creators",
+      "searchPlaceholder": "Search creators...",
+      "noCreatorsFound": "No creators found matching your search.",
+      "noCreatorsYet": "No creators available yet.",
+      "connect": "Connect",
+      "pending": "Pending",
+      "connected": "Connected",
+      "message": "Message",
+      "connectionRequestSent": "Connection request sent!",
+      "connectionLimitReached": "Monthly connection request limit reached (50). Upgrade to premium for unlimited requests.",
+      "pleaseLogIn": "Please log in to send messages",
+      "failedToOpenChat": "Failed to open chat"
+    },
+    "stats": {
+      "activeCreators": "Active Creators",
+      "discussionGroups": "Discussion Groups",
+      "weeklyEvents": "Weekly Events"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "editProfile": "Edit Profile",
+    "joined": "Joined",
+    "tabs": {
+      "overview": "Overview",
+      "posts": "Posts",
+      "content": "My Content",
+      "saved": "Saved Items",
+      "network": "Network"
+    },
+    "stats": {
+      "toolsSubmitted": "Tools Submitted",
+      "articlesWritten": "Articles Written",
+      "likesReceived": "Likes Received",
+      "toolsBookmarked": "Tools Bookmarked"
+    },
+    "overview": {
+      "recentActivity": "Recent Activity",
+      "noActivity": "No recent activity. Start creating content or interacting with the community!"
+    },
+    "content": {
+      "title": "My Content",
+      "noContent": "You haven't created any content yet.",
+      "promote": "Promote"
+    },
+    "saved": {
+      "title": "Saved Items",
+      "noSaved": "No saved items yet.",
+      "remove": "Remove"
+    }
+  },
+  "talentSearch": {
+    "title": "Talent Search",
+    "subtitle": "Find the perfect AI talent for your team",
+    "searchPlaceholder": "Search by name, skills, or job title...",
+    "showingResults": "Showing {{count}} of {{total}} talents",
+    "loading": "Loading talents...",
+    "noTalentsFound": "No Talents Found",
+    "adjustCriteria": "Try adjusting your search criteria or filters.",
+    "noTalentsYet": "There are no talents in the system yet.",
+    "verified": "Verified",
+    "proficiency": {
+      "beginner": "Beginner",
+      "elementary": "Elementary",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced",
+      "native": "Native/Fluent"
+    }
+  },
+  "toolDetails": {
+    "backToTools": "Back to Tools",
+    "notFound": "Tool Not Found",
+    "notFoundDesc": "The tool you're looking for doesn't exist or has been removed.",
+    "features": "Features",
+    "pros": "Pros",
+    "cons": "Cons",
+    "toolInfo": "Tool Information",
+    "submittedBy": "Submitted by",
+    "anonymous": "Anonymous",
+    "addedOn": "Added on",
+    "lastUpdated": "Last updated",
+    "tags": "Tags",
+    "freePlanAvailable": "Free Plan Available",
+    "readAllReviews": "Read all reviews"
+  },
+  "submitTool": {
+    "title": "Submit AI Tool",
+    "editTitle": "Edit AI Tool",
+    "subtitle": "Share an AI tool with the community",
+    "successTitle": "Tool Submitted Successfully!",
+    "successMessage": "Thank you for submitting your AI tool. Our team will review it within 24-48 hours.",
+    "submitAnother": "Submit Another Tool",
+    "form": {
+      "name": "Tool Name",
+      "namePlaceholder": "Enter tool name",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe what this tool does",
+      "category": "Category",
+      "selectCategory": "Select a category",
+      "subcategory": "Subcategory",
+      "selectSubcategory": "Select a subcategory",
+      "toolType": "Tool Type",
+      "selectToolType": "Select tool types",
+      "website": "Website URL",
+      "websitePlaceholder": "https://example.com",
+      "pricing": "Pricing",
+      "freePlan": "Free Plan Available",
+      "logo": "Logo",
+      "uploadLogo": "Upload Logo",
+      "tags": "Tags",
+      "tagsPlaceholder": "Enter tags separated by commas",
+      "features": "Features",
+      "addFeature": "Add Feature",
+      "pros": "Pros",
+      "addPro": "Add Pro",
+      "cons": "Cons",
+      "addCon": "Add Con",
+      "submit": "Submit Tool",
+      "submitting": "Submitting..."
+    },
+    "validation": {
+      "authRequired": "You must be logged in to submit a tool.",
+      "duplicateDetected": "A tool with this name and website already exists.",
+      "subcategoryRequired": "Please select a subcategory.",
+      "toolTypeRequired": "Please select at least one tool type."
+    }
   }
 }

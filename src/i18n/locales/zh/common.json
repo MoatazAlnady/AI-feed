@@ -365,5 +365,116 @@
     "postNotFound": "帖子未找到",
     "error": "错误",
     "success": "成功"
+  },
+  "community": {
+    "title": "社区",
+    "tabs": {
+      "networking": "社交",
+      "feed": "动态",
+      "events": "活动",
+      "groups": "群组"
+    },
+    "feed": {
+      "title": "社区动态",
+      "subtitle": "与其他创作者交流，分享见解，发现新机会。"
+    },
+    "events": {
+      "title": "社区活动",
+      "createEvent": "创建活动",
+      "joinEvent": "加入活动",
+      "rsvp": "回复"
+    },
+    "groups": {
+      "title": "讨论群组",
+      "createGroup": "创建群组",
+      "joinDiscussion": "加入讨论",
+      "members": "成员"
+    },
+    "networking": {
+      "title": "发现创作者",
+      "searchPlaceholder": "搜索创作者...",
+      "noCreatorsFound": "未找到符合搜索条件的创作者。",
+      "noCreatorsYet": "暂无可用创作者。",
+      "connect": "连接",
+      "pending": "待处理",
+      "connected": "已连接",
+      "message": "消息",
+      "connectionRequestSent": "连接请求已发送！",
+      "connectionLimitReached": "已达到每月连接请求限制（50次）。升级至高级版以获取无限请求。",
+      "pleaseLogIn": "请登录以发送消息",
+      "failedToOpenChat": "打开聊天失败"
+    },
+    "stats": {
+      "activeCreators": "活跃创作者",
+      "discussionGroups": "讨论群组",
+      "weeklyEvents": "每周活动"
+    }
+  },
+  "profile": {
+    "title": "个人资料",
+    "editProfile": "编辑资料",
+    "joined": "加入时间",
+    "tabs": {
+      "overview": "概览",
+      "posts": "帖子",
+      "content": "我的内容",
+      "saved": "已保存",
+      "network": "社交网络"
+    },
+    "stats": {
+      "toolsSubmitted": "提交的工具",
+      "articlesWritten": "撰写的文章",
+      "likesReceived": "收到的点赞",
+      "toolsBookmarked": "收藏的工具"
+    },
+    "overview": {
+      "recentActivity": "最近活动",
+      "noActivity": "暂无最近活动。开始创建内容或与社区互动吧！"
+    },
+    "content": {
+      "title": "我的内容",
+      "noContent": "您还没有创建任何内容。",
+      "promote": "推广"
+    },
+    "saved": {
+      "title": "已保存的项目",
+      "noSaved": "暂无已保存的项目。",
+      "remove": "移除"
+    }
+  },
+  "talentSearch": {
+    "title": "人才搜索",
+    "subtitle": "为您的团队找到完美的AI人才",
+    "searchPlaceholder": "按姓名、技能或职位搜索...",
+    "showingResults": "显示 {{count}} / {{total}} 个人才",
+    "loading": "正在加载人才...",
+    "noTalentsFound": "未找到人才",
+    "adjustCriteria": "请尝试调整搜索条件或筛选器。",
+    "noTalentsYet": "系统中暂无人才。",
+    "verified": "已验证"
+  },
+  "toolDetails": {
+    "backToTools": "返回工具列表",
+    "notFound": "工具未找到",
+    "notFoundDesc": "您寻找的工具不存在或已被删除。",
+    "features": "功能特点",
+    "pros": "优点",
+    "cons": "缺点",
+    "toolInfo": "工具信息",
+    "submittedBy": "提交者",
+    "anonymous": "匿名",
+    "addedOn": "添加日期",
+    "lastUpdated": "最后更新",
+    "tags": "标签",
+    "freePlanAvailable": "提供免费计划",
+    "readAllReviews": "阅读所有评论"
+  },
+  "submitTool": {
+    "title": "提交AI工具",
+    "editTitle": "编辑AI工具",
+    "subtitle": "与社区分享AI工具",
+    "successTitle": "工具提交成功！",
+    "successMessage": "感谢您提交AI工具。我们的团队将在24-48小时内审核。",
+    "submitAnother": "提交另一个工具"
   }
 }

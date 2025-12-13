@@ -306,5 +306,116 @@
     "applicants": "متقدمين",
     "upgradeToSee": "قم بالترقية لرؤية توصيات المواهب المطابقة بالذكاء الاصطناعي بناءً على إعلانات وظائفك.",
     "upgradePlan": "ترقية الخطة"
+  },
+  "community": {
+    "title": "المجتمع",
+    "tabs": {
+      "networking": "التواصل",
+      "feed": "الموجز",
+      "events": "الفعاليات",
+      "groups": "المجموعات"
+    },
+    "feed": {
+      "title": "موجز المجتمع",
+      "subtitle": "تواصل مع المبدعين الآخرين، شارك الأفكار، واكتشف فرصًا جديدة."
+    },
+    "events": {
+      "title": "فعاليات المجتمع",
+      "createEvent": "إنشاء فعالية",
+      "joinEvent": "انضم للفعالية",
+      "rsvp": "تأكيد الحضور"
+    },
+    "groups": {
+      "title": "مجموعات النقاش",
+      "createGroup": "إنشاء مجموعة",
+      "joinDiscussion": "انضم للنقاش",
+      "members": "أعضاء"
+    },
+    "networking": {
+      "title": "ابحث عن المبدعين",
+      "searchPlaceholder": "البحث عن المبدعين...",
+      "noCreatorsFound": "لم يتم العثور على مبدعين يطابقون بحثك.",
+      "noCreatorsYet": "لا يوجد مبدعون متاحون حتى الآن.",
+      "connect": "تواصل",
+      "pending": "قيد الانتظار",
+      "connected": "متصل",
+      "message": "رسالة",
+      "connectionRequestSent": "تم إرسال طلب الاتصال!",
+      "connectionLimitReached": "تم الوصول إلى الحد الشهري لطلبات الاتصال (50). قم بالترقية للحصول على طلبات غير محدودة.",
+      "pleaseLogIn": "يرجى تسجيل الدخول لإرسال الرسائل",
+      "failedToOpenChat": "فشل في فتح المحادثة"
+    },
+    "stats": {
+      "activeCreators": "المبدعون النشطون",
+      "discussionGroups": "مجموعات النقاش",
+      "weeklyEvents": "الفعاليات الأسبوعية"
+    }
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "editProfile": "تعديل الملف الشخصي",
+    "joined": "انضم في",
+    "tabs": {
+      "overview": "نظرة عامة",
+      "posts": "المنشورات",
+      "content": "محتواي",
+      "saved": "المحفوظات",
+      "network": "الشبكة"
+    },
+    "stats": {
+      "toolsSubmitted": "الأدوات المقدمة",
+      "articlesWritten": "المقالات المكتوبة",
+      "likesReceived": "الإعجابات المستلمة",
+      "toolsBookmarked": "الأدوات المحفوظة"
+    },
+    "overview": {
+      "recentActivity": "النشاط الأخير",
+      "noActivity": "لا يوجد نشاط حديث. ابدأ بإنشاء محتوى أو التفاعل مع المجتمع!"
+    },
+    "content": {
+      "title": "محتواي",
+      "noContent": "لم تقم بإنشاء أي محتوى بعد.",
+      "promote": "ترويج"
+    },
+    "saved": {
+      "title": "العناصر المحفوظة",
+      "noSaved": "لا توجد عناصر محفوظة حتى الآن.",
+      "remove": "إزالة"
+    }
+  },
+  "talentSearch": {
+    "title": "البحث عن المواهب",
+    "subtitle": "ابحث عن موهبة الذكاء الاصطناعي المثالية لفريقك",
+    "searchPlaceholder": "البحث بالاسم أو المهارات أو المسمى الوظيفي...",
+    "showingResults": "عرض {{count}} من {{total}} موهبة",
+    "loading": "جارٍ تحميل المواهب...",
+    "noTalentsFound": "لم يتم العثور على مواهب",
+    "adjustCriteria": "حاول تعديل معايير البحث أو الفلاتر.",
+    "noTalentsYet": "لا توجد مواهب في النظام حتى الآن.",
+    "verified": "موثق"
+  },
+  "toolDetails": {
+    "backToTools": "العودة إلى الأدوات",
+    "notFound": "الأداة غير موجودة",
+    "notFoundDesc": "الأداة التي تبحث عنها غير موجودة أو تمت إزالتها.",
+    "features": "الميزات",
+    "pros": "المميزات",
+    "cons": "العيوب",
+    "toolInfo": "معلومات الأداة",
+    "submittedBy": "مقدم من",
+    "anonymous": "مجهول",
+    "addedOn": "أضيف في",
+    "lastUpdated": "آخر تحديث",
+    "tags": "الوسوم",
+    "freePlanAvailable": "خطة مجانية متاحة",
+    "readAllReviews": "قراءة جميع المراجعات"
+  },
+  "submitTool": {
+    "title": "إرسال أداة ذكاء اصطناعي",
+    "editTitle": "تعديل أداة الذكاء الاصطناعي",
+    "subtitle": "شارك أداة ذكاء اصطناعي مع المجتمع",
+    "successTitle": "تم إرسال الأداة بنجاح!",
+    "successMessage": "شكرًا لإرسال أداة الذكاء الاصطناعي. سيقوم فريقنا بمراجعتها خلال 24-48 ساعة.",
+    "submitAnother": "إرسال أداة أخرى"
   }
 }
