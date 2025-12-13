@@ -17,7 +17,8 @@
     "admin": "管理员",
     "signIn": "登录",
     "signUp": "注册",
-    "signOut": "退出"
+    "signOut": "退出",
+    "guidelines": "准则与规范"
   },
   "auth": {
     "signOut": "退出"
