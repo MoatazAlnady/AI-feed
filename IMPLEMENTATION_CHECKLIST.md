@@ -6,6 +6,7 @@
 - [x] **Chat window dark mode colors** - Fixed to match landing page panels in dark mode
 - [x] **Posts tab added to profile** - New "Posts" tab added alongside Overview, My Content, Saved Items
 - [x] **Header icon removal** - Removed admin and employer dashboard shortcuts from header (moved to user menu)
+- [x] **Hardcoded button labels fixed** - NewsFeed.tsx and Profile.tsx now use i18n translation keys
 
 ### Newsletter & Settings
 - [x] **Newsletter subscription control** - Users can control newsletter subscription from account settings
@@ -49,8 +50,6 @@
   - Proper 10-second timer functionality
   - Tasks auto-remove after undo period expires
 
-## ⏳ IN PROGRESS / NEEDS COMPLETION
-
 ### Employer Dashboard Features
 - [x] **Landing page search → AI chat** - Search bar prompts AI chatbot
 - [x] **Employer search → talent filters** - Search in employer dashboard applies talent filters  
@@ -64,7 +63,28 @@
 ### Content Management
 - [x] **Newsfeed post visibility** - Posts now appear in newsfeed with real Supabase integration
 - [x] **Tool reviews and ratings** - Complete review system with pros/cons, helpful votes, and moderation
-- [ ] **Chat window integration** - Opening chat with specific person
+
+### Tool Edit Request System
+- [x] **"Request Edit" button** - Added to ToolDetails page for non-admin users
+- [x] **Edit request modal** - Shows appropriate messaging for edit requests
+- [x] **Admin approval workflow** - Full integration with existing admin review system
+
+### Category/Subcategory Protection
+- [x] **Deletion protection** - Database triggers prevent deleting categories with assigned tools
+- [x] **UI feedback** - Toast notifications inform users when deletion is blocked
+
+### Internationalization (i18n)
+- [x] **Brand name consistency** - "AI Feed" branding in all 9 language files
+- [x] **Auto-generated key translations** - All 43 `auto.*` keys translated to 8 languages
+- [x] **Content type translations** - Added `common.contentTypes` for tool, article, post, event, job
+- [x] **Hardcoded strings cleanup** - Replaced hardcoded labels with i18n keys
+
+### Top Creators Integration
+- [x] **OnboardingFlow component** - Multi-step onboarding with interest selection
+- [x] **Creator discovery** - Fetches and displays creators matching user interests
+- [x] **Follow functionality** - Users can follow creators during onboarding
+
+## ⏳ IN PROGRESS / NEEDS COMPLETION
 
 ### Advanced Admin Features  
 - [ ] **User management interface** - Complete user administration
@@ -72,22 +92,24 @@
 - [ ] **Newsletter content management** - Newsletter creation and management
 - [ ] **Dropdown improvements** - Tools dropdown and signup improvements
 
+### Chat Integration
+- [ ] **Chat window integration** - Opening chat with specific person from profile
+
 ## 🚧 TECHNICAL NOTES
 
 ### Database Requirements
-- Some features may need additional database tables/columns
-- User posts, reactions, and reports need proper data models
-- Tool ratings and reviews system needs schema design
+- ✅ User posts, reactions, and reports data models implemented
+- ✅ Tool ratings and reviews system implemented
+- ✅ Tool edit requests table and functions implemented
 
 ### Integration Points
-- AI chat integration with search needs backend API
-- Talent search filtering needs Supabase queries
-- Real-time notifications system for admin actions
+- ✅ AI chat integration with search working
+- ✅ Talent search filtering with Supabase queries
+- ✅ Real-time notifications system for admin actions
 
 ## 📋 NEXT PRIORITIES
 
-1. **Employer Dashboard Population** - Fill empty pages with actual functionality
-2. **Search Integration** - Connect search bars to proper systems
-3. **Database Schema Updates** - Add missing tables for new features
-4. **Real Content Display** - Show actual posts in newsfeeds
-5. **Tool Rating System** - Complete review and rating functionality
+1. **Chat Window Integration** - Add "Message" button to user profiles
+2. **User Management Interface** - Complete CRUD operations for users
+3. **Organization Management** - Employer organization settings
+4. **Newsletter Management** - Newsletter creation and scheduling UI
