@@ -501,21 +501,227 @@
       "logo": "Logo",
       "uploadLogo": "上传Logo",
       "tags": "标签",
-      "tagsPlaceholder": "输入标签，用逗号分隔",
-      "features": "功能特点",
-      "addFeature": "添加功能",
-      "pros": "优点",
-      "addPro": "添加优点",
-      "cons": "缺点",
-      "addCon": "添加缺点",
-      "submit": "提交工具",
-      "submitting": "提交中..."
-    },
-    "validation": {
-      "authRequired": "您必须登录才能提交工具。",
-      "duplicateDetected": "已存在具有此名称和网站的工具。",
-      "subcategoryRequired": "请选择子分类。",
-      "toolTypeRequired": "请选择至少一种工具类型。"
+      "tagsPlaceholder": "添加标签（按回车键添加）"
     }
+  },
+  "submitArticle": {
+    "title": "提交文章",
+    "subtitle": "与AI社区分享您的知识和见解",
+    "successTitle": "文章提交成功！",
+    "successMessage": "感谢您提交文章。我们的团队将在24-48小时内审核。",
+    "submitAnother": "提交另一篇文章",
+    "form": {
+      "title": "文章标题",
+      "titlePlaceholder": "输入您的文章标题",
+      "category": "分类",
+      "selectCategory": "选择分类",
+      "content": "内容",
+      "contentPlaceholder": "在这里撰写您的文章...",
+      "excerpt": "摘要",
+      "excerptPlaceholder": "简短描述您的文章",
+      "featuredImage": "特色图片URL",
+      "featuredImagePlaceholder": "https://example.com/image.jpg",
+      "videoUrl": "视频URL（可选）",
+      "videoUrlPlaceholder": "https://youtube.com/watch?v=...",
+      "tags": "标签",
+      "tagsPlaceholder": "添加标签（按回车键添加）",
+      "submit": "提交文章",
+      "submitting": "提交中..."
+    }
+  },
+  "creatorProfile": {
+    "title": "创作者资料",
+    "backToCreators": "返回创作者列表",
+    "notFound": "未找到创作者",
+    "notFoundDesc": "您查找的创作者资料不存在或已被删除。",
+    "verified": "已认证",
+    "topVoice": "AI Nexus 顶级声音",
+    "connect": "建立联系",
+    "message": "发送消息",
+    "following": "正在关注",
+    "about": "关于",
+    "skills": "技能与兴趣",
+    "stats": {
+      "tools": "提交的工具",
+      "articles": "撰写的文章",
+      "engagement": "总互动量",
+      "reach": "总触达量"
+    },
+    "activity": {
+      "title": "最近活动",
+      "noActivity": "暂无活动"
+    },
+    "contact": {
+      "title": "联系信息",
+      "website": "网站",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter",
+      "github": "GitHub"
+    }
+  },
+  "analytics": {
+    "title": "内容分析",
+    "subtitle": "追踪您内容的表现和互动情况",
+    "overview": "概览",
+    "posts": "帖子",
+    "tools": "工具",
+    "articles": "文章",
+    "metrics": {
+      "totalViews": "总浏览量",
+      "totalLikes": "总点赞量",
+      "totalComments": "总评论量",
+      "totalShares": "总分享量",
+      "engagementRate": "互动率",
+      "avgViewsPerPost": "每帖平均浏览量"
+    },
+    "charts": {
+      "viewsOverTime": "一段时间内的浏览量",
+      "engagementByType": "按类型划分的互动",
+      "topPerforming": "表现最佳的内容"
+    },
+    "period": {
+      "7days": "过去7天",
+      "30days": "过去30天",
+      "90days": "过去90天",
+      "allTime": "所有时间"
+    },
+    "noData": "暂无分析数据",
+    "noDataDesc": "开始创建内容以查看您的分析数据。"
+  },
+  "upgrade": {
+    "title": "升级您的会员资格",
+    "subtitle": "解锁高级功能，将您的AI之旅提升到新水平",
+    "currentPlan": "当前计划",
+    "free": "免费版",
+    "premium": "高级版",
+    "enterprise": "企业版",
+    "popular": "最受欢迎",
+    "features": {
+      "title": "高级功能",
+      "unlimitedConnections": "无限制的联系请求",
+      "advancedAnalytics": "高级分析",
+      "prioritySupport": "优先支持",
+      "featuredProfile": "个人资料突出显示",
+      "aiRecommendations": "AI驱动的推荐",
+      "customBranding": "自定义品牌",
+      "apiAccess": "API访问",
+      "dedicatedManager": "专属客户经理"
+    },
+    "pricing": {
+      "monthly": "每月",
+      "yearly": "每年",
+      "savePercent": "节省{{percent}}%"
+    },
+    "cta": {
+      "upgrade": "立即升级",
+      "contact": "联系销售",
+      "startTrial": "开始免费试用"
+    },
+    "faq": {
+      "title": "常见问题",
+      "q1": "我可以随时取消吗？",
+      "a1": "是的，您可以随时取消订阅，没有任何隐藏费用。",
+      "q2": "有退款政策吗？",
+      "a2": "我们提供30天退款保证。",
+      "q3": "我可以更改计划吗？",
+      "a3": "是的，您可以随时升级或降级您的计划。"
+    }
+  },
+  "createPost": {
+    "title": "创建帖子",
+    "placeholder": "您在想什么？",
+    "addImage": "添加图片",
+    "addVideo": "添加视频",
+    "addLink": "添加链接",
+    "post": "发布",
+    "posting": "发布中...",
+    "cancel": "取消",
+    "imageUrl": "图片URL",
+    "videoUrl": "视频URL",
+    "linkUrl": "链接URL",
+    "success": "帖子发布成功！",
+    "error": "发布帖子失败"
+  },
+  "notificationsPage": {
+    "title": "通知",
+    "markAllRead": "全部标为已读",
+    "noNotifications": "暂无通知",
+    "noNotificationsDesc": "有新消息时，您会在这里看到。",
+    "types": {
+      "like": "点赞了您的帖子",
+      "comment": "评论了您的帖子",
+      "follow": "开始关注您",
+      "mention": "在帖子中提到了您",
+      "connection": "接受了您的联系请求"
+    }
+  },
+  "notFound": {
+    "title": "页面未找到",
+    "subtitle": "抱歉，您查找的页面不存在或已被移动。",
+    "backHome": "返回首页",
+    "searchInstead": "或尝试搜索"
+  },
+  "chatPage": {
+    "title": "消息",
+    "subtitle": "与您的联系人交流"
+  },
+  "projects": {
+    "title": "项目",
+    "createProject": "创建项目",
+    "noProjects": "暂无项目",
+    "noProjectsDesc": "创建您的第一个项目来组织候选人。",
+    "projectName": "项目名称",
+    "projectDescription": "项目描述",
+    "candidates": "候选人",
+    "addCandidate": "添加候选人",
+    "removeCandidate": "移除候选人",
+    "notes": "备注",
+    "tags": "标签",
+    "createTag": "创建标签",
+    "deleteProject": "删除项目",
+    "confirmDelete": "您确定要删除此项目吗？"
+  },
+  "userView": {
+    "title": "用户资料",
+    "backToUsers": "返回用户列表",
+    "accountInfo": "账户信息",
+    "email": "电子邮件",
+    "role": "角色",
+    "status": "状态",
+    "joined": "加入时间",
+    "lastActive": "最后活跃",
+    "actions": {
+      "ban": "封禁用户",
+      "unban": "解封用户",
+      "changeRole": "更改角色",
+      "resetPassword": "重置密码",
+      "deleteAccount": "删除账户"
+    },
+    "activity": {
+      "title": "用户活动",
+      "posts": "帖子",
+      "comments": "评论",
+      "tools": "工具",
+      "articles": "文章"
+    }
+  },
+  "adminToolRequests": {
+    "title": "工具编辑请求",
+    "subtitle": "审核和管理工具编辑请求",
+    "pending": "待审核",
+    "approved": "已批准",
+    "rejected": "已拒绝",
+    "noRequests": "暂无编辑请求",
+    "noRequestsDesc": "工具编辑请求将在此处显示。",
+    "requestedBy": "请求者",
+    "requestedOn": "请求日期",
+    "currentValues": "当前值",
+    "requestedChanges": "请求的更改",
+    "approve": "批准",
+    "reject": "拒绝",
+    "adminNotes": "管理员备注",
+    "addNotes": "添加备注...",
+    "confirmApprove": "确认批准此编辑请求？",
+    "confirmReject": "确认拒绝此编辑请求？"
   }
 }
