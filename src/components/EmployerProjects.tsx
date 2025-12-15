@@ -251,20 +251,20 @@ const EmployerProjects: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Project Management</h2>
-          <p className="text-gray-600 dark:text-gray-400">Organize candidates and streamline your hiring process</p>
+          <h2 className="text-2xl font-bold text-foreground">Project Management</h2>
+          <p className="text-muted-foreground">Organize candidates and streamline your hiring process</p>
         </div>
         <div className="flex space-x-3">
           <button
             onClick={() => setShowTagsModal(true)}
-            className="flex items-center space-x-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
           >
-            <Tag className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-            <span className="text-gray-700 dark:text-gray-300">Manage Tags</span>
+            <Tag className="h-5 w-5 text-muted-foreground" />
+            <span className="text-foreground">Manage Tags</span>
           </button>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
           >
             <Plus className="h-5 w-5" />
             <span>New Project</span>
@@ -273,15 +273,15 @@ const EmployerProjects: React.FC = () => {
       </div>
 
       {/* Search */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
+      <div className="bg-card rounded-xl shadow-sm p-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search projects..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
           />
         </div>
       </div>
@@ -294,27 +294,27 @@ const EmployerProjects: React.FC = () => {
       ) : filteredProjects.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProjects.map((project) => (
-            <div key={project.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+            <div key={project.id} className="bg-card rounded-xl shadow-sm hover:shadow-md transition-shadow">
               <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
-                      <Briefcase className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <Briefcase className="h-5 w-5 text-primary" />
                     </div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-lg">{project.title}</h3>
+                    <h3 className="font-semibold text-foreground text-lg">{project.title}</h3>
                   </div>
                   <div className="relative">
-                    <button className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                    <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors">
                       <MoreHorizontal className="h-5 w-5" />
                     </button>
                   </div>
                 </div>
                 
                 {project.description && (
-                  <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">{project.description}</p>
+                  <p className="text-muted-foreground mb-4 line-clamp-2">{project.description}</p>
                 )}
                 
-                <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+                <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
                   <div className="flex items-center space-x-2">
                     <Users className="h-4 w-4" />
                     <span>{project.candidate_count} candidates</span>
@@ -328,14 +328,14 @@ const EmployerProjects: React.FC = () => {
                 <div className="flex space-x-2">
                   <button
                     onClick={() => openProjectDetails(project)}
-                    className="flex-1 bg-primary-500 text-white py-2 rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center space-x-2"
+                    className="flex-1 bg-primary text-primary-foreground py-2 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center space-x-2"
                   >
                     <Eye className="h-4 w-4" />
                     <span>View Details</span>
                   </button>
                   <button
                     onClick={() => handleDeleteProject(project.id)}
-                    className="p-2 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                     title="Delete Project"
                   >
                     <Trash className="h-5 w-5" />
@@ -346,17 +346,17 @@ const EmployerProjects: React.FC = () => {
           ))}
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-12 text-center">
-          <Briefcase className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+        <div className="bg-card rounded-xl shadow-sm p-12 text-center">
+          <Briefcase className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-foreground mb-2">
             No Projects Yet
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
+          <p className="text-muted-foreground mb-6">
             Create your first project to organize candidates and streamline your hiring process.
           </p>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-6 py-3 bg-primary-500 text-white rounded-xl font-medium hover:bg-primary-600 transition-colors"
+            className="px-6 py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-colors"
           >
             Create Your First Project
           </button>
@@ -365,22 +365,22 @@ const EmployerProjects: React.FC = () => {
 
       {/* Create Project Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-card rounded-xl shadow-xl max-w-md w-full border border-border">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Create Project</h2>
+                <h2 className="text-2xl font-bold text-foreground">Create Project</h2>
                 <button
                   onClick={() => setShowCreateModal(false)}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  className="p-2 hover:bg-muted rounded-lg transition-colors"
                 >
-                  <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                  <X className="h-5 w-5 text-muted-foreground" />
                 </button>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2">
                     Project Title *
                   </label>
                   <input
@@ -388,14 +388,14 @@ const EmployerProjects: React.FC = () => {
                     id="title"
                     value={newProject.title}
                     onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                     placeholder="e.g., Senior AI Engineer Hiring"
                     required
                   />
                 </div>
                 
                 <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label htmlFor="description" className="block text-sm font-medium text-foreground mb-2">
                     Description
                   </label>
                   <textarea
@@ -403,7 +403,7 @@ const EmployerProjects: React.FC = () => {
                     value={newProject.description}
                     onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
                     rows={3}
-                    className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent resize-none bg-background text-foreground"
                     placeholder="Describe the purpose of this project..."
                   />
                 </div>
@@ -412,7 +412,7 @@ const EmployerProjects: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowCreateModal(false)}
-                    className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    className="flex-1 px-4 py-3 border border-border text-foreground rounded-xl hover:bg-muted transition-colors"
                   >
                     Cancel
                   </button>
@@ -420,7 +420,7 @@ const EmployerProjects: React.FC = () => {
                     type="button"
                     onClick={handleCreateProject}
                     disabled={!newProject.title.trim()}
-                    className="flex-1 bg-primary-500 text-white px-4 py-3 rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 bg-primary text-primary-foreground px-4 py-3 rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Create Project
                   </button>
@@ -433,16 +433,16 @@ const EmployerProjects: React.FC = () => {
 
       {/* Manage Tags Modal */}
       {showTagsModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-card rounded-xl shadow-xl max-w-md w-full border border-border">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Manage Tags</h2>
+                <h2 className="text-2xl font-bold text-foreground">Manage Tags</h2>
                 <button
                   onClick={() => setShowTagsModal(false)}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  className="p-2 hover:bg-muted rounded-lg transition-colors"
                 >
-                  <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                  <X className="h-5 w-5 text-muted-foreground" />
                 </button>
               </div>
 
@@ -452,41 +452,41 @@ const EmployerProjects: React.FC = () => {
                     type="text"
                     value={newTag.name}
                     onChange={(e) => setNewTag({ ...newTag, name: e.target.value })}
-                    className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                     placeholder="New tag name"
                   />
                   <input
                     type="color"
                     value={newTag.color}
                     onChange={(e) => setNewTag({ ...newTag, color: e.target.value })}
-                    className="h-10 w-10 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer"
+                    className="h-10 w-10 rounded-lg border border-border cursor-pointer"
                   />
                   <button
                     onClick={handleCreateTag}
                     disabled={!newTag.name.trim()}
-                    className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Add
                   </button>
                 </div>
 
-                <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden max-h-64 overflow-y-auto">
+                <div className="border border-border rounded-xl overflow-hidden max-h-64 overflow-y-auto">
                   {tags.map((tag) => (
                     <div 
                       key={tag.id} 
-                      className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
+                      className="flex items-center justify-between p-3 border-b border-border last:border-b-0"
                     >
                       <div className="flex items-center space-x-3">
                         <div 
                           className="w-4 h-4 rounded-full" 
                           style={{ backgroundColor: tag.color }}
                         />
-                        <span className="text-gray-900 dark:text-white">{tag.name}</span>
+                        <span className="text-foreground">{tag.name}</span>
                       </div>
                       {!tag.id.startsWith('default-') && (
                         <button
                           onClick={() => handleDeleteTag(tag.id)}
-                          className="text-red-500 hover:text-red-700 transition-colors"
+                          className="text-destructive hover:text-destructive/80 transition-colors"
                         >
                           <Trash className="h-4 w-4" />
                         </button>
