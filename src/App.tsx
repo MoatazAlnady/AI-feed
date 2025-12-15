@@ -13,6 +13,7 @@ import Index from "./pages/Index";
 import Tools from "./pages/Tools";
 import Talent from "./pages/Talent";
 import EmployerDashboard from "./pages/EmployerDashboard";
+import CreatorDashboard from "./pages/CreatorDashboard";
 import EmployerOnboarding from "./components/EmployerOnboarding";
 import Admin from "./pages/Admin";
 import Messages from "./pages/Messages";
@@ -91,7 +92,7 @@ const App = () => (
                
                <Route path="settings" element={<Settings />} />
                <Route path="upgrade" element={<Upgrade />} />
-               <Route path="dashboard" element={<EmployerDashboard />} />
+               <Route path="dashboard" element={<CreatorDashboard />} />
                <Route path="employer/onboarding" element={<EmployerOnboarding />} />
                <Route path="employer/upgrade" element={<EmployerUpgrade />} />
                <Route path="employer/*" element={<EmployerDashboard />} />
