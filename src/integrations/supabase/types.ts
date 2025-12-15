@@ -1791,6 +1791,7 @@ export type Database = {
           newsletter_frequency: string | null
           newsletter_subscription: boolean | null
           notification_preferences: Json | null
+          online_status_mode: string | null
           organization_id: string | null
           phone: string | null
           phone_country_code: string | null
@@ -1839,6 +1840,7 @@ export type Database = {
           newsletter_frequency?: string | null
           newsletter_subscription?: boolean | null
           notification_preferences?: Json | null
+          online_status_mode?: string | null
           organization_id?: string | null
           phone?: string | null
           phone_country_code?: string | null
@@ -1887,6 +1889,7 @@ export type Database = {
           newsletter_frequency?: string | null
           newsletter_subscription?: boolean | null
           notification_preferences?: Json | null
+          online_status_mode?: string | null
           organization_id?: string | null
           phone?: string | null
           phone_country_code?: string | null

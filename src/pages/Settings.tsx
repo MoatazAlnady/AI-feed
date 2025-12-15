@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Bell, User, Globe, Shield, Briefcase, MapPin, Phone, Link2, Calendar, Users } from 'lucide-react';
+import { Bell, User, Globe, Shield, Briefcase, MapPin, Phone, Link2, Calendar, Users, Circle } from 'lucide-react';
 import NotificationSettings from '@/components/NotificationSettings';
 import SecuritySettings from '@/components/SecuritySettings';
 import InterestTagSelector from '@/components/InterestTagSelector';
@@ -23,6 +23,7 @@ const Settings = () => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [countryCodes, setCountryCodes] = useState<Array<{ id: string; country_name: string; country_code: string; phone_code: string }>>([]);
+  const [onlineStatusMode, setOnlineStatusMode] = useState<'auto' | 'online' | 'offline'>('auto');
   const [profile, setProfile] = useState({
     full_name: '',
     display_name: '',
@@ -51,8 +52,51 @@ const Settings = () => {
     if (user) {
       fetchProfile();
       fetchCountryCodes();
+      fetchOnlineStatusMode();
     }
   }, [user]);
+
+  const fetchOnlineStatusMode = async () => {
+    if (!user) return;
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('online_status_mode')
+        .eq('id', user.id)
+        .single();
+      
+      if (!error && data?.online_status_mode) {
+        setOnlineStatusMode(data.online_status_mode as 'auto' | 'online' | 'offline');
+      }
+    } catch (error) {
+      console.error('Error fetching online status mode:', error);
+    }
+  };
+
+  const handleOnlineStatusChange = async (mode: 'auto' | 'online' | 'offline') => {
+    if (!user) return;
+    try {
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ online_status_mode: mode })
+        .eq('id', user.id);
+      
+      if (!error) {
+        setOnlineStatusMode(mode);
+        toast({
+          title: t('common.success'),
+          description: t('settings.settingsSaved'),
+        });
+      }
+    } catch (error) {
+      console.error('Error updating online status:', error);
+      toast({
+        title: t('common.error'),
+        description: t('settings.saveError'),
+        variant: "destructive"
+      });
+    }
+  };
 
   const fetchCountryCodes = async () => {
     try {
@@ -570,6 +614,68 @@ const Settings = () => {
                     <SelectItem value="private">{t('settings.visibilityOptions.private')}</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Online Status Settings */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Circle className="h-5 w-5" />
+                {t('onlineStatus.title')}
+              </CardTitle>
+              <CardDescription>
+                {t('onlineStatus.description')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <div
+                  onClick={() => handleOnlineStatusChange('auto')}
+                  className={`flex items-center space-x-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                    onlineStatusMode === 'auto' ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'
+                  }`}
+                >
+                  <Circle className="h-4 w-4 fill-green-500 text-green-500" />
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{t('onlineStatus.auto')}</p>
+                    <p className="text-xs text-muted-foreground">{t('onlineStatus.autoDesc')}</p>
+                  </div>
+                  {onlineStatusMode === 'auto' && (
+                    <div className="w-2 h-2 rounded-full bg-primary" />
+                  )}
+                </div>
+                <div
+                  onClick={() => handleOnlineStatusChange('online')}
+                  className={`flex items-center space-x-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                    onlineStatusMode === 'online' ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'
+                  }`}
+                >
+                  <Circle className="h-4 w-4 fill-green-500 text-green-500" />
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{t('onlineStatus.online')}</p>
+                    <p className="text-xs text-muted-foreground">{t('onlineStatus.onlineDesc')}</p>
+                  </div>
+                  {onlineStatusMode === 'online' && (
+                    <div className="w-2 h-2 rounded-full bg-primary" />
+                  )}
+                </div>
+                <div
+                  onClick={() => handleOnlineStatusChange('offline')}
+                  className={`flex items-center space-x-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                    onlineStatusMode === 'offline' ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'
+                  }`}
+                >
+                  <Circle className="h-4 w-4 fill-muted-foreground text-muted-foreground" />
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{t('onlineStatus.offline')}</p>
+                    <p className="text-xs text-muted-foreground">{t('onlineStatus.offlineDesc')}</p>
+                  </div>
+                  {onlineStatusMode === 'offline' && (
+                    <div className="w-2 h-2 rounded-full bg-primary" />
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>

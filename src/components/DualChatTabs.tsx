@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, X, MessageCircle, Search, User, ArrowLeft, Maximize2, Minimize2, Send } from 'lucide-react';
+import { Bot, X, MessageCircle, Search, User, ArrowLeft, Maximize2, Minimize2, Send, Circle, ChevronDown } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import AIChat from './AIChat';
 import { useAuth } from '@/context/AuthContext';
 import { useChatDock } from '@/context/ChatDockContext';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 interface DualChatTabsProps {
   isOpen: boolean;
@@ -33,7 +35,8 @@ interface ActiveConversation {
 
 const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
   const { user } = useAuth();
-  const { conversationUsers, onlineUsers, refreshConnections, loading } = useChatDock();
+  const { t } = useTranslation();
+  const { conversationUsers, onlineUsers, refreshConnections, loading, myOnlineStatusMode, updateMyStatusMode, getEffectiveOnlineStatus } = useChatDock();
   const [activeTab, setActiveTab] = useState('chats');
   const [searchTerm, setSearchTerm] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
@@ -234,24 +237,72 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
           ) : (
-            // Normal tabs header
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
-              <TabsList className="grid w-full grid-cols-2 h-9">
-                <TabsTrigger value="chats" className="text-sm relative">
-                  <MessageCircle className="h-4 w-4 mr-1.5" />
-                  Chats
-                  {totalUnread > 0 && (
-                    <Badge variant="destructive" className="ml-1.5 h-5 min-w-[20px] px-1.5 text-xs">
-                      {totalUnread}
-                    </Badge>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger value="ai" className="text-sm">
-                  <Bot className="h-4 w-4 mr-1.5" />
-                  AI Assistant
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+            // Normal tabs header with status toggle
+            <div className="flex items-center space-x-2 flex-1">
+              {/* Status indicator dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 relative">
+                    <Circle className={`h-3 w-3 ${
+                      myOnlineStatusMode === 'offline' ? 'fill-muted-foreground text-muted-foreground' :
+                      myOnlineStatusMode === 'online' ? 'fill-green-500 text-green-500' :
+                      'fill-green-500 text-green-500'
+                    }`} />
+                    <ChevronDown className="h-2 w-2 absolute bottom-0 right-0" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-48">
+                  <DropdownMenuItem 
+                    onClick={() => updateMyStatusMode('auto')}
+                    className={myOnlineStatusMode === 'auto' ? 'bg-muted' : ''}
+                  >
+                    <Circle className="h-3 w-3 mr-2 fill-green-500 text-green-500" />
+                    <div>
+                      <p className="text-sm font-medium">{t('onlineStatus.auto')}</p>
+                      <p className="text-xs text-muted-foreground">{t('onlineStatus.autoDesc')}</p>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => updateMyStatusMode('online')}
+                    className={myOnlineStatusMode === 'online' ? 'bg-muted' : ''}
+                  >
+                    <Circle className="h-3 w-3 mr-2 fill-green-500 text-green-500" />
+                    <div>
+                      <p className="text-sm font-medium">{t('onlineStatus.online')}</p>
+                      <p className="text-xs text-muted-foreground">{t('onlineStatus.onlineDesc')}</p>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => updateMyStatusMode('offline')}
+                    className={myOnlineStatusMode === 'offline' ? 'bg-muted' : ''}
+                  >
+                    <Circle className="h-3 w-3 mr-2 fill-muted-foreground text-muted-foreground" />
+                    <div>
+                      <p className="text-sm font-medium">{t('onlineStatus.offline')}</p>
+                      <p className="text-xs text-muted-foreground">{t('onlineStatus.offlineDesc')}</p>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
+                <TabsList className="grid w-full grid-cols-2 h-9">
+                  <TabsTrigger value="chats" className="text-sm relative">
+                    <MessageCircle className="h-4 w-4 mr-1.5" />
+                    {t('chat.chats') || 'Chats'}
+                    {totalUnread > 0 && (
+                      <Badge variant="destructive" className="ml-1.5 h-5 min-w-[20px] px-1.5 text-xs">
+                        {totalUnread}
+                      </Badge>
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger value="ai" className="text-sm">
+                    <Bot className="h-4 w-4 mr-1.5" />
+                    {t('chat.aiAssistant') || 'AI Assistant'}
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
           )}
           
           <div className="flex items-center space-x-1 ml-2">
@@ -359,8 +410,8 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
                 ) : filteredUsers.length > 0 ? (
                   <div className="divide-y divide-border">
                     {filteredUsers.map((userItem) => {
-                      // Only show online status for connections
-                      const isOnline = userItem.showOnlineStatus && onlineUsers.has(userItem.id);
+                      // Use getEffectiveOnlineStatus for connections to respect status mode
+                      const isOnline = userItem.showOnlineStatus && getEffectiveOnlineStatus(userItem.id);
                       
                       return (
                         <button

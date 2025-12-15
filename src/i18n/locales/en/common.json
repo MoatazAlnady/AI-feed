@@ -1,4 +1,36 @@
 {
+  "onlineStatus": {
+    "title": "Online Status",
+    "description": "Control how your online status appears to others",
+    "auto": "Auto",
+    "autoDesc": "Show my real status automatically",
+    "online": "Online",
+    "onlineDesc": "Always appear online to others",
+    "offline": "Offline",
+    "offlineDesc": "Always appear offline to others",
+    "quickChange": "Change status"
+  },
+  "creatorProfile": {
+    "tabs": {
+      "tools": "Tools",
+      "articles": "Articles",
+      "activity": "Activity",
+      "groups": "Groups"
+    },
+    "empty": {
+      "noTools": "No tools submitted yet",
+      "toolsAppear": "Tools submitted by this user will appear here.",
+      "toolsAppearOwn": "Tools you submit will appear here.",
+      "noArticles": "No articles written yet",
+      "articlesAppear": "Articles written by this user will appear here.",
+      "articlesAppearOwn": "Articles you write will appear here.",
+      "noActivity": "No recent activity",
+      "activityAppear": "Recent activity will appear here.",
+      "noGroups": "Not a member of any groups",
+      "groupsAppear": "Groups this user belongs to will appear here.",
+      "groupsAppearOwn": "Groups you join will appear here."
+    }
+  },
   "nav": {
     "home": "Home",
     "tools": "Tools",
