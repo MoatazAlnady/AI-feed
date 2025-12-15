@@ -187,6 +187,91 @@ export type Database = {
         }
         Relationships: []
       }
+      company_employees: {
+        Row: {
+          company_page_id: string
+          created_at: string | null
+          id: string
+          invited_by: string | null
+          joined_at: string | null
+          role: Database["public"]["Enums"]["company_role"]
+          user_id: string
+        }
+        Insert: {
+          company_page_id: string
+          created_at?: string | null
+          id?: string
+          invited_by?: string | null
+          joined_at?: string | null
+          role?: Database["public"]["Enums"]["company_role"]
+          user_id: string
+        }
+        Update: {
+          company_page_id?: string
+          created_at?: string | null
+          id?: string
+          invited_by?: string | null
+          joined_at?: string | null
+          role?: Database["public"]["Enums"]["company_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_employees_company_page_id_fkey"
+            columns: ["company_page_id"]
+            isOneToOne: false
+            referencedRelation: "company_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_invitations: {
+        Row: {
+          company_page_id: string
+          created_at: string | null
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string
+          role: Database["public"]["Enums"]["company_role"]
+          status: string
+          token: string
+          updated_at: string | null
+        }
+        Insert: {
+          company_page_id: string
+          created_at?: string | null
+          email: string
+          expires_at: string
+          id?: string
+          invited_by: string
+          role?: Database["public"]["Enums"]["company_role"]
+          status?: string
+          token: string
+          updated_at?: string | null
+        }
+        Update: {
+          company_page_id?: string
+          created_at?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          role?: Database["public"]["Enums"]["company_role"]
+          status?: string
+          token?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_invitations_company_page_id_fkey"
+            columns: ["company_page_id"]
+            isOneToOne: false
+            referencedRelation: "company_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_pages: {
         Row: {
           city: string | null
@@ -195,14 +280,19 @@ export type Database = {
           created_at: string | null
           created_by: string
           description: string | null
+          domain: string | null
           headcount: string | null
           id: string
           industry: string | null
           location: string | null
           logo_url: string | null
+          max_employees: number | null
           name: string
           slug: string
           social_links: Json | null
+          subscription_expires_at: string | null
+          subscription_plan_id: string | null
+          subscription_status: string | null
           updated_at: string | null
           verified: boolean | null
           website: string | null
@@ -214,14 +304,19 @@ export type Database = {
           created_at?: string | null
           created_by: string
           description?: string | null
+          domain?: string | null
           headcount?: string | null
           id?: string
           industry?: string | null
           location?: string | null
           logo_url?: string | null
+          max_employees?: number | null
           name: string
           slug: string
           social_links?: Json | null
+          subscription_expires_at?: string | null
+          subscription_plan_id?: string | null
+          subscription_status?: string | null
           updated_at?: string | null
           verified?: boolean | null
           website?: string | null
@@ -233,14 +328,19 @@ export type Database = {
           created_at?: string | null
           created_by?: string
           description?: string | null
+          domain?: string | null
           headcount?: string | null
           id?: string
           industry?: string | null
           location?: string | null
           logo_url?: string | null
+          max_employees?: number | null
           name?: string
           slug?: string
           social_links?: Json | null
+          subscription_expires_at?: string | null
+          subscription_plan_id?: string | null
+          subscription_status?: string | null
           updated_at?: string | null
           verified?: boolean | null
           website?: string | null
@@ -251,6 +351,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_pages_subscription_plan_id_fkey"
+            columns: ["subscription_plan_id"]
+            isOneToOne: false
+            referencedRelation: "pricing_plans"
             referencedColumns: ["id"]
           },
         ]
@@ -442,6 +549,7 @@ export type Database = {
       }
       employer_projects: {
         Row: {
+          company_page_id: string | null
           created_at: string | null
           description: string | null
           id: string
@@ -450,6 +558,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          company_page_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -458,6 +567,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          company_page_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -466,6 +576,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "employer_projects_company_page_id_fkey"
+            columns: ["company_page_id"]
+            isOneToOne: false
+            referencedRelation: "company_pages"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "employer_projects_user_id_fkey"
             columns: ["user_id"]
@@ -562,6 +679,7 @@ export type Database = {
           application_url: string
           city: string
           company: string
+          company_page_id: string | null
           country: string
           created_at: string | null
           description: string
@@ -583,6 +701,7 @@ export type Database = {
           application_url: string
           city: string
           company: string
+          company_page_id?: string | null
           country: string
           created_at?: string | null
           description: string
@@ -604,6 +723,7 @@ export type Database = {
           application_url?: string
           city?: string
           company?: string
+          company_page_id?: string | null
           country?: string
           created_at?: string | null
           description?: string
@@ -621,6 +741,13 @@ export type Database = {
           work_mode?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "jobs_company_page_id_fkey"
+            columns: ["company_page_id"]
+            isOneToOne: false
+            referencedRelation: "company_pages"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "jobs_user_id_fkey"
             columns: ["user_id"]
@@ -2199,6 +2326,7 @@ export type Database = {
           verified: boolean
         }[]
       }
+      get_user_company_id: { Args: { user_uuid: string }; Returns: string }
       get_user_connections_count: {
         Args: { user_id_param: string }
         Returns: number
@@ -2207,11 +2335,23 @@ export type Database = {
         Args: { user_id_param: string }
         Returns: string[]
       }
+      has_active_subscription: {
+        Args: { company_id: string }
+        Returns: boolean
+      }
       has_permission: {
         Args: { permission_key_param: string; user_id_param: string }
         Returns: boolean
       }
       is_admin: { Args: never; Returns: boolean }
+      is_company_admin: {
+        Args: { company_id: string; user_uuid: string }
+        Returns: boolean
+      }
+      is_company_employee: {
+        Args: { company_id: string; user_uuid: string }
+        Returns: boolean
+      }
       is_following: {
         Args: { follower_uuid: string; following_uuid: string }
         Returns: boolean
@@ -2263,7 +2403,7 @@ export type Database = {
       user_profile_exists: { Args: { user_id_param: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      company_role: "admin" | "manager" | "employee"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2390,6 +2530,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      company_role: ["admin", "manager", "employee"],
+    },
   },
 } as const
