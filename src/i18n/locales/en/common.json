@@ -127,6 +127,22 @@
   "form": {
     "required": "Required field"
   },
+  "jobs": {
+    "title": "AI Jobs",
+    "subtitle": "Discover exciting career opportunities in artificial intelligence and machine learning.",
+    "allLocations": "All Locations",
+    "remote": "Remote",
+    "allTypes": "All Types",
+    "fullTime": "Full-time",
+    "partTime": "Part-time",
+    "contract": "Contract",
+    "allExperience": "All Experience",
+    "entryLevel": "Entry Level",
+    "midLevel": "Mid Level",
+    "seniorLevel": "Senior Level",
+    "applyNow": "Apply Now",
+    "loadMore": "Load More Jobs"
+  },
   "admin": {
     "createUser": "Create User",
     "toolEditRequests": "Tool Edit Requests",
