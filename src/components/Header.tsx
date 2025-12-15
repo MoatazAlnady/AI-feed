@@ -605,23 +605,12 @@ const Header: React.FC = () => {
                             )}
                         </>
                       )}
-                      {/* Dashboard Switcher Section - Show for all logged-in users */}
-                      {user && (
+                      {/* Dashboard Switcher Section - Only show for employers and admins */}
+                      {(isEmployer || isAdmin) && (
                         <div className="border-t border-gray-100 dark:border-gray-700 pt-2 mt-2">
                           <p className="px-4 py-1 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                            Dashboards
+                            Switch Dashboard
                           </p>
-                          {/* Creator Dashboard - Always available */}
-                          <Link
-                            to="/dashboard"
-                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                            onClick={() => setShowUserMenu(false)}
-                          >
-                            <div className="flex items-center">
-                              <LayoutDashboard className="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" />
-                              Creator Dashboard
-                            </div>
-                          </Link>
                           {/* Employer Dashboard */}
                           {isEmployer && (
                             <Link
