@@ -197,6 +197,11 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
   const applyFilters = () => {
     let filtered = [...talents];
     
+    // Exclude current user from results
+    if (user) {
+      filtered = filtered.filter(talent => talent.id !== user.id);
+    }
+    
     // Search across all relevant profile fields
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
@@ -329,6 +334,11 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
         description: t('auth.loginRequired', 'Please log in to connect'),
         variant: 'destructive',
       });
+      return;
+    }
+
+    // Prevent self-connection
+    if (user.id === talent.id) {
       return;
     }
 
