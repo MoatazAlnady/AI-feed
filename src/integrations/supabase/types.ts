@@ -689,6 +689,7 @@ export type Database = {
           requirements: string
           salary: string | null
           share_count: number | null
+          show_poster: boolean | null
           slots: number
           title: string
           type: string
@@ -711,6 +712,7 @@ export type Database = {
           requirements: string
           salary?: string | null
           share_count?: number | null
+          show_poster?: boolean | null
           slots?: number
           title: string
           type: string
@@ -733,6 +735,7 @@ export type Database = {
           requirements?: string
           salary?: string | null
           share_count?: number | null
+          show_poster?: boolean | null
           slots?: number
           title?: string
           type?: string
@@ -1965,6 +1968,7 @@ export type Database = {
           city: string | null
           company: string | null
           company_page_id: string | null
+          company_text: string | null
           contact_visible: boolean | null
           country: string | null
           cover_photo: string | null
@@ -2015,6 +2019,7 @@ export type Database = {
           city?: string | null
           company?: string | null
           company_page_id?: string | null
+          company_text?: string | null
           contact_visible?: boolean | null
           country?: string | null
           cover_photo?: string | null
@@ -2065,6 +2070,7 @@ export type Database = {
           city?: string | null
           company?: string | null
           company_page_id?: string | null
+          company_text?: string | null
           contact_visible?: boolean | null
           country?: string | null
           cover_photo?: string | null

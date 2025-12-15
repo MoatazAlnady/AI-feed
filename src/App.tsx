@@ -13,6 +13,7 @@ import Index from "./pages/Index";
 import Tools from "./pages/Tools";
 import Talent from "./pages/Talent";
 import EmployerDashboard from "./pages/EmployerDashboard";
+import EmployerOnboarding from "./components/EmployerOnboarding";
 import Admin from "./pages/Admin";
 import Messages from "./pages/Messages";
 import SubmitTool from "./pages/SubmitTool";
@@ -89,7 +90,8 @@ const App = () => (
                <Route path="settings" element={<Settings />} />
                <Route path="upgrade" element={<Upgrade />} />
                <Route path="dashboard" element={<EmployerDashboard />} />
-                <Route path="employer/*" element={<EmployerDashboard />} />
+               <Route path="employer/onboarding" element={<EmployerOnboarding />} />
+               <Route path="employer/*" element={<EmployerDashboard />} />
                 <Route path="admin" element={<Admin />} />
                 <Route path="admin/newsletter" element={<AdminNewsletter />} />
                   <Route path="messages" element={<Messages />} />
