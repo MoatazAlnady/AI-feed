@@ -612,7 +612,7 @@ const Header: React.FC = () => {
                             Switch Dashboard
                           </p>
                           {/* Toggle View Button - Switch between Creator/Employer views */}
-                          {isEmployer && (
+                          {(isEmployer || isAdmin) && (
                             <button
                               onClick={() => {
                                 setShowUserMenu(false);
