@@ -30,7 +30,6 @@ export interface TalentFilters {
   ageRange: [number, number];
   verifiedOnly: boolean;
   accountTypes: string[];
-  booleanOperator: 'AND' | 'OR';
 }
 
 const defaultFilters: TalentFilters = {
@@ -47,7 +46,6 @@ const defaultFilters: TalentFilters = {
   ageRange: [18, 65],
   verifiedOnly: false,
   accountTypes: [],
-  booleanOperator: 'AND',
 };
 
 const TalentSearchFilters: React.FC<TalentSearchFiltersProps> = ({ onFilterChange }) => {
@@ -196,7 +194,6 @@ const TalentSearchFilters: React.FC<TalentSearchFiltersProps> = ({ onFilterChang
       ageRange: [ageMin, ageMax],
       verifiedOnly: params.get('verifiedOnly') === 'true',
       accountTypes: parseArrayParam('accountTypes'),
-      booleanOperator: (params.get('operator') as 'AND' | 'OR') || 'AND',
     });
   }, []);
 
@@ -226,7 +223,6 @@ const TalentSearchFilters: React.FC<TalentSearchFiltersProps> = ({ onFilterChang
     if (newFilters.ageRange[1] !== 65) params.set('ageMax', newFilters.ageRange[1].toString());
     if (newFilters.verifiedOnly) params.set('verifiedOnly', 'true');
     setArrayParam('accountTypes', newFilters.accountTypes);
-    if (newFilters.booleanOperator !== 'AND') params.set('operator', newFilters.booleanOperator);
 
     navigate(`${location.pathname}?${params.toString()}`, { replace: true });
     
@@ -300,27 +296,6 @@ const TalentSearchFilters: React.FC<TalentSearchFiltersProps> = ({ onFilterChang
 
         <CollapsibleContent>
           <CardContent className="pt-0">
-            {/* Boolean Operator Toggle */}
-            <div className="flex items-center gap-3 mb-6 p-3 bg-muted/50 rounded-lg">
-              <Label className="text-sm font-medium">Match:</Label>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant={filters.booleanOperator === 'AND' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handleFilterChange('booleanOperator', 'AND')}
-                >
-                  All filters (AND)
-                </Button>
-                <Button
-                  variant={filters.booleanOperator === 'OR' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handleFilterChange('booleanOperator', 'OR')}
-                >
-                  Any filter (OR)
-                </Button>
-              </div>
-            </div>
-
             {/* Filter Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {/* Skills */}
