@@ -16,7 +16,7 @@ import {
   User
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import TalentSearchFilters from '../components/TalentSearchFilters';
+import TalentSearchFilters, { TalentFilters } from '../components/TalentSearchFilters';
 import { supabase } from '../lib/supabase';
 
 interface Talent {
@@ -36,11 +36,31 @@ interface Talent {
   contact_visible?: boolean;
   email?: string;
   phone?: string;
+  gender?: string;
+  age?: number;
+  account_type?: string;
 }
 
 interface TalentSearchProps {
   initialSearch?: string;
 }
+
+const defaultFilters: TalentFilters = {
+  skills: [],
+  languages: [],
+  languageLevel: '',
+  countries: [],
+  cities: [],
+  industries: [],
+  companySizes: [],
+  experienceLevels: [],
+  jobTitles: [],
+  genders: [],
+  ageRange: [18, 65],
+  verifiedOnly: false,
+  accountTypes: [],
+  booleanOperator: 'AND',
+};
 
 const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
   const { t } = useTranslation();
@@ -50,13 +70,7 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
   const [filteredTalents, setFilteredTalents] = useState<Talent[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalTalents, setTotalTalents] = useState(0);
-  const [filters, setFilters] = useState({
-    skills: [] as string[],
-    experience: '',
-    location: '',
-    language: '',
-    languageLevel: ''
-  });
+  const [filters, setFilters] = useState<TalentFilters>(defaultFilters);
 
   useEffect(() => {
     fetchTalents();
@@ -116,6 +130,7 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
 
   const applyFilters = () => {
     let filtered = [...talents];
+    const isAndMode = filters.booleanOperator === 'AND';
     
     // Apply search term
     if (searchTerm) {
@@ -128,59 +143,61 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
         talent.skills?.some(skill => skill.toLowerCase().includes(term))
       );
     }
+
+    // Build filter checks
+    const filterChecks: ((talent: Talent) => boolean)[] = [];
     
-    // Apply skills filter
+    // Skills filter
     if (filters.skills.length > 0) {
-      filtered = filtered.filter(talent => 
+      filterChecks.push((talent) => 
         talent.skills?.some(skill => 
           filters.skills.some(filterSkill => 
             skill.toLowerCase().includes(filterSkill.toLowerCase())
           )
+        ) ?? false
+      );
+    }
+    
+    // Experience filter
+    if (filters.experienceLevels.length > 0) {
+      filterChecks.push((talent) => 
+        filters.experienceLevels.includes(talent.experience || '')
+      );
+    }
+    
+    // Countries filter
+    if (filters.countries.length > 0) {
+      filterChecks.push((talent) => 
+        filters.countries.some(country => 
+          talent.country?.toLowerCase() === country.toLowerCase() ||
+          talent.location?.toLowerCase().includes(country.toLowerCase())
         )
       );
     }
     
-    // Apply experience filter
-    if (filters.experience) {
-      filtered = filtered.filter(talent => 
-        talent.experience === filters.experience
-      );
-    }
-    
-    // Apply location filter
-    if (filters.location) {
-      filtered = filtered.filter(talent => 
-        talent.location?.includes(filters.location) ||
-        talent.country === filters.location ||
-        talent.city === filters.location
-      );
-    }
-    
-    // Apply language filter
-    if (filters.language) {
-      filtered = filtered.filter(talent => {
+    // Languages filter
+    if (filters.languages.length > 0) {
+      filterChecks.push((talent) => {
         if (!talent.languages) return false;
         
-        // Parse languages if it's a string
         let languagesArray;
         try {
           languagesArray = typeof talent.languages === 'string' 
             ? JSON.parse(talent.languages) 
             : talent.languages;
         } catch (e) {
-          console.error('Error parsing languages:', e);
           return false;
         }
         
-        // Check if talent speaks the language
-        const hasLanguage = Array.isArray(languagesArray) && languagesArray.some((lang: any) => 
-          lang.language === filters.language
+        if (!Array.isArray(languagesArray)) return false;
+        
+        const hasLanguage = languagesArray.some((lang: any) => 
+          filters.languages.includes(lang.language)
         );
         
-        // If language level is specified, check that too
         if (hasLanguage && filters.languageLevel) {
           return languagesArray.some((lang: any) => 
-            lang.language === filters.language && 
+            filters.languages.includes(lang.language) && 
             lang.level >= parseInt(filters.languageLevel)
           );
         }
@@ -188,11 +205,49 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
         return hasLanguage;
       });
     }
+
+    // Verified filter
+    if (filters.verifiedOnly) {
+      filterChecks.push((talent) => talent.verified === true);
+    }
+
+    // Gender filter
+    if (filters.genders.length > 0) {
+      filterChecks.push((talent) => 
+        filters.genders.includes(talent.gender || '')
+      );
+    }
+
+    // Account type filter
+    if (filters.accountTypes.length > 0) {
+      filterChecks.push((talent) => 
+        filters.accountTypes.includes(talent.account_type || '')
+      );
+    }
+
+    // Age range filter
+    if (filters.ageRange[0] !== 18 || filters.ageRange[1] !== 65) {
+      filterChecks.push((talent) => {
+        if (!talent.age) return true; // Don't filter out if no age
+        return talent.age >= filters.ageRange[0] && talent.age <= filters.ageRange[1];
+      });
+    }
+
+    // Apply all filter checks based on boolean operator
+    if (filterChecks.length > 0) {
+      filtered = filtered.filter(talent => {
+        if (isAndMode) {
+          return filterChecks.every(check => check(talent));
+        } else {
+          return filterChecks.some(check => check(talent));
+        }
+      });
+    }
     
     setFilteredTalents(filtered);
   };
 
-  const handleFilterChange = (newFilters: any) => {
+  const handleFilterChange = (newFilters: TalentFilters) => {
     setFilters(newFilters);
   };
 
