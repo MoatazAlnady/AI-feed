@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Mail, Lock, User, Eye, EyeOff, Upload, Camera, MapPin, Calendar, Users, Building, UserCheck, Sparkles, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { InputBase, TextareaBase, SelectBase } from '@/components/ui/InputBase';
 import OnboardingFlow from './OnboardingFlow';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -11,6 +13,9 @@ interface AuthModalProps {
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'signin' }) => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
   const [mode, setMode] = useState<'signin' | 'signup'>(initialMode);
   const [step, setStep] = useState(1); // For multi-step signup
   const [email, setEmail] = useState('');
@@ -41,7 +46,41 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
   // Languages and skills
   const [languages, setLanguages] = useState<Array<{language: string, level: number}>>([]);
 
+  // Invitation handling
+  const [inviteToken, setInviteToken] = useState<string | null>(null);
+  const [inviteCompanyName, setInviteCompanyName] = useState<string | null>(null);
+
   const { signIn, signUp, resendConfirmation } = useAuth();
+
+  // Check for invitation token in URL
+  useEffect(() => {
+    const token = searchParams.get('invite');
+    if (token && isOpen) {
+      setInviteToken(token);
+      fetchInvitationDetails(token);
+    }
+  }, [searchParams, isOpen]);
+
+  const fetchInvitationDetails = async (token: string) => {
+    try {
+      const { data } = await supabase
+        .from('company_invitations')
+        .select(`
+          email,
+          company_pages (name)
+        `)
+        .eq('token', token)
+        .eq('status', 'pending')
+        .single();
+
+      if (data) {
+        setEmail(data.email);
+        setInviteCompanyName((data.company_pages as any)?.name || null);
+      }
+    } catch (err) {
+      console.error('Failed to fetch invitation:', err);
+    }
+  };
 
   const availableInterests = [
     'Machine Learning', 'Deep Learning', 'Natural Language Processing', 'Computer Vision',
@@ -326,12 +365,29 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
             phone_country_code: phoneCountryCode
           });
           if (error) throw error;
-          setSuccess('Account created successfully! Please check your email for a confirmation link before signing in.');
-          setTimeout(() => {
-            setMode('signin');
-            setStep(1);
-            setSuccess('');
-          }, 3000);
+          
+          // If employer account, redirect to employer onboarding after a short delay
+          if (accountType === 'employer') {
+            setSuccess('Account created! Redirecting to employer setup...');
+            setTimeout(() => {
+              onClose();
+              navigate('/employer/onboarding');
+            }, 2000);
+          } else if (inviteToken) {
+            // If there's an invitation token, redirect to accept it
+            setSuccess('Account created! Redirecting to accept invitation...');
+            setTimeout(() => {
+              onClose();
+              navigate(`/invite/${inviteToken}`);
+            }, 2000);
+          } else {
+            setSuccess('Account created successfully! Please check your email for a confirmation link before signing in.');
+            setTimeout(() => {
+              setMode('signin');
+              setStep(1);
+              setSuccess('');
+            }, 3000);
+          }
         }
       }
     } catch (error: any) {
@@ -390,6 +446,16 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
               <X className="h-5 w-5 text-muted-foreground" />
             </button>
           </header>
+
+          {/* Invitation banner */}
+          {inviteCompanyName && (
+            <div className="mb-4 p-3 bg-primary/10 border border-primary/20 rounded-lg">
+              <p className="text-sm text-center">
+                <span className="text-muted-foreground">You've been invited to join </span>
+                <strong className="text-foreground">{inviteCompanyName}</strong>
+              </p>
+            </div>
+          )}
 
           {/* Progress indicator for signup */}
           {mode === 'signup' && (
