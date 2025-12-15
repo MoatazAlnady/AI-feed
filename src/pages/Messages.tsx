@@ -311,7 +311,7 @@ const Messages: React.FC = () => {
         <div className="bg-card rounded-2xl shadow-sm overflow-hidden border border-border" style={{ height: 'calc(100vh - 200px)' }}>
           <div className="flex h-full">
             {/* Conversations List */}
-            <div className="w-1/3 border-r border-border flex flex-col">
+            <div className="w-1/3 border-r border-border flex flex-col bg-card">
               {/* Header */}
               <div className="p-4 border-b border-border">
                 <h2 className="text-xl font-bold text-foreground mb-4">{t('messages.title')}</h2>
@@ -394,7 +394,7 @@ const Messages: React.FC = () => {
             </div>
 
             {/* Chat Area */}
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col bg-card">
               {selectedConv ? (
                 <>
                   {/* Chat Header */}
@@ -437,7 +437,7 @@ const Messages: React.FC = () => {
                   </div>
 
                   {/* Messages */}
-                  <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-muted/20">
                     {messages.length === 0 ? (
                       <div className="flex items-center justify-center h-full">
                         <p className="text-muted-foreground">No messages yet. Start the conversation!</p>
