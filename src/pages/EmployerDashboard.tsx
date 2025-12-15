@@ -226,7 +226,12 @@ const EmployerDashboard = () => {
               </Avatar>
               <div>
                 <h3 className="text-lg font-semibold">{t('employer.settings.companyProfile', 'Company Profile')}</h3>
-                <p className="text-sm text-muted-foreground">{companyPage.name}</p>
+                <p 
+                  className="text-sm text-muted-foreground hover:text-primary cursor-pointer transition-colors"
+                  onClick={() => navigate(`/company/${companyPage.slug}`)}
+                >
+                  {companyPage.name}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -340,7 +345,12 @@ const EmployerDashboard = () => {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h2 className="font-semibold text-lg">{companyPage.name}</h2>
+                <h2 
+                  className="font-semibold text-lg hover:text-primary cursor-pointer transition-colors"
+                  onClick={() => navigate(`/company/${companyPage.slug}`)}
+                >
+                  {companyPage.name}
+                </h2>
                 <p className="text-sm text-muted-foreground">
                   {t('employer.companyDashboard', 'Company Dashboard')}
                 </p>
