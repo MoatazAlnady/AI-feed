@@ -242,13 +242,13 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
               {/* Status indicator dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 relative">
+                  <Button variant="ghost" size="sm" className="h-10 w-6 p-0 flex flex-col items-center justify-center gap-0.5">
                     <Circle className={`h-3 w-3 ${
                       myOnlineStatusMode === 'offline' ? 'fill-muted-foreground text-muted-foreground' :
                       myOnlineStatusMode === 'online' ? 'fill-green-500 text-green-500' :
                       'fill-green-500 text-green-500'
                     }`} />
-                    <ChevronDown className="h-2 w-2 absolute bottom-0 right-0" />
+                    <ChevronDown className="h-2 w-2" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-48">

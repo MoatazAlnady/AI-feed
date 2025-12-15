@@ -99,6 +99,7 @@
     "cta": "Explore Tools"
   },
   "chat": {
+    "chats": "Chats",
     "aiAssistant": "AI Assistant",
     "aiThinking": "AI is thinking...",
     "typeMessage": "Type your message...",

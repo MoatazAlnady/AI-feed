@@ -90,6 +90,7 @@
     "cta": "探索工具"
   },
   "chat": {
+    "chats": "聊天",
     "aiAssistant": "AI 助手",
     "aiThinking": "AI 正在思考...",
     "typeMessage": "输入您的消息...",
