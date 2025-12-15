@@ -20,6 +20,7 @@ import {
   Linkedin,
   Twitter,
   Loader2,
+  Briefcase,
 } from 'lucide-react';
 
 interface CompanyPageData {
@@ -47,6 +48,16 @@ interface Employee {
   job_title: string | null;
   profile_photo: string | null;
   verified: boolean;
+  role: string;
+  joined_at: string | null;
+}
+
+interface Job {
+  id: string;
+  title: string;
+  location: string;
+  type: string;
+  created_at: string;
 }
 
 const CompanyPage = () => {
@@ -55,6 +66,7 @@ const CompanyPage = () => {
   const { user } = useAuth();
   const [company, setCompany] = useState<CompanyPageData | null>(null);
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [editModalOpen, setEditModalOpen] = useState(false);
 
@@ -85,15 +97,49 @@ const CompanyPage = () => {
         social_links: socialLinks,
       });
 
-      // Fetch employees who work at this company
+      // Fetch employees from company_employees table with user profile data
       const { data: employeesData, error: employeesError } = await supabase
-        .from('user_profiles')
-        .select('id, full_name, job_title, profile_photo, verified')
+        .from('company_employees')
+        .select(`
+          role,
+          joined_at,
+          user_id,
+          user_profiles:user_id (
+            id,
+            full_name,
+            job_title,
+            profile_photo,
+            verified
+          )
+        `)
         .eq('company_page_id', companyData.id)
         .limit(20);
 
       if (!employeesError && employeesData) {
-        setEmployees(employeesData);
+        const mappedEmployees = employeesData
+          .filter(emp => emp.user_profiles)
+          .map(emp => ({
+            id: (emp.user_profiles as any).id,
+            full_name: (emp.user_profiles as any).full_name,
+            job_title: (emp.user_profiles as any).job_title,
+            profile_photo: (emp.user_profiles as any).profile_photo,
+            verified: (emp.user_profiles as any).verified,
+            role: emp.role,
+            joined_at: emp.joined_at
+          }));
+        setEmployees(mappedEmployees);
+      }
+
+      // Fetch company jobs
+      const { data: jobsData, error: jobsError } = await supabase
+        .from('jobs')
+        .select('id, title, location, type, created_at')
+        .eq('company_page_id', companyData.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (!jobsError && jobsData) {
+        setJobs(jobsData);
       }
     } catch (error) {
       console.error('Error fetching company page:', error);
@@ -245,8 +291,40 @@ const CompanyPage = () => {
             </Card>
           </div>
 
-          {/* Employees Section */}
-          <div>
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Jobs Section */}
+            {jobs.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Briefcase className="h-5 w-5" />
+                    {t('companyPages.openPositions', 'Open Positions')}
+                    <Badge variant="secondary">{jobs.length}</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {jobs.map((job) => (
+                      <Link
+                        key={job.id}
+                        to={`/jobs/${job.id}`}
+                        className="block p-3 rounded-lg hover:bg-muted transition-colors border"
+                      >
+                        <p className="font-medium text-sm">{job.title}</p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                          <span>{job.location}</span>
+                          <span>•</span>
+                          <Badge variant="outline" className="text-xs">{job.type}</Badge>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Employees Section */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -278,6 +356,9 @@ const CompanyPage = () => {
                               {employee.full_name || 'Unknown'}
                             </p>
                             {employee.verified && <VerificationBadge size="sm" />}
+                            {employee.role === 'admin' && (
+                              <Badge variant="secondary" className="text-xs ml-1">Admin</Badge>
+                            )}
                           </div>
                           {employee.job_title && (
                             <p className="text-xs text-muted-foreground truncate">

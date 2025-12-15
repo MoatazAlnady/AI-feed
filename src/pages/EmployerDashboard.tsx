@@ -11,8 +11,13 @@ import {
   Calendar,
   MessageSquare,
   Settings,
-  Building
+  Building,
+  Crown,
+  AlertCircle
 } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import TodoSystem from '../components/TodoSystem';
 import EmployerChatDock from '../components/EmployerChatDock';
 import JobsManagement from '../components/JobsManagement';
@@ -21,11 +26,20 @@ import EmployerProjects from '../components/EmployerProjects';
 import EmployerMessages from '../components/EmployerMessages';
 import TalentSearch from './TalentSearch';
 import OrganizationManagement from '../components/OrganizationManagement';
+import SubscriptionGate from '../components/SubscriptionGate';
+import { useEmployerAccess } from '../hooks/useEmployerAccess';
 
 const EmployerDashboard = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const { 
+    loading: employerLoading, 
+    companyPage, 
+    hasActiveSubscription, 
+    subscriptionStatus,
+    isCompanyAdmin 
+  } = useEmployerAccess();
   const [activeTab, setActiveTab] = useState(() => {
     const path = location.pathname.split('/').pop();
     return path === 'employer' ? 'overview' : path || 'overview';
@@ -179,7 +193,11 @@ const EmployerDashboard = () => {
 
   const ProjectsPage = () => <EmployerProjects />;
 
-  const AnalyticsPage = () => <EmployerAnalytics />;
+  const AnalyticsPage = () => (
+    <SubscriptionGate hasActiveSubscription={hasActiveSubscription} featureName="analytics">
+      <EmployerAnalytics />
+    </SubscriptionGate>
+  );
 
   const MessagesPage = () => <EmployerMessages />;
 
@@ -195,9 +213,84 @@ const EmployerDashboard = () => {
     navigate(`/employer/talents?search=${encodeURIComponent(query)}`);
   };
 
+  const getSubscriptionBadge = () => {
+    if (!companyPage) return null;
+    
+    if (hasActiveSubscription) {
+      return (
+        <Badge className="bg-green-500/10 text-green-600 border-green-500/20">
+          <Crown className="h-3 w-3 mr-1" />
+          {t('subscription.active', 'Active')}
+        </Badge>
+      );
+    }
+    
+    if (subscriptionStatus === 'expired') {
+      return (
+        <Badge variant="destructive">
+          <AlertCircle className="h-3 w-3 mr-1" />
+          {t('subscription.expired', 'Expired')}
+        </Badge>
+      );
+    }
+    
+    return (
+      <Badge variant="secondary">
+        {t('subscription.inactive', 'Inactive')}
+      </Badge>
+    );
+  };
+
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Company Branding Header */}
+        {companyPage && (
+          <div className="mb-6 p-4 bg-card rounded-xl border flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Avatar className="h-12 w-12 border">
+                <AvatarImage src={companyPage.logo_url || ''} alt={companyPage.name} />
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  {companyPage.name.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h2 className="font-semibold text-lg">{companyPage.name}</h2>
+                <p className="text-sm text-muted-foreground">
+                  {t('employer.companyDashboard', 'Company Dashboard')}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              {getSubscriptionBadge()}
+              {!hasActiveSubscription && (
+                <Button size="sm" onClick={() => navigate('/upgrade')}>
+                  <Crown className="h-4 w-4 mr-1" />
+                  {t('subscription.upgrade', 'Upgrade')}
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Subscription Warning Banner */}
+        {companyPage && !hasActiveSubscription && (
+          <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center gap-3">
+            <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                {t('subscription.limitedAccess', 'Limited Access')}
+              </p>
+              <p className="text-xs text-amber-700 dark:text-amber-300">
+                {t('subscription.upgradePrompt', 'Upgrade your subscription to unlock all employer features.')}
+              </p>
+            </div>
+            <Button size="sm" variant="outline" onClick={() => navigate('/upgrade')}>
+              {t('subscription.viewPlans', 'View Plans')}
+            </Button>
+          </div>
+        )}
+
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-6">
             <h1 className="text-3xl font-bold text-foreground">{pageTitle}</h1>
