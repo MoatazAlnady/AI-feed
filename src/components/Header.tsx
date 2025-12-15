@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Search, Zap, Plus, Settings, User, LogOut, Bell, MessageCircle, Building, BarChart3, Moon, Sun, Briefcase, Users, Crown, BookOpen } from 'lucide-react';
+import { Menu, X, Search, Zap, Plus, Settings, User, LogOut, Bell, MessageCircle, Building, BarChart3, Moon, Sun, Briefcase, Users, Crown, BookOpen, Shield, LayoutDashboard } from 'lucide-react';
 import ChatDock from './ChatDock';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
@@ -25,7 +25,7 @@ const Header: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, signOut, isAdmin, loading } = useAuth();
+  const { user, signOut, isAdmin, isEmployer, loading } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [userProfilePhoto, setUserProfilePhoto] = useState<string | null>(null);
   const createMenuRef = useRef<HTMLDivElement>(null);
@@ -43,18 +43,17 @@ const Header: React.FC = () => {
     { name: t('nav.blog'), href: '/blog' },
   ];
 
-  // Check if user is employer - also check user_profiles table
-  const isEmployer = user?.user_metadata?.account_type === 'employer';
-  const isCreator = !isEmployer; // Default to creator if not employer
+  // Creator access is available to all logged-in users
+  const isCreator = !!user;
   
   // Debug logging
   useEffect(() => {
     if (user) {
-      console.log('Header - User account type:', user?.user_metadata?.account_type);
       console.log('Header - isCreator:', isCreator);
       console.log('Header - isEmployer:', isEmployer);
+      console.log('Header - isAdmin:', isAdmin);
     }
-  }, [user, isCreator, isEmployer]);
+  }, [user, isCreator, isEmployer, isAdmin]);
 
   // Check verification status
   const isVerified = user?.user_metadata?.verified || false;
@@ -606,29 +605,50 @@ const Header: React.FC = () => {
                             )}
                         </>
                       )}
+                      {/* Dashboard Switcher Section */}
                       {(isEmployer || isAdmin) && (
-                        <Link
-                          to={isEmployerView ? "/" : "/employer"}
-                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                          onClick={() => {
-                            setShowUserMenu(false);
-                            toggleEmployerView();
-                          }}
-                        >
-                          <div className="flex items-center">
-                            <Building className="h-4 w-4 mr-2 text-purple-500 dark:text-purple-400" />
-                            {isEmployerView ? "Switch to Creator View" : "Switch to Employer View"}
-                          </div>
-                        </Link>
-                      )}
-                      {isAdmin && (
-                        <Link
-                          to="/admin"
-                          className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                          onClick={() => setShowUserMenu(false)}
-                        >
-                          Admin Dashboard
-                        </Link>
+                        <div className="border-t border-gray-100 dark:border-gray-700 pt-2 mt-2">
+                          <p className="px-4 py-1 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                            Dashboards
+                          </p>
+                          {/* Creator Dashboard - Always available */}
+                          <Link
+                            to="/dashboard"
+                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                            onClick={() => setShowUserMenu(false)}
+                          >
+                            <div className="flex items-center">
+                              <LayoutDashboard className="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" />
+                              Creator Dashboard
+                            </div>
+                          </Link>
+                          {/* Employer Dashboard */}
+                          {isEmployer && (
+                            <Link
+                              to="/employer"
+                              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                              onClick={() => setShowUserMenu(false)}
+                            >
+                              <div className="flex items-center">
+                                <Building className="h-4 w-4 mr-2 text-purple-500 dark:text-purple-400" />
+                                Employer Dashboard
+                              </div>
+                            </Link>
+                          )}
+                          {/* Admin Dashboard */}
+                          {isAdmin && (
+                            <Link
+                              to="/admin"
+                              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                              onClick={() => setShowUserMenu(false)}
+                            >
+                              <div className="flex items-center">
+                                <Shield className="h-4 w-4 mr-2 text-red-500 dark:text-red-400" />
+                                Admin Dashboard
+                              </div>
+                            </Link>
+                          )}
+                        </div>
                       )}
                       <button
                         onClick={handleSignOut}

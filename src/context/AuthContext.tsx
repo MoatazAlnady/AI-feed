@@ -11,6 +11,8 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   resendConfirmation: (email: string) => Promise<any>;
   isAdmin: boolean;
+  isEmployer: boolean;
+  companyPageId: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -153,32 +155,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { data, error };
   };
 
-  // Check if user is admin based on database role only (no hardcoded bypass)
+  // Check if user is admin based on role_id (1 = product_admin) OR account_type = 'admin'
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isEmployer, setIsEmployer] = useState(false);
+  const [companyPageId, setCompanyPageId] = useState<string | null>(null);
   
   useEffect(() => {
-    const checkAdminStatus = async () => {
+    const checkUserAccess = async () => {
       if (user) {
         try {
           const { data: profile, error } = await supabase
             .from('user_profiles')
-            .select('account_type')
+            .select('account_type, role_id, company_page_id')
             .eq('id', user.id)
             .single();
           
           if (!error && profile) {
-            setIsAdmin(profile.account_type === 'admin');
+            // Admin access: role_id = 1 (product_admin) OR account_type = 'admin'
+            setIsAdmin(profile.role_id === 1 || profile.account_type === 'admin');
+            // Employer access: has company_page_id
+            setIsEmployer(!!profile.company_page_id);
+            setCompanyPageId(profile.company_page_id);
           }
         } catch (error) {
-          console.error('Error checking admin status:', error);
+          console.error('Error checking user access:', error);
           setIsAdmin(false);
+          setIsEmployer(false);
+          setCompanyPageId(null);
         }
       } else {
         setIsAdmin(false);
+        setIsEmployer(false);
+        setCompanyPageId(null);
       }
     };
     
-    checkAdminStatus();
+    checkUserAccess();
   }, [user]);
 
   const value = {
@@ -190,6 +202,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signOut,
     resendConfirmation,
     isAdmin,
+    isEmployer,
+    companyPageId,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
