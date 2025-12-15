@@ -13,7 +13,15 @@ import {
   ChevronDown,
   ChevronRight,
   Flag,
-  Shield
+  Shield,
+  Briefcase,
+  Building,
+  MessageSquare,
+  BarChart3,
+  ClipboardList,
+  Tag,
+  Globe,
+  Users2
 } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
@@ -30,7 +38,7 @@ interface MenuItem {
 }
 
 const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }) => {
-  const [openSections, setOpenSections] = React.useState<string[]>(['users', 'tools']);
+  const [openSections, setOpenSections] = React.useState<string[]>(['users', 'tools', 'content', 'jobs-talent', 'community', 'settings']);
 
   const menuItems: MenuItem[] = [
     {
@@ -59,6 +67,34 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
       ]
     },
     {
+      id: 'content',
+      label: 'Content Management',
+      icon: FileText,
+      children: [
+        { id: 'articles', label: 'Articles', icon: FileText },
+        { id: 'site-content', label: 'Site Content', icon: Globe },
+        { id: 'interests', label: 'Interests', icon: Tag }
+      ]
+    },
+    {
+      id: 'jobs-talent',
+      label: 'Jobs & Talent',
+      icon: Briefcase,
+      children: [
+        { id: 'jobs', label: 'Jobs Management', icon: Briefcase },
+        { id: 'organizations', label: 'Organizations', icon: Building }
+      ]
+    },
+    {
+      id: 'community',
+      label: 'Community',
+      icon: Users2,
+      children: [
+        { id: 'groups', label: 'Groups', icon: Users2 },
+        { id: 'posts-moderation', label: 'Posts Moderation', icon: MessageSquare }
+      ]
+    },
+    {
       id: 'reports',
       label: 'Content Reports',
       icon: Flag
@@ -72,6 +108,16 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
       id: 'newsletters',
       label: 'Newsletters',
       icon: Mail
+    },
+    {
+      id: 'analytics',
+      label: 'Analytics',
+      icon: BarChart3
+    },
+    {
+      id: 'audit-log',
+      label: 'Audit Log',
+      icon: ClipboardList
     },
     {
       id: 'settings',

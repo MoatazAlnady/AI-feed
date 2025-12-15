@@ -6,29 +6,10 @@ import {
   Wrench, 
   FileText, 
   Settings,
-  Shield,
-  Bell,
-  Search, 
   Plus, 
   Edit,
-  Briefcase,
-  MessageSquare,
-  Flag,
-  UserX,
-  CheckCircle,
-  XCircle,
-  AlertTriangle,
-  BarChart3,
   TrendingUp,
-  PieChart,
-  List,
-  Tag,
-  Globe,
-  Map,
-  Layers,
-  Database,
-  X,
-  CreditCard
+  Flag
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import CreateUserModal from '../components/CreateUserModal';
@@ -43,6 +24,15 @@ import UserRoleAssignment from '../components/UserRoleAssignment';
 import ReportsManagement from '../components/ReportsManagement';
 import AdminToolRequests from '../components/AdminToolRequests';
 import AdminPendingTools from '../components/AdminPendingTools';
+import AdvancedUserManagement from '../components/AdvancedUserManagement';
+import ArticlesManagement from '../components/ArticlesManagement';
+import InterestManagement from '../components/InterestManagement';
+import JobsManagement from '../components/JobsManagement';
+import OrganizationManagement from '../components/OrganizationManagement';
+import GroupsManagement from '../components/GroupsManagement';
+import PostsModeration from '../components/PostsModeration';
+import AdminAnalytics from '../components/AdminAnalytics';
+import AuditLogViewer from '../components/AuditLogViewer';
 import { supabase } from '../lib/supabase';
 import useI18nGuard from '../hooks/useI18nGuard';
 
@@ -254,19 +244,8 @@ const AdminDashboard: React.FC = () => {
       case 'users':
       case 'user-list':
         return (
-          <div className="space-y-6">
-            <div className="flex items-center justify-end">
-              <button
-                onClick={() => setShowCreateUser(true)}
-                className="flex items-center space-x-2 px-4 py-2 bg-gradient-primary text-white rounded-lg hover:shadow-lg transition-all"
-              >
-                <Plus className="h-5 w-5" />
-                <span>Create User</span>
-              </button>
-            </div>
-            <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
-              <ContentManagement />
-            </div>
+          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+            <AdvancedUserManagement />
           </div>
         );
 
@@ -321,26 +300,66 @@ const AdminDashboard: React.FC = () => {
       case 'tool-requests':
         return <AdminToolRequests onRefresh={fetchDashboardData} />;
 
-      case 'site-config':
+      case 'articles':
+        return (
+          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+            <ArticlesManagement />
+          </div>
+        );
+
+      case 'site-content':
         return (
           <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
             <ContentManagement />
           </div>
         );
 
-      case 'system':
+      case 'interests':
         return (
           <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="p-4 border border-primary/20 rounded-lg bg-card">
-                <h3 className="font-semibold mb-2">Database Health</h3>
-                <p className="text-sm text-muted-foreground">Monitor and maintain database performance</p>
-              </div>
-              <div className="p-4 border border-primary/20 rounded-lg bg-card">
-                <h3 className="font-semibold mb-2">Cache Management</h3>
-                <p className="text-sm text-muted-foreground">Clear and manage application cache</p>
-              </div>
-            </div>
+            <InterestManagement mode="admin" />
+          </div>
+        );
+
+      case 'jobs':
+        return (
+          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+            <JobsManagement />
+          </div>
+        );
+
+      case 'organizations':
+        return (
+          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+            <OrganizationManagement />
+          </div>
+        );
+
+      case 'groups':
+        return (
+          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+            <GroupsManagement />
+          </div>
+        );
+
+      case 'posts-moderation':
+        return (
+          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+            <PostsModeration />
+          </div>
+        );
+
+      case 'analytics':
+        return (
+          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+            <AdminAnalytics />
+          </div>
+        );
+
+      case 'audit-log':
+        return (
+          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+            <AuditLogViewer />
           </div>
         );
 
