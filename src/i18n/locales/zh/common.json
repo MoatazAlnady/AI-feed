@@ -1,4 +1,36 @@
 {
+  "onlineStatus": {
+    "title": "在线状态",
+    "description": "控制您的在线状态如何显示给其他人",
+    "auto": "自动",
+    "autoDesc": "自动显示我的真实状态",
+    "online": "在线",
+    "onlineDesc": "始终向他人显示为在线",
+    "offline": "离线",
+    "offlineDesc": "始终向他人显示为离线",
+    "quickChange": "更改状态"
+  },
+  "creatorProfile": {
+    "tabs": {
+      "tools": "工具",
+      "articles": "文章",
+      "activity": "动态",
+      "groups": "群组"
+    },
+    "empty": {
+      "noTools": "尚未提交任何工具",
+      "toolsAppear": "此用户提交的工具将显示在这里。",
+      "toolsAppearOwn": "您提交的工具将显示在这里。",
+      "noArticles": "尚未撰写任何文章",
+      "articlesAppear": "此用户撰写的文章将显示在这里。",
+      "articlesAppearOwn": "您撰写的文章将显示在这里。",
+      "noActivity": "暂无最近动态",
+      "activityAppear": "最近的动态将显示在这里。",
+      "noGroups": "未加入任何群组",
+      "groupsAppear": "此用户所属的群组将显示在这里。",
+      "groupsAppearOwn": "您加入的群组将显示在这里。"
+    }
+  },
   "nav": {
     "home": "首页",
     "tools": "工具",

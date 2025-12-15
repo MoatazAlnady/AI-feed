@@ -1,4 +1,36 @@
 {
+  "onlineStatus": {
+    "title": "オンラインステータス",
+    "description": "あなたのオンラインステータスが他のユーザーにどのように表示されるかを制御します",
+    "auto": "自動",
+    "autoDesc": "実際のステータスを自動的に表示",
+    "online": "オンライン",
+    "onlineDesc": "常にオンラインとして表示",
+    "offline": "オフライン",
+    "offlineDesc": "常にオフラインとして表示",
+    "quickChange": "ステータスを変更"
+  },
+  "creatorProfile": {
+    "tabs": {
+      "tools": "ツール",
+      "articles": "記事",
+      "activity": "アクティビティ",
+      "groups": "グループ"
+    },
+    "empty": {
+      "noTools": "まだツールが提出されていません",
+      "toolsAppear": "このユーザーが提出したツールはここに表示されます。",
+      "toolsAppearOwn": "提出したツールはここに表示されます。",
+      "noArticles": "まだ記事が書かれていません",
+      "articlesAppear": "このユーザーが書いた記事はここに表示されます。",
+      "articlesAppearOwn": "書いた記事はここに表示されます。",
+      "noActivity": "最近のアクティビティはありません",
+      "activityAppear": "最近のアクティビティはここに表示されます。",
+      "noGroups": "どのグループにも所属していません",
+      "groupsAppear": "このユーザーが所属するグループはここに表示されます。",
+      "groupsAppearOwn": "参加したグループはここに表示されます。"
+    }
+  },
   "nav": {
     "home": "ホーム",
     "tools": "ツール",

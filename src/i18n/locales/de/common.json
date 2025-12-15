@@ -1,4 +1,36 @@
 {
+  "onlineStatus": {
+    "title": "Online-Status",
+    "description": "Steuern Sie, wie Ihr Online-Status anderen angezeigt wird",
+    "auto": "Automatisch",
+    "autoDesc": "Meinen echten Status automatisch anzeigen",
+    "online": "Online",
+    "onlineDesc": "Immer als online anzeigen",
+    "offline": "Offline",
+    "offlineDesc": "Immer als offline anzeigen",
+    "quickChange": "Status ändern"
+  },
+  "creatorProfile": {
+    "tabs": {
+      "tools": "Werkzeuge",
+      "articles": "Artikel",
+      "activity": "Aktivität",
+      "groups": "Gruppen"
+    },
+    "empty": {
+      "noTools": "Noch keine Tools eingereicht",
+      "toolsAppear": "Von diesem Benutzer eingereichte Tools werden hier angezeigt.",
+      "toolsAppearOwn": "Ihre eingereichten Tools werden hier angezeigt.",
+      "noArticles": "Noch keine Artikel geschrieben",
+      "articlesAppear": "Von diesem Benutzer geschriebene Artikel werden hier angezeigt.",
+      "articlesAppearOwn": "Ihre geschriebenen Artikel werden hier angezeigt.",
+      "noActivity": "Keine aktuelle Aktivität",
+      "activityAppear": "Aktuelle Aktivitäten werden hier angezeigt.",
+      "noGroups": "Kein Mitglied in Gruppen",
+      "groupsAppear": "Gruppen, denen dieser Benutzer angehört, werden hier angezeigt.",
+      "groupsAppearOwn": "Gruppen, denen Sie beitreten, werden hier angezeigt."
+    }
+  },
   "nav": {
     "home": "Startseite",
     "tools": "Werkzeuge",

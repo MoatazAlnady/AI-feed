@@ -1,4 +1,36 @@
 {
+  "onlineStatus": {
+    "title": "Statut en ligne",
+    "description": "Contrôlez comment votre statut en ligne apparaît aux autres",
+    "auto": "Automatique",
+    "autoDesc": "Afficher mon statut réel automatiquement",
+    "online": "En ligne",
+    "onlineDesc": "Toujours apparaître en ligne aux autres",
+    "offline": "Hors ligne",
+    "offlineDesc": "Toujours apparaître hors ligne aux autres",
+    "quickChange": "Changer le statut"
+  },
+  "creatorProfile": {
+    "tabs": {
+      "tools": "Outils",
+      "articles": "Articles",
+      "activity": "Activité",
+      "groups": "Groupes"
+    },
+    "empty": {
+      "noTools": "Aucun outil soumis pour le moment",
+      "toolsAppear": "Les outils soumis par cet utilisateur apparaîtront ici.",
+      "toolsAppearOwn": "Les outils que vous soumettez apparaîtront ici.",
+      "noArticles": "Aucun article écrit pour le moment",
+      "articlesAppear": "Les articles écrits par cet utilisateur apparaîtront ici.",
+      "articlesAppearOwn": "Les articles que vous écrivez apparaîtront ici.",
+      "noActivity": "Aucune activité récente",
+      "activityAppear": "L'activité récente apparaîtra ici.",
+      "noGroups": "N'est membre d'aucun groupe",
+      "groupsAppear": "Les groupes auxquels cet utilisateur appartient apparaîtront ici.",
+      "groupsAppearOwn": "Les groupes que vous rejoignez apparaîtront ici."
+    }
+  },
   "nav": {
     "home": "Accueil",
     "tools": "Outils",

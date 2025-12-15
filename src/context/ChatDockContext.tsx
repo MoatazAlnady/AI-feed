@@ -71,6 +71,9 @@ interface ChatDockContextType {
   conversationUsers: Connection[]; // All users with conversations (connections + non-connections)
   onlineUsers: Set<string>;
   refreshConnections: () => Promise<void>;
+  myOnlineStatusMode: 'auto' | 'online' | 'offline';
+  updateMyStatusMode: (mode: 'auto' | 'online' | 'offline') => Promise<void>;
+  getEffectiveOnlineStatus: (userId: string) => boolean;
 }
 
 const ChatDockContext = createContext<ChatDockContextType | undefined>(undefined);
@@ -96,6 +99,53 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [connections, setConnections] = useState<Connection[]>([]);
   const [conversationUsers, setConversationUsers] = useState<Connection[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
+  const [myOnlineStatusMode, setMyOnlineStatusMode] = useState<'auto' | 'online' | 'offline'>('auto');
+  const [otherUsersStatusModes, setOtherUsersStatusModes] = useState<Map<string, string>>(new Map());
+
+  // Fetch my online status mode
+  const fetchMyStatusMode = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('online_status_mode')
+        .eq('id', user.id)
+        .single();
+      
+      if (!error && data?.online_status_mode) {
+        setMyOnlineStatusMode(data.online_status_mode as 'auto' | 'online' | 'offline');
+      }
+    } catch (error) {
+      console.error('Error fetching status mode:', error);
+    }
+  }, [user]);
+
+  // Update my online status mode
+  const updateMyStatusMode = useCallback(async (mode: 'auto' | 'online' | 'offline') => {
+    if (!user) return;
+    
+    try {
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ online_status_mode: mode })
+        .eq('id', user.id);
+      
+      if (!error) {
+        setMyOnlineStatusMode(mode);
+        toast.success(`Status changed to ${mode === 'auto' ? 'Automatic' : mode === 'online' ? 'Online' : 'Offline'}`);
+      }
+    } catch (error) {
+      console.error('Error updating status mode:', error);
+    }
+  }, [user]);
+
+  // Fetch my status mode on mount
+  useEffect(() => {
+    if (user) {
+      fetchMyStatusMode();
+    }
+  }, [user, fetchMyStatusMode]);
 
   // Fetch connections with their chat history
   const fetchConnections = useCallback(async () => {
@@ -249,9 +299,14 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   }, [user, onlineUsers]);
 
-  // Set up Supabase Presence for online status
+  // Set up Supabase Presence for online status - respect myOnlineStatusMode
   useEffect(() => {
     if (!user) return;
+
+    // If user is set to "offline", don't track presence at all
+    if (myOnlineStatusMode === 'offline') {
+      return;
+    }
 
     const presenceChannel = supabase.channel('online-users', {
       config: {
@@ -292,7 +347,43 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     return () => {
       supabase.removeChannel(presenceChannel);
     };
-  }, [user]);
+  }, [user, myOnlineStatusMode]);
+
+  // Get effective online status for a user - respects their status mode preference
+  const getEffectiveOnlineStatus = useCallback((userId: string): boolean => {
+    const userStatusMode = otherUsersStatusModes.get(userId);
+    
+    // If they set themselves as always offline, show offline
+    if (userStatusMode === 'offline') return false;
+    // If they set themselves as always online, show online
+    if (userStatusMode === 'online') return true;
+    // Otherwise use real-time presence
+    return onlineUsers.has(userId);
+  }, [onlineUsers, otherUsersStatusModes]);
+
+  // Fetch status modes for other users when fetching connections
+  const fetchOtherUsersStatusModes = useCallback(async (userIds: string[]) => {
+    if (userIds.length === 0) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('id, online_status_mode')
+        .in('id', userIds);
+      
+      if (!error && data) {
+        const statusMap = new Map<string, string>();
+        data.forEach(profile => {
+          if (profile.online_status_mode) {
+            statusMap.set(profile.id, profile.online_status_mode);
+          }
+        });
+        setOtherUsersStatusModes(statusMap);
+      }
+    } catch (error) {
+      console.error('Error fetching other users status modes:', error);
+    }
+  }, []);
 
   // Update connections when online status changes
   useEffect(() => {
@@ -703,7 +794,10 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     connections,
     conversationUsers,
     onlineUsers,
-    refreshConnections
+    refreshConnections,
+    myOnlineStatusMode,
+    updateMyStatusMode,
+    getEffectiveOnlineStatus
   };
 
   // Register global chat controller
