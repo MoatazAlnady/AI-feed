@@ -34,6 +34,7 @@ import GroupsManagement from '../components/GroupsManagement';
 import PostsModeration from '../components/PostsModeration';
 import AdminAnalytics from '../components/AdminAnalytics';
 import AuditLogViewer from '../components/AuditLogViewer';
+import DropdownListsManagement from '../components/DropdownListsManagement';
 import { supabase } from '../lib/supabase';
 import useI18nGuard from '../hooks/useI18nGuard';
 
@@ -361,6 +362,13 @@ const AdminDashboard: React.FC = () => {
         return (
           <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
             <AuditLogViewer />
+          </div>
+        );
+
+      case 'dropdown-lists':
+        return (
+          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+            <DropdownListsManagement />
           </div>
         );
 

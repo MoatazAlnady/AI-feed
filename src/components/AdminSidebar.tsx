@@ -124,7 +124,8 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
       label: 'Settings',
       icon: Settings,
       children: [
-        { id: 'roles-permissions', label: 'Roles & Permissions', icon: Shield }
+        { id: 'roles-permissions', label: 'Roles & Permissions', icon: Shield },
+        { id: 'dropdown-lists', label: 'Dropdown Lists', icon: ClipboardList }
       ]
     }
   ];
