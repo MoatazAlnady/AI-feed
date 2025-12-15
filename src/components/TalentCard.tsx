@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import VerificationBadge from '@/components/VerificationBadge';
 import {
@@ -12,6 +13,9 @@ import {
   FolderPlus,
   MessageSquare,
   Languages,
+  UserPlus,
+  Clock,
+  Check,
 } from 'lucide-react';
 
 interface TalentProfile {
@@ -31,15 +35,33 @@ interface TalentProfile {
   contact_visible: boolean;
 }
 
+type ConnectionStatus = 'none' | 'pending' | 'connected';
+
 interface TalentCardProps {
   talent: TalentProfile;
   isSelected?: boolean;
+  isChecked?: boolean;
+  showCheckbox?: boolean;
+  connectionStatus?: ConnectionStatus;
   onSelect: (talent: TalentProfile) => void;
   onSaveToProject: (talent: TalentProfile) => void;
   onSendMessage: (talent: TalentProfile) => void;
+  onConnect?: (talent: TalentProfile) => void;
+  onCheckChange?: (talent: TalentProfile, checked: boolean) => void;
 }
 
-const TalentCard = ({ talent, isSelected, onSelect, onSaveToProject, onSendMessage }: TalentCardProps) => {
+const TalentCard = ({ 
+  talent, 
+  isSelected, 
+  isChecked = false,
+  showCheckbox = false,
+  connectionStatus = 'none',
+  onSelect, 
+  onSaveToProject, 
+  onSendMessage,
+  onConnect,
+  onCheckChange,
+}: TalentCardProps) => {
   const { t } = useTranslation();
 
   const initials = talent.full_name
@@ -52,6 +74,28 @@ const TalentCard = ({ talent, isSelected, onSelect, onSaveToProject, onSendMessa
   const displaySkills = talent.interests?.slice(0, 4) || [];
   const remainingSkills = (talent.interests?.length || 0) - 4;
 
+  const getConnectionIcon = () => {
+    switch (connectionStatus) {
+      case 'pending':
+        return <Clock className="h-4 w-4" />;
+      case 'connected':
+        return <Check className="h-4 w-4" />;
+      default:
+        return <UserPlus className="h-4 w-4" />;
+    }
+  };
+
+  const getConnectionTitle = () => {
+    switch (connectionStatus) {
+      case 'pending':
+        return t('talentSearch.requestPending', 'Request Pending');
+      case 'connected':
+        return t('talentSearch.connected', 'Connected');
+      default:
+        return t('talentSearch.connect', 'Connect');
+    }
+  };
+
   return (
     <Card 
       className={`cursor-pointer transition-all hover:shadow-md ${
@@ -63,6 +107,19 @@ const TalentCard = ({ talent, isSelected, onSelect, onSaveToProject, onSendMessa
     >
       <CardContent className="p-4">
         <div className="flex gap-4">
+          {/* Checkbox */}
+          {showCheckbox && (
+            <div className="flex items-start pt-1">
+              <Checkbox
+                checked={isChecked}
+                onCheckedChange={(checked) => {
+                  onCheckChange?.(talent, checked as boolean);
+                }}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+          )}
+
           {/* Avatar */}
           <Avatar className="h-14 w-14 shrink-0">
             <AvatarImage src={talent.profile_photo || ''} alt={talent.full_name || ''} />
@@ -139,6 +196,21 @@ const TalentCard = ({ talent, isSelected, onSelect, onSaveToProject, onSendMessa
 
           {/* Quick Actions */}
           <div className="flex flex-col gap-1 shrink-0">
+            {onConnect && (
+              <Button
+                variant={connectionStatus === 'connected' ? 'secondary' : 'ghost'}
+                size="icon"
+                className="h-8 w-8"
+                disabled={connectionStatus !== 'none'}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onConnect(talent);
+                }}
+                title={getConnectionTitle()}
+              >
+                {getConnectionIcon()}
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon"
