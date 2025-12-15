@@ -187,6 +187,74 @@ export type Database = {
         }
         Relationships: []
       }
+      company_pages: {
+        Row: {
+          city: string | null
+          country: string | null
+          cover_image_url: string | null
+          created_at: string | null
+          created_by: string
+          description: string | null
+          headcount: string | null
+          id: string
+          industry: string | null
+          location: string | null
+          logo_url: string | null
+          name: string
+          slug: string
+          social_links: Json | null
+          updated_at: string | null
+          verified: boolean | null
+          website: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          created_by: string
+          description?: string | null
+          headcount?: string | null
+          id?: string
+          industry?: string | null
+          location?: string | null
+          logo_url?: string | null
+          name: string
+          slug: string
+          social_links?: Json | null
+          updated_at?: string | null
+          verified?: boolean | null
+          website?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          created_by?: string
+          description?: string | null
+          headcount?: string | null
+          id?: string
+          industry?: string | null
+          location?: string | null
+          logo_url?: string | null
+          name?: string
+          slug?: string
+          social_links?: Json | null
+          updated_at?: string | null
+          verified?: boolean | null
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_pages_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       connection_requests: {
         Row: {
           created_at: string
@@ -1769,6 +1837,7 @@ export type Database = {
           birth_date: string | null
           city: string | null
           company: string | null
+          company_page_id: string | null
           contact_visible: boolean | null
           country: string | null
           cover_photo: string | null
@@ -1818,6 +1887,7 @@ export type Database = {
           birth_date?: string | null
           city?: string | null
           company?: string | null
+          company_page_id?: string | null
           contact_visible?: boolean | null
           country?: string | null
           cover_photo?: string | null
@@ -1867,6 +1937,7 @@ export type Database = {
           birth_date?: string | null
           city?: string | null
           company?: string | null
+          company_page_id?: string | null
           contact_visible?: boolean | null
           country?: string | null
           cover_photo?: string | null
@@ -1905,6 +1976,13 @@ export type Database = {
           website?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "user_profiles_company_page_id_fkey"
+            columns: ["company_page_id"]
+            isOneToOne: false
+            referencedRelation: "company_pages"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "user_profiles_organization_id_fkey"
             columns: ["organization_id"]
