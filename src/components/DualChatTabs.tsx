@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Bot, X, MessageCircle, Search, User } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Bot, X, MessageCircle, Search, User, ArrowLeft, Maximize2, Minimize2, Send } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import AIChat from './AIChat';
 import { useAuth } from '@/context/AuthContext';
 import { useChatDock } from '@/context/ChatDockContext';
+import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 
 interface DualChatTabsProps {
@@ -15,11 +16,33 @@ interface DualChatTabsProps {
   onClose: () => void;
 }
 
+interface ChatMessage {
+  id: string;
+  body: string;
+  sender_id: string;
+  created_at: string;
+}
+
+interface ActiveConversation {
+  conversationId: string;
+  userId: string;
+  userName: string;
+  userAvatar?: string;
+  isConnection: boolean;
+}
+
 const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
   const { user } = useAuth();
-  const { connections, onlineUsers, refreshConnections, loading } = useChatDock();
+  const { conversationUsers, onlineUsers, refreshConnections, loading } = useChatDock();
   const [activeTab, setActiveTab] = useState('chats');
   const [searchTerm, setSearchTerm] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [activeConversation, setActiveConversation] = useState<ActiveConversation | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Refresh connections when tab opens
   useEffect(() => {
@@ -28,13 +51,109 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
     }
   }, [isOpen, user, refreshConnections]);
 
-  const handleOpenChat = (userId: string) => {
-    // Open chat via MultiChatDock's global API
-    if (window.chatDock?.openChatWith) {
-      window.chatDock.openChatWith(userId);
-    } else if (window.chatDock?.open) {
-      window.chatDock.open(userId);
+  // Fetch messages when conversation is opened
+  useEffect(() => {
+    if (activeConversation?.conversationId) {
+      fetchMessages(activeConversation.conversationId);
+      
+      // Subscribe to new messages
+      const channel = supabase
+        .channel(`conversation:${activeConversation.conversationId}`)
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'conversation_messages',
+          filter: `conversation_id=eq.${activeConversation.conversationId}`
+        }, (payload) => {
+          const newMsg = payload.new as ChatMessage;
+          setMessages(prev => [...prev, newMsg]);
+        })
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
+  }, [activeConversation?.conversationId]);
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const fetchMessages = async (conversationId: string) => {
+    setLoadingMessages(true);
+    try {
+      const { data, error } = await supabase
+        .from('conversation_messages')
+        .select('id, body, sender_id, created_at')
+        .eq('conversation_id', conversationId)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      setMessages(data || []);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    } finally {
+      setLoadingMessages(false);
+    }
+  };
+
+  const handleOpenChat = async (userItem: typeof conversationUsers[0]) => {
+    // If no conversation exists, create one first
+    let conversationId = userItem.conversationId;
+    
+    if (!conversationId) {
+      try {
+        const { data, error } = await supabase.rpc('find_or_create_dm', {
+          other_user_id: userItem.id
+        });
+        if (error) throw error;
+        conversationId = data;
+        // Refresh connections to get the new conversation
+        refreshConnections();
+      } catch (error) {
+        console.error('Error creating conversation:', error);
+        return;
+      }
+    }
+
+    setActiveConversation({
+      conversationId,
+      userId: userItem.id,
+      userName: userItem.name,
+      userAvatar: userItem.avatar,
+      isConnection: userItem.isConnection
+    });
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim() || !activeConversation?.conversationId || !user) return;
+
+    setSendingMessage(true);
+    try {
+      const { error } = await supabase
+        .from('conversation_messages')
+        .insert({
+          conversation_id: activeConversation.conversationId,
+          sender_id: user.id,
+          body: newMessage.trim()
+        });
+
+      if (error) throw error;
+      setNewMessage('');
+      refreshConnections(); // Refresh to update last message
+    } catch (error) {
+      console.error('Error sending message:', error);
+    } finally {
+      setSendingMessage(false);
+    }
+  };
+
+  const handleBack = () => {
+    setActiveConversation(null);
+    setMessages([]);
   };
 
   const formatTime = (timestamp: string) => {
@@ -53,50 +172,169 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  // Filter connections based on search term
-  const filteredConnections = connections.filter(conn =>
-    conn.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  const formatMessageTime = (timestamp: string) => {
+    try {
+      return format(new Date(timestamp), 'HH:mm');
+    } catch {
+      return '';
+    }
+  };
+
+  // Filter users based on search term
+  const filteredUsers = conversationUsers.filter(u =>
+    u.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalUnread = connections.reduce((acc, conn) => acc + conn.unreadCount, 0);
+  const totalUnread = conversationUsers.reduce((acc, u) => acc + u.unreadCount, 0);
 
   if (!isOpen) return null;
 
+  const windowHeight = isExpanded ? 'h-[700px]' : 'h-[500px]';
+  const windowWidth = isExpanded ? 'w-[450px]' : 'w-96';
+
   return (
-    <div className="fixed bottom-24 right-6 z-40 w-96 h-[500px] animate-slide-up">
+    <div className={`fixed bottom-24 right-6 z-40 ${windowWidth} ${windowHeight} animate-slide-up transition-all duration-300`}>
       <Card className="h-full flex flex-col bg-card border border-border shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="p-3 border-b flex items-center justify-between bg-primary/5">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
-            <TabsList className="grid w-full grid-cols-2 h-9">
-              <TabsTrigger value="chats" className="text-sm relative">
-                <MessageCircle className="h-4 w-4 mr-1.5" />
-                Chats
-                {totalUnread > 0 && (
-                  <Badge variant="destructive" className="ml-1.5 h-5 min-w-[20px] px-1.5 text-xs">
-                    {totalUnread}
-                  </Badge>
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="ai" className="text-sm">
-                <Bot className="h-4 w-4 mr-1.5" />
-                AI Assistant
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="h-8 w-8 p-0 ml-2"
-          >
-            <X className="h-4 w-4" />
-          </Button>
+          {activeConversation ? (
+            // Chat header with back button
+            <div className="flex items-center space-x-2 flex-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleBack}
+                className="h-8 w-8 p-0"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <div className="flex items-center space-x-2 flex-1 min-w-0">
+                <div className="relative flex-shrink-0">
+                  {activeConversation.userAvatar ? (
+                    <img
+                      src={activeConversation.userAvatar}
+                      alt={activeConversation.userName}
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
+                      <User className="h-4 w-4 text-primary-foreground" />
+                    </div>
+                  )}
+                  {/* Only show online status for connections */}
+                  {activeConversation.isConnection && (
+                    <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 border-2 border-card rounded-full ${
+                      onlineUsers.has(activeConversation.userId) ? 'bg-green-500' : 'bg-muted-foreground/50'
+                    }`} />
+                  )}
+                </div>
+                <span className="font-medium text-sm text-foreground truncate">
+                  {activeConversation.userName}
+                </span>
+              </div>
+            </div>
+          ) : (
+            // Normal tabs header
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
+              <TabsList className="grid w-full grid-cols-2 h-9">
+                <TabsTrigger value="chats" className="text-sm relative">
+                  <MessageCircle className="h-4 w-4 mr-1.5" />
+                  Chats
+                  {totalUnread > 0 && (
+                    <Badge variant="destructive" className="ml-1.5 h-5 min-w-[20px] px-1.5 text-xs">
+                      {totalUnread}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="ai" className="text-sm">
+                  <Bot className="h-4 w-4 mr-1.5" />
+                  AI Assistant
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          )}
+          
+          <div className="flex items-center space-x-1 ml-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="h-8 w-8 p-0"
+            >
+              {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="h-8 w-8 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-h-0 bg-card">
-          {activeTab === 'chats' ? (
+        <div className="flex-1 min-h-0 bg-card flex flex-col">
+          {activeConversation ? (
+            // Inline chat view
+            <>
+              <ScrollArea className="flex-1 p-3">
+                {loadingMessages ? (
+                  <div className="flex items-center justify-center h-32">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  </div>
+                ) : messages.length > 0 ? (
+                  <div className="space-y-3">
+                    {messages.map((msg) => {
+                      const isOwn = msg.sender_id === user?.id;
+                      return (
+                        <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                          <div className={`max-w-[80%] px-3 py-2 rounded-2xl ${
+                            isOwn 
+                              ? 'bg-primary text-primary-foreground rounded-br-md' 
+                              : 'bg-muted text-foreground rounded-bl-md'
+                          }`}>
+                            <p className="text-sm whitespace-pre-wrap break-words">{msg.body}</p>
+                            <p className={`text-[10px] mt-1 ${isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                              {formatMessageTime(msg.created_at)}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <div ref={messagesEndRef} />
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
+                    No messages yet. Start the conversation!
+                  </div>
+                )}
+              </ScrollArea>
+              
+              {/* Message input */}
+              <form onSubmit={handleSendMessage} className="p-3 border-t bg-card">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    placeholder="Type a message..."
+                    disabled={sendingMessage}
+                    className="flex-1 px-3 py-2 text-sm border border-border rounded-lg bg-background focus:ring-2 focus:ring-primary focus:border-transparent"
+                  />
+                  <Button
+                    type="submit"
+                    size="sm"
+                    disabled={!newMessage.trim() || sendingMessage}
+                    className="h-9 w-9 p-0"
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+              </form>
+            </>
+          ) : activeTab === 'chats' ? (
             <div className="h-full flex flex-col">
               {/* Search */}
               <div className="p-3 border-b bg-card">
@@ -104,7 +342,7 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <input
                     type="text"
-                    placeholder="Search connections..."
+                    placeholder="Search conversations..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-lg bg-background focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -112,30 +350,30 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Connections List */}
+              {/* Users List */}
               <ScrollArea className="flex-1 bg-card">
                 {loading ? (
                   <div className="flex items-center justify-center h-32">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                   </div>
-                ) : filteredConnections.length > 0 ? (
+                ) : filteredUsers.length > 0 ? (
                   <div className="divide-y divide-border">
-                    {filteredConnections.map((conn) => {
-                      // Use onlineUsers from context for real-time status
-                      const isOnline = onlineUsers.has(conn.id);
+                    {filteredUsers.map((userItem) => {
+                      // Only show online status for connections
+                      const isOnline = userItem.showOnlineStatus && onlineUsers.has(userItem.id);
                       
                       return (
                         <button
-                          key={conn.id}
-                          onClick={() => handleOpenChat(conn.id)}
+                          key={userItem.id}
+                          onClick={() => handleOpenChat(userItem)}
                           className="w-full p-3 text-left hover:bg-muted/50 transition-colors bg-card"
                         >
                           <div className="flex items-start space-x-3">
                             <div className="relative flex-shrink-0">
-                              {conn.avatar ? (
+                              {userItem.avatar ? (
                                 <img
-                                  src={conn.avatar}
-                                  alt={conn.name || ''}
+                                  src={userItem.avatar}
+                                  alt={userItem.name || ''}
                                   className="w-10 h-10 rounded-full object-cover"
                                 />
                               ) : (
@@ -143,29 +381,34 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
                                   <User className="h-5 w-5 text-primary-foreground" />
                                 </div>
                               )}
-                              {/* Online indicator - using real presence data */}
-                              <span className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-card rounded-full ${
-                                isOnline ? 'bg-green-500' : 'bg-muted-foreground/50'
-                              }`} />
+                              {/* Only show online indicator for connections */}
+                              {userItem.showOnlineStatus && (
+                                <span className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-card rounded-full ${
+                                  isOnline ? 'bg-green-500' : 'bg-muted-foreground/50'
+                                }`} />
+                              )}
                             </div>
                             
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between">
                                 <h3 className="font-medium text-sm text-foreground truncate">
-                                  {conn.name || 'Unknown User'}
+                                  {userItem.name || 'Unknown User'}
+                                  {!userItem.isConnection && (
+                                    <span className="text-xs text-muted-foreground ml-1">(not connected)</span>
+                                  )}
                                 </h3>
                                 <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">
-                                  {conn.lastMessage ? formatTime(conn.lastMessage.timestamp) : ''}
+                                  {userItem.lastMessage ? formatTime(userItem.lastMessage.timestamp) : ''}
                                 </span>
                               </div>
                               
                               <div className="flex items-center justify-between mt-0.5">
                                 <p className="text-xs text-muted-foreground truncate pr-2">
-                                  {conn.lastMessage?.content || 'Start a conversation'}
+                                  {userItem.lastMessage?.content || 'Start a conversation'}
                                 </p>
-                                {conn.unreadCount > 0 && (
+                                {userItem.unreadCount > 0 && (
                                   <Badge variant="default" className="h-5 min-w-[20px] px-1.5 text-xs flex-shrink-0">
-                                    {conn.unreadCount}
+                                    {userItem.unreadCount}
                                   </Badge>
                                 )}
                               </div>
@@ -178,7 +421,7 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
                 ) : (
                   <div className="p-8 text-center bg-card">
                     <MessageCircle className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
-                    <h3 className="font-medium text-foreground text-sm mb-1">No connections</h3>
+                    <h3 className="font-medium text-foreground text-sm mb-1">No conversations</h3>
                     <p className="text-muted-foreground text-xs">
                       Connect with people to start chatting
                     </p>
