@@ -27,11 +27,20 @@ interface Project {
 interface SaveToProjectModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  candidateId: string;
-  candidateName: string;
+  candidateId?: string;
+  candidateName?: string;
+  candidateIds?: string[];
+  onSuccess?: () => void;
 }
 
-const SaveToProjectModal = ({ open, onOpenChange, candidateId, candidateName }: SaveToProjectModalProps) => {
+const SaveToProjectModal = ({ 
+  open, 
+  onOpenChange, 
+  candidateId, 
+  candidateName,
+  candidateIds = [],
+  onSuccess 
+}: SaveToProjectModalProps) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -47,12 +56,21 @@ const SaveToProjectModal = ({ open, onOpenChange, candidateId, candidateName }: 
   const [newProjectDescription, setNewProjectDescription] = useState('');
   const [savedProjects, setSavedProjects] = useState<Set<string>>(new Set());
 
+  // Determine if bulk mode
+  const isBulkMode = candidateIds.length > 0;
+  const idsToSave = isBulkMode ? candidateIds : (candidateId ? [candidateId] : []);
+  const displayName = isBulkMode 
+    ? t('saveToProject.multipleCandidates', '{{count}} candidates', { count: candidateIds.length })
+    : candidateName;
+
   useEffect(() => {
     if (open && user) {
       fetchProjects();
-      checkExistingSaves();
+      if (!isBulkMode && candidateId) {
+        checkExistingSaves();
+      }
     }
-  }, [open, user, candidateId]);
+  }, [open, user, candidateId, isBulkMode]);
 
   const fetchProjects = async () => {
     if (!user) return;
@@ -74,7 +92,7 @@ const SaveToProjectModal = ({ open, onOpenChange, candidateId, candidateName }: 
   };
 
   const checkExistingSaves = async () => {
-    if (!user) return;
+    if (!user || !candidateId) return;
     try {
       const { data, error } = await supabase
         .from('project_candidates')
@@ -127,9 +145,9 @@ const SaveToProjectModal = ({ open, onOpenChange, candidateId, candidateName }: 
   };
 
   const handleSaveToProject = async () => {
-    if (!user || !selectedProjectId) return;
+    if (!user || !selectedProjectId || idsToSave.length === 0) return;
     
-    if (savedProjects.has(selectedProjectId)) {
+    if (!isBulkMode && savedProjects.has(selectedProjectId)) {
       toast({
         title: t('saveToProject.alreadySaved', 'Already saved'),
         description: t('saveToProject.alreadySavedDesc', 'This candidate is already saved to this project'),
@@ -140,26 +158,37 @@ const SaveToProjectModal = ({ open, onOpenChange, candidateId, candidateName }: 
 
     setSaving(true);
     try {
+      // Insert all candidates
+      const insertData = idsToSave.map(id => ({
+        project_id: selectedProjectId,
+        candidate_id: id,
+        notes: notes.trim() || null,
+      }));
+
       const { error } = await supabase
         .from('project_candidates')
-        .insert({
-          project_id: selectedProjectId,
-          candidate_id: candidateId,
-          notes: notes.trim() || null,
+        .upsert(insertData, { 
+          onConflict: 'project_id,candidate_id',
+          ignoreDuplicates: true 
         });
 
       if (error) throw error;
       
-      setSavedProjects(new Set([...savedProjects, selectedProjectId]));
+      if (!isBulkMode) {
+        setSavedProjects(new Set([...savedProjects, selectedProjectId]));
+      }
       
       toast({
         title: t('saveToProject.saved', 'Saved!'),
-        description: t('saveToProject.savedDesc', '{{name}} has been saved to the project', { name: candidateName }),
+        description: isBulkMode 
+          ? t('saveToProject.bulkSavedDesc', '{{count}} candidates saved to the project', { count: idsToSave.length })
+          : t('saveToProject.savedDesc', '{{name}} has been saved to the project', { name: candidateName }),
       });
       
       onOpenChange(false);
       setSelectedProjectId(null);
       setNotes('');
+      onSuccess?.();
     } catch (error) {
       console.error('Error saving to project:', error);
       toast({
@@ -182,7 +211,9 @@ const SaveToProjectModal = ({ open, onOpenChange, candidateId, candidateName }: 
         <DialogHeader>
           <DialogTitle>{t('saveToProject.title', 'Save to Project')}</DialogTitle>
           <DialogDescription>
-            {t('saveToProject.description', 'Save {{name}} to one of your projects', { name: candidateName })}
+            {isBulkMode 
+              ? t('saveToProject.bulkDescription', 'Save {{count}} candidates to one of your projects', { count: idsToSave.length })
+              : t('saveToProject.description', 'Save {{name}} to one of your projects', { name: candidateName })}
           </DialogDescription>
         </DialogHeader>
 

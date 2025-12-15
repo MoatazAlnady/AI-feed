@@ -948,5 +948,32 @@
     "addNotes": "添加备注...",
     "confirmApprove": "确认批准此编辑请求？",
     "confirmReject": "确认拒绝此编辑请求？"
+  },
+  "talentSearch": {
+    "title": "人才搜索",
+    "searchPlaceholder": "按姓名、职位、技能搜索...",
+    "showingResults": "显示 {{total}} 个人才中的 {{count}} 个",
+    "noTalentsFound": "未找到人才"
+  },
+  "bulkActions": {
+    "selectAll": "全选",
+    "selected": "已选择 {{count}} 项",
+    "saveAll": "全部保存",
+    "bulkMessage": "批量消息",
+    "connectAll": "全部连接"
+  },
+  "saveToProject": {
+    "title": "保存到项目",
+    "description": "将 {{name}} 保存到您的项目"
+  },
+  "onboarding": {
+    "welcome": "欢迎来到 AI Feed！",
+    "yourWorkplace": "您的工作地点",
+    "allSet": "一切就绪！"
+  },
+  "talentCard": {
+    "connect": "连接",
+    "pending": "待处理",
+    "connected": "已连接"
   }
 }

@@ -1077,5 +1077,43 @@
       "title": "Consecuencias",
       "content": "Las violaciones de estas directrices pueden resultar en advertencias, suspensión de cuenta o prohibición permanente dependiendo de la gravedad."
     }
+  },
+  "talentSearch": {
+    "title": "Búsqueda de Talento",
+    "searchPlaceholder": "Buscar por nombre, título, habilidades...",
+    "showingResults": "Mostrando {{count}} de {{total}} talentos",
+    "loading": "Cargando...",
+    "noTalentsFound": "No se encontraron talentos",
+    "adjustCriteria": "Intenta ajustar tu búsqueda o filtros"
+  },
+  "bulkActions": {
+    "selectAll": "Seleccionar todo",
+    "selected": "{{count}} seleccionados",
+    "saveAll": "Guardar todo",
+    "bulkMessage": "Mensaje masivo",
+    "connectAll": "Conectar todo",
+    "clear": "Limpiar",
+    "messagesSent": "Mensajes enviados",
+    "requestsSent": "Solicitudes enviadas"
+  },
+  "saveToProject": {
+    "title": "Guardar en proyecto",
+    "description": "Guardar {{name}} en uno de tus proyectos",
+    "bulkDescription": "Guardar {{count}} candidatos en uno de tus proyectos"
+  },
+  "onboarding": {
+    "welcome": "¡Bienvenido a AI Feed!",
+    "yourWorkplace": "Tu lugar de trabajo",
+    "workplaceDesc": "¿Dónde trabajas actualmente?",
+    "discoverCreators": "Descubre creadores top",
+    "allSet": "¡Todo listo!",
+    "skip": "Omitir",
+    "next": "Siguiente",
+    "startExploring": "¡Comienza a explorar AI Feed!"
+  },
+  "talentCard": {
+    "connect": "Conectar",
+    "pending": "Pendiente",
+    "connected": "Conectado"
   }
 }
