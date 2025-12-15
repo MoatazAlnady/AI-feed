@@ -975,5 +975,19 @@
     "connect": "连接",
     "pending": "待处理",
     "connected": "已连接"
+  },
+  "footer": {
+    "tagline": "发现、分享和利用尖端AI工具来革新您的工作流程。",
+    "quickLinks": "快速链接",
+    "browseTools": "浏览工具",
+    "categories": "分类",
+    "blog": "博客",
+    "about": "关于",
+    "resources": "资源",
+    "apiDocs": "API文档",
+    "submitTool": "提交工具",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "copyright": "© 2024 AI Feed. 保留所有权利。"
   }
 }

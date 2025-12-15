@@ -926,5 +926,19 @@
     "connect": "接続",
     "pending": "保留中",
     "connected": "接続済み"
+  },
+  "footer": {
+    "tagline": "最先端のAIツールを発見し、共有し、活用して、ワークフローを革新しましょう。",
+    "quickLinks": "クイックリンク",
+    "browseTools": "ツールを探す",
+    "categories": "カテゴリー",
+    "blog": "ブログ",
+    "about": "概要",
+    "resources": "リソース",
+    "apiDocs": "APIドキュメント",
+    "submitTool": "ツールを提出",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "copyright": "© 2024 AI Feed. All rights reserved."
   }
 }

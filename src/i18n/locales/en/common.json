@@ -1460,5 +1460,19 @@
     "message": "Message",
     "save": "Save",
     "worksAt": "Works at"
+  },
+  "footer": {
+    "tagline": "Discover, share, and leverage cutting-edge AI tools to revolutionize your workflows.",
+    "quickLinks": "Quick Links",
+    "browseTools": "Browse Tools",
+    "categories": "Categories",
+    "blog": "Blog",
+    "about": "About",
+    "resources": "Resources",
+    "apiDocs": "API Docs",
+    "submitTool": "Submit Tool",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "© 2024 AI Feed. All rights reserved."
   }
 }
