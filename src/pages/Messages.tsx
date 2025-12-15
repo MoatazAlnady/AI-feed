@@ -295,7 +295,7 @@ const Messages: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="py-8 bg-background min-h-screen">
+      <div className="py-8 bg-muted/20 min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -306,12 +306,12 @@ const Messages: React.FC = () => {
   }
 
   return (
-    <div className="py-8 bg-background min-h-screen">
+    <div className="py-8 bg-muted/20 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-card rounded-2xl shadow-sm overflow-hidden border border-border" style={{ height: 'calc(100vh - 200px)' }}>
           <div className="flex h-full">
             {/* Conversations List */}
-            <div className="w-1/3 border-r border-border flex flex-col bg-card">
+            <div className="w-1/3 border-r border-border flex flex-col bg-card/80">
               {/* Header */}
               <div className="p-4 border-b border-border">
                 <h2 className="text-xl font-bold text-foreground mb-4">{t('messages.title')}</h2>
@@ -394,7 +394,7 @@ const Messages: React.FC = () => {
             </div>
 
             {/* Chat Area */}
-            <div className="flex-1 flex flex-col bg-card">
+            <div className="flex-1 flex flex-col bg-card/80">
               {selectedConv ? (
                 <>
                   {/* Chat Header */}
