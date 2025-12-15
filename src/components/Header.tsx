@@ -622,7 +622,7 @@ const Header: React.FC = () => {
                             >
                               <div className="flex items-center">
                                 <Building className="h-4 w-4 mr-2 text-purple-500 dark:text-purple-400" />
-                                {isEmployerView ? "Switch to Creator View" : "Switch to Employer View"}
+                                {isEmployerView ? "Creator View" : "Employer View"}
                               </div>
                             </button>
                           )}
@@ -876,7 +876,7 @@ const Header: React.FC = () => {
                     >
                       <div className="flex items-center">
                         <Building className="h-4 w-4 mr-2 text-purple-500 dark:text-purple-400" />
-                        {isEmployerView ? "Switch to Creator View" : "Switch to Employer View"}
+                        {isEmployerView ? "Creator View" : "Employer View"}
                       </div>
                     </button>
                   )}
