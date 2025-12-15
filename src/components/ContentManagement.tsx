@@ -8,13 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, FileText, Layout, BarChart, Users, Wrench, Mail, Building } from 'lucide-react';
-import AdminToolRequests from './AdminToolRequests';
-import AdvancedUserManagement from './AdvancedUserManagement';
-import NewsletterManagement from './NewsletterManagement';
-import OrganizationManagement from './OrganizationManagement';
-import InterestManagement from './InterestManagement';
-import PricingManagement from './PricingManagement';
+import { Settings, FileText, Layout, BarChart } from 'lucide-react';
 
 interface ContentItem {
   id: string;
@@ -196,7 +190,7 @@ const ContentManagement = () => {
       </div>
 
       <Tabs defaultValue="hero" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 lg:grid-cols-9">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="hero" className="flex items-center gap-2">
             <Layout className="h-4 w-4" />
             <span className="hidden sm:inline">Hero</span>
@@ -212,26 +206,6 @@ const ContentManagement = () => {
           <TabsTrigger value="cta" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
             <span className="hidden sm:inline">CTA</span>
-          </TabsTrigger>
-          <TabsTrigger value="interests" className="flex items-center gap-2">
-            <Settings className="h-4 w-4" />
-            <span className="hidden sm:inline">Interests</span>
-          </TabsTrigger>
-          <TabsTrigger value="tools" className="flex items-center gap-2">
-            <Wrench className="h-4 w-4" />
-            <span className="hidden sm:inline">Tools</span>
-          </TabsTrigger>
-          <TabsTrigger value="users" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            <span className="hidden sm:inline">Users</span>
-          </TabsTrigger>
-          <TabsTrigger value="orgs" className="flex items-center gap-2">
-            <Building className="h-4 w-4" />
-            <span className="hidden sm:inline">Orgs</span>
-          </TabsTrigger>
-          <TabsTrigger value="newsletter" className="flex items-center gap-2">
-            <Mail className="h-4 w-4" />
-            <span className="hidden sm:inline">Newsletter</span>
           </TabsTrigger>
         </TabsList>
 
@@ -311,25 +285,6 @@ const ContentManagement = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="interests" className="space-y-4">
-          <InterestManagement mode="admin" />
-        </TabsContent>
-
-        <TabsContent value="tools" className="space-y-4">
-          <AdminToolRequests />
-        </TabsContent>
-
-        <TabsContent value="users" className="space-y-4">
-          <AdvancedUserManagement />
-        </TabsContent>
-
-        <TabsContent value="orgs" className="space-y-4">
-          <OrganizationManagement />
-        </TabsContent>
-
-        <TabsContent value="newsletter" className="space-y-4">
-          <NewsletterManagement />
-        </TabsContent>
       </Tabs>
     </div>
   );
