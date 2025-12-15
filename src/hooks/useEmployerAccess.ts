@@ -75,7 +75,7 @@ export const useEmployerAccess = (): EmployerAccess => {
         `)
         .eq('user_id', user.id)
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (employeeData?.company_pages) {
         const company = employeeData.company_pages as unknown as CompanyPage;
