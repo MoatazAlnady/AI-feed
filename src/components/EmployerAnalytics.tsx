@@ -160,7 +160,7 @@ const EmployerAnalytics: React.FC = () => {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
       </div>
     );
@@ -170,11 +170,11 @@ const EmployerAnalytics: React.FC = () => {
     return (
       <div className="space-y-6">
         <div className="text-center py-20">
-          <BarChart3 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <BarChart3 className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-foreground mb-2">
             No Analytics Data
           </h3>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Post your first job to start seeing analytics.
           </p>
         </div>
@@ -187,15 +187,15 @@ const EmployerAnalytics: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Hiring Analytics</h2>
-          <p className="text-gray-600 dark:text-gray-400">Track your recruitment performance and insights</p>
+          <h2 className="text-2xl font-bold text-foreground">Hiring Analytics</h2>
+          <p className="text-muted-foreground">Track your recruitment performance and insights</p>
         </div>
         
         <div className="flex items-center space-x-4">
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value as any)}
-            className="border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            className="border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-transparent bg-card text-foreground"
           >
             <option value="7d">Last 7 days</option>
             <option value="30d">Last 30 days</option>
@@ -204,7 +204,7 @@ const EmployerAnalytics: React.FC = () => {
           
           <button
             onClick={exportData}
-            className="flex items-center space-x-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors text-foreground"
           >
             <Download className="h-4 w-4" />
             <span>Export</span>
@@ -214,11 +214,11 @@ const EmployerAnalytics: React.FC = () => {
 
       {/* Metrics Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+        <div className="bg-card p-6 rounded-xl shadow-sm border border-border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Jobs</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{analyticsData.jobMetrics.totalJobs}</p>
+              <p className="text-sm text-muted-foreground">Total Jobs</p>
+              <p className="text-2xl font-bold text-foreground">{analyticsData.jobMetrics.totalJobs}</p>
               <div className="flex items-center mt-1">
                 <ArrowUp className="h-4 w-4 text-green-500" />
                 <span className="text-sm text-green-600 ml-1">12%</span>
@@ -228,11 +228,11 @@ const EmployerAnalytics: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+        <div className="bg-card p-6 rounded-xl shadow-sm border border-border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Views</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{analyticsData.jobMetrics.viewsThisMonth.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">Total Views</p>
+              <p className="text-2xl font-bold text-foreground">{analyticsData.jobMetrics.viewsThisMonth.toLocaleString()}</p>
               <div className="flex items-center mt-1">
                 <ArrowUp className="h-4 w-4 text-green-500" />
                 <span className="text-sm text-green-600 ml-1">8%</span>
@@ -242,11 +242,11 @@ const EmployerAnalytics: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+        <div className="bg-card p-6 rounded-xl shadow-sm border border-border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Applications</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{analyticsData.jobMetrics.totalApplicants}</p>
+              <p className="text-sm text-muted-foreground">Applications</p>
+              <p className="text-2xl font-bold text-foreground">{analyticsData.jobMetrics.totalApplicants}</p>
               <div className="flex items-center mt-1">
                 <ArrowUp className="h-4 w-4 text-green-500" />
                 <span className="text-sm text-green-600 ml-1">15%</span>
@@ -256,11 +256,11 @@ const EmployerAnalytics: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+        <div className="bg-card p-6 rounded-xl shadow-sm border border-border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Avg. Time to Hire</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{analyticsData.jobMetrics.averageTimeToHire}d</p>
+              <p className="text-sm text-muted-foreground">Avg. Time to Hire</p>
+              <p className="text-2xl font-bold text-foreground">{analyticsData.jobMetrics.averageTimeToHire}d</p>
               <div className="flex items-center mt-1">
                 <ArrowDown className="h-4 w-4 text-green-500" />
                 <span className="text-sm text-green-600 ml-1">3d faster</span>
@@ -274,22 +274,22 @@ const EmployerAnalytics: React.FC = () => {
       {/* Charts and Demographics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Performance Chart */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Views vs Applications</h3>
+        <div className="bg-card rounded-xl shadow-sm p-6 border border-border">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Views vs Applications</h3>
           <div className="h-64 flex items-end justify-between space-x-1">
             {analyticsData.chartData.slice(-14).map((data, index) => (
               <div key={index} className="flex-1 flex flex-col items-center">
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-t relative" style={{ height: '200px' }}>
+                <div className="w-full bg-muted rounded-t relative" style={{ height: '200px' }}>
                   <div 
-                    className="absolute bottom-0 w-full bg-primary-500 rounded-t transition-all duration-500"
+                    className="absolute bottom-0 w-full bg-primary rounded-t transition-all duration-500"
                     style={{ height: `${(data.views / Math.max(...analyticsData.chartData.map(d => d.views))) * 100}%` }}
                   />
                   <div 
-                    className="absolute bottom-0 w-full bg-secondary-500 rounded-t transition-all duration-500 opacity-70"
+                    className="absolute bottom-0 w-full bg-secondary rounded-t transition-all duration-500 opacity-70"
                     style={{ height: `${(data.applications / Math.max(...analyticsData.chartData.map(d => d.applications))) * 80}%` }}
                   />
                 </div>
-                <span className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                <span className="text-xs text-muted-foreground mt-2">
                   {new Date(data.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </span>
               </div>
@@ -297,45 +297,45 @@ const EmployerAnalytics: React.FC = () => {
           </div>
           <div className="flex items-center justify-center space-x-6 mt-4">
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-primary-500 rounded"></div>
-              <span className="text-sm text-gray-600 dark:text-gray-400">Views</span>
+              <div className="w-3 h-3 bg-primary rounded"></div>
+              <span className="text-sm text-muted-foreground">Views</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-secondary-500 rounded"></div>
-              <span className="text-sm text-gray-600 dark:text-gray-400">Applications</span>
+              <div className="w-3 h-3 bg-secondary rounded"></div>
+              <span className="text-sm text-muted-foreground">Applications</span>
             </div>
           </div>
         </div>
 
         {/* Demographics */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Candidate Demographics</h3>
+        <div className="bg-card rounded-xl shadow-sm p-6 border border-border">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Candidate Demographics</h3>
           
           <div className="space-y-4">
             <div>
-              <h4 className="font-medium text-gray-900 dark:text-white mb-2">Experience Level</h4>
+              <h4 className="font-medium text-foreground mb-2">Experience Level</h4>
               {analyticsData.demographics.experience.map((exp, index) => (
                 <div key={index} className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">{exp.level}</span>
+                  <span className="text-sm text-muted-foreground">{exp.level}</span>
                   <div className="flex items-center space-x-2">
-                    <div className="w-20 h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
+                    <div className="w-20 h-2 bg-muted rounded-full">
                       <div 
-                        className="h-full bg-primary-500 rounded-full transition-all duration-500"
+                        className="h-full bg-primary rounded-full transition-all duration-500"
                         style={{ width: `${exp.percentage}%` }}
                       />
                     </div>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white w-8">{exp.percentage}%</span>
+                    <span className="text-sm font-medium text-foreground w-8">{exp.percentage}%</span>
                   </div>
                 </div>
               ))}
             </div>
             
-            <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
-              <h4 className="font-medium text-gray-900 dark:text-white mb-2">Top Locations</h4>
+            <div className="pt-4 border-t border-border">
+              <h4 className="font-medium text-foreground mb-2">Top Locations</h4>
               {analyticsData.demographics.locations.slice(0, 3).map((location, index) => (
                 <div key={index} className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">{location.location}</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">{location.percentage}%</span>
+                  <span className="text-sm text-muted-foreground">{location.location}</span>
+                  <span className="text-sm font-medium text-foreground">{location.percentage}%</span>
                 </div>
               ))}
             </div>
@@ -344,39 +344,39 @@ const EmployerAnalytics: React.FC = () => {
       </div>
 
       {/* Top Performing Jobs */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+      <div className="bg-card rounded-xl shadow-sm p-6 border border-border">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Top Performing Jobs</h3>
+          <h3 className="text-lg font-semibold text-foreground">Top Performing Jobs</h3>
         </div>
         
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200 dark:border-gray-700">
-                <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Job Title</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Views</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Applications</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Conversion</th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Posted</th>
+              <tr className="border-b border-border">
+                <th className="text-left py-3 px-4 font-semibold text-foreground">Job Title</th>
+                <th className="text-left py-3 px-4 font-semibold text-foreground">Views</th>
+                <th className="text-left py-3 px-4 font-semibold text-foreground">Applications</th>
+                <th className="text-left py-3 px-4 font-semibold text-foreground">Conversion</th>
+                <th className="text-left py-3 px-4 font-semibold text-foreground">Posted</th>
               </tr>
             </thead>
             <tbody>
               {analyticsData.topJobs.map((job, index) => (
-                <tr key={job.id} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                <tr key={job.id} className="border-b border-border hover:bg-muted/50">
                   <td className="py-3 px-4">
                     <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{job.title}</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{job.company}</p>
+                      <p className="font-medium text-foreground">{job.title}</p>
+                      <p className="text-sm text-muted-foreground">{job.company}</p>
                     </div>
                   </td>
-                  <td className="py-3 px-4 text-gray-900 dark:text-white">{job.views.toLocaleString()}</td>
-                  <td className="py-3 px-4 text-gray-900 dark:text-white">{job.applicants}</td>
+                  <td className="py-3 px-4 text-foreground">{job.views.toLocaleString()}</td>
+                  <td className="py-3 px-4 text-foreground">{job.applicants}</td>
                   <td className="py-3 px-4">
                     <span className="text-sm font-medium text-green-600">
                       {job.views > 0 ? Math.round((job.applicants / job.views) * 100) : 0}%
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-sm text-gray-600 dark:text-gray-400">
+                  <td className="py-3 px-4 text-sm text-muted-foreground">
                     {new Date(job.posted).toLocaleDateString()}
                   </td>
                 </tr>
