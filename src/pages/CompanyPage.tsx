@@ -69,12 +69,34 @@ const CompanyPage = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [isCompanyAdmin, setIsCompanyAdmin] = useState(false);
 
   useEffect(() => {
     if (slug) {
       fetchCompanyPage();
     }
   }, [slug]);
+
+  // Check if current user is a company admin
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user || !company) {
+        setIsCompanyAdmin(false);
+        return;
+      }
+      
+      const { data } = await supabase
+        .from('company_employees')
+        .select('role')
+        .eq('company_page_id', company.id)
+        .eq('user_id', user.id)
+        .single();
+      
+      setIsCompanyAdmin(data?.role === 'admin');
+    };
+    
+    checkAdminStatus();
+  }, [user, company]);
 
   const fetchCompanyPage = async () => {
     try {
@@ -149,6 +171,7 @@ const CompanyPage = () => {
   };
 
   const isOwner = user && company && user.id === company.created_by;
+  const canEdit = isOwner || isCompanyAdmin;
 
   if (loading) {
     return (
@@ -231,7 +254,7 @@ const CompanyPage = () => {
                     </div>
                   </div>
 
-                  {isOwner && (
+                  {canEdit && (
                     <Button variant="outline" onClick={() => setEditModalOpen(true)}>
                       <Edit className="h-4 w-4 mr-2" />
                       {t('common.edit', 'Edit')}

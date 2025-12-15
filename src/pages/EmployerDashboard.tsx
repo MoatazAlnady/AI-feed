@@ -13,7 +13,9 @@ import {
   Settings,
   Building,
   Crown,
-  AlertCircle
+  AlertCircle,
+  Edit,
+  ExternalLink
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -36,6 +38,7 @@ const EmployerDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showCreateCompanyModal, setShowCreateCompanyModal] = useState(false);
+  const [showEditCompanyModal, setShowEditCompanyModal] = useState(false);
   const { 
     loading: employerLoading, 
     companyPage, 
@@ -210,6 +213,43 @@ const EmployerDashboard = () => {
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Settings</h2>
       
+      {/* Company Profile Management - shown if user has a company page */}
+      {companyPage && (
+        <div className="bg-card p-6 rounded-xl border">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Avatar className="h-16 w-16 border">
+                <AvatarImage src={companyPage.logo_url || ''} alt={companyPage.name} />
+                <AvatarFallback className="bg-primary text-primary-foreground text-lg">
+                  {companyPage.name.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h3 className="text-lg font-semibold">{t('employer.settings.companyProfile', 'Company Profile')}</h3>
+                <p className="text-sm text-muted-foreground">{companyPage.name}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.open(`/company/${companyPage.slug}`, '_blank')}
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                {t('employer.settings.viewPage', 'View Page')}
+              </Button>
+              <Button 
+                size="sm"
+                onClick={() => setShowEditCompanyModal(true)}
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                {t('employer.settings.editProfile', 'Edit Profile')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Company Employee Management - shown if user has a company page */}
       {companyPage && (
         <CompanyEmployeeManager
@@ -367,6 +407,34 @@ const EmployerDashboard = () => {
           setShowCreateCompanyModal(false);
         }}
       />
+
+      {/* Edit Company Modal */}
+      {companyPage && (
+        <CreateCompanyPageModal 
+          open={showEditCompanyModal} 
+          onOpenChange={setShowEditCompanyModal}
+          editingCompany={{
+            id: companyPage.id,
+            name: companyPage.name,
+            slug: companyPage.slug,
+            domain: null,
+            description: null,
+            website: null,
+            social_links: null,
+            industry: null,
+            headcount: null,
+            country: null,
+            city: null,
+            location: null,
+            logo_url: companyPage.logo_url,
+            cover_image_url: null
+          }}
+          onSuccess={() => {
+            refetchEmployerAccess();
+            setShowEditCompanyModal(false);
+          }}
+        />
+      )}
     </div>
   );
 };
