@@ -17,6 +17,8 @@ interface Connection {
     senderId: string;
   };
   unreadCount: number;
+  isConnection: boolean; // Whether this is an actual connection or just someone who messaged
+  showOnlineStatus: boolean; // Only show online status for connections
 }
 
 interface Thread {
@@ -66,6 +68,7 @@ interface ChatDockContextType {
   loading: boolean;
   openChatWith: (userId: string, opts?: { createIfMissing?: boolean }) => Promise<boolean>;
   connections: Connection[];
+  conversationUsers: Connection[]; // All users with conversations (connections + non-connections)
   onlineUsers: Set<string>;
   refreshConnections: () => Promise<void>;
 }
@@ -91,6 +94,7 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [activeTab, setActiveTab] = useState<'focused' | 'other'>('focused');
   const [loading, setLoading] = useState(true);
   const [connections, setConnections] = useState<Connection[]>([]);
+  const [conversationUsers, setConversationUsers] = useState<Connection[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
 
   // Fetch connections with their chat history
@@ -106,45 +110,54 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
 
       if (connectionsError) {
         console.error('Error fetching connections:', connectionsError);
-        return;
       }
 
-      if (!connectionsData || connectionsData.length === 0) {
-        setConnections([]);
-        return;
-      }
-
-      // Get the other user IDs from connections
-      const otherUserIds = connectionsData.map(conn => 
-        conn.user_1_id === user.id ? conn.user_2_id : conn.user_1_id
-      );
-
-      // Fetch profiles for connected users
-      const { data: profilesData } = await supabase.rpc('get_public_profiles_by_ids', {
-        ids: otherUserIds
-      });
-
-      const profileMap = new Map();
-      if (Array.isArray(profilesData)) {
-        profilesData.forEach((profile: any) => {
-          profileMap.set(profile.id, profile);
+      // Get connection user IDs
+      const connectionUserIds = new Set<string>();
+      if (connectionsData) {
+        connectionsData.forEach(conn => {
+          const otherId = conn.user_1_id === user.id ? conn.user_2_id : conn.user_1_id;
+          connectionUserIds.add(otherId);
         });
       }
 
-      // Fetch conversations for these users
+      // Fetch ALL conversations for this user (includes non-connections)
       const { data: conversationsData } = await supabase
         .from('conversations')
         .select('id, participant_1_id, participant_2_id, last_message_at')
         .or(`participant_1_id.eq.${user.id},participant_2_id.eq.${user.id}`);
 
-      // Create a map of other user ID -> conversation
+      // Get all unique user IDs from conversations
+      const allConversationUserIds = new Set<string>();
       const conversationMap = new Map();
       if (conversationsData) {
         conversationsData.forEach(conv => {
           const otherUserId = conv.participant_1_id === user.id 
             ? conv.participant_2_id 
             : conv.participant_1_id;
+          allConversationUserIds.add(otherUserId);
           conversationMap.set(otherUserId, conv);
+        });
+      }
+
+      // Merge: all users with conversations + all connections
+      const allUserIds = new Set([...allConversationUserIds, ...connectionUserIds]);
+      
+      if (allUserIds.size === 0) {
+        setConnections([]);
+        setConversationUsers([]);
+        return;
+      }
+
+      // Fetch profiles for all users
+      const { data: profilesData } = await supabase.rpc('get_public_profiles_by_ids', {
+        ids: Array.from(allUserIds)
+      });
+
+      const profileMap = new Map();
+      if (Array.isArray(profilesData)) {
+        profilesData.forEach((profile: any) => {
+          profileMap.set(profile.id, profile);
         });
       }
 
@@ -181,42 +194,56 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
         }
       }
 
-      // Build connections list with chat data
-      const connectionsList: Connection[] = otherUserIds.map(otherUserId => {
-        const profile = profileMap.get(otherUserId);
-        const conversation = conversationMap.get(otherUserId);
-        const lastMessage = conversation ? lastMessagesMap.get(conversation.id) : null;
-        const unreadCount = conversation ? unreadCountMap.get(conversation.id) || 0 : 0;
+      // Build list with isConnection flag
+      const buildUserList = (userIds: string[], connectionsOnly: boolean): Connection[] => {
+        return Array.from(userIds).map(otherUserId => {
+          const profile = profileMap.get(otherUserId);
+          const conversation = conversationMap.get(otherUserId);
+          const lastMessage = conversation ? lastMessagesMap.get(conversation.id) : null;
+          const unreadCount = conversation ? unreadCountMap.get(conversation.id) || 0 : 0;
+          const isConnection = connectionUserIds.has(otherUserId);
 
-        return {
-          id: otherUserId,
-          name: profile?.full_name || 'Unknown User',
-          avatar: profile?.profile_photo,
-          title: profile?.job_title || '',
-          online: onlineUsers.has(otherUserId),
-          conversationId: conversation?.id,
-          lastMessage: lastMessage ? {
-            content: lastMessage.body,
-            timestamp: lastMessage.created_at,
-            senderId: lastMessage.sender_id
-          } : undefined,
-          unreadCount
-        };
-      });
+          return {
+            id: otherUserId,
+            name: profile?.full_name || 'Unknown User',
+            avatar: profile?.profile_photo,
+            title: profile?.job_title || '',
+            online: isConnection ? onlineUsers.has(otherUserId) : false,
+            conversationId: conversation?.id,
+            lastMessage: lastMessage ? {
+              content: lastMessage.body,
+              timestamp: lastMessage.created_at,
+              senderId: lastMessage.sender_id
+            } : undefined,
+            unreadCount,
+            isConnection,
+            showOnlineStatus: isConnection // Only show online status for connections
+          };
+        });
+      };
 
-      // Sort: unread first, then by last message time, then alphabetically
-      connectionsList.sort((a, b) => {
-        if (a.unreadCount > 0 && b.unreadCount === 0) return -1;
-        if (a.unreadCount === 0 && b.unreadCount > 0) return 1;
-        if (a.lastMessage && b.lastMessage) {
-          return new Date(b.lastMessage.timestamp).getTime() - new Date(a.lastMessage.timestamp).getTime();
-        }
-        if (a.lastMessage && !b.lastMessage) return -1;
-        if (!a.lastMessage && b.lastMessage) return 1;
-        return a.name.localeCompare(b.name);
-      });
+      // Sort function
+      const sortUsers = (list: Connection[]) => {
+        return list.sort((a, b) => {
+          if (a.unreadCount > 0 && b.unreadCount === 0) return -1;
+          if (a.unreadCount === 0 && b.unreadCount > 0) return 1;
+          if (a.lastMessage && b.lastMessage) {
+            return new Date(b.lastMessage.timestamp).getTime() - new Date(a.lastMessage.timestamp).getTime();
+          }
+          if (a.lastMessage && !b.lastMessage) return -1;
+          if (!a.lastMessage && b.lastMessage) return 1;
+          return a.name.localeCompare(b.name);
+        });
+      };
 
+      // Build connections list (only actual connections)
+      const connectionsList = sortUsers(buildUserList(Array.from(connectionUserIds), true));
       setConnections(connectionsList);
+
+      // Build conversation users list (all users with conversations, including non-connections)
+      const conversationUsersList = sortUsers(buildUserList(Array.from(allUserIds), false));
+      setConversationUsers(conversationUsersList);
+      
     } catch (error) {
       console.error('Error fetching connections:', error);
     }
@@ -674,6 +701,7 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     loading,
     openChatWith,
     connections,
+    conversationUsers,
     onlineUsers,
     refreshConnections
   };
