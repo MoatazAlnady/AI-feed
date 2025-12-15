@@ -26,6 +26,7 @@ import EmployerProjects from '../components/EmployerProjects';
 import EmployerMessages from '../components/EmployerMessages';
 import TalentSearch from './TalentSearch';
 import OrganizationManagement from '../components/OrganizationManagement';
+import CompanyEmployeeManager from '../components/CompanyEmployeeManager';
 import SubscriptionGate from '../components/SubscriptionGate';
 import { useEmployerAccess } from '../hooks/useEmployerAccess';
 
@@ -204,6 +205,18 @@ const EmployerDashboard = () => {
   const SettingsPage = () => (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Settings</h2>
+      
+      {/* Company Employee Management - shown if user has a company page */}
+      {companyPage && (
+        <CompanyEmployeeManager
+          companyPageId={companyPage.id}
+          companyName={companyPage.name}
+          maxEmployees={companyPage.max_employees || 1}
+          isAdmin={isCompanyAdmin}
+          hasActiveSubscription={hasActiveSubscription}
+        />
+      )}
+      
       <OrganizationManagement />
     </div>
   );

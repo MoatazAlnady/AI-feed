@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   User, Mail, Calendar, Heart, Bookmark, MessageSquare, Upload, 
   Briefcase, MapPin, Edit, Camera, Target, TrendingUp, ExternalLink,
-  Plus, Code, FileText, Users, Star
+  Plus, Code, FileText, Users, Star, Building
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Zap } from 'lucide-react';
@@ -11,16 +11,94 @@ import InterestManagement from '../components/InterestManagement';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+
+interface CompanyOption {
+  id: string;
+  name: string;
+  logo_url: string | null;
+}
 
 const Profile: React.FC = () => {
   const { t } = useTranslation('common');
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'overview' | 'posts' | 'saved' | 'interests'>('overview');
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState<'overview' | 'posts' | 'saved' | 'interests' | 'workplace'>('overview');
   const [showPromoteModal, setShowPromoteModal] = useState(false);
   const [selectedContent, setSelectedContent] = useState<any>(null);
   const [savedItems, setSavedItems] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
+  
+  // Workplace selection state
+  const [companies, setCompanies] = useState<CompanyOption[]>([]);
+  const [workplaceMode, setWorkplaceMode] = useState<'select' | 'manual'>('select');
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string>('');
+  const [manualCompanyName, setManualCompanyName] = useState<string>('');
+  const [savingWorkplace, setSavingWorkplace] = useState(false);
+
+  // Fetch companies and current workplace
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      const { data } = await supabase
+        .from('company_pages')
+        .select('id, name, logo_url')
+        .order('name');
+      if (data) setCompanies(data);
+    };
+
+    const fetchUserWorkplace = async () => {
+      if (!user?.id) return;
+      const { data } = await supabase
+        .from('user_profiles')
+        .select('company_page_id, company')
+        .eq('id', user.id)
+        .single();
+      
+      if (data) {
+        if (data.company_page_id) {
+          setWorkplaceMode('select');
+          setSelectedCompanyId(data.company_page_id);
+        } else if (data.company) {
+          setWorkplaceMode('manual');
+          setManualCompanyName(data.company);
+        }
+      }
+    };
+
+    fetchCompanies();
+    fetchUserWorkplace();
+  }, [user?.id]);
+
+  const handleSaveWorkplace = async () => {
+    if (!user?.id) return;
+    setSavingWorkplace(true);
+    
+    try {
+      const updateData = workplaceMode === 'select' 
+        ? { company_page_id: selectedCompanyId || null, company: null }
+        : { company_page_id: null, company: manualCompanyName || null };
+
+      const { error } = await supabase
+        .from('user_profiles')
+        .update(updateData)
+        .eq('id', user.id);
+
+      if (error) throw error;
+      toast({ title: 'Workplace updated', description: 'Your workplace has been saved.' });
+    } catch (error) {
+      console.error('Error saving workplace:', error);
+      toast({ title: 'Error', description: 'Failed to save workplace', variant: 'destructive' });
+    } finally {
+      setSavingWorkplace(false);
+    }
+  };
 
   // Refs for file inputs
   const profilePhotoInputRef = useRef<HTMLInputElement>(null);
@@ -322,7 +400,8 @@ const Profile: React.FC = () => {
                 { key: 'about', label: 'About' },
                 { key: 'posts', label: 'My Content' },
                 { key: 'saved', label: 'Saved Items' },
-                { key: 'interests', label: 'My Interests' }
+                { key: 'interests', label: 'My Interests' },
+                { key: 'workplace', label: 'Workplace' }
               ].map(({ key, label }) => (
                 <button
                   key={key}
@@ -501,6 +580,72 @@ const Profile: React.FC = () => {
                     console.log('Updated interests:', interests);
                   }}
                 />
+              )}
+
+              {activeTab === 'workplace' && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Building className="h-5 w-5" />
+                      Workplace
+                    </CardTitle>
+                    <CardDescription>
+                      Select your company from registered organizations or enter it manually
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <RadioGroup
+                      value={workplaceMode}
+                      onValueChange={(value: 'select' | 'manual') => setWorkplaceMode(value)}
+                      className="space-y-3"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <RadioGroupItem value="select" id="select-company" />
+                        <Label htmlFor="select-company">Select from registered companies</Label>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <RadioGroupItem value="manual" id="manual-company" />
+                        <Label htmlFor="manual-company">Enter company name manually</Label>
+                      </div>
+                    </RadioGroup>
+
+                    {workplaceMode === 'select' ? (
+                      <div className="space-y-2">
+                        <Label>Company</Label>
+                        <Select value={selectedCompanyId} onValueChange={setSelectedCompanyId}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a company..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {companies.map((company) => (
+                              <SelectItem key={company.id} value={company.id}>
+                                <div className="flex items-center gap-2">
+                                  {company.logo_url && (
+                                    <img src={company.logo_url} alt="" className="h-4 w-4 rounded" />
+                                  )}
+                                  {company.name}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <Label>Company Name</Label>
+                        <Input
+                          value={manualCompanyName}
+                          onChange={(e) => setManualCompanyName(e.target.value)}
+                          placeholder="Enter your company name..."
+                        />
+                      </div>
+                    )}
+
+                    <Button onClick={handleSaveWorkplace} disabled={savingWorkplace}>
+                      {savingWorkplace ? 'Saving...' : 'Save Workplace'}
+                    </Button>
+                  </CardContent>
+                </Card>
               )}
             </div>
           </div>
