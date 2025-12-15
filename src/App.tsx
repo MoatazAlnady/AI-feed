@@ -39,6 +39,7 @@ import ConnectionRequests from './pages/ConnectionRequests';
 import Guidelines from "./pages/Guidelines";
 import CompanyPage from "./pages/CompanyPage";
 import InvitationAccept from "./pages/InvitationAccept";
+import EmployerUpgrade from "./pages/EmployerUpgrade";
 
 const queryClient = new QueryClient();
 
@@ -92,6 +93,7 @@ const App = () => (
                <Route path="upgrade" element={<Upgrade />} />
                <Route path="dashboard" element={<EmployerDashboard />} />
                <Route path="employer/onboarding" element={<EmployerOnboarding />} />
+               <Route path="employer/upgrade" element={<EmployerUpgrade />} />
                <Route path="employer/*" element={<EmployerDashboard />} />
                 <Route path="admin" element={<Admin />} />
                 <Route path="admin/newsletter" element={<AdminNewsletter />} />

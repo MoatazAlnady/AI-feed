@@ -29,17 +29,21 @@ import OrganizationManagement from '../components/OrganizationManagement';
 import CompanyEmployeeManager from '../components/CompanyEmployeeManager';
 import SubscriptionGate from '../components/SubscriptionGate';
 import { useEmployerAccess } from '../hooks/useEmployerAccess';
+import CreateCompanyPageModal from '../components/CreateCompanyPageModal';
 
 const EmployerDashboard = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const [showCreateCompanyModal, setShowCreateCompanyModal] = useState(false);
   const { 
     loading: employerLoading, 
     companyPage, 
     hasActiveSubscription, 
     subscriptionStatus,
-    isCompanyAdmin 
+    isCompanyAdmin,
+    isEmployer,
+    refetch: refetchEmployerAccess
   } = useEmployerAccess();
   const [activeTab, setActiveTab] = useState(() => {
     const path = location.pathname.split('/').pop();
@@ -254,9 +258,37 @@ const EmployerDashboard = () => {
     );
   };
 
+  // Check if user is an employer without a company
+  const isEmployerWithoutCompany = isEmployer && !companyPage && !employerLoading;
+
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Company Setup CTA for employers without a company */}
+        {isEmployerWithoutCompany && (
+          <div className="mb-6 p-6 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-xl">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-primary/20 rounded-full">
+                  <Building className="h-8 w-8 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold">
+                    {t('employer.createCompany.title', 'Create Your Company Page')}
+                  </h2>
+                  <p className="text-muted-foreground">
+                    {t('employer.createCompany.description', 'Set up your company page to post jobs, manage projects, and find talent.')}
+                  </p>
+                </div>
+              </div>
+              <Button onClick={() => setShowCreateCompanyModal(true)}>
+                <Building className="h-4 w-4 mr-2" />
+                {t('employer.createCompany.button', 'Create Company')}
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Company Branding Header */}
         {companyPage && (
           <div className="mb-6 p-4 bg-card rounded-xl border flex items-center justify-between">
@@ -277,7 +309,7 @@ const EmployerDashboard = () => {
             <div className="flex items-center gap-3">
               {getSubscriptionBadge()}
               {!hasActiveSubscription && (
-                <Button size="sm" onClick={() => navigate('/upgrade')}>
+                <Button size="sm" onClick={() => navigate('/employer/upgrade')}>
                   <Crown className="h-4 w-4 mr-1" />
                   {t('subscription.upgrade', 'Upgrade')}
                 </Button>
@@ -298,7 +330,7 @@ const EmployerDashboard = () => {
                 {t('subscription.upgradePrompt', 'Upgrade your subscription to unlock all employer features.')}
               </p>
             </div>
-            <Button size="sm" variant="outline" onClick={() => navigate('/upgrade')}>
+            <Button size="sm" variant="outline" onClick={() => navigate('/employer/upgrade')}>
               {t('subscription.viewPlans', 'View Plans')}
             </Button>
           </div>
@@ -325,6 +357,16 @@ const EmployerDashboard = () => {
       
       {/* Chat Dock for Employers */}
       <EmployerChatDock onTalentSearch={handleTalentSearch} />
+
+      {/* Create Company Modal */}
+      <CreateCompanyPageModal 
+        open={showCreateCompanyModal} 
+        onOpenChange={setShowCreateCompanyModal}
+        onSuccess={() => {
+          refetchEmployerAccess();
+          setShowCreateCompanyModal(false);
+        }}
+      />
     </div>
   );
 };
