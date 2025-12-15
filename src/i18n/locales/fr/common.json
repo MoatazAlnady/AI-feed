@@ -1077,5 +1077,95 @@
       "title": "Conséquences",
       "content": "Les violations de ces directives peuvent entraîner des avertissements, une suspension de compte ou un bannissement permanent selon la gravité."
     }
+  },
+  "talentSearch": {
+    "title": "Recherche de Talents",
+    "searchPlaceholder": "Rechercher par nom, titre, compétences...",
+    "showingResults": "Affichage de {{count}} sur {{total}} talents",
+    "loading": "Chargement...",
+    "noTalentsFound": "Aucun talent trouvé",
+    "adjustCriteria": "Essayez d'ajuster votre recherche ou vos filtres",
+    "noTalentsYet": "Aucun talent disponible pour le moment"
+  },
+  "bulkActions": {
+    "selectAll": "Tout sélectionner",
+    "selected": "{{count}} sélectionné(s)",
+    "saveAll": "Tout enregistrer",
+    "bulkMessage": "Message groupé",
+    "bulkMessageDesc": "Envoyer un message personnalisé à {{count}} destinataires",
+    "connectAll": "Tout connecter",
+    "clear": "Effacer",
+    "recipients": "Destinataires",
+    "insertPlaceholder": "Insérer un espace réservé",
+    "messageTemplate": "Modèle de message",
+    "hidePreview": "Masquer l'aperçu",
+    "showPreview": "Afficher l'aperçu",
+    "previewFor": "Aperçu pour",
+    "noMessage": "Pas encore de message...",
+    "messagesSent": "Messages envoyés",
+    "messagesSentDesc": "{{count}} messages envoyés avec succès",
+    "sendError": "Échec de l'envoi des messages",
+    "sending": "Envoi en cours...",
+    "sendToAll": "Envoyer à {{count}}",
+    "noEligible": "Aucun talent éligible",
+    "allConnected": "Tous les talents sélectionnés sont déjà connectés",
+    "requestsSent": "Demandes envoyées",
+    "requestsSentDesc": "{{count}} demandes de connexion envoyées",
+    "connectError": "Échec de l'envoi de certaines demandes de connexion"
+  },
+  "saveToProject": {
+    "title": "Enregistrer dans le projet",
+    "description": "Enregistrer {{name}} dans l'un de vos projets",
+    "bulkDescription": "Enregistrer {{count}} candidats dans l'un de vos projets",
+    "multipleCandidates": "{{count}} candidats",
+    "bulkSavedDesc": "{{count}} candidats enregistrés dans le projet",
+    "searchProjects": "Rechercher des projets...",
+    "createProject": "Créer un nouveau projet",
+    "save": "Enregistrer dans le projet",
+    "saved": "Enregistré !",
+    "savedDesc": "{{name}} a été enregistré dans le projet",
+    "saveError": "Échec de l'enregistrement du candidat",
+    "alreadySaved": "Déjà enregistré",
+    "noProjects": "Aucun projet pour le moment"
+  },
+  "companyPages": {
+    "selectCompany": "Sélectionner une entreprise...",
+    "searchCompanies": "Rechercher des entreprises...",
+    "createNew": "Créer une page entreprise",
+    "selectFromList": "Sélectionner dans la liste",
+    "enterManually": "Saisir manuellement"
+  },
+  "onboarding": {
+    "welcome": "Bienvenue sur AI Feed !",
+    "welcomeTitle": "Bienvenue sur AI Feed",
+    "stepOf": "Étape {{current}} sur {{total}}",
+    "selectInterestsDesc": "Personnalisons votre expérience en sélectionnant vos centres d'intérêt",
+    "yourWorkplace": "Votre lieu de travail",
+    "workplaceDesc": "Où travaillez-vous actuellement ?",
+    "workplaceOptional": "C'est facultatif - vous pouvez l'ajouter ou le modifier plus tard dans les paramètres de votre profil.",
+    "discoverCreators": "Découvrez les meilleurs créateurs",
+    "discoverCreatorsDesc": "Suivez les créateurs qui partagent vos intérêts",
+    "allSet": "Vous êtes prêt !",
+    "welcomeMessage": "Bienvenue sur AI Feed ! Voici ce que vous pouvez faire :",
+    "skipTour": "Passer la visite",
+    "skip": "Passer",
+    "next": "Suivant",
+    "follow": "Suivre",
+    "startExploring": "Commencer à explorer AI Feed !"
+  },
+  "profilePreview": {
+    "viewFullProfile": "Voir le profil complet",
+    "saveToProject": "Enregistrer dans le projet",
+    "sendMessage": "Envoyer un message",
+    "connect": "Connecter",
+    "pending": "En attente",
+    "connected": "Connecté"
+  },
+  "talentCard": {
+    "connect": "Connecter",
+    "pending": "En attente",
+    "connected": "Connecté",
+    "message": "Message",
+    "save": "Enregistrer"
   }
 }

@@ -856,5 +856,95 @@
       "title": "العواقب",
       "content": "قد تؤدي انتهاكات هذه الإرشادات إلى تحذيرات أو تعليق الحساب أو الحظر الدائم حسب خطورة المخالفة."
     }
+  },
+  "talentSearch": {
+    "title": "البحث عن المواهب",
+    "searchPlaceholder": "البحث بالاسم، المسمى الوظيفي، المهارات...",
+    "showingResults": "عرض {{count}} من {{total}} موهبة",
+    "loading": "جاري التحميل...",
+    "noTalentsFound": "لم يتم العثور على مواهب",
+    "adjustCriteria": "حاول تعديل البحث أو الفلاتر",
+    "noTalentsYet": "لا توجد مواهب متاحة بعد"
+  },
+  "bulkActions": {
+    "selectAll": "تحديد الكل",
+    "selected": "{{count}} محدد",
+    "saveAll": "حفظ الكل",
+    "bulkMessage": "رسالة جماعية",
+    "bulkMessageDesc": "إرسال رسالة مخصصة إلى {{count}} مستلم",
+    "connectAll": "التواصل مع الكل",
+    "clear": "مسح",
+    "recipients": "المستلمون",
+    "insertPlaceholder": "إدراج متغير",
+    "messageTemplate": "قالب الرسالة",
+    "hidePreview": "إخفاء المعاينة",
+    "showPreview": "عرض المعاينة",
+    "previewFor": "معاينة لـ",
+    "noMessage": "لا توجد رسالة بعد...",
+    "messagesSent": "تم إرسال الرسائل",
+    "messagesSentDesc": "تم إرسال {{count}} رسالة بنجاح",
+    "sendError": "فشل في إرسال الرسائل",
+    "sending": "جاري الإرسال...",
+    "sendToAll": "إرسال إلى {{count}}",
+    "noEligible": "لا توجد مواهب مؤهلة",
+    "allConnected": "جميع المواهب المحددة متصلة بالفعل",
+    "requestsSent": "تم إرسال الطلبات",
+    "requestsSentDesc": "تم إرسال {{count}} طلب اتصال",
+    "connectError": "فشل في إرسال بعض طلبات الاتصال"
+  },
+  "saveToProject": {
+    "title": "حفظ في المشروع",
+    "description": "حفظ {{name}} في أحد مشاريعك",
+    "bulkDescription": "حفظ {{count}} مرشح في أحد مشاريعك",
+    "multipleCandidates": "{{count}} مرشح",
+    "bulkSavedDesc": "تم حفظ {{count}} مرشح في المشروع",
+    "searchProjects": "البحث في المشاريع...",
+    "createProject": "إنشاء مشروع جديد",
+    "save": "حفظ في المشروع",
+    "saved": "تم الحفظ!",
+    "savedDesc": "تم حفظ {{name}} في المشروع",
+    "saveError": "فشل في حفظ المرشح",
+    "alreadySaved": "محفوظ بالفعل",
+    "noProjects": "لا توجد مشاريع بعد"
+  },
+  "companyPages": {
+    "selectCompany": "اختر الشركة...",
+    "searchCompanies": "البحث عن الشركات...",
+    "createNew": "إنشاء صفحة شركة",
+    "selectFromList": "اختر من القائمة",
+    "enterManually": "إدخال يدوي"
+  },
+  "onboarding": {
+    "welcome": "مرحباً بك في AI Feed!",
+    "welcomeTitle": "مرحباً بك في AI Feed",
+    "stepOf": "الخطوة {{current}} من {{total}}",
+    "selectInterestsDesc": "دعنا نخصص تجربتك باختيار اهتماماتك",
+    "yourWorkplace": "مكان عملك",
+    "workplaceDesc": "أين تعمل حالياً؟",
+    "workplaceOptional": "هذا اختياري - يمكنك إضافته أو تغييره لاحقاً في إعدادات ملفك الشخصي.",
+    "discoverCreators": "اكتشف أفضل المبدعين",
+    "discoverCreatorsDesc": "تابع المبدعين الذين يشاركونك اهتماماتك",
+    "allSet": "أنت جاهز!",
+    "welcomeMessage": "مرحباً بك في AI Feed! إليك ما يمكنك فعله:",
+    "skipTour": "تخطي الجولة",
+    "skip": "تخطي",
+    "next": "التالي",
+    "follow": "متابعة",
+    "startExploring": "ابدأ استكشاف AI Feed!"
+  },
+  "profilePreview": {
+    "viewFullProfile": "عرض الملف الكامل",
+    "saveToProject": "حفظ في المشروع",
+    "sendMessage": "إرسال رسالة",
+    "connect": "تواصل",
+    "pending": "قيد الانتظار",
+    "connected": "متصل"
+  },
+  "talentCard": {
+    "connect": "تواصل",
+    "pending": "قيد الانتظار",
+    "connected": "متصل",
+    "message": "رسالة",
+    "save": "حفظ"
   }
 }

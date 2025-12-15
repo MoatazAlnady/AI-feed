@@ -80,6 +80,7 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
   // Save to project modal state
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [talentToSave, setTalentToSave] = useState<Talent | null>(null);
+  const [bulkSaveIds, setBulkSaveIds] = useState<string[]>([]);
   
   // Bulk selection state
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -380,11 +381,10 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
   };
 
   const handleBulkSaveToProject = () => {
-    // For bulk save, we'll open modal with first selected talent
-    // The modal would need to be enhanced to handle multiple candidates
-    const selectedTalents = filteredTalents.filter(t => selectedIds.has(t.id));
-    if (selectedTalents.length > 0) {
-      setTalentToSave(selectedTalents[0]);
+    const selectedTalentIds = Array.from(selectedIds);
+    if (selectedTalentIds.length > 0) {
+      setBulkSaveIds(selectedTalentIds);
+      setTalentToSave(null); // Clear single talent
       setSaveModalOpen(true);
     }
   };
@@ -557,14 +557,20 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
       </div>
 
       {/* Save to Project Modal */}
-      {talentToSave && (
-        <SaveToProjectModal
-          open={saveModalOpen}
-          onOpenChange={setSaveModalOpen}
-          candidateId={talentToSave.id}
-          candidateName={talentToSave.full_name || 'Unknown'}
-        />
-      )}
+      <SaveToProjectModal
+        open={saveModalOpen}
+        onOpenChange={(open) => {
+          setSaveModalOpen(open);
+          if (!open) {
+            setTalentToSave(null);
+            setBulkSaveIds([]);
+          }
+        }}
+        candidateId={talentToSave?.id}
+        candidateName={talentToSave?.full_name || undefined}
+        candidateIds={bulkSaveIds}
+        onSuccess={() => setSelectedIds(new Set())}
+      />
 
       {/* Bulk Message Modal */}
       <BulkMessageModal

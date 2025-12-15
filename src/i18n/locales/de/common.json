@@ -1077,5 +1077,95 @@
       "title": "Konsequenzen",
       "content": "Verstöße gegen diese Richtlinien können zu Warnungen, Kontosperrung oder dauerhaftem Ausschluss führen, je nach Schwere des Verstoßes."
     }
+  },
+  "talentSearch": {
+    "title": "Talentsuche",
+    "searchPlaceholder": "Suche nach Name, Berufsbezeichnung, Fähigkeiten...",
+    "showingResults": "Zeige {{count}} von {{total}} Talenten",
+    "loading": "Laden...",
+    "noTalentsFound": "Keine Talente gefunden",
+    "adjustCriteria": "Versuchen Sie, Ihre Suche oder Filter anzupassen",
+    "noTalentsYet": "Noch keine Talente verfügbar"
+  },
+  "bulkActions": {
+    "selectAll": "Alle auswählen",
+    "selected": "{{count}} ausgewählt",
+    "saveAll": "Alle speichern",
+    "bulkMessage": "Massennachricht",
+    "bulkMessageDesc": "Personalisierte Nachricht an {{count}} Empfänger senden",
+    "connectAll": "Alle verbinden",
+    "clear": "Löschen",
+    "recipients": "Empfänger",
+    "insertPlaceholder": "Platzhalter einfügen",
+    "messageTemplate": "Nachrichtenvorlage",
+    "hidePreview": "Vorschau ausblenden",
+    "showPreview": "Vorschau anzeigen",
+    "previewFor": "Vorschau für",
+    "noMessage": "Noch keine Nachricht...",
+    "messagesSent": "Nachrichten gesendet",
+    "messagesSentDesc": "{{count}} Nachrichten erfolgreich gesendet",
+    "sendError": "Nachrichten konnten nicht gesendet werden",
+    "sending": "Senden...",
+    "sendToAll": "An {{count}} senden",
+    "noEligible": "Keine berechtigten Talente",
+    "allConnected": "Alle ausgewählten Talente sind bereits verbunden",
+    "requestsSent": "Anfragen gesendet",
+    "requestsSentDesc": "{{count}} Verbindungsanfragen gesendet",
+    "connectError": "Einige Verbindungsanfragen konnten nicht gesendet werden"
+  },
+  "saveToProject": {
+    "title": "Im Projekt speichern",
+    "description": "{{name}} in einem Ihrer Projekte speichern",
+    "bulkDescription": "{{count}} Kandidaten in einem Ihrer Projekte speichern",
+    "multipleCandidates": "{{count}} Kandidaten",
+    "bulkSavedDesc": "{{count}} Kandidaten im Projekt gespeichert",
+    "searchProjects": "Projekte suchen...",
+    "createProject": "Neues Projekt erstellen",
+    "save": "Im Projekt speichern",
+    "saved": "Gespeichert!",
+    "savedDesc": "{{name}} wurde im Projekt gespeichert",
+    "saveError": "Kandidat konnte nicht gespeichert werden",
+    "alreadySaved": "Bereits gespeichert",
+    "noProjects": "Noch keine Projekte"
+  },
+  "companyPages": {
+    "selectCompany": "Unternehmen auswählen...",
+    "searchCompanies": "Unternehmen suchen...",
+    "createNew": "Unternehmensseite erstellen",
+    "selectFromList": "Aus Liste auswählen",
+    "enterManually": "Manuell eingeben"
+  },
+  "onboarding": {
+    "welcome": "Willkommen bei AI Feed!",
+    "welcomeTitle": "Willkommen bei AI Feed",
+    "stepOf": "Schritt {{current}} von {{total}}",
+    "selectInterestsDesc": "Personalisieren wir Ihre Erfahrung durch Auswahl Ihrer Interessen",
+    "yourWorkplace": "Ihr Arbeitsplatz",
+    "workplaceDesc": "Wo arbeiten Sie derzeit?",
+    "workplaceOptional": "Dies ist optional - Sie können es später in Ihren Profileinstellungen hinzufügen oder ändern.",
+    "discoverCreators": "Top-Ersteller entdecken",
+    "discoverCreatorsDesc": "Folgen Sie Erstellern, die Ihre Interessen teilen",
+    "allSet": "Alles bereit!",
+    "welcomeMessage": "Willkommen bei AI Feed! Das können Sie tun:",
+    "skipTour": "Tour überspringen",
+    "skip": "Überspringen",
+    "next": "Weiter",
+    "follow": "Folgen",
+    "startExploring": "AI Feed erkunden!"
+  },
+  "profilePreview": {
+    "viewFullProfile": "Vollständiges Profil anzeigen",
+    "saveToProject": "Im Projekt speichern",
+    "sendMessage": "Nachricht senden",
+    "connect": "Verbinden",
+    "pending": "Ausstehend",
+    "connected": "Verbunden"
+  },
+  "talentCard": {
+    "connect": "Verbinden",
+    "pending": "Ausstehend",
+    "connected": "Verbunden",
+    "message": "Nachricht",
+    "save": "Speichern"
   }
 }

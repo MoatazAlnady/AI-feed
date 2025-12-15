@@ -899,5 +899,32 @@
     "addNotes": "Добавить заметку...",
     "confirmApprove": "Подтвердить одобрение запроса?",
     "confirmReject": "Подтвердить отклонение запроса?"
+  },
+  "talentSearch": {
+    "title": "Поиск талантов",
+    "searchPlaceholder": "Поиск по имени, должности, навыкам...",
+    "showingResults": "Показано {{count}} из {{total}} талантов",
+    "noTalentsFound": "Таланты не найдены"
+  },
+  "bulkActions": {
+    "selectAll": "Выбрать все",
+    "selected": "Выбрано: {{count}}",
+    "saveAll": "Сохранить все",
+    "bulkMessage": "Массовое сообщение",
+    "connectAll": "Подключить все"
+  },
+  "saveToProject": {
+    "title": "Сохранить в проект",
+    "description": "Сохранить {{name}} в один из ваших проектов"
+  },
+  "onboarding": {
+    "welcome": "Добро пожаловать в AI Feed!",
+    "yourWorkplace": "Ваше место работы",
+    "allSet": "Всё готово!"
+  },
+  "talentCard": {
+    "connect": "Подключить",
+    "pending": "Ожидание",
+    "connected": "Подключено"
   }
 }

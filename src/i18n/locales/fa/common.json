@@ -885,5 +885,32 @@
       "title": "عواقب",
       "content": "نقض این راهنماها ممکن است منجر به هشدار، تعلیق حساب یا ممنوعیت دائمی بسته به شدت تخلف شود."
     }
+  },
+  "talentSearch": {
+    "title": "جستجوی استعداد",
+    "searchPlaceholder": "جستجو بر اساس نام، عنوان شغلی، مهارت‌ها...",
+    "showingResults": "نمایش {{count}} از {{total}} استعداد",
+    "noTalentsFound": "استعدادی پیدا نشد"
+  },
+  "bulkActions": {
+    "selectAll": "انتخاب همه",
+    "selected": "{{count}} انتخاب شده",
+    "saveAll": "ذخیره همه",
+    "bulkMessage": "پیام گروهی",
+    "connectAll": "اتصال به همه"
+  },
+  "saveToProject": {
+    "title": "ذخیره در پروژه",
+    "description": "ذخیره {{name}} در یکی از پروژه‌های شما"
+  },
+  "onboarding": {
+    "welcome": "به AI Feed خوش آمدید!",
+    "yourWorkplace": "محل کار شما",
+    "allSet": "همه چیز آماده است!"
+  },
+  "talentCard": {
+    "connect": "اتصال",
+    "pending": "در انتظار",
+    "connected": "متصل"
   }
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,8 +8,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { X, UserPlus, ArrowRight, Sparkles, Users, Compass } from 'lucide-react';
+import { X, UserPlus, ArrowRight, Sparkles, Users, Compass, Building2 } from 'lucide-react';
 import InterestManagement from './InterestManagement';
+import CompanySelector from './CompanySelector';
 
 interface TopCreator {
   id: string;
@@ -31,6 +33,7 @@ interface OnboardingFlowProps {
 }
 
 const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComplete }) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
@@ -38,11 +41,15 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
   const [topCreators, setTopCreators] = useState<TopCreator[]>([]);
   const [selectedCreators, setSelectedCreators] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  
+  // Workplace state
+  const [companyName, setCompanyName] = useState('');
+  const [companyPageId, setCompanyPageId] = useState<string | null>(null);
 
-  const totalSteps = 3;
+  const totalSteps = 4;
 
   useEffect(() => {
-    if (isOpen && currentStep === 2) {
+    if (isOpen && currentStep === 3) {
       fetchTopCreators();
     }
   }, [isOpen, currentStep, userInterests]);
@@ -74,6 +81,29 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
     setUserInterests(interests);
   };
 
+  const handleCompanyChange = (name: string, pageId: string | null) => {
+    setCompanyName(name);
+    setCompanyPageId(pageId);
+  };
+
+  const saveWorkplace = async () => {
+    if (!user || !companyName) return;
+    
+    try {
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({
+          company: companyName,
+          company_page_id: companyPageId,
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error saving workplace:', error);
+    }
+  };
+
   const toggleCreatorSelection = (creatorId: string) => {
     setSelectedCreators(prev => 
       prev.includes(creatorId) 
@@ -90,8 +120,8 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
 
     if (!user) {
       toast({
-        title: "Error",
-        description: "You must be logged in to follow creators.",
+        title: t('common.error'),
+        description: t('onboarding.mustBeLoggedIn', 'You must be logged in to follow creators.'),
         variant: "destructive",
       });
       return;
@@ -99,7 +129,6 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
 
     setLoading(true);
     try {
-      // Insert follow records for each selected creator
       const followPromises = selectedCreators.map(async (creatorId) => {
         const { error } = await supabase
           .from('follows')
@@ -108,7 +137,6 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
             following_id: creatorId
           });
         
-        // Ignore duplicate errors (user already following)
         if (error && error.code !== '23505') {
           throw error;
         }
@@ -117,16 +145,16 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
       await Promise.all(followPromises);
       
       toast({
-        title: "Success!",
-        description: `You're now following ${selectedCreators.length} creators.`,
+        title: t('common.success'),
+        description: t('onboarding.followingCreators', "You're now following {{count}} creators.", { count: selectedCreators.length }),
       });
       
       handleNextStep();
     } catch (error) {
       console.error('Error following creators:', error);
       toast({
-        title: "Error",
-        description: "Failed to follow creators. Please try again.",
+        title: t('common.error'),
+        description: t('onboarding.followError', 'Failed to follow creators. Please try again.'),
         variant: "destructive",
       });
     } finally {
@@ -134,7 +162,12 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
     }
   };
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
+    // Save workplace when moving from step 2
+    if (currentStep === 2 && companyName) {
+      await saveWorkplace();
+    }
+    
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     } else {
@@ -157,9 +190,9 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
           <div className="space-y-6">
             <div className="text-center">
               <Sparkles className="h-12 w-12 text-primary mx-auto mb-4" />
-              <h2 className="text-2xl font-bold mb-2">Welcome to AI Feed!</h2>
+              <h2 className="text-2xl font-bold mb-2">{t('onboarding.welcome', 'Welcome to AI Feed!')}</h2>
               <p className="text-muted-foreground">
-                Let's personalize your experience by selecting your interests
+                {t('onboarding.selectInterestsDesc', "Let's personalize your experience by selecting your interests")}
               </p>
             </div>
             <InterestManagement 
@@ -174,17 +207,41 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <Users className="h-12 w-12 text-primary mx-auto mb-4" />
-              <h2 className="text-2xl font-bold mb-2">Discover Top Creators</h2>
+              <Building2 className="h-12 w-12 text-primary mx-auto mb-4" />
+              <h2 className="text-2xl font-bold mb-2">{t('onboarding.yourWorkplace', 'Your Workplace')}</h2>
               <p className="text-muted-foreground">
-                Follow creators who share your interests and get inspired
+                {t('onboarding.workplaceDesc', 'Where do you currently work?')}
+              </p>
+            </div>
+            
+            <div className="max-w-md mx-auto">
+              <CompanySelector
+                value={companyName}
+                companyPageId={companyPageId}
+                onChange={handleCompanyChange}
+              />
+              <p className="text-xs text-muted-foreground mt-2 text-center">
+                {t('onboarding.workplaceOptional', 'This is optional - you can add or change this later in your profile settings.')}
+              </p>
+            </div>
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className="space-y-6">
+            <div className="text-center">
+              <Users className="h-12 w-12 text-primary mx-auto mb-4" />
+              <h2 className="text-2xl font-bold mb-2">{t('onboarding.discoverCreators', 'Discover Top Creators')}</h2>
+              <p className="text-muted-foreground">
+                {t('onboarding.discoverCreatorsDesc', 'Follow creators who share your interests and get inspired')}
               </p>
             </div>
             
             {loading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                <p className="text-sm text-muted-foreground mt-2">Finding creators for you...</p>
+                <p className="text-sm text-muted-foreground mt-2">{t('onboarding.findingCreators', 'Finding creators for you...')}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
@@ -216,12 +273,12 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
                             )}
                             {creator.ai_feed_top_voice && (
                               <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
-                                Top Voice
+                                {t('onboarding.topVoice', 'Top Voice')}
                               </Badge>
                             )}
                           </div>
                           <p className="text-xs text-muted-foreground truncate">
-                            {creator.job_title || 'AI Enthusiast'}
+                            {creator.job_title || t('onboarding.aiEnthusiast', 'AI Enthusiast')}
                           </p>
                           <div className="flex flex-wrap gap-1 mt-2">
                             {creator.interests.slice(0, 2).map((interest) => (
@@ -236,8 +293,8 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
                             )}
                           </div>
                           <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
-                            <span>{creator.tools_submitted || 0} tools</span>
-                            <span>{creator.articles_written || 0} articles</span>
+                            <span>{creator.tools_submitted || 0} {t('onboarding.tools', 'tools')}</span>
+                            <span>{creator.articles_written || 0} {t('onboarding.articles', 'articles')}</span>
                           </div>
                         </div>
                         {selectedCreators.includes(creator.id) && (
@@ -253,57 +310,57 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
             {topCreators.length === 0 && !loading && (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
-                  No creators found matching your interests yet. You can explore and follow creators later!
+                  {t('onboarding.noCreatorsFound', 'No creators found matching your interests yet. You can explore and follow creators later!')}
                 </p>
               </div>
             )}
           </div>
         );
 
-      case 3:
+      case 4:
         return (
           <div className="space-y-6 text-center">
             <div>
               <Compass className="h-12 w-12 text-primary mx-auto mb-4" />
-              <h2 className="text-2xl font-bold mb-2">You're All Set!</h2>
+              <h2 className="text-2xl font-bold mb-2">{t('onboarding.allSet', "You're All Set!")}</h2>
               <p className="text-muted-foreground mb-6">
-                Welcome to AI Feed! Here's what you can do:
+                {t('onboarding.welcomeMessage', "Welcome to AI Feed! Here's what you can do:")}
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
               <Card>
                 <CardContent className="p-4">
-                  <h3 className="font-semibold mb-2">📝 Share Content</h3>
+                  <h3 className="font-semibold mb-2">📝 {t('onboarding.shareContent', 'Share Content')}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Create posts, share AI tools, and write articles to engage with the community
+                    {t('onboarding.shareContentDesc', 'Create posts, share AI tools, and write articles to engage with the community')}
                   </p>
                 </CardContent>
               </Card>
               
               <Card>
                 <CardContent className="p-4">
-                  <h3 className="font-semibold mb-2">🔍 Discover Tools</h3>
+                  <h3 className="font-semibold mb-2">🔍 {t('onboarding.discoverTools', 'Discover Tools')}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Explore AI tools submitted by the community and find your next favorite
+                    {t('onboarding.discoverToolsDesc', 'Explore AI tools submitted by the community and find your next favorite')}
                   </p>
                 </CardContent>
               </Card>
               
               <Card>
                 <CardContent className="p-4">
-                  <h3 className="font-semibold mb-2">🤝 Connect</h3>
+                  <h3 className="font-semibold mb-2">🤝 {t('onboarding.connect', 'Connect')}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Network with AI enthusiasts, professionals, and innovators
+                    {t('onboarding.connectDesc', 'Network with AI enthusiasts, professionals, and innovators')}
                   </p>
                 </CardContent>
               </Card>
               
               <Card>
                 <CardContent className="p-4">
-                  <h3 className="font-semibold mb-2">📚 Learn</h3>
+                  <h3 className="font-semibold mb-2">📚 {t('onboarding.learn', 'Learn')}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Read articles, tutorials, and insights from experts in the field
+                    {t('onboarding.learnDesc', 'Read articles, tutorials, and insights from experts in the field')}
                   </p>
                 </CardContent>
               </Card>
@@ -322,14 +379,14 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
         return (
           <>
             <Button variant="outline" onClick={handleSkip}>
-              Skip Tour
+              {t('onboarding.skipTour', 'Skip Tour')}
             </Button>
             <Button 
               onClick={handleNextStep}
               disabled={userInterests.length === 0}
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white"
             >
-              Next <ArrowRight className="h-4 w-4 ml-2" />
+              {t('onboarding.next', 'Next')} <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </>
         );
@@ -338,26 +395,41 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
         return (
           <>
             <Button variant="outline" onClick={handleNextStep}>
-              Skip
+              {t('onboarding.skip', 'Skip')}
             </Button>
             <Button 
-              onClick={handleFollowCreators}
-              disabled={loading}
+              onClick={handleNextStep}
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white"
             >
-              {loading ? 'Following...' : `Follow ${selectedCreators.length > 0 ? `(${selectedCreators.length})` : ''}`}
-              <ArrowRight className="h-4 w-4 ml-2" />
+              {t('onboarding.next', 'Next')} <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </>
         );
       
       case 3:
         return (
+          <>
+            <Button variant="outline" onClick={handleNextStep}>
+              {t('onboarding.skip', 'Skip')}
+            </Button>
+            <Button 
+              onClick={handleFollowCreators}
+              disabled={loading}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+            >
+              {loading ? t('onboarding.following', 'Following...') : `${t('onboarding.follow', 'Follow')} ${selectedCreators.length > 0 ? `(${selectedCreators.length})` : ''}`}
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+          </>
+        );
+      
+      case 4:
+        return (
           <Button 
             onClick={onComplete}
             className="bg-gradient-to-r from-blue-600 to-purple-600 text-white w-full"
           >
-            Start Exploring AI Feed!
+            {t('onboarding.startExploring', 'Start Exploring AI Feed!')}
           </Button>
         );
       
@@ -372,9 +444,9 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
         <DialogHeader>
           <div className="flex items-center justify-between">
             <div>
-              <DialogTitle>Welcome to AI Feed</DialogTitle>
+              <DialogTitle>{t('onboarding.welcomeTitle', 'Welcome to AI Feed')}</DialogTitle>
               <DialogDescription>
-                Step {currentStep} of {totalSteps}
+                {t('onboarding.stepOf', 'Step {{current}} of {{total}}', { current: currentStep, total: totalSteps })}
               </DialogDescription>
             </div>
             <Button variant="ghost" size="sm" onClick={onClose}>
@@ -383,7 +455,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ isOpen, onClose, onComp
           </div>
           
           {/* Progress bar */}
-          <div className="w-full bg-gray-200 rounded-full h-2 mt-4">
+          <div className="w-full bg-muted rounded-full h-2 mt-4">
             <div 
               className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${(currentStep / totalSteps) * 100}%` }}

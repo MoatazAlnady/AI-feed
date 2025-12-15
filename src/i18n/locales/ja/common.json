@@ -899,5 +899,32 @@
     "addNotes": "メモを追加...",
     "confirmApprove": "この編集リクエストを承認しますか？",
     "confirmReject": "この編集リクエストを却下しますか？"
+  },
+  "talentSearch": {
+    "title": "タレント検索",
+    "searchPlaceholder": "名前、職種、スキルで検索...",
+    "showingResults": "{{total}}件中{{count}}件を表示",
+    "noTalentsFound": "タレントが見つかりません"
+  },
+  "bulkActions": {
+    "selectAll": "すべて選択",
+    "selected": "{{count}}件選択中",
+    "saveAll": "すべて保存",
+    "bulkMessage": "一括メッセージ",
+    "connectAll": "すべてに接続"
+  },
+  "saveToProject": {
+    "title": "プロジェクトに保存",
+    "description": "{{name}}をプロジェクトに保存"
+  },
+  "onboarding": {
+    "welcome": "AI Feedへようこそ！",
+    "yourWorkplace": "勤務先",
+    "allSet": "準備完了！"
+  },
+  "talentCard": {
+    "connect": "接続",
+    "pending": "保留中",
+    "connected": "接続済み"
   }
 }
