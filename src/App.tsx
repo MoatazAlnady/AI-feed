@@ -38,6 +38,7 @@ import Notifications from "./pages/Notifications";
 import ConnectionRequests from './pages/ConnectionRequests';
 import Guidelines from "./pages/Guidelines";
 import CompanyPage from "./pages/CompanyPage";
+import InvitationAccept from "./pages/InvitationAccept";
 
 const queryClient = new QueryClient();
 
@@ -99,6 +100,7 @@ const App = () => (
                   <Route path="connection-requests" element={<ConnectionRequests />} />
                   <Route path="guidelines" element={<Guidelines />} />
                   <Route path="company/:slug" element={<CompanyPage />} />
+                  <Route path="invite/:token" element={<InvitationAccept />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
