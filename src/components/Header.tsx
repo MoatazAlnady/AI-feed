@@ -605,8 +605,8 @@ const Header: React.FC = () => {
                             )}
                         </>
                       )}
-                      {/* Dashboard Switcher Section */}
-                      {(isEmployer || isAdmin) && (
+                      {/* Dashboard Switcher Section - Show for all logged-in users */}
+                      {user && (
                         <div className="border-t border-gray-100 dark:border-gray-700 pt-2 mt-2">
                           <p className="px-4 py-1 text-xs font-medium text-muted-foreground uppercase tracking-wide">
                             Dashboards
