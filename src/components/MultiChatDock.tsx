@@ -332,6 +332,7 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
   useEffect(() => {
     (window as any).chatDock = {
       open: openChatWith,
+      openChatWith: openChatWith, // Alias for compatibility
       close: closeWindow,
       minimize: minimizeWindow,
       focus: focusWindow
@@ -376,7 +377,7 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
     if (!activeWindowData) return null;
 
     return (
-      <div className="fixed inset-0 z-50 bg-white dark:bg-gray-800">
+      <div className="fixed inset-0 z-50 bg-card">
         <ChatWindowContent
           window={activeWindowData}
           messages={messages[activeWindowData.conversationId] || []}
@@ -398,7 +399,7 @@ const MultiChatDock: React.FC<MultiChatDockProps> = ({ onOpenChat }) => {
       {windows.map((window) => (
         <div
           key={window.conversationId}
-          className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-t-lg shadow-lg transition-all duration-200 ${
+          className={`bg-card border border-border rounded-t-lg shadow-lg transition-all duration-200 ${
             window.minimized ? 'w-64 h-12' : 'w-80 h-96'
           }`}
           style={{ zIndex: window.zIndex }}
@@ -434,7 +435,7 @@ const MinimizedWindow: React.FC<{
   onClick: () => void;
   onClose: () => void;
 }> = ({ window, onClick, onClose }) => (
-  <div className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+  <div className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50">
     <div className="flex items-center space-x-2" onClick={onClick}>
       <Avatar className="h-6 w-6">
         <AvatarImage src={window.otherUser?.avatar_url} />
