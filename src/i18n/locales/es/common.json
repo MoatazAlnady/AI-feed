@@ -90,6 +90,7 @@
     "cta": "Explorar herramientas"
   },
   "chat": {
+    "chats": "Chats",
     "aiAssistant": "Asistente IA",
     "aiThinking": "IA está pensando...",
     "typeMessage": "Escribe tu mensaje...",

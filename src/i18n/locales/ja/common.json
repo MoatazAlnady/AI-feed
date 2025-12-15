@@ -90,6 +90,7 @@
     "cta": "ツールを探索"
   },
   "chat": {
+    "chats": "チャット",
     "aiAssistant": "AIアシスタント",
     "aiThinking": "AIが考えています...",
     "typeMessage": "メッセージを入力してください...",
