@@ -10,10 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Bell, User, Globe, Shield, Briefcase, MapPin, Phone, Link2, Calendar, Users, Circle } from 'lucide-react';
+import { Bell, User, Globe, Shield, Briefcase, MapPin, Phone, Link2, Calendar, Users, Circle, Building2 } from 'lucide-react';
 import NotificationSettings from '@/components/NotificationSettings';
 import SecuritySettings from '@/components/SecuritySettings';
 import InterestTagSelector from '@/components/InterestTagSelector';
+import CompanySelector from '@/components/CompanySelector';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 
@@ -32,6 +33,7 @@ const Settings = () => {
     bio: '',
     job_title: '',
     company: '',
+    company_page_id: null as string | null,
     website: '',
     country: '',
     city: '',
@@ -133,6 +135,7 @@ const Settings = () => {
           bio: data.bio || '',
           job_title: data.job_title || '',
           company: data.company || '',
+          company_page_id: data.company_page_id || null,
           website: data.website || '',
           country: data.country || '',
           city: data.city || '',
@@ -175,6 +178,7 @@ const Settings = () => {
           bio: profile.bio,
           job_title: profile.job_title,
           company: profile.company,
+          company_page_id: profile.company_page_id,
           website: profile.website,
           country: profile.country,
           city: profile.city,
@@ -330,25 +334,29 @@ const Settings = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="job_title">{t('settings.jobTitle')}</Label>
-                  <Input
-                    id="job_title"
-                    value={profile.job_title}
-                    onChange={(e) => setProfile(prev => ({ ...prev, job_title: e.target.value }))}
-                    placeholder={t('settings.jobTitlePlaceholder')}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="company">{t('settings.company')}</Label>
-                  <Input
-                    id="company"
-                    value={profile.company}
-                    onChange={(e) => setProfile(prev => ({ ...prev, company: e.target.value }))}
-                    placeholder={t('settings.companyPlaceholder')}
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="job_title">{t('settings.jobTitle')}</Label>
+                <Input
+                  id="job_title"
+                  value={profile.job_title}
+                  onChange={(e) => setProfile(prev => ({ ...prev, job_title: e.target.value }))}
+                  placeholder={t('settings.jobTitlePlaceholder')}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4" />
+                  {t('settings.workplace', 'Workplace')}
+                </Label>
+                <CompanySelector
+                  value={profile.company}
+                  companyPageId={profile.company_page_id}
+                  onChange={(company, companyPageId) => setProfile(prev => ({ 
+                    ...prev, 
+                    company, 
+                    company_page_id: companyPageId 
+                  }))}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="website">{t('settings.websiteLabel')}</Label>

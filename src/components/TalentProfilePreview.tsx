@@ -20,6 +20,9 @@ import {
   Linkedin,
   Twitter,
   Languages,
+  UserPlus,
+  Clock,
+  Check,
 } from 'lucide-react';
 
 interface TalentProfile {
@@ -43,11 +46,15 @@ interface TalentProfile {
   contact_visible?: boolean;
 }
 
+type ConnectionStatus = 'none' | 'pending' | 'connected';
+
 interface TalentProfilePreviewProps {
   talent: TalentProfile | null;
+  connectionStatus?: ConnectionStatus;
   onClose: () => void;
   onSaveToProject: (talent: TalentProfile) => void;
   onSendMessage: (talent: TalentProfile) => void;
+  onConnect?: (talent: TalentProfile) => void;
 }
 
 const getProficiencyLabel = (level: number): string => {
@@ -61,7 +68,14 @@ const getProficiencyLabel = (level: number): string => {
   }
 };
 
-const TalentProfilePreview = ({ talent, onClose, onSaveToProject, onSendMessage }: TalentProfilePreviewProps) => {
+const TalentProfilePreview = ({ 
+  talent, 
+  connectionStatus = 'none',
+  onClose, 
+  onSaveToProject, 
+  onSendMessage,
+  onConnect,
+}: TalentProfilePreviewProps) => {
   const { t } = useTranslation();
 
   if (!talent) {
@@ -85,6 +99,38 @@ const TalentProfilePreview = ({ talent, onClose, onSaveToProject, onSendMessage 
     .toUpperCase() || '?';
 
   const displayLocation = talent.location || [talent.city, talent.country].filter(Boolean).join(', ');
+
+  const getConnectionButton = () => {
+    if (!onConnect) return null;
+
+    switch (connectionStatus) {
+      case 'pending':
+        return (
+          <Button variant="outline" disabled className="flex-1 gap-2">
+            <Clock className="h-4 w-4" />
+            {t('talentSearch.requestPending', 'Pending')}
+          </Button>
+        );
+      case 'connected':
+        return (
+          <Button variant="secondary" disabled className="flex-1 gap-2">
+            <Check className="h-4 w-4" />
+            {t('talentSearch.connected', 'Connected')}
+          </Button>
+        );
+      default:
+        return (
+          <Button 
+            variant="outline" 
+            onClick={() => onConnect(talent)}
+            className="flex-1 gap-2"
+          >
+            <UserPlus className="h-4 w-4" />
+            {t('talentSearch.connect', 'Connect')}
+          </Button>
+        );
+    }
+  };
 
   return (
     <div className="h-full flex flex-col bg-card rounded-lg border overflow-hidden">
@@ -138,6 +184,7 @@ const TalentProfilePreview = ({ talent, onClose, onSaveToProject, onSendMessage 
 
           {/* Action Buttons */}
           <div className="flex gap-2">
+            {getConnectionButton()}
             <Button 
               onClick={() => onSendMessage(talent)} 
               className="flex-1"

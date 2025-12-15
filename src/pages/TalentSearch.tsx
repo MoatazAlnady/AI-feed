@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -7,10 +7,13 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import TalentSearchFilters, { TalentFilters } from '../components/TalentSearchFilters';
 import TalentCard from '../components/TalentCard';
 import TalentProfilePreview from '../components/TalentProfilePreview';
 import SaveToProjectModal from '../components/SaveToProjectModal';
+import BulkActionsToolbar from '../components/BulkActionsToolbar';
+import BulkMessageModal from '../components/BulkMessageModal';
 import { supabase } from '../lib/supabase';
 
 interface Talent {
@@ -61,6 +64,7 @@ const defaultFilters: TalentFilters = {
 
 const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState(initialSearch);
@@ -76,10 +80,23 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
   // Save to project modal state
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [talentToSave, setTalentToSave] = useState<Talent | null>(null);
+  
+  // Bulk selection state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkMessageOpen, setBulkMessageOpen] = useState(false);
+  
+  // Connection status tracking
+  const [connectionStatuses, setConnectionStatuses] = useState<Record<string, 'none' | 'pending' | 'connected'>>({});
 
   useEffect(() => {
     fetchTalents();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchConnectionStatuses();
+    }
+  }, [user, talents]);
 
   useEffect(() => {
     if (initialSearch) {
@@ -90,6 +107,49 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
   useEffect(() => {
     applyFilters();
   }, [talents, filters, searchTerm]);
+
+  const fetchConnectionStatuses = async () => {
+    if (!user || talents.length === 0) return;
+    
+    try {
+      const talentIds = talents.map(t => t.id);
+      
+      // Get pending requests
+      const { data: pendingRequests } = await supabase
+        .from('connection_requests')
+        .select('recipient_id')
+        .eq('requester_id', user.id)
+        .eq('status', 'pending')
+        .in('recipient_id', talentIds);
+      
+      // Get connections
+      const { data: connections } = await supabase
+        .from('connections')
+        .select('user_1_id, user_2_id')
+        .or(`user_1_id.eq.${user.id},user_2_id.eq.${user.id}`);
+      
+      const statuses: Record<string, 'none' | 'pending' | 'connected'> = {};
+      
+      talentIds.forEach(id => {
+        statuses[id] = 'none';
+      });
+      
+      pendingRequests?.forEach(req => {
+        statuses[req.recipient_id] = 'pending';
+      });
+      
+      connections?.forEach(conn => {
+        const otherId = conn.user_1_id === user.id ? conn.user_2_id : conn.user_1_id;
+        if (talentIds.includes(otherId)) {
+          statuses[otherId] = 'connected';
+        }
+      });
+      
+      setConnectionStatuses(statuses);
+    } catch (error) {
+      console.error('Error fetching connection statuses:', error);
+    }
+  };
 
   const fetchTalents = async () => {
     try {
@@ -259,6 +319,140 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
     navigate(`/messages?userId=${talent.id}`);
   };
 
+  const handleConnect = async (talent: Talent) => {
+    if (!user) {
+      toast({
+        title: t('common.error', 'Error'),
+        description: t('auth.loginRequired', 'Please log in to connect'),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('connection_requests')
+        .insert({
+          requester_id: user.id,
+          recipient_id: talent.id,
+        });
+
+      if (error) throw error;
+
+      setConnectionStatuses(prev => ({
+        ...prev,
+        [talent.id]: 'pending',
+      }));
+
+      toast({
+        title: t('network.requestSent', 'Connection Request Sent'),
+        description: t('network.requestSentDesc', 'Your connection request has been sent to {{name}}', { name: talent.full_name }),
+      });
+    } catch (error: any) {
+      console.error('Error sending connection request:', error);
+      toast({
+        title: t('common.error', 'Error'),
+        description: error.message || t('network.requestError', 'Failed to send connection request'),
+        variant: 'destructive',
+      });
+    }
+  };
+
+  // Bulk selection handlers
+  const handleCheckChange = (talent: Talent, checked: boolean) => {
+    setSelectedIds(prev => {
+      const newSet = new Set(prev);
+      if (checked) {
+        newSet.add(talent.id);
+      } else {
+        newSet.delete(talent.id);
+      }
+      return newSet;
+    });
+  };
+
+  const handleSelectAll = (selected: boolean) => {
+    if (selected) {
+      setSelectedIds(new Set(filteredTalents.map(t => t.id)));
+    } else {
+      setSelectedIds(new Set());
+    }
+  };
+
+  const handleBulkSaveToProject = () => {
+    // For bulk save, we'll open modal with first selected talent
+    // The modal would need to be enhanced to handle multiple candidates
+    const selectedTalents = filteredTalents.filter(t => selectedIds.has(t.id));
+    if (selectedTalents.length > 0) {
+      setTalentToSave(selectedTalents[0]);
+      setSaveModalOpen(true);
+    }
+  };
+
+  const handleBulkConnect = async () => {
+    if (!user) {
+      toast({
+        title: t('common.error', 'Error'),
+        description: t('auth.loginRequired', 'Please log in to connect'),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const selectedTalents = filteredTalents.filter(
+      t => selectedIds.has(t.id) && connectionStatuses[t.id] === 'none'
+    );
+
+    if (selectedTalents.length === 0) {
+      toast({
+        title: t('bulkActions.noEligible', 'No Eligible Talents'),
+        description: t('bulkActions.allConnected', 'All selected talents are already connected or have pending requests'),
+      });
+      return;
+    }
+
+    try {
+      let successCount = 0;
+      for (const talent of selectedTalents) {
+        const { error } = await supabase
+          .from('connection_requests')
+          .insert({
+            requester_id: user.id,
+            recipient_id: talent.id,
+          });
+
+        if (!error) {
+          successCount++;
+          setConnectionStatuses(prev => ({
+            ...prev,
+            [talent.id]: 'pending',
+          }));
+        }
+      }
+
+      toast({
+        title: t('bulkActions.requestsSent', 'Requests Sent'),
+        description: t('bulkActions.requestsSentDesc', 'Sent {{count}} connection requests', { count: successCount }),
+      });
+      
+      setSelectedIds(new Set());
+    } catch (error) {
+      console.error('Error sending bulk connection requests:', error);
+      toast({
+        title: t('common.error', 'Error'),
+        description: t('bulkActions.connectError', 'Failed to send some connection requests'),
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const selectedTalentsForBulk = useMemo(() => 
+    filteredTalents.filter(t => selectedIds.has(t.id)),
+    [filteredTalents, selectedIds]
+  );
+
+  const allSelected = filteredTalents.length > 0 && selectedIds.size === filteredTalents.length;
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -291,6 +485,20 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
           </p>
         </div>
 
+        {/* Bulk Actions Toolbar */}
+        {!loading && filteredTalents.length > 0 && (
+          <BulkActionsToolbar
+            selectedCount={selectedIds.size}
+            totalCount={filteredTalents.length}
+            allSelected={allSelected}
+            onSelectAll={handleSelectAll}
+            onSaveToProject={handleBulkSaveToProject}
+            onBulkMessage={() => setBulkMessageOpen(true)}
+            onBulkConnect={handleBulkConnect}
+            onClearSelection={() => setSelectedIds(new Set())}
+          />
+        )}
+
         {/* Split View Layout */}
         <div className="flex gap-6">
           {/* Talent List - Left Side */}
@@ -306,9 +514,14 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
                     key={talent.id}
                     talent={talent}
                     isSelected={selectedTalent?.id === talent.id}
+                    isChecked={selectedIds.has(talent.id)}
+                    showCheckbox={true}
+                    connectionStatus={connectionStatuses[talent.id] || 'none'}
                     onSelect={handleSelectTalent}
                     onSaveToProject={handleSaveToProject}
                     onSendMessage={handleSendMessage}
+                    onConnect={handleConnect}
+                    onCheckChange={handleCheckChange}
                   />
                 ))}
               </div>
@@ -332,9 +545,11 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
             <div className="w-2/5 sticky top-6 h-[calc(100vh-8rem)]">
               <TalentProfilePreview
                 talent={selectedTalent}
+                connectionStatus={connectionStatuses[selectedTalent.id] || 'none'}
                 onClose={() => setSelectedTalent(null)}
                 onSaveToProject={handleSaveToProject}
                 onSendMessage={handleSendMessage}
+                onConnect={handleConnect}
               />
             </div>
           )}
@@ -350,6 +565,14 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
           candidateName={talentToSave.full_name || 'Unknown'}
         />
       )}
+
+      {/* Bulk Message Modal */}
+      <BulkMessageModal
+        open={bulkMessageOpen}
+        onOpenChange={setBulkMessageOpen}
+        recipients={selectedTalentsForBulk}
+        onSuccess={() => setSelectedIds(new Set())}
+      />
     </div>
   );
 };
