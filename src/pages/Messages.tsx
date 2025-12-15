@@ -18,12 +18,12 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { format } from 'date-fns';
 
+// Message interface - maps to conversation_messages table
 interface Message {
   id: string;
   sender_id: string;
-  content: string;
+  content: string; // Mapped from 'body' in conversation_messages
   created_at: string;
-  read_at: string | null;
 }
 
 interface Participant {
@@ -47,7 +47,7 @@ const Messages: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
-  const { openChatWith, toggleOpen } = useChatDock();
+  const { openChatWith, toggleOpen, onlineUsers } = useChatDock();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
@@ -107,16 +107,16 @@ const Messages: React.FC = () => {
             
             const participant = profiles?.find(p => p.id === otherUserId) || null;
 
-            // Get last message
+            // Get last message from conversation_messages table
             const { data: lastMsgData } = await supabase
-              .from('messages')
-              .select('*')
+              .from('conversation_messages')
+              .select('id, body, sender_id, created_at')
               .eq('conversation_id', conv.id)
               .order('created_at', { ascending: false })
               .limit(1)
               .maybeSingle();
 
-            // Get unread count
+            // Get unread count from messages table (still needed for read tracking)
             const { count } = await supabase
               .from('messages')
               .select('*', { count: 'exact', head: true })
@@ -132,7 +132,12 @@ const Messages: React.FC = () => {
                 profile_photo: participant.profile_photo,
                 job_title: participant.job_title
               } : null,
-              lastMessage: lastMsgData,
+              lastMessage: lastMsgData ? {
+                id: lastMsgData.id,
+                sender_id: lastMsgData.sender_id,
+                content: lastMsgData.body, // Map body to content
+                created_at: lastMsgData.created_at
+              } : null,
               unreadCount: count || 0
             };
           })
@@ -149,16 +154,15 @@ const Messages: React.FC = () => {
 
     fetchConversations();
 
-    // Subscribe to new messages
+    // Subscribe to new messages in conversation_messages table
     const channel = supabase
-      .channel('messages-changes')
+      .channel('conversation-messages-changes')
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'messages',
-          filter: `recipient_id=eq.${user.id}`
+          table: 'conversation_messages'
         },
         () => {
           fetchConversations();
@@ -176,9 +180,10 @@ const Messages: React.FC = () => {
     if (!selectedConversation || !user) return;
 
     const fetchMessages = async () => {
+      // Fetch from conversation_messages table
       const { data, error } = await supabase
-        .from('messages')
-        .select('*')
+        .from('conversation_messages')
+        .select('id, sender_id, body, created_at')
         .eq('conversation_id', selectedConversation)
         .order('created_at', { ascending: true });
 
@@ -187,9 +192,17 @@ const Messages: React.FC = () => {
         return;
       }
 
-      setMessages(data || []);
+      // Map body to content for the Message interface
+      const mappedMessages: Message[] = (data || []).map(msg => ({
+        id: msg.id,
+        sender_id: msg.sender_id,
+        content: msg.body,
+        created_at: msg.created_at
+      }));
 
-      // Mark messages as read
+      setMessages(mappedMessages);
+
+      // Mark messages as read in the messages table (legacy, still needed for unread tracking)
       await supabase
         .from('messages')
         .update({ read_at: new Date().toISOString() })
@@ -202,17 +215,23 @@ const Messages: React.FC = () => {
 
     // Subscribe to new messages in this conversation
     const channel = supabase
-      .channel(`conv-${selectedConversation}`)
+      .channel(`conv-messages-${selectedConversation}`)
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'messages',
+          table: 'conversation_messages',
           filter: `conversation_id=eq.${selectedConversation}`
         },
         (payload) => {
-          setMessages(prev => [...prev, payload.new as Message]);
+          const newMsg = payload.new as any;
+          setMessages(prev => [...prev, {
+            id: newMsg.id,
+            sender_id: newMsg.sender_id,
+            content: newMsg.body, // Map body to content
+            created_at: newMsg.created_at
+          }]);
         }
       )
       .subscribe();
@@ -243,12 +262,12 @@ const Messages: React.FC = () => {
       : selectedConv.participant_1_id;
 
     try {
+      // Insert into conversation_messages table
       const { error } = await supabase
-        .from('messages')
+        .from('conversation_messages')
         .insert({
-          content: newMessage.trim(),
+          body: newMessage.trim(),
           sender_id: user.id,
-          recipient_id: recipientId,
           conversation_id: selectedConversation
         });
 
@@ -351,6 +370,12 @@ const Messages: React.FC = () => {
                               <User className="h-6 w-6 text-primary-foreground" />
                             </div>
                           )}
+                          {/* Online status indicator */}
+                          {conversation.participant && (
+                            <span className={`absolute bottom-0 right-0 w-3.5 h-3.5 border-2 border-card rounded-full ${
+                              onlineUsers.has(conversation.participant.id) ? 'bg-green-500' : 'bg-muted-foreground/50'
+                            }`} />
+                          )}
                         </div>
                         
                         <div className="flex-1 min-w-0">
@@ -412,13 +437,22 @@ const Messages: React.FC = () => {
                             <User className="h-5 w-5 text-primary-foreground" />
                           </div>
                         )}
+                        {/* Online status indicator */}
+                        {selectedConv.participant && (
+                          <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 border-2 border-card rounded-full ${
+                            onlineUsers.has(selectedConv.participant.id) ? 'bg-green-500' : 'bg-muted-foreground/50'
+                          }`} />
+                        )}
                       </div>
                       <div>
                         <h3 className="font-semibold text-foreground">
                           {selectedConv.participant?.full_name || 'Unknown User'}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                          {selectedConv.participant?.job_title}
+                          {selectedConv.participant && onlineUsers.has(selectedConv.participant.id) 
+                            ? 'Online' 
+                            : selectedConv.participant?.job_title || 'Offline'
+                          }
                         </p>
                       </div>
                     </div>
