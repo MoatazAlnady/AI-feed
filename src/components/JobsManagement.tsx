@@ -4,10 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
-import { Plus, Briefcase, MapPin, DollarSign, Clock, Users, Edit, Trash2, Eye } from 'lucide-react';
+import { useEmployerAccess } from '@/hooks/useEmployerAccess';
+import { Plus, Briefcase, MapPin, DollarSign, Clock, Users, Edit, Trash2, Eye, User } from 'lucide-react';
 
 interface Job {
   id: string;
@@ -25,6 +28,8 @@ interface Job {
   application_url: string;
   slots: number;
   applicants: number;
+  show_poster?: boolean;
+  company_page_id?: string;
   created_at: string;
   updated_at: string;
 }
@@ -32,6 +37,7 @@ interface Job {
 const JobsManagement: React.FC = () => {
   const { toast } = useToast();
   const { user } = useAuth();
+  const { companyPage, isEmployer } = useEmployerAccess();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -49,7 +55,8 @@ const JobsManagement: React.FC = () => {
     experience: 'mid',
     salary: '',
     application_url: '',
-    slots: 1
+    slots: 1,
+    show_poster: true
   });
 
   useEffect(() => {
@@ -85,8 +92,11 @@ const JobsManagement: React.FC = () => {
 
     setLoading(true);
     try {
+      // Auto-populate company name and company_page_id if user has a company
       const jobData = {
         ...formData,
+        company: companyPage ? companyPage.name : formData.company,
+        company_page_id: companyPage?.id || null,
         user_id: user.id,
         applicants: 0
       };
@@ -145,7 +155,8 @@ const JobsManagement: React.FC = () => {
       experience: job.experience,
       salary: job.salary || '',
       application_url: job.application_url,
-      slots: job.slots
+      slots: job.slots,
+      show_poster: job.show_poster ?? true
     });
     setShowCreateForm(true);
   };
@@ -180,7 +191,7 @@ const JobsManagement: React.FC = () => {
   const resetForm = () => {
     setFormData({
       title: '',
-      company: '',
+      company: companyPage?.name || '',
       description: '',
       requirements: '',
       location: '',
@@ -191,7 +202,8 @@ const JobsManagement: React.FC = () => {
       experience: 'mid',
       salary: '',
       application_url: '',
-      slots: 1
+      slots: 1,
+      show_poster: true
     });
     setEditingJob(null);
     setShowCreateForm(false);
@@ -284,12 +296,20 @@ const JobsManagement: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Company *</label>
-                  <Input
-                    value={formData.company}
-                    onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
-                    placeholder="Company name"
-                    required
-                  />
+                  {companyPage ? (
+                    <div className="flex items-center gap-2 px-3 py-2 border border-input rounded-md bg-muted">
+                      <Briefcase className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-foreground">{companyPage.name}</span>
+                      <Badge variant="secondary" className="ml-auto text-xs">From your company</Badge>
+                    </div>
+                  ) : (
+                    <Input
+                      value={formData.company}
+                      onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
+                      placeholder="Company name"
+                      required
+                    />
+                  )}
                 </div>
               </div>
 
@@ -418,6 +438,24 @@ const JobsManagement: React.FC = () => {
                     required
                   />
                 </div>
+              </div>
+
+              {/* Show Poster Toggle */}
+              <div className="flex items-center justify-between p-4 border border-border rounded-lg bg-muted/30">
+                <div className="space-y-0.5">
+                  <Label htmlFor="show-poster" className="text-base font-medium flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Show Job Poster
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Display your profile as the person who posted this job
+                  </p>
+                </div>
+                <Switch
+                  id="show-poster"
+                  checked={formData.show_poster}
+                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_poster: checked }))}
+                />
               </div>
 
               <div className="flex gap-3 pt-4">
