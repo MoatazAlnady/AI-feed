@@ -285,13 +285,18 @@ const SaveToProjectModal = ({
 
           {/* Create New Project */}
           {showCreateNew ? (
-            <div className="space-y-3 p-3 bg-muted rounded-lg">
+            <div className="space-y-3 p-4 border-2 border-dashed border-primary/30 bg-primary/5 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Plus className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium text-primary">{t('saveToProject.newProject', 'New Project')}</span>
+              </div>
               <div className="space-y-2">
                 <Label>{t('saveToProject.projectTitle', 'Project Title')}</Label>
                 <Input
                   value={newProjectTitle}
                   onChange={(e) => setNewProjectTitle(e.target.value)}
                   placeholder={t('saveToProject.projectTitlePlaceholder', 'e.g., Senior Developer Search')}
+                  className="bg-background"
                 />
               </div>
               <div className="space-y-2">
@@ -300,9 +305,10 @@ const SaveToProjectModal = ({
                   value={newProjectDescription}
                   onChange={(e) => setNewProjectDescription(e.target.value)}
                   placeholder={t('saveToProject.projectDescPlaceholder', 'Brief description...')}
+                  className="bg-background"
                 />
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 pt-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -317,7 +323,8 @@ const SaveToProjectModal = ({
                   disabled={!newProjectTitle.trim() || saving}
                   className="flex-1"
                 >
-                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : t('common.create')}
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
+                  {t('common.create')}
                 </Button>
               </div>
             </div>
@@ -325,7 +332,7 @@ const SaveToProjectModal = ({
             <Button
               variant="outline"
               onClick={() => setShowCreateNew(true)}
-              className="w-full"
+              className="w-full border-2 border-dashed border-muted-foreground/30 hover:border-primary/50 hover:bg-primary/5 transition-colors"
             >
               <Plus className="h-4 w-4 mr-2" />
               {t('saveToProject.createProject', 'Create New Project')}

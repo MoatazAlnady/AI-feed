@@ -59,7 +59,6 @@ const defaultFilters: TalentFilters = {
   ageRange: [18, 65],
   verifiedOnly: false,
   accountTypes: [],
-  booleanOperator: 'AND',
 };
 
 const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
@@ -197,8 +196,8 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
 
   const applyFilters = () => {
     let filtered = [...talents];
-    const isAndMode = filters.booleanOperator === 'AND';
     
+    // Search across all relevant profile fields
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(talent => 
@@ -206,7 +205,15 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
         talent.job_title?.toLowerCase().includes(term) ||
         talent.company?.toLowerCase().includes(term) ||
         talent.bio?.toLowerCase().includes(term) ||
-        talent.interests?.some(skill => skill.toLowerCase().includes(term))
+        talent.location?.toLowerCase().includes(term) ||
+        talent.country?.toLowerCase().includes(term) ||
+        talent.city?.toLowerCase().includes(term) ||
+        talent.website?.toLowerCase().includes(term) ||
+        talent.github?.toLowerCase().includes(term) ||
+        talent.linkedin?.toLowerCase().includes(term) ||
+        talent.twitter?.toLowerCase().includes(term) ||
+        talent.interests?.some(skill => skill.toLowerCase().includes(term)) ||
+        talent.languages?.some(lang => lang.language?.toLowerCase().includes(term))
       );
     }
 
@@ -290,14 +297,9 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
       });
     }
 
+    // Apply all filter checks with AND logic
     if (filterChecks.length > 0) {
-      filtered = filtered.filter(talent => {
-        if (isAndMode) {
-          return filterChecks.every(check => check(talent));
-        } else {
-          return filterChecks.some(check => check(talent));
-        }
-      });
+      filtered = filtered.filter(talent => filterChecks.every(check => check(talent)));
     }
     
     setFilteredTalents(filtered);
