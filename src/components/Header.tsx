@@ -611,18 +611,20 @@ const Header: React.FC = () => {
                           <p className="px-4 py-1 text-xs font-medium text-muted-foreground uppercase tracking-wide">
                             Switch Dashboard
                           </p>
-                          {/* Employer Dashboard */}
+                          {/* Toggle View Button - Switch between Creator/Employer views */}
                           {isEmployer && (
-                            <Link
-                              to="/employer"
-                              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                              onClick={() => setShowUserMenu(false)}
+                            <button
+                              onClick={() => {
+                                setShowUserMenu(false);
+                                toggleEmployerView();
+                              }}
+                              className="w-full block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                             >
                               <div className="flex items-center">
                                 <Building className="h-4 w-4 mr-2 text-purple-500 dark:text-purple-400" />
-                                Employer Dashboard
+                                {isEmployerView ? "Switch to Creator View" : "Switch to Employer View"}
                               </div>
-                            </Link>
+                            </button>
                           )}
                           {/* Admin Dashboard */}
                           {isAdmin && (
