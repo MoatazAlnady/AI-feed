@@ -319,6 +319,7 @@ const EmployerDashboard = () => {
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="messages" element={<MessagesPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="profile" element={<Navigate to="/profile" replace />} />
         </Routes>
       </div>
       
