@@ -1,8 +1,23 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { setGlobalChatController } from '../components/ChatController';
+
+interface Connection {
+  id: string;
+  name: string;
+  avatar?: string;
+  title?: string;
+  online: boolean;
+  conversationId?: string;
+  lastMessage?: {
+    content: string;
+    timestamp: string;
+    senderId: string;
+  };
+  unreadCount: number;
+}
 
 interface Thread {
   id: string;
@@ -50,6 +65,9 @@ interface ChatDockContextType {
   setActiveTab: (tab: 'focused' | 'other') => void;
   loading: boolean;
   openChatWith: (userId: string, opts?: { createIfMissing?: boolean }) => Promise<boolean>;
+  connections: Connection[];
+  onlineUsers: Set<string>;
+  refreshConnections: () => Promise<void>;
 }
 
 const ChatDockContext = createContext<ChatDockContextType | undefined>(undefined);
@@ -72,6 +90,190 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'focused' | 'other'>('focused');
   const [loading, setLoading] = useState(true);
+  const [connections, setConnections] = useState<Connection[]>([]);
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
+
+  // Fetch connections with their chat history
+  const fetchConnections = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      // First, get all connections for this user
+      const { data: connectionsData, error: connectionsError } = await supabase
+        .from('connections')
+        .select('id, user_1_id, user_2_id, created_at')
+        .or(`user_1_id.eq.${user.id},user_2_id.eq.${user.id}`);
+
+      if (connectionsError) {
+        console.error('Error fetching connections:', connectionsError);
+        return;
+      }
+
+      if (!connectionsData || connectionsData.length === 0) {
+        setConnections([]);
+        return;
+      }
+
+      // Get the other user IDs from connections
+      const otherUserIds = connectionsData.map(conn => 
+        conn.user_1_id === user.id ? conn.user_2_id : conn.user_1_id
+      );
+
+      // Fetch profiles for connected users
+      const { data: profilesData } = await supabase.rpc('get_public_profiles_by_ids', {
+        ids: otherUserIds
+      });
+
+      const profileMap = new Map();
+      if (Array.isArray(profilesData)) {
+        profilesData.forEach((profile: any) => {
+          profileMap.set(profile.id, profile);
+        });
+      }
+
+      // Fetch conversations for these users
+      const { data: conversationsData } = await supabase
+        .from('conversations')
+        .select('id, participant_1_id, participant_2_id, last_message_at')
+        .or(`participant_1_id.eq.${user.id},participant_2_id.eq.${user.id}`);
+
+      // Create a map of other user ID -> conversation
+      const conversationMap = new Map();
+      if (conversationsData) {
+        conversationsData.forEach(conv => {
+          const otherUserId = conv.participant_1_id === user.id 
+            ? conv.participant_2_id 
+            : conv.participant_1_id;
+          conversationMap.set(otherUserId, conv);
+        });
+      }
+
+      // Get conversation IDs to fetch last messages
+      const conversationIds = conversationsData?.map(c => c.id) || [];
+      
+      // Fetch last messages for each conversation
+      const lastMessagesMap = new Map();
+      const unreadCountMap = new Map();
+      
+      if (conversationIds.length > 0) {
+        // Get the most recent message for each conversation
+        for (const convId of conversationIds) {
+          const { data: lastMsgData } = await supabase
+            .from('conversation_messages')
+            .select('id, body, sender_id, created_at')
+            .eq('conversation_id', convId)
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+          if (lastMsgData && lastMsgData.length > 0) {
+            lastMessagesMap.set(convId, lastMsgData[0]);
+          }
+
+          // Get unread count (messages from other users that are not read)
+          const { count } = await supabase
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .eq('conversation_id', convId)
+            .eq('recipient_id', user.id)
+            .is('read_at', null);
+
+          unreadCountMap.set(convId, count || 0);
+        }
+      }
+
+      // Build connections list with chat data
+      const connectionsList: Connection[] = otherUserIds.map(otherUserId => {
+        const profile = profileMap.get(otherUserId);
+        const conversation = conversationMap.get(otherUserId);
+        const lastMessage = conversation ? lastMessagesMap.get(conversation.id) : null;
+        const unreadCount = conversation ? unreadCountMap.get(conversation.id) || 0 : 0;
+
+        return {
+          id: otherUserId,
+          name: profile?.full_name || 'Unknown User',
+          avatar: profile?.profile_photo,
+          title: profile?.job_title || '',
+          online: onlineUsers.has(otherUserId),
+          conversationId: conversation?.id,
+          lastMessage: lastMessage ? {
+            content: lastMessage.body,
+            timestamp: lastMessage.created_at,
+            senderId: lastMessage.sender_id
+          } : undefined,
+          unreadCount
+        };
+      });
+
+      // Sort: unread first, then by last message time, then alphabetically
+      connectionsList.sort((a, b) => {
+        if (a.unreadCount > 0 && b.unreadCount === 0) return -1;
+        if (a.unreadCount === 0 && b.unreadCount > 0) return 1;
+        if (a.lastMessage && b.lastMessage) {
+          return new Date(b.lastMessage.timestamp).getTime() - new Date(a.lastMessage.timestamp).getTime();
+        }
+        if (a.lastMessage && !b.lastMessage) return -1;
+        if (!a.lastMessage && b.lastMessage) return 1;
+        return a.name.localeCompare(b.name);
+      });
+
+      setConnections(connectionsList);
+    } catch (error) {
+      console.error('Error fetching connections:', error);
+    }
+  }, [user, onlineUsers]);
+
+  // Set up Supabase Presence for online status
+  useEffect(() => {
+    if (!user) return;
+
+    const presenceChannel = supabase.channel('online-users', {
+      config: {
+        presence: {
+          key: user.id,
+        },
+      },
+    });
+
+    presenceChannel
+      .on('presence', { event: 'sync' }, () => {
+        const state = presenceChannel.presenceState();
+        const onlineUserIds = new Set<string>();
+        Object.keys(state).forEach(userId => {
+          onlineUserIds.add(userId);
+        });
+        setOnlineUsers(onlineUserIds);
+      })
+      .on('presence', { event: 'join' }, ({ key }) => {
+        setOnlineUsers(prev => new Set([...prev, key]));
+      })
+      .on('presence', { event: 'leave' }, ({ key }) => {
+        setOnlineUsers(prev => {
+          const next = new Set(prev);
+          next.delete(key);
+          return next;
+        });
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await presenceChannel.track({
+            user_id: user.id,
+            online_at: new Date().toISOString(),
+          });
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(presenceChannel);
+    };
+  }, [user]);
+
+  // Update connections when online status changes
+  useEffect(() => {
+    setConnections(prev => prev.map(conn => ({
+      ...conn,
+      online: onlineUsers.has(conn.id)
+    })));
+  }, [onlineUsers]);
 
   // Check URL params for deep-linking
   useEffect(() => {
@@ -79,14 +281,13 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     const withUserId = urlParams.get('with');
     
     if (withUserId && user) {
-      // Auto-open chat with specified user
       openChatWith(withUserId, { createIfMissing: true })
         .catch(error => {
           console.error('Error opening chat from URL:', error);
           toast.error('Failed to open chat');
         });
     }
-  }, [user]); // Run when user changes
+  }, [user]);
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -107,10 +308,11 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   }, [isOpen, minimized]);
 
-  // Fetch threads when user changes
+  // Fetch threads and connections when user changes
   useEffect(() => {
     if (user) {
       fetchThreads();
+      fetchConnections();
       
       // Set up realtime subscription for new messages
       const channel = supabase
@@ -121,10 +323,8 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
           table: 'messages',
           filter: `recipient_id=eq.${user.id}`,
         }, (payload) => {
-          // Handle new message
           const newMessage = payload.new as any;
           
-          // Update messages if this thread is active
           if (newMessage.thread_id === activeThreadId) {
             setMessages(prev => [...prev, {
               id: newMessage.id,
@@ -136,7 +336,6 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
             }]);
           }
           
-          // Update thread's last message and unread count
           setThreads(prev => prev.map(thread => {
             if (thread.id === newMessage.thread_id) {
               return {
@@ -151,6 +350,9 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
             }
             return thread;
           }));
+
+          // Refresh connections to update last message
+          fetchConnections();
         })
         .subscribe();
       
@@ -158,14 +360,12 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
         supabase.removeChannel(channel);
       };
     }
-  }, [user, activeThreadId]);
+  }, [user, activeThreadId, fetchConnections]);
 
   // Fetch messages when active thread changes
   useEffect(() => {
     if (activeThreadId) {
       fetchMessages(activeThreadId);
-      
-      // Mark messages as read
       markThreadAsRead(activeThreadId);
     }
   }, [activeThreadId]);
@@ -176,21 +376,18 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     try {
       setLoading(true);
       
-      // Fetch conversations directly using participant columns
       const { data: conversations } = await supabase
         .from('conversations')
         .select('id, participant_1_id, participant_2_id')
         .or(`participant_1_id.eq.${user.id},participant_2_id.eq.${user.id}`);
 
       if (conversations && conversations.length > 0) {
-        // Get other user IDs
         const otherUserIds = conversations.map(conv => 
           conv.participant_1_id === user.id ? conv.participant_2_id : conv.participant_1_id
         ).filter(Boolean);
         
         const uniqueUserIds = [...new Set(otherUserIds)];
 
-        // Fetch profiles using RPC
         const { data: profilesData } = await supabase.rpc('get_public_profiles_by_ids', {
           ids: uniqueUserIds
         });
@@ -215,7 +412,7 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
               name: profile?.full_name || 'Deleted User',
               avatar: profile?.profile_photo,
               title: profile?.job_title || '',
-              online: false
+              online: onlineUsers.has(otherUserId || '')
             }],
             lastMessage: {
               content: 'No messages yet',
@@ -244,7 +441,6 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     try {
       setLoading(true);
       
-      // Fetch real messages from database
       const { data: messagesData } = await supabase
         .from('conversation_messages')
         .select(`
@@ -258,7 +454,6 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
         .order('created_at', { ascending: true });
 
       if (messagesData && messagesData.length > 0) {
-        // Get sender profiles safely
         const senderIds = [...new Set(messagesData.map(msg => msg.sender_id))];
         const { data: profilesData } = await supabase.rpc('get_public_profiles_by_ids', {
           ids: senderIds
@@ -295,19 +490,13 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     if (!user) return;
     
     try {
-      // In a real implementation, update in Supabase
-      // For now, just update local state
       setThreads(prev => prev.map(thread => {
         if (thread.id === threadId) {
-          return {
-            ...thread,
-            unreadCount: 0
-          };
+          return { ...thread, unreadCount: 0 };
         }
         return thread;
       }));
       
-      // Mark messages as read
       setMessages(prev => prev.map(message => ({
         ...message,
         read: true
@@ -321,8 +510,6 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     if (!user || !content.trim()) return;
     
     try {
-      // In a real implementation, send to Supabase
-      // For now, just update local state
       const newMessage: Message = {
         id: Date.now().toString(),
         threadId,
@@ -334,7 +521,6 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
       
       setMessages(prev => [...prev, newMessage]);
       
-      // Update thread's last message
       setThreads(prev => prev.map(thread => {
         if (thread.id === threadId) {
           return {
@@ -354,28 +540,22 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
   };
 
   const loadMoreMessages = async (threadId: string) => {
-    // In a real implementation, fetch more messages from Supabase
-    // For now, just return a promise
     return Promise.resolve();
   };
 
   const openChatWith = async (userId: string, opts?: { createIfMissing?: boolean }): Promise<boolean> => {
     try {
-      // Prefer MultiChatDock if available
       if (typeof window !== 'undefined' && (window as any).chatDock?.open) {
         const success = await (window as any).chatDock.open(userId);
         console.log('[ChatDockContext] MultiChatDock result:', success);
         return success;
       }
 
-      // Fallback to legacy in-context threads (no real-time window)
-      // Find existing thread with this user
       let existingThread = threads.find(thread => 
         thread.participants.some(p => p.id === userId)
       );
 
       if (!existingThread && opts?.createIfMissing) {
-        // Get user profile safely using RPC
         const { data: userProfiles, error } = await supabase.rpc('get_public_profiles_by_ids', {
           ids: [userId]
         });
@@ -387,7 +567,6 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
         if (error || !Array.isArray(userProfiles) || userProfiles.length === 0) {
           console.warn('Chat: RPC failed or returned empty, trying direct fetch...');
           
-          // Fallback: Try direct profile fetch
           const { data: directProfile, error: directError } = await supabase
             .from('user_profiles')
             .select('id, full_name, profile_photo, job_title')
@@ -406,15 +585,14 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
           console.log('Chat: Using RPC profile data:', userProfile);
         }
 
-        // Create new thread with proper name handling
         const newThread: Thread = {
           id: `thread_${Date.now()}`,
           participants: [{
             id: userId,
-            name: userProfile.full_name || 'AI Enthusiast', // Better fallback
+            name: userProfile.full_name || 'AI Enthusiast',
             avatar: userProfile.profile_photo,
             title: userProfile.job_title || '',
-            online: false
+            online: onlineUsers.has(userId)
           }],
           lastMessage: {
             content: 'No messages yet',
@@ -430,7 +608,6 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
       }
 
       if (existingThread) {
-        // Open chat dock and focus thread
         setIsOpen(true);
         setMinimized(false);
         setActiveThreadId(existingThread.id);
@@ -444,6 +621,7 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
       return false;
     }
   };
+
   const toggleOpen = () => {
     setIsOpen(!isOpen);
     if (!isOpen) {
@@ -455,28 +633,26 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     setMinimized(!minimized);
   };
 
-  // Filter threads based on search query and active tab
   const filteredThreads = threads.filter(thread => {
-    // Filter by tab
     if (activeTab === 'focused' && !thread.isFocused) return false;
     if (activeTab === 'other' && thread.isFocused) return false;
     
-    // Filter by search query
     if (!searchQuery) return true;
     
     const query = searchQuery.toLowerCase();
     
-    // Search in participant names and titles
     return thread.participants.some(participant => 
       participant.name.toLowerCase().includes(query) ||
       (participant.title && participant.title.toLowerCase().includes(query))
     ) || 
-    // Search in last message
     thread.lastMessage.content.toLowerCase().includes(query);
   });
 
-  // Calculate total unread count
   const unreadCount = threads.reduce((count, thread) => count + thread.unreadCount, 0);
+
+  const refreshConnections = useCallback(async () => {
+    await fetchConnections();
+  }, [fetchConnections]);
 
   const value = {
     isOpen,
@@ -496,10 +672,13 @@ export const ChatDockProvider: React.FC<{ children: ReactNode }> = ({ children }
     activeTab,
     setActiveTab,
     loading,
-    openChatWith
+    openChatWith,
+    connections,
+    onlineUsers,
+    refreshConnections
   };
 
-  // Set global controller
+  // Register global chat controller
   useEffect(() => {
     setGlobalChatController(openChatWith);
   }, [openChatWith]);
