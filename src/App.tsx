@@ -36,6 +36,7 @@ import AdminNewsletter from "./pages/AdminNewsletter";
 import Notifications from "./pages/Notifications";
 import ConnectionRequests from './pages/ConnectionRequests';
 import Guidelines from "./pages/Guidelines";
+import CompanyPage from "./pages/CompanyPage";
 
 const queryClient = new QueryClient();
 
@@ -95,6 +96,7 @@ const App = () => (
                   <Route path="notifications" element={<Notifications />} />
                   <Route path="connection-requests" element={<ConnectionRequests />} />
                   <Route path="guidelines" element={<Guidelines />} />
+                  <Route path="company/:slug" element={<CompanyPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

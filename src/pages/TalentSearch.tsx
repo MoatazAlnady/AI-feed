@@ -1,44 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
   Search, 
-  Users, 
-  Briefcase, 
-  MapPin, 
-  Mail, 
-  Phone, 
-  Star, 
-  MessageCircle,
-  UserPlus,
-  Filter,
-  Globe,
-  User
+  Users,
 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { useAuth } from '../context/AuthContext';
 import TalentSearchFilters, { TalentFilters } from '../components/TalentSearchFilters';
+import TalentCard from '../components/TalentCard';
+import TalentProfilePreview from '../components/TalentProfilePreview';
+import SaveToProjectModal from '../components/SaveToProjectModal';
 import { supabase } from '../lib/supabase';
 
 interface Talent {
   id: string;
-  full_name: string;
-  job_title?: string;
-  company?: string;
-  location?: string;
-  country?: string;
-  city?: string;
-  bio?: string;
-  skills?: string[];
+  full_name: string | null;
+  job_title: string | null;
+  company: string | null;
+  company_page_id?: string | null;
+  location: string | null;
+  country: string | null;
+  city: string | null;
+  bio: string | null;
+  interests: string[] | null;
   experience?: string;
-  languages?: Array<{language: string, level: number}>;
-  profile_photo?: string;
-  verified?: boolean;
-  contact_visible?: boolean;
-  email?: string;
-  phone?: string;
+  languages: { language: string; proficiency: number }[] | null;
+  profile_photo: string | null;
+  verified: boolean;
+  contact_visible: boolean;
   gender?: string;
   age?: number;
   account_type?: string;
+  website?: string | null;
+  github?: string | null;
+  linkedin?: string | null;
+  twitter?: string | null;
 }
 
 interface TalentSearchProps {
@@ -65,12 +62,20 @@ const defaultFilters: TalentFilters = {
 const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [talents, setTalents] = useState<Talent[]>([]);
   const [filteredTalents, setFilteredTalents] = useState<Talent[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalTalents, setTotalTalents] = useState(0);
   const [filters, setFilters] = useState<TalentFilters>(defaultFilters);
+  
+  // Split view state
+  const [selectedTalent, setSelectedTalent] = useState<Talent | null>(null);
+  
+  // Save to project modal state
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
+  const [talentToSave, setTalentToSave] = useState<Talent | null>(null);
 
   useEffect(() => {
     fetchTalents();
@@ -83,7 +88,6 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
   }, [initialSearch]);
 
   useEffect(() => {
-    // Apply filters whenever they change
     applyFilters();
   }, [talents, filters, searchTerm]);
 
@@ -99,24 +103,26 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
       
       if (error) throw error;
       
-      // Transform data to match Talent interface
       const transformedData: Talent[] = (data || []).map((profile: any) => ({
         id: profile.id,
         full_name: profile.full_name || '',
         job_title: profile.job_title,
         company: profile.company,
+        company_page_id: profile.company_page_id,
         location: profile.location,
         country: profile.country,
         city: profile.city,
         bio: profile.bio,
-        skills: Array.isArray(profile.interests) ? profile.interests : [],
+        interests: Array.isArray(profile.interests) ? profile.interests : [],
         experience: '',
-        languages: (profile.languages as Array<{language: string, level: number}>) || [],
+        languages: (profile.languages as Array<{ language: string; proficiency: number }>) || [],
         profile_photo: profile.profile_photo,
-        verified: profile.verified,
+        verified: profile.verified || false,
         contact_visible: !!profile.website || !!profile.github || !!profile.linkedin || !!profile.twitter,
-        email: '',
-        phone: undefined
+        website: profile.website,
+        github: profile.github,
+        linkedin: profile.linkedin,
+        twitter: profile.twitter,
       }));
       
       setTalents(transformedData);
@@ -132,7 +138,6 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
     let filtered = [...talents];
     const isAndMode = filters.booleanOperator === 'AND';
     
-    // Apply search term
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(talent => 
@@ -140,17 +145,15 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
         talent.job_title?.toLowerCase().includes(term) ||
         talent.company?.toLowerCase().includes(term) ||
         talent.bio?.toLowerCase().includes(term) ||
-        talent.skills?.some(skill => skill.toLowerCase().includes(term))
+        talent.interests?.some(skill => skill.toLowerCase().includes(term))
       );
     }
 
-    // Build filter checks
     const filterChecks: ((talent: Talent) => boolean)[] = [];
     
-    // Skills filter
     if (filters.skills.length > 0) {
       filterChecks.push((talent) => 
-        talent.skills?.some(skill => 
+        talent.interests?.some(skill => 
           filters.skills.some(filterSkill => 
             skill.toLowerCase().includes(filterSkill.toLowerCase())
           )
@@ -158,14 +161,12 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
       );
     }
     
-    // Experience filter
     if (filters.experienceLevels.length > 0) {
       filterChecks.push((talent) => 
         filters.experienceLevels.includes(talent.experience || '')
       );
     }
     
-    // Countries filter
     if (filters.countries.length > 0) {
       filterChecks.push((talent) => 
         filters.countries.some(country => 
@@ -175,7 +176,6 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
       );
     }
     
-    // Languages filter
     if (filters.languages.length > 0) {
       filterChecks.push((talent) => {
         if (!talent.languages) return false;
@@ -198,7 +198,7 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
         if (hasLanguage && filters.languageLevel) {
           return languagesArray.some((lang: any) => 
             filters.languages.includes(lang.language) && 
-            lang.level >= parseInt(filters.languageLevel)
+            (lang.level || lang.proficiency) >= parseInt(filters.languageLevel)
           );
         }
         
@@ -206,34 +206,29 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
       });
     }
 
-    // Verified filter
     if (filters.verifiedOnly) {
       filterChecks.push((talent) => talent.verified === true);
     }
 
-    // Gender filter
     if (filters.genders.length > 0) {
       filterChecks.push((talent) => 
         filters.genders.includes(talent.gender || '')
       );
     }
 
-    // Account type filter
     if (filters.accountTypes.length > 0) {
       filterChecks.push((talent) => 
         filters.accountTypes.includes(talent.account_type || '')
       );
     }
 
-    // Age range filter
     if (filters.ageRange[0] !== 18 || filters.ageRange[1] !== 65) {
       filterChecks.push((talent) => {
-        if (!talent.age) return true; // Don't filter out if no age
+        if (!talent.age) return true;
         return talent.age >= filters.ageRange[0] && talent.age <= filters.ageRange[1];
       });
     }
 
-    // Apply all filter checks based on boolean operator
     if (filterChecks.length > 0) {
       filtered = filtered.filter(talent => {
         if (isAndMode) {
@@ -251,29 +246,32 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
     setFilters(newFilters);
   };
 
-  return (
-    <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            {t('talentSearch.title')}
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400">
-            {t('talentSearch.subtitle')}
-          </p>
-        </div>
+  const handleSelectTalent = (talent: Talent) => {
+    setSelectedTalent(talent);
+  };
 
+  const handleSaveToProject = (talent: Talent) => {
+    setTalentToSave(talent);
+    setSaveModalOpen(true);
+  };
+
+  const handleSendMessage = (talent: Talent) => {
+    navigate(`/messages?userId=${talent.id}`);
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Search Bar */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 mb-6">
+        <div className="bg-card rounded-xl shadow-sm p-4 mb-6">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
-            <input
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input
               type="text"
-              placeholder={t('talentSearch.searchPlaceholder')}
+              placeholder={t('talentSearch.searchPlaceholder', 'Search by name, job title, skills...')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="pl-12"
             />
           </div>
         </div>
@@ -281,177 +279,79 @@ const TalentSearch: React.FC<TalentSearchProps> = ({ initialSearch = '' }) => {
         {/* Filters */}
         <TalentSearchFilters onFilterChange={handleFilterChange} />
 
-        {/* Results */}
-        <div className="mb-6">
-          <p className="text-gray-600 dark:text-gray-400">
-            {loading ? t('talentSearch.loading') : t('talentSearch.showingResults', { count: filteredTalents.length, total: totalTalents })}
+        {/* Results Count */}
+        <div className="mb-4">
+          <p className="text-sm text-muted-foreground">
+            {loading 
+              ? t('talentSearch.loading', 'Loading...') 
+              : t('talentSearch.showingResults', 'Showing {{count}} of {{total}} talents', { 
+                  count: filteredTalents.length, 
+                  total: totalTalents 
+                })}
           </p>
         </div>
 
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 dark:border-primary-400"></div>
-          </div>
-        ) : filteredTalents.length > 0 ? (
-          <div className="space-y-6">
-            {filteredTalents.map((talent) => (
-              <div key={talent.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
-                <div className="flex items-start space-x-4">
-                  {/* Profile Photo */}
-                  <div className="flex-shrink-0">
-                    {talent.profile_photo ? (
-                      <img
-                        src={talent.profile_photo}
-                        alt={talent.full_name}
-                        className="w-16 h-16 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-16 h-16 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
-                        <User className="h-8 w-8 text-white" />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Talent Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {talent.full_name}
-                        {talent.verified && (
-                          <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400">
-                            {t('talentSearch.verified')}
-                          </span>
-                        )}
-                      </h3>
-                      <div className="flex space-x-2">
-                        <button className="p-2 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors">
-                          <MessageCircle className="h-5 w-5" />
-                        </button>
-                        <button className="p-2 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors">
-                          <UserPlus className="h-5 w-5" />
-                        </button>
-                      </div>
-                    </div>
-                    
-                    {/* Job Title & Company */}
-                    {(talent.job_title || talent.company) && (
-                      <div className="flex items-center text-gray-600 dark:text-gray-300 mt-1">
-                        <Briefcase className="h-4 w-4 mr-1 flex-shrink-0" />
-                        <span className="text-sm">
-                          {talent.job_title}
-                          {talent.job_title && talent.company && ' at '}
-                          {talent.company}
-                        </span>
-                      </div>
-                    )}
-                    
-                    {/* Location */}
-                    {talent.location && (
-                      <div className="flex items-center text-gray-600 dark:text-gray-300 mt-1">
-                        <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-                        <span className="text-sm">{talent.location}</span>
-                      </div>
-                    )}
-                    
-                    {/* Languages */}
-                    {talent.languages && (
-                      <div className="flex items-center text-gray-600 dark:text-gray-300 mt-1">
-                        <Globe className="h-4 w-4 mr-1 flex-shrink-0" />
-                        <span className="text-sm">
-                          {(() => {
-                            try {
-                              const langs = typeof talent.languages === 'string' 
-                                ? JSON.parse(talent.languages) 
-                                : talent.languages;
-                              
-                              if (Array.isArray(langs)) {
-                                return langs.map((lang: any) => 
-                                  `${lang.language} (${getProficiencyLabel(lang.level)})`
-                                ).join(', ');
-                              }
-                              return '';
-                            } catch (e) {
-                              console.error('Error parsing languages:', e);
-                              return '';
-                            }
-                          })()}
-                        </span>
-                      </div>
-                    )}
-                    
-                    {/* Bio */}
-                    {talent.bio && (
-                      <p className="text-gray-600 dark:text-gray-400 text-sm mt-2 line-clamp-2">{talent.bio}</p>
-                    )}
-                    
-                    {/* Skills */}
-                    {talent.skills && talent.skills.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mt-3">
-                        {talent.skills.map((skill, index) => (
-                          <span
-                            key={index}
-                            className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-md"
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    
-                    {/* Contact Info - Only if visible */}
-                    {talent.contact_visible && (
-                      <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
-                        {talent.email && (
-                          <div className="flex items-center text-gray-600 dark:text-gray-300 text-sm">
-                            <Mail className="h-4 w-4 mr-2 text-gray-400 dark:text-gray-500" />
-                            <a href={`mailto:${talent.email}`} className="hover:text-primary-600 dark:hover:text-primary-400">
-                              {talent.email}
-                            </a>
-                          </div>
-                        )}
-                        {talent.phone && (
-                          <div className="flex items-center text-gray-600 dark:text-gray-300 text-sm mt-1">
-                            <Phone className="h-4 w-4 mr-2 text-gray-400 dark:text-gray-500" />
-                            <a href={`tel:${talent.phone}`} className="hover:text-primary-600 dark:hover:text-primary-400">
-                              {talent.phone}
-                            </a>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
+        {/* Split View Layout */}
+        <div className="flex gap-6">
+          {/* Talent List - Left Side */}
+          <div className={`${selectedTalent ? 'w-3/5' : 'w-full'} transition-all duration-300`}>
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
-            ))}
+            ) : filteredTalents.length > 0 ? (
+              <div className="space-y-4">
+                {filteredTalents.map((talent) => (
+                  <TalentCard
+                    key={talent.id}
+                    talent={talent}
+                    isSelected={selectedTalent?.id === talent.id}
+                    onSelect={handleSelectTalent}
+                    onSaveToProject={handleSaveToProject}
+                    onSendMessage={handleSendMessage}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-card rounded-xl shadow-sm p-12 text-center">
+                <Users className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">
+                  {t('talentSearch.noTalentsFound', 'No talents found')}
+                </h3>
+                <p className="text-muted-foreground">
+                  {searchTerm || Object.values(filters).some(v => v && (Array.isArray(v) ? v.length > 0 : true))
+                    ? t('talentSearch.adjustCriteria', 'Try adjusting your search or filters')
+                    : t('talentSearch.noTalentsYet', 'No talents available yet')}
+                </p>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-12 text-center">
-            <Users className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              {t('talentSearch.noTalentsFound')}
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              {searchTerm || Object.values(filters).some(v => v && (Array.isArray(v) ? v.length > 0 : true))
-                ? t('talentSearch.adjustCriteria')
-                : t('talentSearch.noTalentsYet')}
-            </p>
-          </div>
-        )}
+
+          {/* Profile Preview - Right Side */}
+          {selectedTalent && (
+            <div className="w-2/5 sticky top-6 h-[calc(100vh-8rem)]">
+              <TalentProfilePreview
+                talent={selectedTalent}
+                onClose={() => setSelectedTalent(null)}
+                onSaveToProject={handleSaveToProject}
+                onSendMessage={handleSendMessage}
+              />
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Save to Project Modal */}
+      {talentToSave && (
+        <SaveToProjectModal
+          open={saveModalOpen}
+          onOpenChange={setSaveModalOpen}
+          candidateId={talentToSave.id}
+          candidateName={talentToSave.full_name || 'Unknown'}
+        />
+      )}
     </div>
   );
 };
-
-// Helper function to get proficiency label
-function getProficiencyLabel(level: number): string {
-  const labels: { [key: number]: string } = {
-    1: 'Beginner',
-    2: 'Elementary',
-    3: 'Intermediate',
-    4: 'Advanced',
-    5: 'Native/Fluent'
-  };
-  return labels[level] || 'Unknown';
-}
 
 export default TalentSearch;

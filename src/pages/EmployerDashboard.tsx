@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -30,6 +30,19 @@ const EmployerDashboard = () => {
     const path = location.pathname.split('/').pop();
     return path === 'employer' ? 'overview' : path || 'overview';
   });
+
+  // Dynamic page title based on current route
+  const pageTitle = useMemo(() => {
+    const path = location.pathname;
+    if (path === '/employer' || path === '/employer/') return t('employer.titles.dashboard', 'Dashboard');
+    if (path.includes('/talents')) return t('employer.titles.talents', 'Talent Search');
+    if (path.includes('/jobs')) return t('employer.titles.jobs', 'Jobs Management');
+    if (path.includes('/projects')) return t('employer.titles.projects', 'Projects');
+    if (path.includes('/analytics')) return t('employer.titles.analytics', 'Analytics');
+    if (path.includes('/messages')) return t('employer.titles.messages', 'Messages');
+    if (path.includes('/settings')) return t('employer.titles.settings', 'Settings');
+    return t('employer.titles.dashboard', 'Dashboard');
+  }, [location.pathname, t]);
 
   const tabs = [
     { id: 'overview', label: t('nav.dashboard'), icon: BarChart3, path: '/employer' },
@@ -183,13 +196,12 @@ const EmployerDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('nav.dashboard')}</h1>
+            <h1 className="text-3xl font-bold text-foreground">{pageTitle}</h1>
           </div>
-          
         </div>
 
         {/* Content Area */}
