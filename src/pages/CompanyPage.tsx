@@ -26,6 +26,7 @@ interface CompanyPageData {
   id: string;
   name: string;
   slug: string;
+  domain: string | null;
   description: string | null;
   website: string | null;
   social_links: { linkedin?: string; twitter?: string; github?: string } | null;

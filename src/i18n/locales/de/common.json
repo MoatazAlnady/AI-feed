@@ -1167,5 +1167,19 @@
     "connected": "Verbunden",
     "message": "Nachricht",
     "save": "Speichern"
+  },
+  "footer": {
+    "tagline": "Entdecken, teilen und nutzen Sie modernste KI-Tools, um Ihre Arbeitsabläufe zu revolutionieren.",
+    "quickLinks": "Schnelllinks",
+    "browseTools": "Tools durchsuchen",
+    "categories": "Kategorien",
+    "blog": "Blog",
+    "about": "Über uns",
+    "resources": "Ressourcen",
+    "apiDocs": "API-Dokumentation",
+    "submitTool": "Tool einreichen",
+    "privacy": "Datenschutzrichtlinie",
+    "terms": "Nutzungsbedingungen",
+    "copyright": "© 2024 AI Feed. Alle Rechte vorbehalten."
   }
 }

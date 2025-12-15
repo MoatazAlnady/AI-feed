@@ -22,6 +22,7 @@ interface CompanyPageData {
   id?: string;
   name: string;
   slug: string;
+  domain: string | null;
   description: string | null;
   website: string | null;
   social_links: { linkedin?: string; twitter?: string; github?: string } | null;
@@ -77,6 +78,7 @@ const CreateCompanyPageModal = ({ open, onOpenChange, editingCompany, onSuccess 
   const [formData, setFormData] = useState<CompanyPageData>({
     name: '',
     slug: '',
+    domain: '',
     description: '',
     website: '',
     social_links: { linkedin: '', twitter: '', github: '' },
@@ -95,12 +97,14 @@ const CreateCompanyPageModal = ({ open, onOpenChange, editingCompany, onSuccess 
       if (editingCompany) {
         setFormData({
           ...editingCompany,
+          domain: editingCompany.domain || '',
           social_links: editingCompany.social_links || { linkedin: '', twitter: '', github: '' },
         });
       } else {
         setFormData({
           name: '',
           slug: '',
+          domain: '',
           description: '',
           website: '',
           social_links: { linkedin: '', twitter: '', github: '' },
@@ -154,14 +158,35 @@ const CreateCompanyPageModal = ({ open, onOpenChange, editingCompany, onSuccess 
     }));
   };
 
+  const validateDomain = (domain: string): boolean => {
+    if (!domain) return false;
+    // Simple domain validation pattern
+    const domainPattern = /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+    return domainPattern.test(domain.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0]);
+  };
+
   const handleSubmit = async () => {
     if (!user || !formData.name.trim()) return;
+    
+    // Validate domain for new companies
+    if (!editingCompany && !validateDomain(formData.domain || '')) {
+      toast({
+        title: t('common.error'),
+        description: t('companyPages.invalidDomain', 'Please enter a valid company domain (e.g., company.com)'),
+        variant: 'destructive',
+      });
+      return;
+    }
 
     setSaving(true);
     try {
+      // Clean the domain (remove protocol and www if present)
+      const cleanDomain = formData.domain?.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0] || null;
+      
       const companyData = {
         name: formData.name.trim(),
         slug: formData.slug || generateSlug(formData.name),
+        domain: cleanDomain,
         description: formData.description?.trim() || null,
         website: formData.website?.trim() || null,
         social_links: formData.social_links,
@@ -187,6 +212,7 @@ const CreateCompanyPageModal = ({ open, onOpenChange, editingCompany, onSuccess 
           description: t('companyPages.updated', 'Company page updated successfully'),
         });
       } else {
+        // Create company page
         const { data, error } = await supabase
           .from('company_pages')
           .insert({
@@ -198,6 +224,23 @@ const CreateCompanyPageModal = ({ open, onOpenChange, editingCompany, onSuccess 
 
         if (error) throw error;
 
+        // Auto-add creator as admin employee
+        if (data) {
+          const { error: employeeError } = await supabase
+            .from('company_employees')
+            .insert({
+              company_page_id: data.id,
+              user_id: user.id,
+              role: 'admin',
+              invited_by: null,
+            });
+
+          if (employeeError) {
+            console.error('Error adding creator as admin:', employeeError);
+            // Don't fail the whole operation, just log the error
+          }
+        }
+
         toast({
           title: t('common.success'),
           description: t('companyPages.created', 'Company page created successfully'),
@@ -206,6 +249,7 @@ const CreateCompanyPageModal = ({ open, onOpenChange, editingCompany, onSuccess 
         if (onSuccess && data) {
           onSuccess({
             ...data,
+            domain: data.domain,
             social_links: data.social_links as { linkedin?: string; twitter?: string; github?: string } | null,
           });
         }
@@ -275,14 +319,28 @@ const CreateCompanyPageModal = ({ open, onOpenChange, editingCompany, onSuccess 
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label>{t('companyPages.website', 'Website')}</Label>
-                <Input
-                  type="url"
-                  value={formData.website || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
-                  placeholder="https://example.com"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>{t('companyPages.domain', 'Company Domain')} *</Label>
+                  <Input
+                    value={formData.domain || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, domain: e.target.value }))}
+                    placeholder="company.com"
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t('companyPages.domainHint', 'e.g., company.com (without https://)')}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label>{t('companyPages.website', 'Website')}</Label>
+                  <Input
+                    type="url"
+                    value={formData.website || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+                    placeholder="https://example.com"
+                  />
+                </div>
               </div>
             </div>
 
@@ -401,7 +459,10 @@ const CreateCompanyPageModal = ({ open, onOpenChange, editingCompany, onSuccess 
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t('common.cancel')}
           </Button>
-          <Button onClick={handleSubmit} disabled={!formData.name.trim() || saving}>
+          <Button 
+            onClick={handleSubmit} 
+            disabled={!formData.name.trim() || (!editingCompany && !formData.domain?.trim()) || saving}
+          >
             {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
             {editingCompany ? t('common.save') : t('common.create')}
           </Button>

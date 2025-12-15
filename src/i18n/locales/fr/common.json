@@ -1167,5 +1167,19 @@
     "connected": "Connecté",
     "message": "Message",
     "save": "Enregistrer"
+  },
+  "footer": {
+    "tagline": "Découvrez, partagez et exploitez des outils IA de pointe pour révolutionner vos flux de travail.",
+    "quickLinks": "Liens rapides",
+    "browseTools": "Parcourir les outils",
+    "categories": "Catégories",
+    "blog": "Blog",
+    "about": "À propos",
+    "resources": "Ressources",
+    "apiDocs": "Documentation API",
+    "submitTool": "Soumettre un outil",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "copyright": "© 2024 AI Feed. Tous droits réservés."
   }
 }

@@ -1115,5 +1115,19 @@
     "connect": "Conectar",
     "pending": "Pendiente",
     "connected": "Conectado"
+  },
+  "footer": {
+    "tagline": "Descubre, comparte y aprovecha herramientas de IA de vanguardia para revolucionar tus flujos de trabajo.",
+    "quickLinks": "Enlaces rápidos",
+    "browseTools": "Explorar herramientas",
+    "categories": "Categorías",
+    "blog": "Blog",
+    "about": "Acerca de",
+    "resources": "Recursos",
+    "apiDocs": "Documentación API",
+    "submitTool": "Enviar herramienta",
+    "privacy": "Política de privacidad",
+    "terms": "Términos de servicio",
+    "copyright": "© 2024 AI Feed. Todos los derechos reservados."
   }
 }
