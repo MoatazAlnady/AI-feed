@@ -11,6 +11,7 @@ import faCommon from './locales/fa/common.json';
 import ruCommon from './locales/ru/common.json';
 import zhCommon from './locales/zh/common.json';
 import jaCommon from './locales/ja/common.json';
+import trCommon from './locales/tr/common.json';
 
 const resources = {
   en: { common: enCommon },
@@ -22,6 +23,7 @@ const resources = {
   ru: { common: ruCommon },
   zh: { common: zhCommon },
   ja: { common: jaCommon },
+  tr: { common: trCommon },
 };
 
 // Safe localStorage access

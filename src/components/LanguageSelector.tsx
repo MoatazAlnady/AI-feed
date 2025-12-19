@@ -19,6 +19,7 @@ const languages = [
   { code: 'ru', name: 'Russian', nativeName: 'Русский' },
   { code: 'zh', name: 'Chinese', nativeName: '中文' },
   { code: 'ja', name: 'Japanese', nativeName: '日本語' },
+  { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' },
 ];
 
 const LanguageSelector: React.FC<LanguageSelectorProps> = ({ 
