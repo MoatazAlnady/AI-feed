@@ -100,19 +100,19 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
           <div
             className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
               dragOver
-                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                : 'border-gray-300 dark:border-gray-600 hover:border-primary-400'
+                ? 'border-primary bg-primary/10'
+                : 'border-border hover:border-primary/50'
             }`}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onClick={() => fileInputRef.current?.click()}
           >
-            <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-lg font-medium text-foreground mb-2">
               Drop files here or click to browse
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-muted-foreground">
               Maximum file size: {maxSize}MB
             </p>
           </div>
@@ -128,18 +128,18 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
 
           {/* File Type Icons */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <div className="flex items-center gap-3 p-3 border border-border rounded-lg">
               <Image className="h-8 w-8 text-blue-500" />
               <div>
-                <p className="font-medium text-sm">Images</p>
-                <p className="text-xs text-gray-500">JPG, PNG, GIF, WebP</p>
+                <p className="font-medium text-sm text-foreground">Images</p>
+                <p className="text-xs text-muted-foreground">JPG, PNG, GIF, WebP</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <div className="flex items-center gap-3 p-3 border border-border rounded-lg">
               <File className="h-8 w-8 text-green-500" />
               <div>
-                <p className="font-medium text-sm">Documents</p>
-                <p className="text-xs text-gray-500">PDF, DOC, TXT</p>
+                <p className="font-medium text-sm text-foreground">Documents</p>
+                <p className="text-xs text-muted-foreground">PDF, DOC, TXT</p>
               </div>
             </div>
           </div>

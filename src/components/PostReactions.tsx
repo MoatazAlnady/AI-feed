@@ -65,8 +65,8 @@ const PostReactions: React.FC<PostReactionsProps> = ({
           onMouseLeave={() => setShowReactionPicker(false)}
           className={`flex items-center space-x-1 px-2 py-1 rounded-lg transition-colors ${
             userReaction 
-              ? 'bg-blue-50 dark:bg-blue-900/20' 
-              : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+              ? 'bg-primary/10' 
+              : 'hover:bg-muted'
           }`}
         >
           {React.createElement(getUserReactionIcon(), {
@@ -77,7 +77,7 @@ const PostReactions: React.FC<PostReactionsProps> = ({
         {/* Reaction picker */}
         {showReactionPicker && (
           <div 
-            className="absolute bottom-full left-0 mb-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-2 flex space-x-1 z-[9999]"
+            className="absolute bottom-full left-0 mb-2 bg-card rounded-lg shadow-lg border border-border p-2 flex space-x-1 z-[9999]"
             onMouseEnter={() => setShowReactionPicker(true)}
             onMouseLeave={() => setShowReactionPicker(false)}
           >
@@ -85,7 +85,7 @@ const PostReactions: React.FC<PostReactionsProps> = ({
               <button
                 key={reaction.type}
                 onClick={() => handleReactionClick(reaction.type)}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors group"
+                className="p-2 hover:bg-muted rounded-lg transition-colors group"
                 title={reaction.label}
               >
                 <reaction.icon className={`h-6 w-6 ${reaction.color} group-hover:scale-110 transition-transform`} />
@@ -106,14 +106,14 @@ const PostReactions: React.FC<PostReactionsProps> = ({
               return (
                 <div
                   key={type}
-                  className="w-6 h-6 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center border border-gray-200 dark:border-gray-700"
+                  className="w-6 h-6 bg-card rounded-full flex items-center justify-center border border-border"
                 >
                   <reactionType.icon className={`h-3 w-3 ${reactionType.color}`} />
                 </div>
               );
             })}
           </div>
-          <span className="text-sm text-gray-500 dark:text-gray-400">
+          <span className="text-sm text-muted-foreground">
             {totalReactions}
           </span>
         </div>

@@ -168,7 +168,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
         aria-controls="notification-panel"
         onClick={toggle}
         type="button"
-        className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+        className="relative p-2 text-muted-foreground hover:text-foreground transition-all duration-200 hover:bg-muted rounded-lg"
         title="Notifications"
       >
         <Bell className="h-5 w-5" />
@@ -196,12 +196,12 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             role="dialog"
             aria-modal="false"
             aria-labelledby="notification-title"
-            className="relative z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 w-80 max-h-96 overflow-hidden"
+            className="relative z-50 bg-card rounded-lg shadow-lg border border-border w-80 max-h-96 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 id="notification-title" className="text-lg font-semibold text-gray-900 dark:text-white">
+            <div className="p-4 border-b border-border">
+              <h3 id="notification-title" className="text-lg font-semibold text-foreground">
                 Notifications
               </h3>
             </div>
@@ -213,7 +213,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
                 </div>
               ) : notifications.length > 0 ? (
-                <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                <div className="divide-y divide-border">
                   {notifications.slice(0, 4).map((notification) => {
                     const Icon = getNotificationIcon(notification.type);
                     const colorClasses = getNotificationColor(notification.type);
@@ -221,8 +221,8 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                     return (
                       <div
                         key={notification.id}
-                        className={`p-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
-                          !notification.read ? 'bg-blue-50 dark:bg-blue-900/10' : ''
+                        className={`p-3 hover:bg-muted transition-colors ${
+                          !notification.read ? 'bg-primary/5' : ''
                         }`}
                       >
                         <div className="flex items-start space-x-3">
@@ -233,13 +233,13 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
 
                           {/* Content */}
                           <div className="flex-1 min-w-0">
-                            <p className={`text-sm ${!notification.read ? 'font-semibold text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
+                            <p className={`text-sm ${!notification.read ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}>
                               {notification.title}
                             </p>
-                            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                            <p className="text-xs text-muted-foreground mt-1">
                               {notification.message}
                             </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                            <p className="text-xs text-muted-foreground mt-1">
                               {formatTimeAgo(notification.created_at)}
                             </p>
                             
@@ -272,8 +272,8 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                 </div>
               ) : (
                 <div className="p-6 text-center">
-                  <Bell className="h-8 w-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <Bell className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">
                     No new notifications
                   </p>
                 </div>
@@ -281,7 +281,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750">
+            <div className="p-3 border-t border-border bg-muted/50">
               <Link
                 to="/notifications"
                 onClick={close}

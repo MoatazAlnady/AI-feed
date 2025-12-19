@@ -133,14 +133,14 @@ const Newsfeed: React.FC = () => {
 
   return (
     <>
-      <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="py-8 bg-background min-h-screen">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
               {t('feed.welcome', { name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'there' })}
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-400">
+            <p className="text-xl text-muted-foreground">
               {t('feed.subtitle')}
             </p>
           </div>
@@ -149,9 +149,9 @@ const Newsfeed: React.FC = () => {
             {/* Sidebar */}
             <div className="lg:col-span-1">
               {/* Create Content Card */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 mb-6">
+              <div className="bg-card rounded-2xl shadow-sm p-6 mb-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-gray-900 dark:text-white">{t('feed.createSomething')}</h3>
+                  <h3 className="font-semibold text-foreground">{t('feed.createSomething')}</h3>
                   <button
                     ref={triggerRef}
                     onClick={() => setShowCreateMenu(!showCreateMenu)}
@@ -170,14 +170,14 @@ const Newsfeed: React.FC = () => {
                           option.action();
                           setShowCreateMenu(false);
                         }}
-                        className="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+                        className="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-muted transition-colors text-left"
                       >
                         <div className={`p-2 bg-gradient-to-r ${option.color} rounded-lg`}>
                           <option.icon className="h-4 w-4 text-white" />
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-medium text-gray-900 dark:text-white text-sm">{option.label}</h4>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{option.description}</p>
+                          <h4 className="font-medium text-foreground text-sm">{option.label}</h4>
+                          <p className="text-xs text-muted-foreground">{option.description}</p>
                         </div>
                       </button>
                     ))}
@@ -225,14 +225,14 @@ const Newsfeed: React.FC = () => {
             {/* Main Content */}
             <div className="lg:col-span-3">
               {/* Create Post Quick Access */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 mb-6">
+              <div className="bg-card rounded-2xl shadow-sm p-6 mb-6">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
                     <User className="h-6 w-6 text-white" />
                   </div>
                   <button
                     onClick={() => setShowCreatePost(true)}
-                    className="flex-1 text-left p-4 bg-gray-50 dark:bg-gray-700 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    className="flex-1 text-left p-4 bg-muted rounded-xl text-muted-foreground hover:bg-muted/80 transition-colors"
                   >
                     {t('feed.compose.placeholder')}
                   </button>
@@ -248,10 +248,10 @@ const Newsfeed: React.FC = () => {
 
               {/* Trending Tools Section - Only show if there are trending tools */}
               {trendingTools.length > 0 && (
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 mb-6">
+                <div className="bg-card rounded-2xl shadow-sm p-6 mb-6">
                   <div className="flex items-center space-x-2 mb-4">
-                    <TrendingUp className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                    <h3 className="font-semibold text-gray-900 dark:text-white">{t('feed.trendingTitle')}</h3>
+                    <TrendingUp className="h-5 w-5 text-primary" />
+                    <h3 className="font-semibold text-foreground">{t('feed.trendingTitle')}</h3>
                   </div>
                   
                   <div className="flex overflow-x-auto pb-4 space-x-4">
@@ -259,26 +259,26 @@ const Newsfeed: React.FC = () => {
                       <a 
                         key={tool.id}
                         href={`/tools/${tool.id}`}
-                        className="flex-shrink-0 w-64 p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-primary-300 dark:hover:border-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all"
+                        className="flex-shrink-0 w-64 p-4 border border-border rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all"
                       >
                         <div className="flex items-center space-x-3 mb-3">
                           <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center text-white font-bold">
                             {tool.name.charAt(0)}
                           </div>
                           <div>
-                            <h4 className="font-medium text-gray-900 dark:text-white">{tool.name}</h4>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">{tool.category}</p>
+                            <h4 className="font-medium text-foreground">{tool.name}</h4>
+                            <p className="text-xs text-muted-foreground">{tool.category}</p>
                           </div>
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">{tool.description}</p>
+                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{tool.description}</p>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-1">
                             <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                            <span className="text-sm text-gray-700 dark:text-gray-300">{tool.rating}</span>
+                            <span className="text-sm text-foreground">{tool.rating}</span>
                           </div>
                           <div className="flex items-center space-x-1">
-                            <TrendingUp className="h-4 w-4 text-green-500 dark:text-green-400" />
-                            <span className="text-sm text-gray-700 dark:text-gray-300">{tool.engagement.toLocaleString()}</span>
+                            <TrendingUp className="h-4 w-4 text-green-500" />
+                            <span className="text-sm text-foreground">{tool.engagement.toLocaleString()}</span>
                           </div>
                         </div>
                       </a>

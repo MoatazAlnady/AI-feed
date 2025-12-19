@@ -188,8 +188,8 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
   });
 
   return (
-    <div className={`bg-white rounded-2xl shadow-sm p-6 ${className}`}>
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Comments</h2>
+    <div className={`bg-card rounded-2xl shadow-sm p-6 ${className}`}>
+      <h2 className="text-2xl font-bold text-foreground mb-6">Comments</h2>
       
       {/* Comment Form */}
       {user && (
@@ -213,7 +213,7 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Share your thoughts about this tool..."
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent resize-none bg-background text-foreground"
                 rows={3}
               />
               <div className="flex justify-end mt-2">
@@ -233,15 +233,15 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
       
       {/* Comments Header */}
       <div className="flex items-center justify-between mb-6">
-        <h3 className="font-semibold text-gray-900">
+        <h3 className="font-semibold text-foreground">
           {comments.length} {comments.length === 1 ? 'Comment' : 'Comments'}
         </h3>
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-600">Sort by:</span>
+          <span className="text-sm text-muted-foreground">Sort by:</span>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as 'recent' | 'popular')}
-            className="border border-gray-200 rounded-lg px-3 py-1 text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="border border-border rounded-lg px-3 py-1 text-sm focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
           >
             <option value="recent">Most Recent</option>
             <option value="popular">Most Popular</option>
@@ -257,7 +257,7 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
       ) : comments.length > 0 ? (
         <div className="space-y-6">
           {sortedComments.map((comment) => (
-            <div key={comment.id} className="border border-gray-200 rounded-xl p-6">
+            <div key={comment.id} className="border border-border rounded-xl p-6">
               <div className="flex items-start space-x-4">
                 <ProfileHoverCard userId={comment.userId}>
                   <div className="flex-shrink-0 cursor-pointer">
@@ -278,7 +278,7 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-1">
                     <ProfileHoverCard userId={comment.userId}>
-                      <h4 className="font-semibold text-gray-900 cursor-pointer hover:underline">{comment.userName}</h4>
+                      <h4 className="font-semibold text-foreground cursor-pointer hover:underline">{comment.userName}</h4>
                     </ProfileHoverCard>
                     {comment.userVerified && (
                       <VerificationBadge 
@@ -288,14 +288,14 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
                     )}
                   </div>
                   
-                  <p className="text-sm text-gray-500 mb-3">{comment.timestamp}</p>
-                  <p className="text-gray-800 mb-4">{comment.content}</p>
+                  <p className="text-sm text-muted-foreground mb-3">{comment.timestamp}</p>
+                  <p className="text-foreground mb-4">{comment.content}</p>
                   
                   <div className="flex items-center space-x-4 text-sm">
                     <button 
                       onClick={() => handleLikeComment(comment.id)}
                       className={`flex items-center space-x-1 ${
-                        comment.userLiked ? 'text-primary-600' : 'text-gray-500 hover:text-gray-700'
+                        comment.userLiked ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
                       <ThumbsUp className="h-4 w-4" />
@@ -303,16 +303,16 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
                     </button>
                     <button 
                       onClick={() => setReplyingTo(comment.id)}
-                      className="flex items-center space-x-1 text-gray-500 hover:text-gray-700"
+                      className="flex items-center space-x-1 text-muted-foreground hover:text-foreground"
                     >
                       <MessageCircle className="h-4 w-4" />
                       <span>Reply</span>
                     </button>
-                    <button className="flex items-center space-x-1 text-gray-500 hover:text-gray-700">
+                    <button className="flex items-center space-x-1 text-muted-foreground hover:text-foreground">
                       <Flag className="h-4 w-4" />
                       <span>Report</span>
                     </button>
-                    <button className="flex items-center space-x-1 text-gray-500 hover:text-gray-700">
+                    <button className="flex items-center space-x-1 text-muted-foreground hover:text-foreground">
                       <MoreHorizontal className="h-4 w-4" />
                     </button>
                   </div>
@@ -329,7 +329,7 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
                           value={replyText}
                           onChange={(e) => setReplyText(e.target.value)}
                           placeholder="Write a reply..."
-                          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                          className="flex-1 px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm bg-background text-foreground"
                         />
                         <button
                           onClick={() => handleSubmitReply(comment.id)}
@@ -340,7 +340,7 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
                         </button>
                         <button
                           onClick={() => setReplyingTo(null)}
-                          className="px-3 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
+                          className="px-3 py-2 border border-border text-muted-foreground rounded-lg hover:bg-muted transition-colors"
                         >
                           Cancel
                         </button>
@@ -350,7 +350,7 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
                   
                   {/* Replies */}
                   {comment.replies && comment.replies.length > 0 && (
-                    <div className="mt-4 pl-6 border-l-2 border-gray-200 space-y-4">
+                    <div className="mt-4 pl-6 border-l-2 border-border space-y-4">
                       {comment.replies.map((reply) => (
                         <div key={reply.id} className="flex items-start space-x-3">
                           <ProfileHoverCard userId={reply.userId}>
@@ -372,28 +372,28 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
                           <div className="flex-1">
                             <div className="flex items-center space-x-2 mb-1">
                               <ProfileHoverCard userId={reply.userId}>
-                                <h5 className="font-medium text-gray-900 text-sm cursor-pointer hover:underline">{reply.userName}</h5>
+                                <h5 className="font-medium text-foreground text-sm cursor-pointer hover:underline">{reply.userName}</h5>
                               </ProfileHoverCard>
                               {reply.userVerified && (
                                 <VerificationBadge type="verified" size="sm" />
-                              )}
-                              <span className="text-xs text-gray-500">{reply.timestamp}</span>
+                                )}
+                              <span className="text-xs text-muted-foreground">{reply.timestamp}</span>
                             </div>
-                            <p className="text-sm text-gray-800 mb-2">{reply.content}</p>
+                            <p className="text-sm text-foreground mb-2">{reply.content}</p>
                             <div className="flex items-center space-x-3 text-xs">
                               <button 
                                 onClick={() => handleLikeReply(comment.id, reply.id)}
                                 className={`flex items-center space-x-1 ${
-                                  reply.userLiked ? 'text-primary-600' : 'text-gray-500 hover:text-gray-700'
+                                  reply.userLiked ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                                 }`}
                               >
                                 <ThumbsUp className="h-3 w-3" />
                                 <span>{reply.likes}</span>
                               </button>
-                              <button className="text-gray-500 hover:text-gray-700">
+                              <button className="text-muted-foreground hover:text-foreground">
                                 Reply
                               </button>
-                              <button className="text-gray-500 hover:text-gray-700">
+                              <button className="text-muted-foreground hover:text-foreground">
                                 Report
                               </button>
                             </div>
@@ -409,20 +409,20 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
         </div>
       ) : (
         <div className="text-center py-12">
-          <MessageCircle className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <MessageCircle className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-foreground mb-2">
             No Comments Yet
           </h3>
-          <p className="text-gray-600 mb-6">
+          <p className="text-muted-foreground mb-6">
             Be the first to comment on this tool and start a discussion.
           </p>
           {user ? (
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Share your thoughts in the comment box above.
             </p>
           ) : (
-            <p className="text-gray-600">
-              Please <a href="#" className="text-primary-600 hover:text-primary-700">sign in</a> to leave a comment.
+            <p className="text-muted-foreground">
+              Please <a href="#" className="text-primary hover:text-primary/80">sign in</a> to leave a comment.
             </p>
           )}
         </div>
