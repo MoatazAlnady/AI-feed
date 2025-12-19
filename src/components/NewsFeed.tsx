@@ -574,7 +574,7 @@ const NewsFeed: React.FC = () => {
   const handleReply = (postId: string, commentId: string, authorName: string, authorHandle?: string) => {
     setReplyingTo({ postId, commentId, authorName });
     // Auto-mention the user being replied to
-    const mention = authorHandle ? `@${authorHandle}` : `@${authorName.replace(/\s+/g, '')}`;
+    const mention = `@${authorName.replace(/\s+/g, '')}`;
     setReplyContent(`${mention} `);
   };
 
@@ -1249,7 +1249,8 @@ const NewsFeed: React.FC = () => {
                                         value={replyContent}
                                         onChange={setReplyContent}
                                         placeholder={`Reply to ${replyingTo.authorName}...`}
-                                        className="flex-1 px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-xs bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                        wrapperClassName="flex-1"
+                                        className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                         contentType="comment"
                                         contentId={comment.id}
                                         rows={1}
