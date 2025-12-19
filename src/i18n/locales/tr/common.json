@@ -303,5 +303,48 @@
     "online": "Çevrimiçi Etkinlik",
     "inPerson": "Yüz Yüze Etkinlik",
     "cancelRsvp": "Katılımı İptal Et"
+  },
+  "index": {
+    "hero": {
+      "title": "AI Feed'e Hoş Geldiniz",
+      "subtitle": "AI yetenekli yaratıcıları birleştiren platform",
+      "ctaNewsletter": "AI Bültenine Abone Ol",
+      "ctaGetStarted": "Ücretsiz Başla",
+      "searchPlaceholder": "AI'dan ne yapmasını istiyorsunuz? Hangi araçlara ihtiyacınız var? Anahtar kelimeler, alanlar, kategorilerle arayın..."
+    },
+    "features": {
+      "title": "Tek platformda ihtiyacınız olan her şey",
+      "subtitle": "AI ekosisteminde keşfedin, bağlanın ve işbirliği yapın",
+      "tools": {
+        "title": "AI Araçları Dizini",
+        "desc": "Projelerinizi güçlendirmek için küratörlü AI araçlarını keşfedin",
+        "cta": "Araçlara Göz At"
+      },
+      "categories": {
+        "title": "AI Kategorileri",
+        "desc": "NLP'den Görüntü İşleme'ye alanlara göre araçlara göz atın",
+        "cta": "Kategorilere Göz At"
+      },
+      "jobs": {
+        "title": "AI İşleri",
+        "desc": "İşverenlerden canlı iş ilanlarını görün",
+        "cta": "İşleri Görüntüle"
+      },
+      "blog": {
+        "title": "AI Blogu",
+        "desc": "AI hakkında içgörüler, öğreticiler ve haberler okuyun",
+        "cta": "Makaleleri Oku"
+      }
+    },
+    "stats": {
+      "tools": "Listelenen AI Araçları",
+      "creators": "Aktif Yaratıcılar",
+      "projects": "Tamamlanan Projeler"
+    },
+    "cta": {
+      "title": "AI devrimine katılmaya hazır mısınız?",
+      "subtitle": "AI Feed ile yolculuğunuza bugün başlayın ve teknolojinin geleceğiyle bağlantı kurun.",
+      "button": "Ücretsiz Başla"
+    }
   }
 }
