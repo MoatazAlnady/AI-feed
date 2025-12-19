@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
+import ProfileHoverCard from '@/components/ProfileHoverCard';
 
 interface Article {
   id: string;
@@ -148,10 +149,19 @@ const Blog: React.FC = () => {
                     </p>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                        <div className="flex items-center space-x-1">
-                          <User className="h-4 w-4" />
-                          <span>{articles[0].author}</span>
-                        </div>
+                        {articles[0].user_id ? (
+                          <ProfileHoverCard userId={articles[0].user_id}>
+                            <div className="flex items-center space-x-1 cursor-pointer hover:text-primary transition-colors">
+                              <User className="h-4 w-4" />
+                              <span>{articles[0].author}</span>
+                            </div>
+                          </ProfileHoverCard>
+                        ) : (
+                          <div className="flex items-center space-x-1">
+                            <User className="h-4 w-4" />
+                            <span>{articles[0].author}</span>
+                          </div>
+                        )}
                         <div className="flex items-center space-x-1">
                           <Calendar className="h-4 w-4" />
                           <span>{formatDate(articles[0].created_at)}</span>
@@ -224,7 +234,15 @@ const Blog: React.FC = () => {
                       
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <div className="flex items-center space-x-3">
-                          <span>{article.author}</span>
+                          {article.user_id ? (
+                            <ProfileHoverCard userId={article.user_id}>
+                              <span className="cursor-pointer hover:text-primary transition-colors">
+                                {article.author}
+                              </span>
+                            </ProfileHoverCard>
+                          ) : (
+                            <span>{article.author}</span>
+                          )}
                           <span>{formatDate(article.created_at)}</span>
                         </div>
                         <span>{estimateReadTime(article.excerpt)}</span>

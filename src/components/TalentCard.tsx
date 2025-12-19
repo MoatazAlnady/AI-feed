@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import VerificationBadge from '@/components/VerificationBadge';
+import ProfileHoverCard from '@/components/ProfileHoverCard';
 import {
   MapPin,
   Building2,
@@ -121,19 +122,23 @@ const TalentCard = ({
           )}
 
           {/* Avatar */}
-          <Avatar className="h-14 w-14 shrink-0">
-            <AvatarImage src={talent.profile_photo || ''} alt={talent.full_name || ''} />
-            <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
+          <ProfileHoverCard userId={talent.id}>
+            <Avatar className="h-14 w-14 shrink-0 cursor-pointer">
+              <AvatarImage src={talent.profile_photo || ''} alt={talent.full_name || ''} />
+              <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+          </ProfileHoverCard>
 
           {/* Main Info */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-semibold text-base truncate">
-                {talent.full_name || 'Unknown'}
-              </h3>
+              <ProfileHoverCard userId={talent.id}>
+                <h3 className="font-semibold text-base truncate cursor-pointer hover:text-primary transition-colors">
+                  {talent.full_name || 'Unknown'}
+                </h3>
+              </ProfileHoverCard>
               {talent.verified && <VerificationBadge size="sm" />}
             </div>
 
