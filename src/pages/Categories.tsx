@@ -121,10 +121,10 @@ const Categories: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            {t('categories.title')}
+            {t('categoriesPage.title', 'AI Tool Categories')}
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400">
-            {t('categories.subtitle')}
+            {t('categoriesPage.subtitle', 'Browse AI tools by category to find exactly what you need')}
           </p>
         </div>
 
@@ -152,10 +152,10 @@ const Categories: React.FC = () => {
                       </p>
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-primary-600 dark:text-primary-400">
-                          {t('categories.toolCount', { count: category.count })}
+                          {t('categoriesPage.toolCount', '{{count}} tools', { count: category.count })}
                         </span>
                         <span className="text-xs text-gray-500 dark:text-gray-500">
-                          {t('categories.viewAll')}
+                          {t('categoriesPage.viewAll', 'View All →')}
                         </span>
                       </div>
                     </div>
@@ -183,16 +183,16 @@ const Categories: React.FC = () => {
         {/* CTA Section */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-8 text-center">
           <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
-            {t('categories.ctaTitle')}
+            {t('categoriesPage.ctaTitle', 'Have an AI Tool to Share?')}
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-            {t('categories.ctaDesc')}
+            {t('categoriesPage.ctaDesc', 'Help the community discover amazing AI tools by submitting your favorite tools to our directory.')}
           </p>
           <Link
-            to="/auth"
+            to="/submit-tool"
             className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-200"
           >
-            {t('categories.submitTool')}
+            {t('categoriesPage.submitTool', 'Submit Your Tool')}
           </Link>
         </div>
       </div>
