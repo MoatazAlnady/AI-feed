@@ -698,7 +698,7 @@ const NewsFeed: React.FC = () => {
   const handleReply = (postId: string, commentId: string, authorName: string, authorHandle?: string) => {
     setReplyingTo({ postId, commentId, authorName });
     // Auto-mention the user being replied to
-    const mention = `@${authorName.replace(/\s+/g, '')}`;
+    const mention = `@${authorName}`;
     setReplyContent(`${mention} `);
   };
 
