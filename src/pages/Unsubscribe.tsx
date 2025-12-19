@@ -33,22 +33,23 @@ const Unsubscribe: React.FC = () => {
   const verifyToken = async (token: string) => {
     setLoading(true);
     try {
-      // Type assertion to avoid deep type instantiation
-      const result: any = await supabase
+      // @ts-ignore - Avoid deep type instantiation with unsubscribe_token column
+      const result = await supabase
         .from('newsletter_subscribers')
         .select('id, email')
         .eq('unsubscribe_token', token)
-        .single();
+        .limit(1);
       
-      const { data, error } = result;
+      const { data, error } = result as { data: any[] | null; error: any };
 
-      if (error || !data) {
+      if (error || !data || data.length === 0) {
         setStatus('not_found');
         return;
       }
 
-      setSubscriberData(data);
-      setEmail(data.email);
+      const subscriber = data[0] as { id: string; email: string };
+      setSubscriberData(subscriber);
+      setEmail(subscriber.email);
       setStatus('confirming');
     } catch (error) {
       console.error('Error verifying token:', error);
