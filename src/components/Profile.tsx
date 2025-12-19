@@ -2,11 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   User, Mail, Calendar, Heart, Bookmark, MessageSquare, Upload, 
   Briefcase, MapPin, Edit, Camera, Target, TrendingUp, ExternalLink,
-  Plus, Code, FileText, Users, Star, Building
+  Plus, Code, FileText, Users, Star, Building, Lock
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Zap } from 'lucide-react';
 import PromoteContentModal from '../components/PromoteContentModal';
+import PremiumUpgradeModal from '../components/PremiumUpgradeModal';
 import InterestManagement from '../components/InterestManagement';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -32,9 +33,11 @@ const Profile: React.FC = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'overview' | 'posts' | 'saved' | 'interests' | 'workplace'>('overview');
   const [showPromoteModal, setShowPromoteModal] = useState(false);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [selectedContent, setSelectedContent] = useState<any>(null);
   const [savedItems, setSavedItems] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
   
   // Workplace selection state
   const [companies, setCompanies] = useState<CompanyOption[]>([]);
@@ -43,7 +46,7 @@ const Profile: React.FC = () => {
   const [manualCompanyName, setManualCompanyName] = useState<string>('');
   const [savingWorkplace, setSavingWorkplace] = useState(false);
 
-  // Fetch companies and current workplace
+  // Fetch companies, current workplace, and premium status
   useEffect(() => {
     const fetchCompanies = async () => {
       const { data } = await supabase
@@ -57,7 +60,7 @@ const Profile: React.FC = () => {
       if (!user?.id) return;
       const { data } = await supabase
         .from('user_profiles')
-        .select('company_page_id, company')
+        .select('company_page_id, company, is_premium, premium_until')
         .eq('id', user.id)
         .single();
       
@@ -69,6 +72,9 @@ const Profile: React.FC = () => {
           setWorkplaceMode('manual');
           setManualCompanyName(data.company);
         }
+        // Check premium status
+        const isActive = data.is_premium && (!data.premium_until || new Date(data.premium_until) > new Date());
+        setIsPremium(isActive);
       }
     };
 
@@ -121,6 +127,10 @@ const Profile: React.FC = () => {
   const userContent: any[] = [];
 
   const handlePromoteContent = (content: any) => {
+    if (!isPremium) {
+      setShowPremiumModal(true);
+      return;
+    }
     setSelectedContent(content);
     setShowPromoteModal(true);
   };
@@ -662,6 +672,14 @@ const Profile: React.FC = () => {
           contentTitle={selectedContent.title}
         />
       )}
+
+      {/* Premium Upgrade Modal */}
+      <PremiumUpgradeModal
+        isOpen={showPremiumModal}
+        onClose={() => setShowPremiumModal(false)}
+        featureName="Content Promotion"
+        trigger="premium_feature"
+      />
     </>
   );
 };

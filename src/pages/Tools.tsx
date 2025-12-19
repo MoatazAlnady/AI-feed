@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Search, Filter, Grid, List, GitCompare, Star, Bookmark, Plus, TrendingUp, ArrowUpDown, Lock, Bot } from 'lucide-react';
+import { Search, Filter, Grid, List, GitCompare, Star, Bookmark, Plus, TrendingUp, ArrowUpDown, Lock, Bot, Crown } from 'lucide-react';
+import PremiumUpgradeModal from '../components/PremiumUpgradeModal';
 import ToolComparisonModal from '../components/ToolComparisonModal';
 import PromoteContentModal from '../components/PromoteContentModal';
 import ToolStars from '../components/ToolStars';
@@ -52,6 +53,7 @@ const Tools: React.FC = () => {
   const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
   const [isPremium, setIsPremium] = useState(false);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
   
   // Sorting and filtering
   const [sortBy, setSortBy] = useState<'newest' | 'rating' | 'reviews' | 'name'>('newest');
@@ -365,10 +367,15 @@ const Tools: React.FC = () => {
                         className="h-7 px-2 ml-auto"
                         onClick={(e) => {
                           e.stopPropagation();
+                          if (!isPremium) {
+                            setShowPremiumModal(true);
+                            return;
+                          }
                           setSelectedTool(tool);
                           setShowPromoteModal(true);
                         }}
                       >
+                        {!isPremium && <Lock className="h-2 w-2 mr-0.5" />}
                         <TrendingUp className="h-3 w-3" />
                       </Button>
                     </div>
@@ -421,10 +428,15 @@ const Tools: React.FC = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => {
+                            if (!isPremium) {
+                              setShowPremiumModal(true);
+                              return;
+                            }
                             setSelectedTool(tool);
                             setShowPromoteModal(true);
                           }}
                         >
+                          {!isPremium && <Lock className="h-3 w-3 mr-1" />}
                           <TrendingUp className="h-4 w-4" />
                         </Button>
                       </div>
@@ -459,6 +471,14 @@ const Tools: React.FC = () => {
           contentTitle={selectedTool.name}
         />
       )}
+
+      {/* Premium Upgrade Modal */}
+      <PremiumUpgradeModal
+        isOpen={showPremiumModal}
+        onClose={() => setShowPremiumModal(false)}
+        featureName={t('promotion.contentPromotion', 'Content Promotion')}
+        trigger="premium_feature"
+      />
     </>
   );
 };

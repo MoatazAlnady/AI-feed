@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Crown, Check, Zap, MessageSquare, Users, Calendar, Wrench, BarChart3, ArrowRight, X } from 'lucide-react';
+import { Crown, Check, Zap, MessageSquare, Users, Calendar, Wrench, BarChart3, ArrowRight, X, TrendingUp } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { useAuth } from '../context/AuthContext';
@@ -37,6 +37,12 @@ const Upgrade: React.FC = () => {
       titleKey: 'upgrade.features.submitTools.title',
       freeKey: 'upgrade.features.submitTools.free',
       premiumKey: 'upgrade.features.submitTools.premium'
+    },
+    {
+      icon: TrendingUp,
+      titleKey: 'upgrade.features.promoteContent.title',
+      freeKey: 'upgrade.features.promoteContent.free',
+      premiumKey: 'upgrade.features.promoteContent.premium'
     },
     {
       icon: Crown,
@@ -106,7 +112,7 @@ const Upgrade: React.FC = () => {
             onClick={() => setBillingPeriod('monthly')}
             className={`px-6 py-2 rounded-full font-medium transition-all ${
               billingPeriod === 'monthly'
-                ? 'bg-primary text-primary-foreground'
+                ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white'
                 : 'bg-muted text-muted-foreground hover:text-foreground'
             }`}
           >
@@ -116,7 +122,7 @@ const Upgrade: React.FC = () => {
             onClick={() => setBillingPeriod('yearly')}
             className={`px-6 py-2 rounded-full font-medium transition-all flex items-center gap-2 ${
               billingPeriod === 'yearly'
-                ? 'bg-primary text-primary-foreground'
+                ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white'
                 : 'bg-muted text-muted-foreground hover:text-foreground'
             }`}
           >

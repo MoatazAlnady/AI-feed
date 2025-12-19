@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Target, DollarSign, Users, Calendar, TrendingUp, MapPin, Sparkles, Bot, ChevronDown, Check, ChevronsUpDown } from 'lucide-react';
+import { X, Target, DollarSign, Users, Calendar, TrendingUp, MapPin, Sparkles, Bot, ChevronDown, Check, ChevronsUpDown, Smartphone, Monitor, Tablet, Globe, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
@@ -34,7 +34,15 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
     selectedCities: [] as string[],
     interests: [] as string[],
     gender: 'all',
-    objective: 'awareness'
+    objective: 'awareness',
+    // New targeting options
+    devices: [] as string[],
+    languages: [] as string[],
+    scheduleEnabled: false,
+    scheduleStartTime: '09:00',
+    scheduleEndTime: '21:00',
+    scheduleDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as string[],
+    industries: [] as string[]
   });
   const [aiPrompt, setAiPrompt] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -199,6 +207,33 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
     { value: 'all', label: 'All Genders' },
     { value: 'male', label: 'Male' },
     { value: 'female', label: 'Female' }
+  ];
+
+  const deviceOptions = [
+    { value: 'mobile', label: 'Mobile', icon: Smartphone },
+    { value: 'desktop', label: 'Desktop', icon: Monitor },
+    { value: 'tablet', label: 'Tablet', icon: Tablet }
+  ];
+
+  const languageOptions = [
+    'English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese', 
+    'Arabic', 'Russian', 'Portuguese', 'Hindi', 'Korean', 'Italian'
+  ];
+
+  const industryOptions = [
+    'Technology', 'Healthcare', 'Finance', 'Education', 'Marketing',
+    'E-commerce', 'Manufacturing', 'Legal', 'Real Estate', 'Media',
+    'Consulting', 'Startups', 'Enterprise', 'Government', 'Non-profit'
+  ];
+
+  const weekDays = [
+    { value: 'monday', label: 'Mon' },
+    { value: 'tuesday', label: 'Tue' },
+    { value: 'wednesday', label: 'Wed' },
+    { value: 'thursday', label: 'Thu' },
+    { value: 'friday', label: 'Fri' },
+    { value: 'saturday', label: 'Sat' },
+    { value: 'sunday', label: 'Sun' }
   ];
 
   const ageRanges = [
@@ -751,6 +786,151 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                   Selected: {formData.interests.length} interest{formData.interests.length !== 1 ? 's' : ''}
                 </p>
+              </div>
+
+              {/* Device Targeting */}
+              <div className="mb-8">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+                  <Smartphone className="h-4 w-4 mr-2" />
+                  Device Targeting
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {deviceOptions.map((device) => (
+                    <button
+                      key={device.value}
+                      type="button"
+                      onClick={() => handleArrayToggle(formData.devices, device.value, 'devices')}
+                      className={`px-4 py-2 rounded-lg border transition-colors flex items-center gap-2 ${
+                        formData.devices.includes(device.value)
+                          ? 'bg-primary-500 text-white border-primary-500'
+                          : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:border-primary-300'
+                      }`}
+                    >
+                      <device.icon className="h-4 w-4" />
+                      {device.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                  {formData.devices.length === 0 ? 'All devices (default)' : `${formData.devices.length} device type(s) selected`}
+                </p>
+              </div>
+
+              {/* Language Targeting */}
+              <div className="mb-8">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+                  <Globe className="h-4 w-4 mr-2" />
+                  Language Targeting
+                </label>
+                <div className="grid grid-cols-3 md:grid-cols-4 gap-2 max-h-32 overflow-y-auto">
+                  {languageOptions.map((language) => (
+                    <button
+                      key={language}
+                      type="button"
+                      onClick={() => handleArrayToggle(formData.languages, language, 'languages')}
+                      className={`p-2 text-sm rounded-lg border transition-colors ${
+                        formData.languages.includes(language)
+                          ? 'bg-purple-500 text-white border-purple-500'
+                          : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:border-purple-300'
+                      }`}
+                    >
+                      {language}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                  {formData.languages.length === 0 ? 'All languages (default)' : `${formData.languages.length} language(s) selected`}
+                </p>
+              </div>
+
+              {/* Industry Targeting */}
+              <div className="mb-8">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+                  <Users className="h-4 w-4 mr-2" />
+                  Industry Targeting
+                </label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto">
+                  {industryOptions.map((industry) => (
+                    <button
+                      key={industry}
+                      type="button"
+                      onClick={() => handleArrayToggle(formData.industries, industry, 'industries')}
+                      className={`p-2 text-sm rounded-lg border transition-colors ${
+                        formData.industries.includes(industry)
+                          ? 'bg-orange-500 text-white border-orange-500'
+                          : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:border-orange-300'
+                      }`}
+                    >
+                      {industry}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                  {formData.industries.length === 0 ? 'All industries (default)' : `${formData.industries.length} industry/industries selected`}
+                </p>
+              </div>
+
+              {/* Schedule Targeting */}
+              <div className="mb-8">
+                <label className="flex items-center justify-between text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  <span className="flex items-center">
+                    <Clock className="h-4 w-4 mr-2" />
+                    Schedule Targeting
+                  </span>
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.scheduleEnabled}
+                      onChange={(e) => setFormData(prev => ({ ...prev, scheduleEnabled: e.target.checked }))}
+                      className="sr-only peer"
+                    />
+                    <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
+                  </label>
+                </label>
+                
+                {formData.scheduleEnabled && (
+                  <div className="space-y-4 p-4 bg-gray-50 dark:bg-slate-800 rounded-xl">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Start Time</label>
+                        <input
+                          type="time"
+                          value={formData.scheduleStartTime}
+                          onChange={(e) => setFormData(prev => ({ ...prev, scheduleStartTime: e.target.value }))}
+                          className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-lg text-sm dark:text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">End Time</label>
+                        <input
+                          type="time"
+                          value={formData.scheduleEndTime}
+                          onChange={(e) => setFormData(prev => ({ ...prev, scheduleEndTime: e.target.value }))}
+                          className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-lg text-sm dark:text-white"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-600 dark:text-gray-400 mb-2">Active Days</label>
+                      <div className="flex flex-wrap gap-2">
+                        {weekDays.map((day) => (
+                          <button
+                            key={day.value}
+                            type="button"
+                            onClick={() => handleArrayToggle(formData.scheduleDays, day.value, 'scheduleDays')}
+                            className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
+                              formData.scheduleDays.includes(day.value)
+                                ? 'bg-primary-500 text-white border-primary-500'
+                                : 'bg-white dark:bg-slate-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-600'
+                            }`}
+                          >
+                            {day.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Campaign Summary */}

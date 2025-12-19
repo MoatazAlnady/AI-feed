@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Crown, Check, X, Sparkles, Users, Calendar, Wrench, BarChart3, MessageSquare } from 'lucide-react';
+import { Crown, Check, X, Sparkles, Users, Calendar, Wrench, BarChart3, MessageSquare, TrendingUp } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
@@ -26,6 +26,7 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
     { icon: Users, key: 'createGroups' },
     { icon: Calendar, key: 'createEvents' },
     { icon: Wrench, key: 'submitTools' },
+    { icon: TrendingUp, key: 'promoteContent' },
     { icon: Crown, key: 'premiumBadge' },
     { icon: BarChart3, key: 'advancedAnalytics' }
   ];
