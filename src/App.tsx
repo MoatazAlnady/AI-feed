@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/providers/ThemeProvider";
 import { AuthProvider } from "@/context/AuthContext";
 import { ChatDockProvider } from "@/context/ChatDockContext";
 import { I18nextProvider } from "react-i18next";
+import { HelmetProvider } from "react-helmet-async";
 import i18n from "@/i18n/config";
 import AppLayout from "@/components/AppLayout";
 import Index from "./pages/Index";
@@ -45,6 +46,7 @@ import EmployerUpgrade from "./pages/EmployerUpgrade";
 const queryClient = new QueryClient();
 
 const App = () => (
+  <HelmetProvider>
   <QueryClientProvider client={queryClient}>
     <I18nextProvider i18n={i18n}>
       <AuthProvider>
@@ -113,6 +115,7 @@ const App = () => (
   </AuthProvider>
   </I18nextProvider>
 </QueryClientProvider>
+</HelmetProvider>
 );
 
 export default App;
