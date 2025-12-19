@@ -28,7 +28,7 @@ const AIChatBot = ({ initialMessage, autoOpen }: AIChatBotProps) => {
       {isLoggedIn && <MultiChatDock />}
 
       {/* Main Chat Button */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50">
         <Button
           onClick={() => setShowChat(!showChat)}
           className="w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg transition-all duration-300 hover:scale-105"
