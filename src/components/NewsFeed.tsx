@@ -30,6 +30,7 @@ import PostOptionsMenu from './PostOptionsMenu';
 import SharePostModal from './SharePostModal';
 import LinkPreview from './LinkPreview';
 import ProfileHoverCard from './ProfileHoverCard';
+import MentionInput from './MentionInput';
 
 interface Post {
   id: string;
@@ -566,9 +567,11 @@ const NewsFeed: React.FC = () => {
     }
   };
 
-  const handleReply = (postId: string, commentId: string, authorName: string) => {
+  const handleReply = (postId: string, commentId: string, authorName: string, authorHandle?: string) => {
     setReplyingTo({ postId, commentId, authorName });
-    setReplyContent('');
+    // Auto-mention the user being replied to
+    const mention = authorHandle ? `@${authorHandle}` : `@${authorName.replace(/\s+/g, '')}`;
+    setReplyContent(`${mention} `);
   };
 
   const cancelReply = () => {
@@ -1223,39 +1226,46 @@ const NewsFeed: React.FC = () => {
                                     userReaction={comment.userReaction}
                                     onReact={handleCommentReaction}
                                   />
-                                  <button 
-                                    onClick={() => handleReply(post.id, comment.id, comment.author.name)}
+                                <button 
+                                    onClick={() => handleReply(post.id, comment.id, comment.author.name, comment.author.handle)}
                                     className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
                                   >
                                     Reply
                                   </button>
                                 </div>
 
-                                {/* Reply Input */}
+                                {/* Reply Input with MentionInput */}
                                 {replyingTo?.postId === post.id && replyingTo?.commentId === comment.id && (
-                                  <div className="mt-2 ml-3 flex items-center space-x-2">
-                                    <div className="w-6 h-6 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
+                                  <div className="mt-2 ml-3 flex items-start space-x-2">
+                                    <div className="w-6 h-6 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                                       <User className="h-3 w-3 text-white" />
                                     </div>
                                     <div className="flex-1 flex space-x-2">
-                                      <input
-                                        type="text"
+                                      <MentionInput
                                         value={replyContent}
-                                        onChange={(e) => setReplyContent(e.target.value)}
+                                        onChange={setReplyContent}
                                         placeholder={`Reply to ${replyingTo.authorName}...`}
                                         className="flex-1 px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-xs bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                                        onKeyPress={(e) => e.key === 'Enter' && handleComment(post.id, (post as any).sharedPostId, comment.id)}
+                                        contentType="comment"
+                                        contentId={comment.id}
+                                        rows={1}
                                         autoFocus
+                                        onKeyPress={(e) => {
+                                          if (e.key === 'Enter' && !e.shiftKey) {
+                                            e.preventDefault();
+                                            handleComment(post.id, (post as any).sharedPostId, comment.id);
+                                          }
+                                        }}
                                       />
                                       <button
                                         onClick={() => handleComment(post.id, (post as any).sharedPostId, comment.id)}
-                                        className="px-2 py-1.5 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                                        className="px-2 py-1.5 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex-shrink-0"
                                       >
                                         <Send className="h-3 w-3" />
                                       </button>
                                       <button
                                         onClick={cancelReply}
-                                        className="px-2 py-1.5 text-gray-500 hover:text-gray-700 transition-colors"
+                                        className="px-2 py-1.5 text-gray-500 hover:text-gray-700 transition-colors flex-shrink-0"
                                       >
                                         <X className="h-3 w-3" />
                                       </button>
@@ -1267,36 +1277,56 @@ const NewsFeed: React.FC = () => {
                                 {comment.replies && comment.replies.length > 0 && (
                                   <div className="ml-8 mt-2 space-y-2">
                                     {comment.replies.map((reply) => (
-                                      <div key={reply.id} className="flex items-start space-x-2">
-                                        {reply.author.avatar ? (
-                                          <Link to={getCreatorProfileLink({ id: reply.author.id, handle: reply.author.handle })}>
-                                            <img
-                                              src={reply.author.avatar}
-                                              alt={reply.author.name}
-                                              className="w-6 h-6 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                                            />
-                                          </Link>
-                                        ) : (
-                                          <Link to={getCreatorProfileLink({ id: reply.author.id, handle: reply.author.handle })}>
-                                            <div className="w-6 h-6 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
-                                              <User className="h-3 w-3 text-white" />
-                                            </div>
-                                          </Link>
-                                        )}
-                                        <div className="flex-1 bg-gray-50 dark:bg-gray-600 rounded-lg p-2">
-                                          <div className="flex items-center space-x-2 mb-1">
-                                            <Link 
-                                              to={getCreatorProfileLink({ id: reply.author.id, handle: reply.author.handle })}
-                                              className="font-medium text-xs text-gray-900 dark:text-white hover:underline"
-                                            >
-                                              {reply.author.name}
+                                      <div key={reply.id} className="space-y-1">
+                                        <div className="flex items-start space-x-2">
+                                          {reply.author.avatar ? (
+                                            <Link to={getCreatorProfileLink({ id: reply.author.id, handle: reply.author.handle })}>
+                                              <img
+                                                src={reply.author.avatar}
+                                                alt={reply.author.name}
+                                                className="w-6 h-6 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                                              />
                                             </Link>
-                                            <span className="text-xs text-gray-500 dark:text-gray-400">
-                                              {reply.timestamp}
-                                            </span>
-                                          </div>
-                                          <div className="text-xs text-gray-800 dark:text-gray-200">
-                                            {reply.content}
+                                          ) : (
+                                            <Link to={getCreatorProfileLink({ id: reply.author.id, handle: reply.author.handle })}>
+                                              <div className="w-6 h-6 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
+                                                <User className="h-3 w-3 text-white" />
+                                              </div>
+                                            </Link>
+                                          )}
+                                          <div className="flex-1">
+                                            <div className="bg-gray-50 dark:bg-gray-600 rounded-lg p-2">
+                                              <div className="flex items-center space-x-2 mb-1">
+                                                <Link 
+                                                  to={getCreatorProfileLink({ id: reply.author.id, handle: reply.author.handle })}
+                                                  className="font-medium text-xs text-gray-900 dark:text-white hover:underline"
+                                                >
+                                                  {reply.author.name}
+                                                </Link>
+                                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                  {reply.timestamp}
+                                                </span>
+                                              </div>
+                                              <div className="text-xs text-gray-800 dark:text-gray-200">
+                                                {reply.content}
+                                              </div>
+                                            </div>
+                                            {/* Reactions for replies */}
+                                            <div className="flex items-center space-x-3 mt-1 ml-2">
+                                              <CommentReactions
+                                                commentId={reply.id}
+                                                reactions={reply.reactions || {}}
+                                                userReaction={reply.userReaction}
+                                                onReact={handleCommentReaction}
+                                                compact
+                                              />
+                                              <button 
+                                                onClick={() => handleReply(post.id, comment.id, reply.author.name, reply.author.handle)}
+                                                className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+                                              >
+                                                Reply
+                                              </button>
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
@@ -1311,23 +1341,30 @@ const NewsFeed: React.FC = () => {
                     ))}
                   </div>
 
-                  {/* Add Comment */}
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
+                  {/* Add Comment with MentionInput */}
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                       <User className="h-4 w-4 text-white" />
                     </div>
                     <div className="flex-1 flex space-x-2">
-                      <input
-                        type="text"
+                      <MentionInput
                         value={newComment[post.id] || ''}
-                        onChange={(e) => setNewComment({ ...newComment, [post.id]: e.target.value })}
-                        placeholder="Write a comment..."
+                        onChange={(value) => setNewComment({ ...newComment, [post.id]: value })}
+                        placeholder="Write a comment... Use @ to mention"
                         className="flex-1 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        onKeyPress={(e) => e.key === 'Enter' && handleComment(post.id, (post as any).sharedPostId)}
+                        contentType="comment"
+                        contentId={post.id}
+                        rows={1}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleComment(post.id, (post as any).sharedPostId);
+                          }
+                        }}
                       />
                       <button
                         onClick={() => handleComment(post.id, (post as any).sharedPostId)}
-                        className="px-3 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                        className="px-3 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex-shrink-0"
                       >
                         <Send className="h-4 w-4" />
                       </button>
