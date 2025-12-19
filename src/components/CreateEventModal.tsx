@@ -149,23 +149,23 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-border">
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('community.events.createEvent', 'Create Event')}</h2>
+            <h2 className="text-2xl font-bold text-foreground">{t('community.events.createEvent', 'Create Event')}</h2>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
             >
-              <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+              <X className="h-5 w-5 text-muted-foreground" />
             </button>
           </div>
 
           <form onSubmit={handleSubmit}>
             {/* Event Title */}
             <div className="mb-6">
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2">
                 {t('community.events.form.title', 'Event Title')} *
               </label>
               <input
@@ -175,14 +175,14 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                 value={formData.title}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                 placeholder={t('community.events.form.titlePlaceholder', 'Enter event title')}
               />
             </div>
 
             {/* Description */}
             <div className="mb-6">
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="description" className="block text-sm font-medium text-foreground mb-2">
                 {t('community.events.form.description', 'Description')} *
               </label>
               <textarea
@@ -192,7 +192,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                 onChange={handleInputChange}
                 required
                 rows={4}
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent resize-none bg-background text-foreground"
                 placeholder={t('community.events.form.descriptionPlaceholder', 'Describe your event')}
               />
             </div>
@@ -200,11 +200,11 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
             {/* Date and Time */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="date" className="block text-sm font-medium text-foreground mb-2">
                   {t('community.events.form.date', 'Date')} *
                 </label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <input
                     type="date"
                     id="date"
@@ -212,16 +212,16 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                     value={formData.date}
                     onChange={handleInputChange}
                     required
-                    className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full pl-12 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   />
                 </div>
               </div>
               <div>
-                <label htmlFor="time" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="time" className="block text-sm font-medium text-foreground mb-2">
                   {t('community.events.form.time', 'Time')} *
                 </label>
                 <div className="relative">
-                  <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <input
                     type="time"
                     id="time"
@@ -229,7 +229,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                     value={formData.time}
                     onChange={handleInputChange}
                     required
-                    className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full pl-12 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   />
                 </div>
               </div>
@@ -237,11 +237,11 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
 
             {/* Event Type */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              <label className="block text-sm font-medium text-foreground mb-3">
                 {t('community.events.form.eventType', 'Event Type')} *
               </label>
               <div className="flex space-x-4">
-                <label className="flex items-center text-gray-900 dark:text-white">
+                <label className="flex items-center text-foreground">
                   <input
                     type="radio"
                     name="type"
@@ -252,7 +252,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                   />
                   {t('community.events.form.online', 'Online')}
                 </label>
-                <label className="flex items-center text-gray-900 dark:text-white">
+                <label className="flex items-center text-foreground">
                   <input
                     type="radio"
                     name="type"
@@ -263,7 +263,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                   />
                   {t('community.events.form.inPerson', 'In-Person')}
                 </label>
-                <label className="flex items-center text-gray-900 dark:text-white">
+                <label className="flex items-center text-foreground">
                   <input
                     type="radio"
                     name="type"
@@ -332,11 +332,11 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
 
             {/* Location */}
             <div className="mb-6">
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="location" className="block text-sm font-medium text-foreground mb-2">
                 {t('community.events.form.location', 'Location')} *
               </label>
               <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
                   type="text"
                   id="location"
@@ -344,7 +344,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                   value={formData.location}
                   onChange={handleInputChange}
                   required
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full pl-12 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   placeholder={formData.type === 'online' ? 'Zoom, Teams, etc.' : t('community.events.form.locationPlaceholder', 'Venue address')}
                 />
               </div>
@@ -352,7 +352,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
 
             {/* Category */}
             <div className="mb-8">
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="category" className="block text-sm font-medium text-foreground mb-2">
                 {t('community.events.form.category', 'Category')} *
               </label>
               <select
@@ -361,7 +361,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                 value={formData.category}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
               >
                 <option value="">{t('community.events.form.selectCategory', 'Select a category')}</option>
                 {categories.map((category) => (
