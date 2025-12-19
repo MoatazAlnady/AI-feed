@@ -1181,5 +1181,10 @@
     "privacy": "Datenschutzrichtlinie",
     "terms": "Nutzungsbedingungen",
     "copyright": "© 2024 AI Feed. Alle Rechte vorbehalten."
+  },
+  "hashtags": {
+    "popularTopics": "Beliebte Themen",
+    "noInterests": "Noch keine Interessen verfügbar. Schauen Sie später vorbei!",
+    "clickToExplore": "Klicken Sie auf ein Thema, um verwandte Inhalte zu erkunden"
   }
 }

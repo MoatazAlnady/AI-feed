@@ -1516,5 +1516,10 @@
     "topRated": "Top Rated",
     "mostReviews": "Most Reviews",
     "priceFilter": "Price"
+  },
+  "hashtags": {
+    "popularTopics": "Popular Topics",
+    "noInterests": "No interests available yet. Check back later!",
+    "clickToExplore": "Click any topic to explore related content"
   }
 }

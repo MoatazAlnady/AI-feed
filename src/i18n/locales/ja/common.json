@@ -940,5 +940,10 @@
     "privacy": "プライバシーポリシー",
     "terms": "利用規約",
     "copyright": "© 2024 AI Feed. All rights reserved."
+  },
+  "hashtags": {
+    "popularTopics": "人気のトピック",
+    "noInterests": "まだ興味がありません。後でもう一度確認してください！",
+    "clickToExplore": "トピックをクリックして関連コンテンツを探索"
   }
 }

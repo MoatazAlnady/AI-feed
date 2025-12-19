@@ -275,10 +275,12 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
 
   if (checkingPremium || loading) {
     return (
-      <div className="container max-w-7xl mx-auto py-8 px-6">
-        <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p>{t('toolComparison.loading')}</p>
+      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="container max-w-7xl mx-auto py-8 px-6">
+          <div className="text-center">
+            <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p>{t('toolComparison.loading')}</p>
+          </div>
         </div>
       </div>
     );
@@ -286,23 +288,26 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
 
   if (!isPremium) {
     return (
-      <div className="container max-w-7xl mx-auto py-16 px-6">
-        <Card className="max-w-md mx-auto text-center">
-          <CardContent className="pt-8 pb-6">
-            <Lock className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h2 className="text-xl font-bold mb-2">{t('toolComparison.premiumRequired')}</h2>
-            <p className="text-muted-foreground mb-6">{t('toolComparison.premiumDescription')}</p>
-            <Button onClick={() => navigate('/upgrade')}>
-              Upgrade to Premium
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="container max-w-7xl mx-auto py-16 px-6">
+          <Card className="max-w-md mx-auto text-center">
+            <CardContent className="pt-8 pb-6">
+              <Lock className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <h2 className="text-xl font-bold mb-2">{t('toolComparison.premiumRequired')}</h2>
+              <p className="text-muted-foreground mb-6">{t('toolComparison.premiumDescription')}</p>
+              <Button onClick={() => navigate('/upgrade')}>
+                Upgrade to Premium
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container max-w-7xl mx-auto py-8 px-6 space-y-8">
+    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="container max-w-7xl mx-auto py-8 px-6 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -507,6 +512,7 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
           )}
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };
