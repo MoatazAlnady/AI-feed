@@ -133,7 +133,7 @@ const Newsfeed: React.FC = () => {
 
   return (
     <>
-      <div className="py-8 bg-background min-h-screen">
+      <div className="py-8 min-h-screen">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
