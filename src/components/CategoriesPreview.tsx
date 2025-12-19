@@ -81,13 +81,13 @@ const CategoriesPreview: React.FC = () => {
   ];
 
   return (
-    <section className="py-20 bg-white dark:bg-gray-800">
+    <section className="py-20 bg-card">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
             Explore by Category
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Find the perfect AI tool for your specific needs across various categories and use cases.
           </p>
         </div>
@@ -97,21 +97,21 @@ const CategoriesPreview: React.FC = () => {
             <Link
               key={category.name}
               to={`/categories/${category.name.toLowerCase().replace(' ', '-')}`}
-              className="group relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+              className="group relative bg-card border border-border rounded-2xl p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
             >
               <div className={`inline-flex p-3 bg-gradient-to-r ${category.color} rounded-xl mb-4 group-hover:shadow-lg transition-shadow`}>
                 <category.icon className="h-6 w-6 text-white" />
               </div>
               
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+              <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
                 {category.name}
               </h3>
               
-              <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+              <p className="text-muted-foreground text-sm mb-4">
                 {category.description}
               </p>
               
-              <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-3">
+              <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
                 <span>{category.count} tools</span>
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </div>
@@ -120,13 +120,13 @@ const CategoriesPreview: React.FC = () => {
                 {category.tools.slice(0, 2).map((tool) => (
                   <span
                     key={tool}
-                    className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-md"
+                    className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-md"
                   >
                     {tool}
                   </span>
                 ))}
                 {category.tools.length > 2 && (
-                  <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-md">
+                  <span className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-md">
                     +{category.tools.length - 2}
                   </span>
                 )}
