@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { usePremiumStatus } from '../hooks/usePremiumStatus';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import PremiumUpgradeModal from './PremiumUpgradeModal';
 
 interface CreateGroupModalProps {
   isOpen: boolean;
@@ -78,39 +79,15 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
 
   if (!isOpen) return null;
 
-  // Show premium required screen for non-premium users
+  // Show premium upgrade modal for non-premium users
   if (!isPremiumLoading && !isPremium) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-8 text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Crown className="h-8 w-8 text-white" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {t('premium.requiredTitle', 'Premium Required')}
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {t('premium.createGroupMessage', 'Creating groups is a premium feature. Upgrade to Premium to create and manage your own groups.')}
-          </p>
-          <div className="space-y-3">
-            <button
-              onClick={() => {
-                onClose();
-                navigate('/upgrade');
-              }}
-              className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
-            >
-              {t('premium.upgradeToPremium', 'Upgrade to Premium')}
-            </button>
-            <button
-              onClick={onClose}
-              className="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
-            >
-              {t('common.cancel', 'Cancel')}
-            </button>
-          </div>
-        </div>
-      </div>
+      <PremiumUpgradeModal
+        isOpen={isOpen}
+        onClose={onClose}
+        featureName={t('community.groups.createGroup', 'Group Creation')}
+        trigger="premium_feature"
+      />
     );
   }
 
