@@ -81,7 +81,7 @@ const AdminToolRequests: React.FC<AdminToolRequestsProps> = ({ onRefresh }) => {
       });
 
       await fetchRequests();
-      if (onRefresh) onRefresh(); // Refresh dashboard counts
+      if (onRefresh) onRefresh();
       setSelectedRequest(null);
       setAdminNotes('');
     } catch (error) {
@@ -121,7 +121,7 @@ const AdminToolRequests: React.FC<AdminToolRequestsProps> = ({ onRefresh }) => {
       });
 
       await fetchRequests();
-      if (onRefresh) onRefresh(); // Refresh dashboard counts
+      if (onRefresh) onRefresh();
       setSelectedRequest(null);
       setAdminNotes('');
     } catch (error) {
@@ -161,7 +161,7 @@ const AdminToolRequests: React.FC<AdminToolRequestsProps> = ({ onRefresh }) => {
         {requests.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
-              <Clock className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+              <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">No Pending Requests</h3>
               <p className="text-muted-foreground">
                 All tool edit requests have been processed.
@@ -235,12 +235,12 @@ const AdminToolRequests: React.FC<AdminToolRequestsProps> = ({ onRefresh }) => {
       {/* Review Modal */}
       {selectedRequest && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="bg-card rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-border">
               <h2 className="text-xl font-bold">Review Tool Edit Request</h2>
               <button
                 onClick={() => setSelectedRequest(null)}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                className="p-2 hover:bg-muted rounded-lg"
               >
                 <X className="h-5 w-5" />
               </button>

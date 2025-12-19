@@ -62,14 +62,14 @@ const HashtagSystem: React.FC<HashtagSystemProps> = ({ onHashtagClick, className
 
   if (loading) {
     return (
-      <div className={`bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 ${className}`}>
+      <div className={`bg-card rounded-2xl shadow-sm p-6 ${className}`}>
         <div className="flex items-center space-x-2 mb-4">
-          <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-          <h3 className="font-semibold text-gray-900 dark:text-white">{t('hashtags.popularTopics')}</h3>
+          <Hash className="h-5 w-5 text-primary" />
+          <h3 className="font-semibold text-foreground">{t('hashtags.popularTopics')}</h3>
         </div>
         <div className="animate-pulse space-y-2">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+            <div key={i} className="h-8 bg-muted rounded-lg"></div>
           ))}
         </div>
       </div>
@@ -77,16 +77,16 @@ const HashtagSystem: React.FC<HashtagSystemProps> = ({ onHashtagClick, className
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 ${className}`}>
+    <div className={`bg-card rounded-2xl shadow-sm p-6 ${className}`}>
       <div className="flex items-center space-x-2 mb-4">
-        <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-        <h3 className="font-semibold text-gray-900 dark:text-white">{t('hashtags.popularTopics')}</h3>
+        <Hash className="h-5 w-5 text-primary" />
+        <h3 className="font-semibold text-foreground">{t('hashtags.popularTopics')}</h3>
       </div>
       
       {interests.length === 0 ? (
         <div className="text-center py-8">
-          <Hash className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
+          <Hash className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+          <p className="text-muted-foreground text-sm">
             {t('hashtags.noInterests')}
           </p>
         </div>
@@ -98,7 +98,7 @@ const HashtagSystem: React.FC<HashtagSystemProps> = ({ onHashtagClick, className
             
             return (
               <div key={category}>
-                <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
                   {category}
                 </h4>
                 <div className="flex flex-wrap gap-2">
@@ -106,7 +106,7 @@ const HashtagSystem: React.FC<HashtagSystemProps> = ({ onHashtagClick, className
                     <Badge
                       key={interest.id}
                       onClick={() => handleInterestClick(interest.name)}
-                      className="cursor-pointer bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                      className="cursor-pointer bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
                     >
                       #{interest.name}
                     </Badge>
@@ -118,8 +118,8 @@ const HashtagSystem: React.FC<HashtagSystemProps> = ({ onHashtagClick, className
         </div>
       )}
       
-      <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-        <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+      <div className="mt-4 pt-4 border-t border-border">
+        <p className="text-xs text-muted-foreground text-center">
           {t('hashtags.clickToExplore')}
         </p>
       </div>
