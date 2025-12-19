@@ -33,6 +33,7 @@ interface Tool {
   updated_at: string;
   average_rating?: number;
   review_count?: number;
+  logo_url?: string;
   user_profiles?: {
     full_name: string;
     profile_photo?: string;
@@ -185,9 +186,17 @@ const ToolDetails: React.FC = () => {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Tool Icon */}
             <div className="flex-shrink-0">
-              <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center">
-                <div className="text-4xl lg:text-5xl">🤖</div>
-              </div>
+              {tool.logo_url ? (
+                <img 
+                  src={tool.logo_url} 
+                  alt={`${tool.name} logo`}
+                  className="w-24 h-24 lg:w-32 lg:h-32 rounded-2xl object-contain bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-2"
+                />
+              ) : (
+                <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center">
+                  <div className="text-4xl lg:text-5xl">🤖</div>
+                </div>
+              )}
             </div>
 
             {/* Tool Info */}
