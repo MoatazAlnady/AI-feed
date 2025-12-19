@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import { Mail, CheckCircle, Settings } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Mail, CheckCircle, Settings, Crown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../integrations/supabase/client';
+import { Badge } from './ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 const Newsletter: React.FC = () => {
   const { user } = useAuth();
@@ -9,10 +12,30 @@ const Newsletter: React.FC = () => {
   const [frequency, setFrequency] = useState('weekly');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
 
   // Get user interests for personalization
   const userInterests = user?.user_metadata?.interests || [];
   const isUserSubscribed = user?.user_metadata?.newsletter_subscription || false;
+
+  useEffect(() => {
+    if (user) {
+      fetchPremiumStatus();
+    }
+  }, [user]);
+
+  const fetchPremiumStatus = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('user_profiles')
+      .select('is_premium, premium_until')
+      .eq('id', user.id)
+      .single();
+    
+    const isActive = data?.is_premium && 
+      (!data.premium_until || new Date(data.premium_until) > new Date());
+    setIsPremium(!!isActive);
+  };
 
   const availableInterests = [
     'AI Research', 'Machine Learning', 'Deep Learning', 'Computer Vision',
@@ -164,23 +187,55 @@ const Newsletter: React.FC = () => {
           <div className="mb-6">
             <h3 className="text-white font-semibold mb-3">How often would you like to hear from us?</h3>
             <div className="flex justify-center space-x-4">
-              {[
-                { value: 'daily', label: 'Daily' },
-                { value: 'weekly', label: 'Weekly' },
-                { value: 'monthly', label: 'Monthly' }
-              ].map(({ value, label }) => (
-                <label key={value} className="flex items-center space-x-2 text-white cursor-pointer">
-                  <input
-                    type="radio"
-                    name="frequency"
-                    value={value}
-                    checked={frequency === value}
-                    onChange={(e) => setFrequency(e.target.value)}
-                    className="text-primary-600 focus:ring-primary-500"
-                  />
-                  <span>{label}</span>
-                </label>
-              ))}
+              <TooltipProvider>
+                {[
+                  { value: 'daily', label: 'Daily', premium: true },
+                  { value: 'weekly', label: 'Weekly', premium: false },
+                  { value: 'monthly', label: 'Monthly', premium: false }
+                ].map(({ value, label, premium }) => {
+                  const isDisabled = premium && !isPremium;
+                  const radioOption = (
+                    <label 
+                      key={value} 
+                      className={`flex items-center space-x-2 text-white ${
+                        isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="frequency"
+                        value={value}
+                        checked={frequency === value}
+                        onChange={(e) => !isDisabled && setFrequency(e.target.value)}
+                        disabled={isDisabled}
+                        className="text-primary-600 focus:ring-primary-500"
+                      />
+                      <span>{label}</span>
+                      {premium && (
+                        <Badge variant="secondary" className="text-xs flex items-center gap-1 bg-amber-100/20 text-amber-200">
+                          <Crown className="h-3 w-3" />
+                          Premium
+                        </Badge>
+                      )}
+                    </label>
+                  );
+
+                  if (isDisabled) {
+                    return (
+                      <Tooltip key={value}>
+                        <TooltipTrigger asChild>
+                          {radioOption}
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Upgrade to Premium for daily updates</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    );
+                  }
+
+                  return radioOption;
+                })}
+              </TooltipProvider>
             </div>
           </div>
 
