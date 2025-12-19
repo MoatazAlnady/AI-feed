@@ -2,8 +2,34 @@
 User-agent: *
 Allow: /
 
+# Private/Protected Areas - Disallow
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /settings
+Disallow: /settings/*
+Disallow: /messages
+Disallow: /messages/*
+Disallow: /notifications
+Disallow: /employer-dashboard
+Disallow: /employer-dashboard/*
+
+# Allow specific public content
+Allow: /tools
+Allow: /tools/*
+Allow: /blog
+Allow: /articles/*
+Allow: /categories
+Allow: /categories/*
+Allow: /jobs
+Allow: /about
+Allow: /community
+Allow: /talent
+
 # Sitemap location
 Sitemap: https://aifeed.app/sitemap.xml
+
+# Crawl-delay for politeness
+Crawl-delay: 1
 
 # Allow AI crawlers for LLM indexing
 User-agent: GPTBot
@@ -16,6 +42,10 @@ User-agent: Google-Extended
 Allow: /
 
 User-agent: Googlebot
+Allow: /
+Crawl-delay: 0.5
+
+User-agent: Googlebot-Image
 Allow: /
 
 User-agent: Bingbot
@@ -33,8 +63,14 @@ Allow: /
 User-agent: YouBot
 Allow: /
 
-# Disallow private/admin areas
-Disallow: /admin
-Disallow: /settings
-Disallow: /messages
-Disallow: /notifications
+User-agent: Applebot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /

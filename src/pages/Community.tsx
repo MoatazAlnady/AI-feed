@@ -297,7 +297,7 @@ const Community: React.FC = () => {
       try {
         // Check if connected
         const { data: connectionData } = await supabase
-          .rpc('are_users_connected', { user1_id: user.id, user2_id: creator.id });
+          .rpc('are_users_connected', { user_a: user.id, user_b: creator.id });
 
         // Check for pending request
         const { data: requestData } = await supabase

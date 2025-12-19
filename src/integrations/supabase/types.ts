@@ -3828,6 +3828,19 @@ export type Database = {
         Args: { base_name: string; user_id: string }
         Returns: string
       }
+      get_invitation_by_token: {
+        Args: { token_input: string }
+        Returns: {
+          company_logo: string
+          company_name: string
+          company_page_id: string
+          email: string
+          expires_at: string
+          id: string
+          role: string
+          status: string
+        }[]
+      }
       get_pending_edit_requests: {
         Args: { limit_param?: number; offset_param?: number }
         Returns: {

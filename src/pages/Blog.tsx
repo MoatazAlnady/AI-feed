@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import ProfileHoverCard from '@/components/ProfileHoverCard';
 import ReportContentModal from '@/components/ReportContentModal';
+import SEOHead from '@/components/SEOHead';
 
 interface Article {
   id: string;
@@ -108,7 +109,15 @@ const Blog: React.FC = () => {
   }
 
   return (
-    <div className="py-8 bg-gradient-to-b from-muted/30 via-background to-background min-h-screen">
+    <>
+      <SEOHead 
+        title="AI Blog - Latest AI News, Tutorials & Insights"
+        description="Stay updated with the latest AI news, in-depth tutorials, tool reviews, and industry insights. Written by AI experts and enthusiasts from around the world."
+        keywords="AI blog, AI news, AI tutorials, machine learning articles, AI reviews, artificial intelligence insights, AI industry updates"
+        url="https://aifeed.app/blog"
+        type="website"
+      />
+      <div className="py-8 bg-gradient-to-b from-muted/30 via-background to-background min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-12">
           <div className="flex flex-col items-center text-center mb-8">
@@ -341,6 +350,7 @@ const Blog: React.FC = () => {
         />
       )}
     </div>
+    </>
   );
 };
 
