@@ -33,15 +33,44 @@ const Blog: React.FC = () => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const { data, error } = await supabase
+        // Fetch articles
+        const { data: articlesData, error: articlesError } = await supabase
           .from('articles')
           .select('*')
           .eq('status', 'published')
           .order('published_at', { ascending: false })
           .limit(20);
 
-        if (error) throw error;
-        setArticles(data || []);
+        if (articlesError) throw articlesError;
+
+        // Fetch average ratings for all articles
+        const articleIds = (articlesData || []).map(a => a.id);
+        const { data: reviewsData } = await supabase
+          .from('tool_reviews')
+          .select('tool_id, rating')
+          .in('tool_id', articleIds)
+          .eq('status', 'approved');
+
+        // Calculate average ratings per article
+        const ratingsMap: Record<string, { sum: number; count: number }> = {};
+        (reviewsData || []).forEach(review => {
+          if (!ratingsMap[review.tool_id]) {
+            ratingsMap[review.tool_id] = { sum: 0, count: 0 };
+          }
+          ratingsMap[review.tool_id].sum += review.rating;
+          ratingsMap[review.tool_id].count += 1;
+        });
+
+        // Merge ratings into articles
+        const articlesWithRatings = (articlesData || []).map(article => ({
+          ...article,
+          average_rating: ratingsMap[article.id] 
+            ? ratingsMap[article.id].sum / ratingsMap[article.id].count 
+            : undefined,
+          review_count: ratingsMap[article.id]?.count || 0
+        }));
+
+        setArticles(articlesWithRatings);
       } catch (error) {
         console.error('Error fetching articles:', error);
       } finally {
@@ -221,10 +250,21 @@ const Blog: React.FC = () => {
                     </div>
                     
                     <div className="p-6">
-                      <div className="flex items-center space-x-2 mb-3">
+                      <div className="flex items-center justify-between mb-3">
                         <span className="px-2 py-1 bg-muted text-muted-foreground rounded-md text-xs">
                           {article.category}
                         </span>
+                        {article.average_rating && article.average_rating > 0 && (
+                          <div className="flex items-center gap-1 text-xs">
+                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                            <span className="text-foreground font-medium">
+                              {article.average_rating.toFixed(1)}
+                            </span>
+                            <span className="text-muted-foreground">
+                              ({article.review_count})
+                            </span>
+                          </div>
+                        )}
                       </div>
                       
                       <Link to={`/articles/${article.id}`}>
