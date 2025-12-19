@@ -886,11 +886,16 @@
       "networking": "Networking",
       "feed": "Feed",
       "events": "Events",
-      "groups": "Groups"
+      "groups": "Groups",
+      "discussion": "Discussion"
     },
     "feed": {
       "title": "Community Feed",
       "subtitle": "Connect with other creators, share insights, and discover new opportunities."
+    },
+    "discussion": {
+      "title": "Community Discussions",
+      "subtitle": "Join discussions about AI tools, share insights, and learn from the community."
     },
     "events": {
       "title": "Community Events",
@@ -910,6 +915,7 @@
       "title": "Discussion Groups",
       "createGroup": "Create Group",
       "joinDiscussion": "Join Discussion",
+      "join": "Join",
       "members": "members",
       "sample": {
         "machineLearning": "Machine Learning",
@@ -944,6 +950,23 @@
       "weeklyEvents": "Weekly Events",
       "successRate": "Success Rate"
     }
+  },
+  "groups": {
+    "discussions": "Discussions",
+    "chat": "Chat",
+    "groupChat": "Group Chat",
+    "replies": "replies",
+    "startDiscussion": "Start Discussion",
+    "newDiscussion": "New Discussion",
+    "discussionTitle": "Discussion title",
+    "discussionContent": "What would you like to discuss? (optional)",
+    "noDiscussions": "No discussions yet",
+    "beFirstToStart": "Be the first to start a discussion!",
+    "writeReply": "Write a reply...",
+    "noMessages": "No messages yet. Start the conversation!",
+    "typeMessage": "Type a message...",
+    "joined": "Joined group successfully!",
+    "alreadyMember": "You are already a member of this group"
   },
   "profile": {
     "title": "Profile",

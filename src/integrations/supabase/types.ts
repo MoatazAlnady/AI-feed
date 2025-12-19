@@ -928,6 +928,54 @@ export type Database = {
           },
         ]
       }
+      discussion_replies: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string | null
+          discussion_id: string
+          id: string
+          likes_count: number | null
+          parent_reply_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string | null
+          discussion_id: string
+          id?: string
+          likes_count?: number | null
+          parent_reply_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string | null
+          discussion_id?: string
+          id?: string
+          likes_count?: number | null
+          parent_reply_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discussion_replies_discussion_id_fkey"
+            columns: ["discussion_id"]
+            isOneToOne: false
+            referencedRelation: "group_discussions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discussion_replies_parent_reply_id_fkey"
+            columns: ["parent_reply_id"]
+            isOneToOne: false
+            referencedRelation: "discussion_replies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employer_projects: {
         Row: {
           company_page_id: string | null
@@ -1065,6 +1113,82 @@ export type Database = {
         }
         Relationships: []
       }
+      group_conversations: {
+        Row: {
+          created_at: string | null
+          group_id: string
+          id: string
+          last_message_at: string | null
+          name: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          group_id: string
+          id?: string
+          last_message_at?: string | null
+          name?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          group_id?: string
+          id?: string
+          last_message_at?: string | null
+          name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_conversations_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: true
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_discussions: {
+        Row: {
+          author_id: string
+          content: string | null
+          created_at: string | null
+          group_id: string
+          id: string
+          is_pinned: boolean | null
+          reply_count: number | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          content?: string | null
+          created_at?: string | null
+          group_id: string
+          id?: string
+          is_pinned?: boolean | null
+          reply_count?: number | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          content?: string | null
+          created_at?: string | null
+          group_id?: string
+          id?: string
+          is_pinned?: boolean | null
+          reply_count?: number | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_discussions_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       group_members: {
         Row: {
           group_id: string
@@ -1100,6 +1224,38 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_messages: {
+        Row: {
+          body: string
+          created_at: string | null
+          group_conversation_id: string
+          id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          group_conversation_id: string
+          id?: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          group_conversation_id?: string
+          id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_messages_group_conversation_id_fkey"
+            columns: ["group_conversation_id"]
+            isOneToOne: false
+            referencedRelation: "group_conversations"
             referencedColumns: ["id"]
           },
         ]

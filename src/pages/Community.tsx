@@ -17,6 +17,8 @@ import {
 import ChatDock from '../components/ChatDock';
 import CreateEventModal from '../components/CreateEventModal';
 import CreateGroupModal from '../components/CreateGroupModal';
+import GroupDiscussions from '../components/GroupDiscussions';
+import GroupChatWindow from '../components/GroupChatWindow';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../integrations/supabase/client';
 import { useAuth } from '../context/AuthContext';
@@ -39,6 +41,54 @@ const Community: React.FC = () => {
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
   const [events, setEvents] = useState<any[]>([]);
   const [groups, setGroups] = useState<any[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<{ id: string; name: string; view: 'discussions' | 'chat' } | null>(null);
+
+  // Fetch groups from database
+  useEffect(() => {
+    if (activeTab === 'groups') {
+      fetchGroups();
+    }
+  }, [activeTab]);
+
+  const fetchGroups = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('groups')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setGroups(data || []);
+    } catch (error) {
+      console.error('Error fetching groups:', error);
+    }
+  };
+
+  const joinGroup = async (groupId: string) => {
+    if (!user) {
+      toast.error(t('community.networking.pleaseLogIn'));
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('group_members')
+        .insert({ group_id: groupId, user_id: user.id, role: 'member' });
+
+      if (error) {
+        if (error.code === '23505') {
+          toast.info(t('groups.alreadyMember', 'You are already a member of this group'));
+        } else {
+          throw error;
+        }
+      } else {
+        toast.success(t('groups.joined', 'Joined group successfully!'));
+      }
+    } catch (error) {
+      console.error('Error joining group:', error);
+      toast.error('Failed to join group');
+    }
+  };
 
   useEffect(() => {
     if (activeTab === 'networking') {
@@ -288,84 +338,131 @@ const Community: React.FC = () => {
     </div>
   );
 
-  const renderGroups = () => (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{t('community.groups.title')}</h3>
-        <button 
-          onClick={() => setShowCreateGroupModal(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200"
-        >
-          <Plus className="h-4 w-4" />
-          <span>{t('community.groups.createGroup')}</span>
-        </button>
+  const renderGroups = () => {
+    // If a group is selected, show discussions or chat
+    if (selectedGroup) {
+      if (selectedGroup.view === 'discussions') {
+        return (
+          <GroupDiscussions
+            groupId={selectedGroup.id}
+            groupName={selectedGroup.name}
+            onBack={() => setSelectedGroup(null)}
+          />
+        );
+      }
+      if (selectedGroup.view === 'chat') {
+        return (
+          <div className="h-[600px]">
+            <GroupChatWindow
+              groupId={selectedGroup.id}
+              groupName={selectedGroup.name}
+              onBack={() => setSelectedGroup(null)}
+            />
+          </div>
+        );
+      }
+    }
+
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{t('community.groups.title')}</h3>
+          <button 
+            onClick={() => setShowCreateGroupModal(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200"
+          >
+            <Plus className="h-4 w-4" />
+            <span>{t('community.groups.createGroup')}</span>
+          </button>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {groups.length === 0 ? (
+            <>
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                  <span className="font-semibold text-gray-900 dark:text-white">{t('community.groups.sample.machineLearning')}</span>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  {t('community.groups.sample.machineLearningDesc')}
+                </p>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-500 dark:text-gray-500">2.4k {t('community.groups.members')}</span>
+                  <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">{t('community.groups.joinDiscussion')} →</button>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                  <span className="font-semibold text-gray-900 dark:text-white">{t('community.groups.sample.aiTools')}</span>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  {t('community.groups.sample.aiToolsDesc')}
+                </p>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-500 dark:text-gray-500">5.1k {t('community.groups.members')}</span>
+                  <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">{t('community.groups.joinDiscussion')} →</button>
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                  <span className="font-semibold text-gray-900 dark:text-white">{t('community.groups.sample.startupsAI')}</span>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  {t('community.groups.sample.startupsAIDesc')}
+                </p>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-500 dark:text-gray-500">1.8k {t('community.groups.members')}</span>
+                  <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">{t('community.groups.joinDiscussion')} →</button>
+                </div>
+              </div>
+            </>
+          ) : (
+            groups.map((group) => (
+              <div key={group.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                  <span className="font-semibold text-gray-900 dark:text-white">{group.name}</span>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  {group.description}
+                </p>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-sm text-gray-500 dark:text-gray-500">{group.member_count || 0} {t('community.groups.members')}</span>
+                  <button 
+                    onClick={() => joinGroup(group.id)}
+                    className="text-primary-600 dark:text-primary-400 hover:underline text-sm"
+                  >
+                    {t('community.groups.join', 'Join')}
+                  </button>
+                </div>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => setSelectedGroup({ id: group.id, name: group.name, view: 'discussions' })}
+                    className="flex-1 px-3 py-2 text-sm bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors"
+                  >
+                    <MessageSquare className="h-4 w-4 inline mr-1" />
+                    {t('groups.discussions', 'Discussions')}
+                  </button>
+                  <button 
+                    onClick={() => setSelectedGroup({ id: group.id, name: group.name, view: 'chat' })}
+                    className="flex-1 px-3 py-2 text-sm bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors"
+                  >
+                    <MessageCircle className="h-4 w-4 inline mr-1" />
+                    {t('groups.chat', 'Chat')}
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {groups.length === 0 ? (
-          <>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-              <div className="flex items-center space-x-2 mb-3">
-                <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                <span className="font-semibold text-gray-900 dark:text-white">{t('community.groups.sample.machineLearning')}</span>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                {t('community.groups.sample.machineLearningDesc')}
-              </p>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500 dark:text-gray-500">2.4k {t('community.groups.members')}</span>
-                <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">{t('community.groups.joinDiscussion')} →</button>
-              </div>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-              <div className="flex items-center space-x-2 mb-3">
-                <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                <span className="font-semibold text-gray-900 dark:text-white">{t('community.groups.sample.aiTools')}</span>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                {t('community.groups.sample.aiToolsDesc')}
-              </p>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500 dark:text-gray-500">5.1k {t('community.groups.members')}</span>
-                <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">{t('community.groups.joinDiscussion')} →</button>
-              </div>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-              <div className="flex items-center space-x-2 mb-3">
-                <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                <span className="font-semibold text-gray-900 dark:text-white">{t('community.groups.sample.startupsAI')}</span>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                {t('community.groups.sample.startupsAIDesc')}
-              </p>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500 dark:text-gray-500">1.8k {t('community.groups.members')}</span>
-                <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">{t('community.groups.joinDiscussion')} →</button>
-              </div>
-            </div>
-          </>
-        ) : (
-          groups.map((group) => (
-            <div key={group.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-              <div className="flex items-center space-x-2 mb-3">
-                <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                <span className="font-semibold text-gray-900 dark:text-white">{group.name}</span>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                {group.description}
-              </p>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500 dark:text-gray-500">{group.members} members</span>
-                <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Discussion →</button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-    </div>
-  );
+    );
+  };
 
   const renderNetworking = () => (
     <div className="space-y-6">
