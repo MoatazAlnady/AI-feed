@@ -1148,5 +1148,17 @@
     "popularTopics": "Temas populares",
     "noInterests": "Aún no hay intereses disponibles. ¡Vuelve más tarde!",
     "clickToExplore": "Haz clic en cualquier tema para explorar contenido relacionado"
+  },
+  "search": {
+    "placeholder": "Buscar herramientas, creadores, grupos, trabajos...",
+    "noResults": "No se encontraron resultados",
+    "viewAll": "Ver todos los resultados",
+    "categories": {
+      "tools": "Herramienta",
+      "creators": "Creador",
+      "groups": "Grupo",
+      "events": "Evento",
+      "jobs": "Trabajo"
+    }
   }
 }

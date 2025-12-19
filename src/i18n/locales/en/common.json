@@ -1629,5 +1629,17 @@
     "popularTopics": "Popular Topics",
     "noInterests": "No interests available yet. Check back later!",
     "clickToExplore": "Click any topic to explore related content"
+  },
+  "search": {
+    "placeholder": "Search tools, creators, groups, jobs...",
+    "noResults": "No results found",
+    "viewAll": "View all results",
+    "categories": {
+      "tools": "Tool",
+      "creators": "Creator",
+      "groups": "Group",
+      "events": "Event",
+      "jobs": "Job"
+    }
   }
 }

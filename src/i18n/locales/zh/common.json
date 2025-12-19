@@ -1008,5 +1008,17 @@
     "popularTopics": "热门话题",
     "noInterests": "暂无可用兴趣。请稍后查看！",
     "clickToExplore": "点击任意话题探索相关内容"
+  },
+  "search": {
+    "placeholder": "搜索工具、创作者、群组、职位...",
+    "noResults": "未找到结果",
+    "viewAll": "查看所有结果",
+    "categories": {
+      "tools": "工具",
+      "creators": "创作者",
+      "groups": "群组",
+      "events": "活动",
+      "jobs": "职位"
+    }
   }
 }

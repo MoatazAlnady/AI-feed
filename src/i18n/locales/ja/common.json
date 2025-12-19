@@ -959,5 +959,17 @@
     "popularTopics": "人気のトピック",
     "noInterests": "まだ興味がありません。後でもう一度確認してください！",
     "clickToExplore": "トピックをクリックして関連コンテンツを探索"
+  },
+  "search": {
+    "placeholder": "ツール、クリエイター、グループ、求人を検索...",
+    "noResults": "結果が見つかりません",
+    "viewAll": "すべての結果を表示",
+    "categories": {
+      "tools": "ツール",
+      "creators": "クリエイター",
+      "groups": "グループ",
+      "events": "イベント",
+      "jobs": "求人"
+    }
   }
 }
