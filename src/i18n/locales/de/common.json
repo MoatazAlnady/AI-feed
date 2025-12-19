@@ -1200,5 +1200,17 @@
     "popularTopics": "Beliebte Themen",
     "noInterests": "Noch keine Interessen verfügbar. Schauen Sie später vorbei!",
     "clickToExplore": "Klicken Sie auf ein Thema, um verwandte Inhalte zu erkunden"
+  },
+  "search": {
+    "placeholder": "Suche nach Tools, Erstellern, Gruppen, Jobs...",
+    "noResults": "Keine Ergebnisse gefunden",
+    "viewAll": "Alle Ergebnisse anzeigen",
+    "categories": {
+      "tools": "Tool",
+      "creators": "Ersteller",
+      "groups": "Gruppe",
+      "events": "Event",
+      "jobs": "Job"
+    }
   }
 }

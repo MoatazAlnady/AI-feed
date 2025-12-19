@@ -30,7 +30,7 @@ const ToolReviews: React.FC<ReviewsProps> = ({ toolId }) => {
   const [submitting, setSubmitting] = useState(false);
   
   const [newReview, setNewReview] = useState({
-    rating: 5,
+    rating: 0,
     comment: ''
   });
 
@@ -92,6 +92,11 @@ const ToolReviews: React.FC<ReviewsProps> = ({ toolId }) => {
       return;
     }
 
+    if (newReview.rating === 0) {
+      toast.error('Please select a rating');
+      return;
+    }
+
     setSubmitting(true);
     try {
       const reviewData = {
@@ -121,7 +126,7 @@ const ToolReviews: React.FC<ReviewsProps> = ({ toolId }) => {
       }
 
       setShowReviewForm(false);
-      setNewReview({ rating: 5, comment: '' });
+      setNewReview({ rating: 0, comment: '' });
       fetchReviews();
     } catch (error) {
       console.error('Error submitting review:', error);

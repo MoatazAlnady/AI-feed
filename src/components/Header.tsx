@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Search, Zap, Plus, Settings, User, LogOut, Bell, MessageCircle, Building, BarChart3, Moon, Sun, Briefcase, Users, Crown, BookOpen, Shield, LayoutDashboard } from 'lucide-react';
 import ChatDock from './ChatDock';
+import GlobalSearch from './GlobalSearch';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../providers/ThemeProvider';
@@ -364,18 +365,22 @@ const Header: React.FC = () => {
             </button>
             
             {/* Search Button */}
-            <form onSubmit={handleSearch} className="hidden md:block">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder={isEmployerView ? "Search talent, jobs..." : "Search AI tools..."}
-                  className="pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent w-64 transition-all duration-200 bg-card text-foreground"
-                />
-              </div>
-            </form>
+            {!isEmployerView ? (
+              <GlobalSearch className="hidden md:block w-64" />
+            ) : (
+              <form onSubmit={handleSearch} className="hidden md:block">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search talent, jobs..."
+                    className="pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent w-64 transition-all duration-200 bg-card text-foreground"
+                  />
+                </div>
+              </form>
+            )}
             
             {/* Mobile Search Button */}
             <button 

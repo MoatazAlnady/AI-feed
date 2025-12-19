@@ -201,7 +201,7 @@ const Tools: React.FC = () => {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <Button onClick={() => navigate('/submit-tool')} size="sm">
+                <Button onClick={() => navigate('/submit-tool')} size="sm" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:opacity-90">
                   <Plus className="h-4 w-4 mr-1" />
                   {t('tools.submitTool')}
                 </Button>
