@@ -227,7 +227,8 @@ const Settings = () => {
   }
 
   return (
-    <div className="container max-w-4xl mx-auto py-8 px-6">
+    <div className="min-h-screen bg-muted/30">
+      <div className="container max-w-4xl mx-auto py-8 px-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">{t('settings.title')}</h1>
         <p className="text-muted-foreground">{t('settings.subtitle')}</p>
