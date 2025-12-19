@@ -97,7 +97,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
           >
             <div className="flex items-center">
               <Globe className="h-4 w-4 mr-2" />
-              {t('common.language')}
+              {t('language', 'Language')}
             </div>
             <span className="text-xs text-muted-foreground">
               {currentLanguage.nativeName}

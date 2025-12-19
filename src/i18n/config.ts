@@ -47,6 +47,10 @@ i18n
       escapeValue: false,
     },
     
+    // Ensure fallback values are shown instead of keys
+    returnNull: false,
+    returnEmptyString: false,
+    
     react: {
       useSuspense: false,
       bindI18n: 'languageChanged loaded',
