@@ -478,7 +478,7 @@ const CreatePost: React.FC = () => {
       <PremiumUpgradeModal
         isOpen={showPremiumModal}
         onClose={() => setShowPremiumModal(false)}
-        feature="video"
+        featureName="video"
       />
     </>
   );
