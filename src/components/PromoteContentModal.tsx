@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { MultiSelectCombobox } from '@/components/ui/multi-select-combobox';
 
 interface PromoteContentModalProps {
   isOpen: boolean;
@@ -637,22 +638,14 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                   Target Audience *
                 </label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {audienceOptions.map((audience) => (
-                    <button
-                      key={audience}
-                      type="button"
-                      onClick={() => handleArrayToggle(formData.targetAudience, audience, 'targetAudience')}
-                      className={`p-3 text-sm rounded-lg border transition-colors ${
-                        formData.targetAudience.includes(audience)
-                          ? 'bg-primary-500 text-white border-primary-500'
-                          : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:border-primary-300 dark:hover:border-primary-600'
-                      }`}
-                    >
-                      {audience}
-                    </button>
-                  ))}
-                </div>
+                <MultiSelectCombobox
+                  options={audienceOptions.map(a => ({ value: a, label: a }))}
+                  selected={formData.targetAudience}
+                  onChange={(selected) => setFormData(prev => ({ ...prev, targetAudience: selected }))}
+                  placeholder="Select target audiences..."
+                  searchPlaceholder="Search audiences..."
+                  emptyMessage="No audiences found."
+                />
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                   Selected: {formData.targetAudience.length} audience{formData.targetAudience.length !== 1 ? 's' : ''}
                 </p>
@@ -851,25 +844,17 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
 
               {/* Interest Targeting */}
               <div className="mb-8">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-6 mt-6">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                   Interest Targeting
                 </label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto">
-                  {availableInterests.map((interest) => (
-                    <button
-                      key={interest}
-                      type="button"
-                      onClick={() => handleArrayToggle(formData.interests, interest, 'interests')}
-                      className={`p-2 text-sm rounded-lg border transition-colors ${
-                        formData.interests.includes(interest)
-                          ? 'bg-blue-500 text-white border-blue-500'
-                          : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-600'
-                      }`}
-                    >
-                      {interest}
-                    </button>
-                  ))}
-                </div>
+                <MultiSelectCombobox
+                  options={availableInterests.map(i => ({ value: i, label: i }))}
+                  selected={formData.interests}
+                  onChange={(selected) => setFormData(prev => ({ ...prev, interests: selected }))}
+                  placeholder="Select interests..."
+                  searchPlaceholder="Search interests..."
+                  emptyMessage="No interests found."
+                />
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                   Selected: {formData.interests.length} interest{formData.interests.length !== 1 ? 's' : ''}
                 </p>
@@ -881,23 +866,18 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                   <Smartphone className="h-4 w-4 mr-2" />
                   Device Targeting
                 </label>
-                <div className="flex flex-wrap gap-2">
-                  {deviceOptions.map((device) => (
-                    <button
-                      key={device.value}
-                      type="button"
-                      onClick={() => handleArrayToggle(formData.devices, device.value, 'devices')}
-                      className={`px-4 py-2 rounded-lg border transition-colors flex items-center gap-2 ${
-                        formData.devices.includes(device.value)
-                          ? 'bg-primary-500 text-white border-primary-500'
-                          : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:border-primary-300'
-                      }`}
-                    >
-                      <device.icon className="h-4 w-4" />
-                      {device.label}
-                    </button>
-                  ))}
-                </div>
+                <MultiSelectCombobox
+                  options={deviceOptions.map(d => ({ 
+                    value: d.value, 
+                    label: d.label,
+                    icon: <d.icon className="h-4 w-4" />
+                  }))}
+                  selected={formData.devices}
+                  onChange={(selected) => setFormData(prev => ({ ...prev, devices: selected }))}
+                  placeholder="All devices (default)"
+                  searchPlaceholder="Search devices..."
+                  emptyMessage="No devices found."
+                />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                   {formData.devices.length === 0 ? 'All devices (default)' : `${formData.devices.length} device type(s) selected`}
                 </p>
@@ -909,22 +889,14 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                   <Globe className="h-4 w-4 mr-2" />
                   Language Targeting
                 </label>
-                <div className="grid grid-cols-3 md:grid-cols-4 gap-2 max-h-32 overflow-y-auto">
-                  {languageOptions.map((language) => (
-                    <button
-                      key={language}
-                      type="button"
-                      onClick={() => handleArrayToggle(formData.languages, language, 'languages')}
-                      className={`p-2 text-sm rounded-lg border transition-colors ${
-                        formData.languages.includes(language)
-                          ? 'bg-purple-500 text-white border-purple-500'
-                          : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:border-purple-300'
-                      }`}
-                    >
-                      {language}
-                    </button>
-                  ))}
-                </div>
+                <MultiSelectCombobox
+                  options={languageOptions.map(l => ({ value: l, label: l }))}
+                  selected={formData.languages}
+                  onChange={(selected) => setFormData(prev => ({ ...prev, languages: selected }))}
+                  placeholder="All languages (default)"
+                  searchPlaceholder="Search languages..."
+                  emptyMessage="No languages found."
+                />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                   {formData.languages.length === 0 ? 'All languages (default)' : `${formData.languages.length} language(s) selected`}
                 </p>
@@ -936,22 +908,14 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                   <Users className="h-4 w-4 mr-2" />
                   Industry Targeting
                 </label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto">
-                  {industryOptions.map((industry) => (
-                    <button
-                      key={industry}
-                      type="button"
-                      onClick={() => handleArrayToggle(formData.industries, industry, 'industries')}
-                      className={`p-2 text-sm rounded-lg border transition-colors ${
-                        formData.industries.includes(industry)
-                          ? 'bg-orange-500 text-white border-orange-500'
-                          : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-600 hover:border-orange-300'
-                      }`}
-                    >
-                      {industry}
-                    </button>
-                  ))}
-                </div>
+                <MultiSelectCombobox
+                  options={industryOptions.map(i => ({ value: i, label: i }))}
+                  selected={formData.industries}
+                  onChange={(selected) => setFormData(prev => ({ ...prev, industries: selected }))}
+                  placeholder="All industries (default)"
+                  searchPlaceholder="Search industries..."
+                  emptyMessage="No industries found."
+                />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                   {formData.industries.length === 0 ? 'All industries (default)' : `${formData.industries.length} industry/industries selected`}
                 </p>
