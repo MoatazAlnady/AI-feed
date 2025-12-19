@@ -126,8 +126,102 @@
     "requiredTitle": "Premium Required",
     "createGroupMessage": "Creating groups is a premium feature. Upgrade to Premium to create and manage your own groups.",
     "createEventMessage": "Creating events is a premium feature. Upgrade to Premium to create and host your own events.",
+    "submitToolMessage": "Submitting AI tools is a premium feature. Upgrade to Premium to submit tools to our directory.",
     "upgradeToPremium": "Upgrade to Premium",
-    "upgrade": "Upgrade"
+    "upgrade": "Upgrade",
+    "features": {
+      "submitTools": "Tool Submission"
+    }
+  },
+  "premiumModal": {
+    "title": "Upgrade to Premium",
+    "subtitle": "Unlock all features and boost your productivity",
+    "limitReached": "You've reached your free limit for {{feature}}",
+    "premiumOnly": "{{feature}} is a premium feature",
+    "monthlyPrice": "$20",
+    "yearlyPrice": "$200",
+    "perMonth": "/month",
+    "perYear": "/year",
+    "saveAmount": "Save $40/year (2 months free!)",
+    "viewPlans": "View Plans & Upgrade",
+    "maybeLater": "Maybe Later",
+    "features": {
+      "aiChat": "10 AI prompts per day",
+      "createGroups": "Create and manage groups",
+      "createEvents": "Host your own events",
+      "submitTools": "Submit AI tools to directory",
+      "premiumBadge": "Premium profile badge",
+      "advancedAnalytics": "Advanced analytics dashboard"
+    }
+  },
+  "upgrade": {
+    "badge": "Premium",
+    "title": "Unlock Your Full",
+    "titleHighlight": "Potential",
+    "subtitle": "Get unlimited access to all premium features and take your AI journey to the next level.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "save2Months": "Save 2 months",
+    "mostPopular": "Most Popular",
+    "currentPlan": "Current Plan",
+    "guarantee": "30-day money-back guarantee",
+    "whatsIncluded": "What's Included",
+    "processing": "Processing...",
+    "cta": "Get Premium Now",
+    "plans": {
+      "free": {
+        "title": "Free",
+        "description": "Basic access to explore the platform"
+      },
+      "premium": {
+        "title": "Premium",
+        "description": "Full access to all premium features"
+      },
+      "yearly": {
+        "discount": "Save $40/year (2 months free!)"
+      }
+    },
+    "features": {
+      "aiChat": {
+        "title": "AI Chat",
+        "free": "1 prompt/day",
+        "premium": "10 prompts/day"
+      },
+      "createGroups": {
+        "title": "Create Groups",
+        "free": "Not available",
+        "premium": "Unlimited"
+      },
+      "createEvents": {
+        "title": "Create Events",
+        "free": "Not available",
+        "premium": "Unlimited"
+      },
+      "submitTools": {
+        "title": "Submit Tools",
+        "free": "Not available",
+        "premium": "Unlimited"
+      },
+      "premiumBadge": {
+        "title": "Premium Badge",
+        "free": "Not available",
+        "premium": "Verified badge"
+      },
+      "advancedAnalytics": {
+        "title": "Analytics",
+        "free": "Basic",
+        "premium": "Advanced"
+      }
+    },
+    "faq": {
+      "title": "Have Questions?",
+      "description": "We're here to help! Contact our support team for any questions.",
+      "contactSupport": "Contact Support"
+    },
+    "toast": {
+      "signInRequired": "Please sign in to upgrade",
+      "paymentFailed": "Payment failed. Please try again."
+    }
   },
   "auto": {
     "totalUsers": "Total Users",

@@ -9,8 +9,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
+import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Save } from 'lucide-react';
+import { Plus, Save, Crown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 interface Category {
   id: string;
@@ -36,8 +39,11 @@ interface CreateToolModalProps {
 }
 
 const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onToolCreated }) => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const { user } = useAuth();
+  const { isPremium, isLoading: isPremiumLoading } = usePremiumStatus();
+  const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>([]);
   const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
   const [loading, setLoading] = useState(false);
@@ -239,14 +245,48 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
   };
 
   const availableSubCategories = subCategories.filter(sub => sub.category_id === formData.category_id);
+  // Show premium required screen for non-premium users
+  if (!isPremiumLoading && !isPremium) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-md">
+          <div className="text-center py-6">
+            <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Crown className="h-8 w-8 text-white" />
+            </div>
+            <DialogTitle className="text-2xl font-bold mb-4">
+              {t('premium.requiredTitle', 'Premium Required')}
+            </DialogTitle>
+            <DialogDescription className="mb-6">
+              {t('premium.submitToolMessage', 'Submitting AI tools is a premium feature. Upgrade to Premium to submit tools to our directory.')}
+            </DialogDescription>
+            <div className="space-y-3">
+              <Button
+                onClick={() => {
+                  onClose();
+                  navigate('/upgrade');
+                }}
+                className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white"
+              >
+                {t('premium.upgradeToPremium', 'Upgrade to Premium')}
+              </Button>
+              <Button onClick={onClose} variant="ghost" className="w-full">
+                {t('common.cancel', 'Cancel')}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New AI Tool</DialogTitle>
+          <DialogTitle>{t('admin.addTool', 'Create New AI Tool')}</DialogTitle>
           <DialogDescription>
-            Add a new AI tool to the directory with proper categorization
+            {t('tools.addDescription', 'Add a new AI tool to the directory with proper categorization')}
           </DialogDescription>
         </DialogHeader>
         

@@ -3,18 +3,21 @@ import { useTranslation } from 'react-i18next';
 import { Upload, Link, Tag, DollarSign, Star, Send, Plus, Minus, Download, FileText, AlertCircle } from 'lucide-react';
 import { generateCSVTemplate } from '../utils/csvTemplate';
 import { useAuth } from '../context/AuthContext';
+import { usePremiumStatus } from '../hooks/usePremiumStatus';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useParams, useNavigate } from 'react-router-dom';
 import ChatDock from '../components/ChatDock';
-
+import PremiumUpgradeModal from '../components/PremiumUpgradeModal';
 const SubmitTool: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { isPremium, isLoading: isPremiumLoading } = usePremiumStatus();
   const { toast } = useToast();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEditMode = !!id;
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [subCategories, setSubCategories] = useState<any[]>([]);
   const [submissionMode, setSubmissionMode] = useState<'form' | 'csv'>('form');
@@ -503,6 +506,21 @@ const SubmitTool: React.FC = () => {
           </div>
         </div>
       </div>
+    );
+  }
+
+  // Show premium upgrade modal for non-premium users (except in edit mode)
+  if (!isEditMode && !isPremiumLoading && !isPremium) {
+    return (
+      <>
+        <PremiumUpgradeModal
+          isOpen={true}
+          onClose={() => navigate(-1)}
+          featureName={t('premium.features.submitTools', 'Tool Submission')}
+          trigger="premium_feature"
+        />
+        <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen" />
+      </>
     );
   }
 

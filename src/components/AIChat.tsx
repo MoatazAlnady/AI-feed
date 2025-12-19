@@ -6,6 +6,7 @@ import { useAIChatUsage } from '@/hooks/useAIChatUsage';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import PremiumUpgradeModal from './PremiumUpgradeModal';
 
 interface AIChatProps {
   context?: string;
@@ -28,6 +29,7 @@ const AIChat: React.FC<AIChatProps> = ({ context = 'general', initialGreeting })
   } = useAIChatUsage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // Auto-scroll
   useEffect(() => {
@@ -41,6 +43,10 @@ const AIChat: React.FC<AIChatProps> = ({ context = 'general', initialGreeting })
     // Increment usage first
     const canProceed = await incrementUsage();
     if (!canProceed) {
+      // Show upgrade modal when limit is reached
+      if (dailyLimit === 1) {
+        setShowUpgradeModal(true);
+      }
       return;
     }
 
@@ -177,7 +183,7 @@ const AIChat: React.FC<AIChatProps> = ({ context = 'general', initialGreeting })
             {dailyLimit === 1 && (
               <Button
                 size="sm"
-                onClick={() => navigate('/upgrade')}
+                onClick={() => setShowUpgradeModal(true)}
                 className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white"
               >
                 {t('premium.upgrade', 'Upgrade')}
@@ -186,6 +192,14 @@ const AIChat: React.FC<AIChatProps> = ({ context = 'general', initialGreeting })
           </div>
         </div>
       )}
+
+      {/* Premium Upgrade Modal */}
+      <PremiumUpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        featureName={t('chat.aiAssistant', 'AI Chat')}
+        trigger="limit_reached"
+      />
       
       {/* Input */}
       <div className="p-4 border-t bg-background">
