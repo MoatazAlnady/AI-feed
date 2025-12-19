@@ -989,5 +989,10 @@
     "privacy": "隐私政策",
     "terms": "服务条款",
     "copyright": "© 2024 AI Feed. 保留所有权利。"
+  },
+  "hashtags": {
+    "popularTopics": "热门话题",
+    "noInterests": "暂无可用兴趣。请稍后查看！",
+    "clickToExplore": "点击任意话题探索相关内容"
   }
 }
