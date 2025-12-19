@@ -197,7 +197,7 @@ const MentionInput: React.FC<MentionInputProps> = ({
 
   // Insert mention into text
   const insertMention = async (selectedEntity: MentionEntity) => {
-    const mention = `@${selectedEntity.handle || selectedEntity.display_name.replace(/\s+/g, '')}`;
+    const mention = `@${selectedEntity.display_name.replace(/\s+/g, '')}`;
     const newValue = value.slice(0, mentionStart) + mention + ' ' + value.slice(mentionStart + mentionQuery.length + 1);
     
     onChange(newValue);
