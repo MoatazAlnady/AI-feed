@@ -29,6 +29,7 @@ import CommentReactions from './CommentReactions';
 import PostOptionsMenu from './PostOptionsMenu';
 import SharePostModal from './SharePostModal';
 import LinkPreview from './LinkPreview';
+import ProfileHoverCard from './ProfileHoverCard';
 
 interface Post {
   id: string;
@@ -853,45 +854,74 @@ const NewsFeed: React.FC = () => {
           ref={(el) => { postRefs.current[post.id] = el; }}
           data-post-id={post.id}
         >
-          {/* Shared Post Header */}
-          {post.type === 'shared' && (
-            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-l-4 border-blue-500">
-              <div className="flex items-center space-x-2">
-                <Share2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                <span className="text-sm text-blue-700 dark:text-blue-300">
-                  <strong>{post.sharedBy?.name || 'Someone'}</strong> shared this post
-                </span>
-                <span className="text-xs text-blue-600 dark:text-blue-400">• {post.sharedAt}</span>
+          {/* Reshared Post Header - Shows resharer profile at top */}
+          {post.type === 'shared' && post.sharedBy && (
+            <div className="mb-4 border-b border-border pb-4">
+              <div className="flex items-start space-x-3">
+                <ProfileHoverCard userId={post.shared_by}>
+                  <Link to={getCreatorProfileLink({ id: post.shared_by, handle: post.sharedBy?.handle })} className="flex-shrink-0">
+                    {post.sharedBy?.avatar ? (
+                      <img
+                        src={post.sharedBy.avatar}
+                        alt={post.sharedBy.name}
+                        className="w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-primary transition-all"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center hover:ring-2 hover:ring-primary transition-all">
+                        <User className="h-5 w-5 text-white" />
+                      </div>
+                    )}
+                  </Link>
+                </ProfileHoverCard>
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2">
+                    <ProfileHoverCard userId={post.shared_by}>
+                      <Link 
+                        to={getCreatorProfileLink({ id: post.shared_by, handle: post.sharedBy?.handle })}
+                        className="font-semibold text-foreground hover:underline"
+                      >
+                        {post.sharedBy?.name || 'Someone'}
+                      </Link>
+                    </ProfileHoverCard>
+                    <Share2 className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">shared this</span>
+                  </div>
+                  {post.shareText && (
+                    <p className="text-foreground mt-2 text-sm italic">
+                      "{post.shareText}"
+                    </p>
+                  )}
+                  <span className="text-xs text-muted-foreground">{post.sharedAt}</span>
+                </div>
               </div>
-              {post.shareText && (
-                <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
-                  "{post.shareText}"
-                </p>
-              )}
             </div>
           )}
           
           <div className="flex items-start space-x-4">
-            {/* Clickable Avatar */}
-            <Link to={getCreatorProfileLink({ id: post.user_id, handle: post.author.handle })} className="flex-shrink-0">
-              {post.author.avatar ? (
-                <img
-                  src={post.author.avatar}
-                  alt={post.author.name}
-                  className="w-12 h-12 rounded-full object-cover hover:ring-2 hover:ring-primary-500 transition-all"
-                />
-              ) : (
-                <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center hover:ring-2 hover:ring-primary-500 transition-all">
-                  <User className="h-6 w-6 text-white" />
-                </div>
-              )}
-            </Link>
+            {/* Clickable Avatar with ProfileHoverCard */}
+            <ProfileHoverCard userId={post.user_id}>
+              <Link to={getCreatorProfileLink({ id: post.user_id, handle: post.author.handle })} className="flex-shrink-0">
+                {post.author.avatar ? (
+                  <img
+                    src={post.author.avatar}
+                    alt={post.author.name}
+                    className="w-12 h-12 rounded-full object-cover hover:ring-2 hover:ring-primary transition-all"
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center hover:ring-2 hover:ring-primary transition-all">
+                    <User className="h-6 w-6 text-white" />
+                  </div>
+                )}
+              </Link>
+            </ProfileHoverCard>
             <div className="flex-1">
               <div className="flex items-center space-x-2 mb-1">
-                {/* Clickable Author Name */}
-                <Link to={getCreatorProfileLink({ id: post.user_id, handle: post.author.handle })} className="hover:underline">
-                  <h3 className="font-semibold text-gray-900 dark:text-white">{post.author.name}</h3>
-                </Link>
+                {/* Clickable Author Name with ProfileHoverCard */}
+                <ProfileHoverCard userId={post.user_id}>
+                  <Link to={getCreatorProfileLink({ id: post.user_id, handle: post.author.handle })} className="hover:underline">
+                    <h3 className="font-semibold text-foreground">{post.author.name}</h3>
+                  </Link>
+                </ProfileHoverCard>
                 {post.author.verified && (
                   <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
                     <div className="w-2 h-2 bg-white rounded-full"></div>

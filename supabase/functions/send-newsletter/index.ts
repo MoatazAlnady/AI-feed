@@ -1,0 +1,435 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+const CONTENT_LIMITS = {
+  articles: 5,
+  posts: 5,
+  tools: 5,
+  jobs: 3,
+};
+
+interface Subscriber {
+  id: string;
+  email: string;
+  frequency: string;
+  interests: string[];
+  full_name?: string;
+  user_id?: string;
+  last_sent_at?: string;
+}
+
+interface ContentItem {
+  id: string;
+  title: string;
+  excerpt: string;
+  url: string;
+  type: string;
+  created_at: string;
+  author?: string;
+  image_url?: string;
+}
+
+serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Determine which frequency to process
+    const { frequency } = await req.json().catch(() => ({ frequency: "all" }));
+    console.log(`Processing newsletter for frequency: ${frequency}`);
+
+    // Get date thresholds based on frequency
+    const now = new Date();
+    const getDateThreshold = (freq: string): Date => {
+      const date = new Date(now);
+      switch (freq) {
+        case "daily":
+          date.setDate(date.getDate() - 1);
+          break;
+        case "weekly":
+          date.setDate(date.getDate() - 7);
+          break;
+        case "monthly":
+          date.setMonth(date.getMonth() - 1);
+          break;
+        default:
+          date.setDate(date.getDate() - 7);
+      }
+      return date;
+    };
+
+    // Determine which frequencies to process
+    const frequenciesToProcess: string[] = [];
+    if (frequency === "all") {
+      const hour = now.getUTCHours();
+      // Daily newsletters sent at 8 AM UTC
+      if (hour === 8) frequenciesToProcess.push("daily");
+      // Weekly newsletters sent on Mondays at 8 AM UTC
+      if (now.getUTCDay() === 1 && hour === 8) frequenciesToProcess.push("weekly");
+      // Monthly newsletters sent on 1st of month at 8 AM UTC
+      if (now.getUTCDate() === 1 && hour === 8) frequenciesToProcess.push("monthly");
+    } else {
+      frequenciesToProcess.push(frequency);
+    }
+
+    if (frequenciesToProcess.length === 0) {
+      console.log("No newsletters to send at this time");
+      return new Response(
+        JSON.stringify({ message: "No newsletters to send at this time" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Create newsletter batch record
+    for (const freq of frequenciesToProcess) {
+      console.log(`Processing ${freq} newsletter...`);
+      
+      const { data: batchData, error: batchError } = await supabase
+        .from("newsletter_batches")
+        .insert({ frequency: freq })
+        .select()
+        .single();
+
+      if (batchError) {
+        console.error("Error creating batch:", batchError);
+        continue;
+      }
+
+      const batchId = batchData.id;
+      const dateThreshold = getDateThreshold(freq);
+
+      // Fetch subscribers for this frequency
+      const { data: subscribers, error: subError } = await supabase
+        .from("newsletter_subscribers")
+        .select("*")
+        .eq("frequency", freq);
+
+      if (subError) {
+        console.error("Error fetching subscribers:", subError);
+        continue;
+      }
+
+      console.log(`Found ${subscribers?.length || 0} subscribers for ${freq} frequency`);
+
+      let successCount = 0;
+      let errorCount = 0;
+
+      // Process each subscriber
+      for (const subscriber of (subscribers || []) as Subscriber[]) {
+        try {
+          // Get sent content IDs for this subscriber
+          const { data: sentContent } = await supabase
+            .from("newsletter_sent_content")
+            .select("content_type, content_id")
+            .eq("subscriber_id", subscriber.id);
+
+          const sentContentMap: Record<string, string[]> = {};
+          (sentContent || []).forEach((item: any) => {
+            if (!sentContentMap[item.content_type]) {
+              sentContentMap[item.content_type] = [];
+            }
+            sentContentMap[item.content_type].push(item.content_id);
+          });
+
+          const content: ContentItem[] = [];
+          const contentToTrack: { type: string; id: string }[] = [];
+
+          // Fetch articles
+          let articlesQuery = supabase
+            .from("articles")
+            .select("id, title, excerpt, featured_image_url, author, created_at, tags")
+            .eq("status", "published")
+            .gte("created_at", dateThreshold.toISOString())
+            .order("views", { ascending: false })
+            .limit(CONTENT_LIMITS.articles);
+
+          if (sentContentMap.article?.length) {
+            articlesQuery = articlesQuery.not("id", "in", `(${sentContentMap.article.join(",")})`);
+          }
+
+          const { data: articles } = await articlesQuery;
+          
+          // Filter by interests if subscriber has any
+          let filteredArticles = articles || [];
+          if (subscriber.interests?.length) {
+            filteredArticles = filteredArticles.filter((article: any) => {
+              const articleTags = article.tags || [];
+              return subscriber.interests.some(interest => 
+                articleTags.some((tag: string) => 
+                  tag.toLowerCase().includes(interest.toLowerCase()) ||
+                  interest.toLowerCase().includes(tag.toLowerCase())
+                ) ||
+                article.title?.toLowerCase().includes(interest.toLowerCase())
+              );
+            });
+          }
+
+          filteredArticles.slice(0, CONTENT_LIMITS.articles).forEach((article: any) => {
+            content.push({
+              id: article.id,
+              title: article.title,
+              excerpt: article.excerpt || article.title,
+              url: `/articles/${article.id}`,
+              type: "article",
+              created_at: article.created_at,
+              author: article.author,
+              image_url: article.featured_image_url
+            });
+            contentToTrack.push({ type: "article", id: article.id });
+          });
+
+          // Fetch tools
+          let toolsQuery = supabase
+            .from("tools")
+            .select("id, name, description, logo_url, created_at, tags")
+            .eq("status", "published")
+            .gte("created_at", dateThreshold.toISOString())
+            .order("average_rating", { ascending: false })
+            .limit(CONTENT_LIMITS.tools);
+
+          if (sentContentMap.tool?.length) {
+            toolsQuery = toolsQuery.not("id", "in", `(${sentContentMap.tool.join(",")})`);
+          }
+
+          const { data: tools } = await toolsQuery;
+
+          let filteredTools = tools || [];
+          if (subscriber.interests?.length) {
+            filteredTools = filteredTools.filter((tool: any) => {
+              const toolTags = tool.tags || [];
+              return subscriber.interests.some(interest =>
+                toolTags.some((tag: string) =>
+                  tag.toLowerCase().includes(interest.toLowerCase())
+                ) ||
+                tool.name?.toLowerCase().includes(interest.toLowerCase()) ||
+                tool.description?.toLowerCase().includes(interest.toLowerCase())
+              );
+            });
+          }
+
+          filteredTools.slice(0, CONTENT_LIMITS.tools).forEach((tool: any) => {
+            content.push({
+              id: tool.id,
+              title: tool.name,
+              excerpt: tool.description?.substring(0, 150) || tool.name,
+              url: `/tools/${tool.id}`,
+              type: "tool",
+              created_at: tool.created_at,
+              image_url: tool.logo_url
+            });
+            contentToTrack.push({ type: "tool", id: tool.id });
+          });
+
+          // Fetch jobs
+          let jobsQuery = supabase
+            .from("jobs")
+            .select("id, title, company, description, location, created_at")
+            .gte("created_at", dateThreshold.toISOString())
+            .order("created_at", { ascending: false })
+            .limit(CONTENT_LIMITS.jobs);
+
+          if (sentContentMap.job?.length) {
+            jobsQuery = jobsQuery.not("id", "in", `(${sentContentMap.job.join(",")})`);
+          }
+
+          const { data: jobs } = await jobsQuery;
+
+          (jobs || []).forEach((job: any) => {
+            content.push({
+              id: job.id,
+              title: job.title,
+              excerpt: `${job.company} • ${job.location}`,
+              url: `/jobs/${job.id}`,
+              type: "job",
+              created_at: job.created_at
+            });
+            contentToTrack.push({ type: "job", id: job.id });
+          });
+
+          // Skip if no content to send
+          if (content.length === 0) {
+            console.log(`No new content for subscriber ${subscriber.email}`);
+            continue;
+          }
+
+          // Generate newsletter HTML
+          const baseUrl = supabaseUrl.replace("/rest/v1", "").replace("supabase.co", "lovable.app");
+          const newsletterHtml = generateNewsletterHtml(
+            subscriber.full_name || subscriber.email.split("@")[0],
+            content,
+            freq,
+            baseUrl
+          );
+
+          // Log the newsletter (in production, would send via email service)
+          console.log(`Newsletter generated for ${subscriber.email}:`, {
+            contentCount: content.length,
+            types: [...new Set(content.map(c => c.type))]
+          });
+
+          // Track sent content
+          for (const item of contentToTrack) {
+            await supabase.from("newsletter_sent_content").insert({
+              subscriber_id: subscriber.id,
+              content_type: item.type,
+              content_id: item.id,
+              newsletter_batch_id: batchId
+            }).catch(() => {}); // Ignore duplicates
+          }
+
+          // Update subscriber's last_sent_at
+          await supabase
+            .from("newsletter_subscribers")
+            .update({ last_sent_at: new Date().toISOString() })
+            .eq("id", subscriber.id);
+
+          successCount++;
+        } catch (error) {
+          console.error(`Error processing subscriber ${subscriber.email}:`, error);
+          errorCount++;
+        }
+      }
+
+      // Update batch with results
+      await supabase
+        .from("newsletter_batches")
+        .update({
+          total_subscribers: subscribers?.length || 0,
+          success_count: successCount,
+          error_count: errorCount
+        })
+        .eq("id", batchId);
+
+      console.log(`${freq} newsletter batch completed: ${successCount} success, ${errorCount} errors`);
+    }
+
+    return new Response(
+      JSON.stringify({ 
+        message: "Newsletter processing completed",
+        frequencies: frequenciesToProcess 
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  } catch (error) {
+    console.error("Newsletter error:", error);
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+});
+
+function generateNewsletterHtml(
+  subscriberName: string, 
+  content: ContentItem[], 
+  frequency: string,
+  baseUrl: string
+): string {
+  const articleItems = content.filter(c => c.type === "article");
+  const toolItems = content.filter(c => c.type === "tool");
+  const jobItems = content.filter(c => c.type === "job");
+
+  const frequencyLabel = frequency.charAt(0).toUpperCase() + frequency.slice(1);
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Feed ${frequencyLabel} Digest</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f5f5f5; }
+    .container { max-width: 600px; margin: 0 auto; background: #fff; }
+    .header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: #fff; padding: 40px 20px; text-align: center; }
+    .header h1 { margin: 0 0 10px; font-size: 28px; }
+    .header p { margin: 0; opacity: 0.9; }
+    .content { padding: 30px 20px; }
+    .section { margin-bottom: 30px; }
+    .section h2 { color: #6366f1; font-size: 20px; margin-bottom: 15px; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
+    .item { background: #f9fafb; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+    .item h3 { margin: 0 0 8px; font-size: 16px; }
+    .item h3 a { color: #1f2937; text-decoration: none; }
+    .item h3 a:hover { color: #6366f1; }
+    .item p { margin: 0; color: #6b7280; font-size: 14px; }
+    .item .meta { font-size: 12px; color: #9ca3af; margin-top: 8px; }
+    .badge { display: inline-block; background: #e0e7ff; color: #4f46e5; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-right: 8px; }
+    .footer { background: #1f2937; color: #9ca3af; padding: 30px 20px; text-align: center; }
+    .footer a { color: #6366f1; text-decoration: none; }
+    .cta { display: inline-block; background: #6366f1; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🤖 AI Feed ${frequencyLabel} Digest</h1>
+      <p>Hi ${subscriberName}, here's what's new in AI!</p>
+    </div>
+    
+    <div class="content">
+      ${articleItems.length > 0 ? `
+      <div class="section">
+        <h2>📚 Featured Articles</h2>
+        ${articleItems.map(article => `
+        <div class="item">
+          <h3><a href="${baseUrl}${article.url}">${article.title}</a></h3>
+          <p>${article.excerpt}</p>
+          ${article.author ? `<div class="meta">By ${article.author}</div>` : ''}
+        </div>
+        `).join('')}
+      </div>
+      ` : ''}
+      
+      ${toolItems.length > 0 ? `
+      <div class="section">
+        <h2>🛠️ New AI Tools</h2>
+        ${toolItems.map(tool => `
+        <div class="item">
+          <h3><a href="${baseUrl}${tool.url}">${tool.title}</a></h3>
+          <p>${tool.excerpt}</p>
+        </div>
+        `).join('')}
+      </div>
+      ` : ''}
+      
+      ${jobItems.length > 0 ? `
+      <div class="section">
+        <h2>💼 AI Job Opportunities</h2>
+        ${jobItems.map(job => `
+        <div class="item">
+          <h3><a href="${baseUrl}${job.url}">${job.title}</a></h3>
+          <p>${job.excerpt}</p>
+        </div>
+        `).join('')}
+      </div>
+      ` : ''}
+      
+      <div style="text-align: center;">
+        <a href="${baseUrl}/newsfeed" class="cta">Explore More on AI Feed →</a>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>You're receiving this because you subscribed to ${frequency} updates.</p>
+      <p>
+        <a href="${baseUrl}/settings">Manage Preferences</a> | 
+        <a href="${baseUrl}/unsubscribe">Unsubscribe</a>
+      </p>
+      <p style="margin-top: 20px; font-size: 12px;">© ${new Date().getFullYear()} AI Feed. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+}
