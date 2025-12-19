@@ -209,7 +209,7 @@ const UserView: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="py-8 bg-gray-50 min-h-screen">
+      <div className="py-8 bg-background min-h-screen">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
@@ -221,7 +221,7 @@ const UserView: React.FC = () => {
 
   if (!userProfile) {
     return (
-      <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="py-8 bg-background min-h-screen">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-20">
             <User className="h-16 w-16 text-gray-300 mx-auto mb-4" />
@@ -244,7 +244,7 @@ const UserView: React.FC = () => {
   }
 
   return (
-    <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div className="py-8 bg-background min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
@@ -300,7 +300,7 @@ const UserView: React.FC = () => {
         </div>
 
         {/* Profile Header */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden mb-8">
+        <div className="bg-card rounded-2xl shadow-sm overflow-hidden mb-8">
           <div className="h-32 bg-gradient-to-r from-primary-500 to-secondary-500"></div>
           <div className="px-8 pb-8">
             <div className="flex items-start space-x-6 -mt-16">
@@ -430,7 +430,7 @@ const UserView: React.FC = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
           {Object.entries(userProfile.stats).map(([key, value]) => (
-            <div key={key} className="bg-white rounded-2xl shadow-sm p-6 text-center">
+            <div key={key} className="bg-card rounded-2xl shadow-sm p-6 text-center">
               <div className="text-2xl font-bold text-gray-900 mb-1">{value}</div>
               <div className="text-sm text-gray-600 capitalize">
                 {key.replace(/([A-Z])/g, ' $1').trim()}
@@ -440,8 +440,8 @@ const UserView: React.FC = () => {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white rounded-2xl shadow-sm mb-8">
-          <div className="flex border-b border-gray-200">
+        <div className="bg-card rounded-2xl shadow-sm mb-8">
+          <div className="flex border-b border-border">
             {[
               { key: 'overview', label: t('userView.tabs.overview') },
               { key: 'activity', label: t('userView.tabs.activity') },

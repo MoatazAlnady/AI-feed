@@ -307,7 +307,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
   };
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
+    <div className={`bg-card rounded-2xl shadow-sm border border-border p-6 ${className}`}>
       <div className="flex items-start space-x-4">
         {/* Profile Photo */}
         <Link to={getProfileLink()} className="flex-shrink-0">

@@ -17,3 +17,12 @@ verify_jwt = false
 
 [functions.send-company-invite]
 verify_jwt = true
+
+[functions.send-group-notification]
+verify_jwt = true
+
+[functions.send-connection-notification]
+verify_jwt = true
+
+[functions.send-job-application-notification]
+verify_jwt = true

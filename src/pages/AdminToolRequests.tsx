@@ -159,7 +159,7 @@ const AdminToolRequests: React.FC = () => {
   });
 
   return (
-    <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div className="py-8 bg-background min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
@@ -180,7 +180,7 @@ const AdminToolRequests: React.FC = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-4 mb-6">
+        <div className="bg-card rounded-2xl shadow-sm p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
@@ -189,7 +189,7 @@ const AdminToolRequests: React.FC = () => {
                 placeholder={t('adminToolRequests.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background text-foreground"
               />
             </div>
             <div className="flex items-center space-x-2">
@@ -197,7 +197,7 @@ const AdminToolRequests: React.FC = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as 'all' | 'pending')}
-                className="border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background text-foreground"
               >
                 <option value="pending">{t('adminToolRequests.filters.pending')}</option>
                 <option value="all">{t('adminToolRequests.filters.all')}</option>
@@ -210,9 +210,9 @@ const AdminToolRequests: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Requests List */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
-              <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                <h2 className="font-semibold text-gray-900 dark:text-white">
+            <div className="bg-card rounded-2xl shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-border">
+                <h2 className="font-semibold text-foreground">
                   {statusFilter === 'pending' ? t('adminToolRequests.filters.pending') : t('adminToolRequests.filters.all')}
                   {filteredRequests.length > 0 && ` (${filteredRequests.length})`}
                 </h2>
@@ -223,7 +223,7 @@ const AdminToolRequests: React.FC = () => {
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 dark:border-primary-400"></div>
                 </div>
               ) : filteredRequests.length > 0 ? (
-                <div className="divide-y divide-gray-200 dark:divide-gray-700 max-h-[600px] overflow-y-auto">
+                <div className="divide-y divide-border max-h-[600px] overflow-y-auto">
                   {filteredRequests.map((request) => (
                     <button
                       key={request.id}
@@ -268,7 +268,7 @@ const AdminToolRequests: React.FC = () => {
           {/* Request Details */}
           <div className="lg:col-span-2">
             {selectedRequest ? (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+              <div className="bg-card rounded-2xl shadow-sm p-6">
                 <div className="mb-6">
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                     {t('adminToolRequests.details.title', { name: selectedRequest.tool_name })}
