@@ -46,19 +46,19 @@ const Blog: React.FC = () => {
         // Fetch average ratings for all articles
         const articleIds = (articlesData || []).map(a => a.id);
         const { data: reviewsData } = await supabase
-          .from('tool_reviews')
-          .select('tool_id, rating')
-          .in('tool_id', articleIds)
+          .from('article_reviews')
+          .select('article_id, rating')
+          .in('article_id', articleIds)
           .eq('status', 'approved');
 
         // Calculate average ratings per article
         const ratingsMap: Record<string, { sum: number; count: number }> = {};
         (reviewsData || []).forEach(review => {
-          if (!ratingsMap[review.tool_id]) {
-            ratingsMap[review.tool_id] = { sum: 0, count: 0 };
+          if (!ratingsMap[review.article_id]) {
+            ratingsMap[review.article_id] = { sum: 0, count: 0 };
           }
-          ratingsMap[review.tool_id].sum += review.rating;
-          ratingsMap[review.tool_id].count += 1;
+          ratingsMap[review.article_id].sum += review.rating;
+          ratingsMap[review.article_id].count += 1;
         });
 
         // Merge ratings into articles
