@@ -134,8 +134,8 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
   if (isInline) {
     return (
       <>
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <div className="p-4 border-b border-border">
+          <h3 className="text-lg font-semibold text-foreground">
             Connection Requests
           </h3>
         </div>
@@ -151,7 +151,7 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
             </div>
           ) : (
             requests.slice(0, 3).map((request) => (
-              <div key={request.id} className="flex items-start space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
+              <div key={request.id} className="flex items-start space-x-3 p-3 rounded-lg border border-border">
                 <Avatar className="h-10 w-10">
                   {request.requester.profile_photo ? (
                     <AvatarImage src={request.requester.profile_photo} />
@@ -163,7 +163,7 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
                 </Avatar>
                 
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium truncate text-gray-900 dark:text-white">
+                    <div className="font-medium truncate text-foreground">
                     {request.requester.full_name || 'Deleted User'}
                   </div>
                   {request.requester.job_title && (
@@ -203,7 +203,7 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
         </div>
 
         {/* Footer with See All button */}
-        <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750">
+        <div className="p-3 border-t border-border bg-muted">
           <Link
             to="/connection-requests"
             onClick={() => {
@@ -224,9 +224,9 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
       className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center pt-16"
       onClick={handleOutsideClick}
     >
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full mx-4 max-h-96 overflow-hidden">
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+      <div className="bg-card rounded-lg shadow-lg max-w-md w-full mx-4 max-h-96 overflow-hidden">
+        <div className="p-4 border-b border-border">
+          <h3 className="text-lg font-semibold text-foreground">
             Connection Requests
           </h3>
         </div>
@@ -240,7 +240,7 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
             </div>
           ) : (
             requests.map((request) => (
-              <div key={request.id} className="flex items-start space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
+              <div key={request.id} className="flex items-start space-x-3 p-3 rounded-lg border border-border">
                 <Avatar className="h-10 w-10">
                   {request.requester.profile_photo ? (
                     <AvatarImage src={request.requester.profile_photo} />
@@ -252,7 +252,7 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
                 </Avatar>
                 
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium truncate text-gray-900 dark:text-white">
+                  <div className="font-medium truncate text-foreground">
                     {request.requester.full_name || 'Deleted User'}
                   </div>
                   {request.requester.job_title && (

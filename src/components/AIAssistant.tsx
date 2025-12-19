@@ -213,13 +213,13 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ mode, className = '' }) => {
       {isOpen && (
         <div 
           ref={chatContainerRef}
-          className={`fixed bottom-20 right-6 w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl z-40 transition-all duration-300 ${
+          className={`fixed bottom-20 right-6 w-full max-w-md bg-card rounded-2xl shadow-xl z-40 transition-all duration-300 ${
             isMinimized ? 'h-16' : 'h-[600px] max-h-[80vh]'
           } ${className}`}
         >
           {/* Header */}
           <div 
-            className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 cursor-pointer"
+            className="flex items-center justify-between p-4 border-b border-border cursor-pointer"
             onClick={minimizeChat}
           >
             <div className="flex items-center space-x-3">
@@ -346,7 +346,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ mode, className = '' }) => {
               )}
 
               {/* Input */}
-              <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="p-4 border-t border-border">
                 <form onSubmit={handleSubmit} className="flex items-center space-x-2">
                   <textarea
                     ref={inputRef}
@@ -354,7 +354,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ mode, className = '' }) => {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder={`Ask the ${mode === 'creator' ? 'AI assistant' : 'talent assistant'} a question...`}
-                    className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none max-h-24 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="flex-1 px-4 py-2 border border-border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none max-h-24 bg-background text-foreground"
                     rows={1}
                   />
                   <button

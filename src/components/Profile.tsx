@@ -231,10 +231,10 @@ const Profile: React.FC = () => {
 
   return (
     <>
-      <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="py-8 bg-background min-h-screen">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Profile Header */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden mb-8">
+          <div className="bg-card rounded-2xl shadow-sm overflow-hidden mb-8">
             {/* Cover Photo - increased height */}
             <div className="h-64 bg-gradient-to-r from-primary-500 to-secondary-500 relative">
               {user?.user_metadata?.cover_photo && (
@@ -265,7 +265,7 @@ const Profile: React.FC = () => {
               <div className="flex items-start space-x-6 -mt-16">
                 {/* Profile Photo */}
                 <div className="relative">
-                  <div className="w-32 h-32 bg-white dark:bg-gray-700 rounded-full p-2 shadow-lg">
+                  <div className="w-32 h-32 bg-card rounded-full p-2 shadow-lg">
                     {user?.user_metadata?.profile_photo ? (
                       <img
                         src={user.user_metadata.profile_photo}
@@ -406,7 +406,7 @@ const Profile: React.FC = () => {
           {/* Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {userStats.map((stat, index) => (
-              <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 text-center">
+              <div key={index} className="bg-card rounded-2xl shadow-sm p-6 text-center">
                 <div className="inline-flex p-3 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-xl mb-4">
                   <stat.icon className="h-6 w-6 text-white" />
                 </div>
@@ -417,8 +417,8 @@ const Profile: React.FC = () => {
           </div>
 
            {/* Tabs */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm mb-8">
-            <div className="flex border-b border-gray-200 dark:border-gray-700">
+          <div className="bg-card rounded-2xl shadow-sm mb-8">
+            <div className="flex border-b border-border">
               {[
                 { key: 'overview', label: 'Overview' },
                 { key: 'about', label: 'About' },
