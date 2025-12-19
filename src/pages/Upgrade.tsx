@@ -96,27 +96,31 @@ const Upgrade: React.FC = () => {
 
   const handleUpgrade = async (plan: 'monthly' | 'yearly') => {
     if (!user) {
-      toast.error(t('upgrade.toast.signInRequired'));
+      toast.error(t('upgrade.toast.signInRequired', 'Please sign in to upgrade'));
       return;
     }
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-payment', {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: {
-          priceId: plan === 'monthly' ? 'price_monthly' : 'price_yearly',
-          plan: plan
+          billingPeriod: plan
         }
       });
 
       if (error) throw error;
 
+      if (data?.error) {
+        toast.error(data.error);
+        return;
+      }
+
       if (data?.url) {
         window.open(data.url, '_blank');
       }
     } catch (error) {
-      console.error('Error creating payment:', error);
-      toast.error(t('upgrade.toast.paymentFailed'));
+      console.error('Error creating checkout session:', error);
+      toast.error(t('upgrade.toast.paymentFailed', 'Failed to start checkout. Please try again.'));
     } finally {
       setLoading(false);
     }

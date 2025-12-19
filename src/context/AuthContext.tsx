@@ -2,6 +2,13 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 
+interface SubscriptionStatus {
+  subscribed: boolean;
+  subscriptionTier: 'monthly' | 'yearly' | null;
+  subscriptionEnd: string | null;
+  isTrialing: boolean;
+}
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -13,6 +20,8 @@ interface AuthContextType {
   isAdmin: boolean;
   isEmployer: boolean;
   companyPageId: string | null;
+  subscription: SubscriptionStatus;
+  checkSubscription: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -159,7 +168,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAdmin, setIsAdmin] = useState(false);
   const [isEmployer, setIsEmployer] = useState(false);
   const [companyPageId, setCompanyPageId] = useState<string | null>(null);
+  const [subscription, setSubscription] = useState<SubscriptionStatus>({
+    subscribed: false,
+    subscriptionTier: null,
+    subscriptionEnd: null,
+    isTrialing: false,
+  });
   
+  // Check subscription status from Stripe
+  const checkSubscription = async () => {
+    if (!user) {
+      setSubscription({
+        subscribed: false,
+        subscriptionTier: null,
+        subscriptionEnd: null,
+        isTrialing: false,
+      });
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('check-subscription');
+      
+      if (error) {
+        console.error('Error checking subscription:', error);
+        return;
+      }
+
+      if (data) {
+        setSubscription({
+          subscribed: data.subscribed || false,
+          subscriptionTier: data.subscription_tier || null,
+          subscriptionEnd: data.subscription_end || null,
+          isTrialing: data.is_trialing || false,
+        });
+      }
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+    }
+  };
+
   useEffect(() => {
     const checkUserAccess = async () => {
       if (user) {
@@ -183,14 +231,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setIsEmployer(false);
           setCompanyPageId(null);
         }
+        
+        // Check subscription status
+        await checkSubscription();
       } else {
         setIsAdmin(false);
         setIsEmployer(false);
         setCompanyPageId(null);
+        setSubscription({
+          subscribed: false,
+          subscriptionTier: null,
+          subscriptionEnd: null,
+          isTrialing: false,
+        });
       }
     };
     
     checkUserAccess();
+  }, [user]);
+
+  // Refresh subscription status periodically (every minute)
+  useEffect(() => {
+    if (!user) return;
+
+    const interval = setInterval(() => {
+      checkSubscription();
+    }, 60000); // 1 minute
+
+    return () => clearInterval(interval);
   }, [user]);
 
   const value = {
@@ -204,6 +272,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isAdmin,
     isEmployer,
     companyPageId,
+    subscription,
+    checkSubscription,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
