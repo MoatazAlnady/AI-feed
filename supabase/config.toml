@@ -8,3 +8,6 @@ verify_jwt = true
 
 [functions.ai-targeting]
 verify_jwt = false
+
+[functions.fetch-link-metadata]
+verify_jwt = false

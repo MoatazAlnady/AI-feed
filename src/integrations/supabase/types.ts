@@ -897,6 +897,45 @@ export type Database = {
         }
         Relationships: []
       }
+      group_members: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       groups: {
         Row: {
           cover_image: string | null
@@ -1603,6 +1642,7 @@ export type Database = {
           id: string
           image_url: string | null
           likes: number | null
+          link_metadata: Json | null
           link_url: string | null
           reach_score: number | null
           share_count: number | null
@@ -1611,6 +1651,8 @@ export type Database = {
           user_id: string
           video_url: string | null
           view_count: number | null
+          visibility: string | null
+          visible_to_groups: string[] | null
         }
         Insert: {
           content: string
@@ -1618,6 +1660,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           likes?: number | null
+          link_metadata?: Json | null
           link_url?: string | null
           reach_score?: number | null
           share_count?: number | null
@@ -1626,6 +1669,8 @@ export type Database = {
           user_id: string
           video_url?: string | null
           view_count?: number | null
+          visibility?: string | null
+          visible_to_groups?: string[] | null
         }
         Update: {
           content?: string
@@ -1633,6 +1678,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           likes?: number | null
+          link_metadata?: Json | null
           link_url?: string | null
           reach_score?: number | null
           share_count?: number | null
@@ -1641,6 +1687,8 @@ export type Database = {
           user_id?: string
           video_url?: string | null
           view_count?: number | null
+          visibility?: string | null
+          visible_to_groups?: string[] | null
         }
         Relationships: []
       }
@@ -2347,6 +2395,8 @@ export type Database = {
           country: string | null
           cover_photo: string | null
           created_at: string | null
+          default_post_groups: string[] | null
+          default_post_visibility: string | null
           display_name: string | null
           followers_count: number | null
           following_count: number | null
@@ -2400,6 +2450,8 @@ export type Database = {
           country?: string | null
           cover_photo?: string | null
           created_at?: string | null
+          default_post_groups?: string[] | null
+          default_post_visibility?: string | null
           display_name?: string | null
           followers_count?: number | null
           following_count?: number | null
@@ -2453,6 +2505,8 @@ export type Database = {
           country?: string | null
           cover_photo?: string | null
           created_at?: string | null
+          default_post_groups?: string[] | null
+          default_post_visibility?: string | null
           display_name?: string | null
           followers_count?: number | null
           following_count?: number | null
