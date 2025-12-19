@@ -12,7 +12,11 @@ import {
   Hash,
   UserPlus,
   UserCheck,
-  MessageCircle
+  MessageCircle,
+  MapPin,
+  Clock,
+  Check,
+  Pin
 } from 'lucide-react';
 import ChatDock from '../components/ChatDock';
 import CreateEventModal from '../components/CreateEventModal';
@@ -24,6 +28,7 @@ import { supabase } from '../integrations/supabase/client';
 import { useAuth } from '../context/AuthContext';
 import { useChatDock } from '../context/ChatDockContext';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
 
 const Community: React.FC = () => {
   const { t } = useTranslation();
@@ -41,7 +46,163 @@ const Community: React.FC = () => {
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
   const [events, setEvents] = useState<any[]>([]);
   const [groups, setGroups] = useState<any[]>([]);
+  const [discussions, setDiscussions] = useState<any[]>([]);
+  const [userAttendance, setUserAttendance] = useState<{[key: string]: string}>({});
   const [selectedGroup, setSelectedGroup] = useState<{ id: string; name: string; view: 'discussions' | 'chat' } | null>(null);
+  const [newDiscussionTitle, setNewDiscussionTitle] = useState('');
+  const [newDiscussionContent, setNewDiscussionContent] = useState('');
+  const [showNewDiscussion, setShowNewDiscussion] = useState(false);
+
+  // Fetch events from database
+  useEffect(() => {
+    if (activeTab === 'events') {
+      fetchEvents();
+    }
+  }, [activeTab]);
+
+  // Fetch discussions from database
+  useEffect(() => {
+    if (activeTab === 'discussion') {
+      fetchDiscussions();
+    }
+  }, [activeTab]);
+
+  const fetchEvents = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .gte('event_date', new Date().toISOString())
+        .order('event_date', { ascending: true })
+        .limit(20);
+
+      if (error) throw error;
+      setEvents(data || []);
+      
+      // Fetch user attendance if logged in
+      if (user && data && data.length > 0) {
+        const eventIds = data.map(e => e.id);
+        const { data: attendanceData } = await supabase
+          .from('event_attendees')
+          .select('event_id, status')
+          .eq('user_id', user.id)
+          .in('event_id', eventIds);
+        
+        const attendanceMap: {[key: string]: string} = {};
+        attendanceData?.forEach(a => {
+          attendanceMap[a.event_id] = a.status;
+        });
+        setUserAttendance(attendanceMap);
+      }
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+
+  const fetchDiscussions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('community_discussions')
+        .select(`
+          *,
+          author:user_profiles(id, full_name, profile_photo)
+        `)
+        .order('is_pinned', { ascending: false })
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+      setDiscussions(data || []);
+    } catch (error) {
+      console.error('Error fetching discussions:', error);
+    }
+  };
+
+  const handleRSVP = async (eventId: string, status: 'attending' | 'not_attending') => {
+    if (!user) {
+      toast.error(t('community.networking.pleaseLogIn'));
+      return;
+    }
+
+    try {
+      const currentStatus = userAttendance[eventId];
+      
+      if (currentStatus) {
+        // Update existing attendance
+        if (currentStatus === status) {
+          // Remove attendance
+          await supabase
+            .from('event_attendees')
+            .delete()
+            .eq('event_id', eventId)
+            .eq('user_id', user.id);
+          
+          setUserAttendance(prev => {
+            const newState = { ...prev };
+            delete newState[eventId];
+            return newState;
+          });
+          toast.success(t('communityEvents.rsvpRemoved', 'RSVP removed'));
+        } else {
+          // Update status
+          await supabase
+            .from('event_attendees')
+            .update({ status })
+            .eq('event_id', eventId)
+            .eq('user_id', user.id);
+          
+          setUserAttendance(prev => ({ ...prev, [eventId]: status }));
+          toast.success(t('communityEvents.rsvpUpdated', 'RSVP updated'));
+        }
+      } else {
+        // Create new attendance
+        await supabase
+          .from('event_attendees')
+          .insert({ event_id: eventId, user_id: user.id, status });
+        
+        setUserAttendance(prev => ({ ...prev, [eventId]: status }));
+        toast.success(status === 'attending' 
+          ? t('communityEvents.attending', "You're attending!") 
+          : t('communityEvents.notAttending', 'Marked as not attending'));
+      }
+    } catch (error) {
+      console.error('Error updating RSVP:', error);
+      toast.error('Failed to update RSVP');
+    }
+  };
+
+  const createDiscussion = async () => {
+    if (!user) {
+      toast.error(t('community.networking.pleaseLogIn'));
+      return;
+    }
+
+    if (!newDiscussionTitle.trim()) {
+      toast.error('Please enter a title');
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('community_discussions')
+        .insert({
+          author_id: user.id,
+          title: newDiscussionTitle.trim(),
+          content: newDiscussionContent.trim() || null
+        });
+
+      if (error) throw error;
+      
+      toast.success('Discussion created!');
+      setNewDiscussionTitle('');
+      setNewDiscussionContent('');
+      setShowNewDiscussion(false);
+      fetchDiscussions();
+    } catch (error) {
+      console.error('Error creating discussion:', error);
+      toast.error('Failed to create discussion');
+    }
+  };
 
   // Fetch groups from database
   useEffect(() => {
@@ -268,11 +429,89 @@ const Community: React.FC = () => {
 
   const renderDiscussion = () => (
     <div className="space-y-6">
-      <div className="bg-card rounded-2xl shadow-sm p-6">
-        <h3 className="text-xl font-semibold mb-4 text-foreground">{t('community.discussion.title', 'Community Discussions')}</h3>
-        <p className="text-muted-foreground">
-          {t('community.discussion.subtitle', 'Join discussions about AI tools, share insights, and learn from the community.')}
-        </p>
+      <div className="flex justify-between items-center">
+        <h3 className="text-xl font-semibold text-foreground">{t('communityDiscussions.title', 'Community Discussions')}</h3>
+        <button 
+          onClick={() => setShowNewDiscussion(true)}
+          className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200"
+        >
+          <Plus className="h-4 w-4" />
+          <span>{t('communityDiscussions.startDiscussion', 'Start Discussion')}</span>
+        </button>
+      </div>
+
+      {showNewDiscussion && (
+        <div className="bg-card rounded-2xl shadow-sm p-6">
+          <input
+            type="text"
+            placeholder={t('communityDiscussions.titlePlaceholder', 'Discussion title...')}
+            value={newDiscussionTitle}
+            onChange={(e) => setNewDiscussionTitle(e.target.value)}
+            className="w-full px-4 py-3 border border-border rounded-xl bg-background text-foreground mb-3"
+          />
+          <textarea
+            placeholder={t('communityDiscussions.contentPlaceholder', 'Share your thoughts... (optional)')}
+            value={newDiscussionContent}
+            onChange={(e) => setNewDiscussionContent(e.target.value)}
+            rows={3}
+            className="w-full px-4 py-3 border border-border rounded-xl bg-background text-foreground mb-3 resize-none"
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={createDiscussion}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
+            >
+              {t('common.submit', 'Submit')}
+            </button>
+            <button
+              onClick={() => setShowNewDiscussion(false)}
+              className="px-4 py-2 border border-border rounded-lg hover:bg-muted"
+            >
+              {t('common.cancel', 'Cancel')}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-4">
+        {discussions.length === 0 ? (
+          <div className="bg-card rounded-2xl shadow-sm p-6 text-center">
+            <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">{t('communityDiscussions.noDiscussions', 'No discussions yet. Be the first to start one!')}</p>
+          </div>
+        ) : (
+          discussions.map((discussion) => (
+            <div key={discussion.id} className="bg-card rounded-2xl shadow-sm p-6">
+              <div className="flex items-start gap-3">
+                {discussion.author?.profile_photo ? (
+                  <img src={discussion.author.profile_photo} alt="" className="w-10 h-10 rounded-full object-cover" />
+                ) : (
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">
+                    {(discussion.author?.full_name || 'U').charAt(0)}
+                  </div>
+                )}
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    {discussion.is_pinned && <Pin className="h-4 w-4 text-primary" />}
+                    <h4 className="font-semibold text-foreground">{discussion.title}</h4>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {discussion.author?.full_name} • {format(new Date(discussion.created_at), 'MMM d, yyyy')}
+                  </p>
+                  {discussion.content && (
+                    <p className="text-muted-foreground line-clamp-2">{discussion.content}</p>
+                  )}
+                  <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <MessageSquare className="h-4 w-4" />
+                      {discussion.reply_count || 0} {t('communityDiscussions.replies', 'replies')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
@@ -292,45 +531,45 @@ const Community: React.FC = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {events.length === 0 ? (
-          <>
-            <div className="bg-card rounded-2xl shadow-sm p-6">
-              <div className="flex items-center space-x-2 mb-3">
-                <Calendar className="h-5 w-5 text-primary" />
-                <span className="text-sm text-muted-foreground">{t('community.events.sample.tomorrow')}</span>
-              </div>
-              <h4 className="font-semibold text-foreground mb-2">{t('community.events.sample.aiToolsShowcase')}</h4>
-              <p className="text-sm text-muted-foreground mb-4">
-                {t('community.events.sample.aiToolsShowcaseDesc')}
-              </p>
-              <button className="text-primary hover:underline text-sm">{t('community.events.joinEvent')} →</button>
-            </div>
-            
-            <div className="bg-card rounded-2xl shadow-sm p-6">
-              <div className="flex items-center space-x-2 mb-3">
-                <Calendar className="h-5 w-5 text-primary" />
-                <span className="text-sm text-muted-foreground">{t('community.events.sample.friday')}</span>
-              </div>
-              <h4 className="font-semibold text-foreground mb-2">{t('community.events.sample.networkingMixer')}</h4>
-              <p className="text-sm text-muted-foreground mb-4">
-                {t('community.events.sample.networkingMixerDesc')}
-              </p>
-              <button className="text-primary hover:underline text-sm">{t('community.events.rsvp')} →</button>
-            </div>
-          </>
+          <div className="col-span-full bg-card rounded-2xl shadow-sm p-6 text-center">
+            <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">{t('communityEvents.noEvents', 'No upcoming events. Create one!')}</p>
+          </div>
         ) : (
           events.map((event) => (
             <div key={event.id} className="bg-card rounded-2xl shadow-sm p-6">
+              {event.cover_image_url && (
+                <img src={event.cover_image_url} alt={event.title} className="w-full h-32 object-cover rounded-lg mb-4" />
+              )}
               <div className="flex items-center space-x-2 mb-3">
                 <Calendar className="h-5 w-5 text-primary" />
                 <span className="text-sm text-muted-foreground">
-                  {event.date} at {event.time}
+                  {format(new Date(event.event_date), 'MMM d, yyyy • h:mm a')}
                 </span>
               </div>
               <h4 className="font-semibold text-foreground mb-2">{event.title}</h4>
-              <p className="text-sm text-muted-foreground mb-4">
+              {event.location && (
+                <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
+                  <MapPin className="h-4 w-4" />
+                  {event.location}
+                </div>
+              )}
+              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                 {event.description}
               </p>
-              <button className="text-primary hover:underline text-sm">Join Event →</button>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => handleRSVP(event.id, 'attending')}
+                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
+                    userAttendance[event.id] === 'attending'
+                      ? 'bg-green-500 text-white'
+                      : 'bg-primary/10 text-primary hover:bg-primary/20'
+                  }`}
+                >
+                  <Check className="h-4 w-4" />
+                  {t('communityEvents.attending', 'Attending')}
+                </button>
+              </div>
             </div>
           ))
         )}

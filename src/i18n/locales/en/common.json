@@ -544,6 +544,11 @@
         "title": "AI Jobs",
         "desc": "See live openings from employers",
         "cta": "View Jobs"
+      },
+      "blog": {
+        "title": "AI Blog",
+        "desc": "Read insights, tutorials and news about AI",
+        "cta": "Read Articles"
       }
     },
     "stats": {

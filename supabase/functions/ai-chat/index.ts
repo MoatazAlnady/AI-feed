@@ -8,17 +8,30 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  const requestId = crypto.randomUUID();
+  const startTime = Date.now();
+  
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { messages, language = 'en', context = 'general' } = await req.json();
+    
+    console.log(`[ai-chat] Request started`, {
+      requestId,
+      timestamp: new Date().toISOString(),
+      language,
+      context,
+      messageCount: messages?.length || 0
+    });
+    
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
     
     if (!LOVABLE_API_KEY) {
+      console.error(`[ai-chat] Missing LOVABLE_API_KEY`, { requestId });
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
@@ -26,7 +39,7 @@ serve(async (req) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Fetch real platform data to provide context to AI
-    console.log('Fetching platform data for AI context...');
+    console.log(`[ai-chat] Fetching platform data`, { requestId });
     
     // Fetch ONLY public data - respecting privacy settings
     const [toolsResult, articlesResult, categoriesResult, topCreatorsResult] = await Promise.all([
@@ -133,7 +146,9 @@ ${dbContext}`;
     });
 
     if (!response.ok) {
+      const duration = Date.now() - startTime;
       if (response.status === 429) {
+        console.warn(`[ai-chat] Rate limit exceeded`, { requestId, duration: `${duration}ms` });
         return new Response(
           JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), 
           {
@@ -143,6 +158,7 @@ ${dbContext}`;
         );
       }
       if (response.status === 402) {
+        console.warn(`[ai-chat] Payment required`, { requestId, duration: `${duration}ms` });
         return new Response(
           JSON.stringify({ error: "Payment required. Please add credits to your workspace." }), 
           {
@@ -152,7 +168,7 @@ ${dbContext}`;
         );
       }
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
+      console.error(`[ai-chat] AI gateway error`, { requestId, status: response.status, error: errorText, duration: `${duration}ms` });
       return new Response(
         JSON.stringify({ error: "AI service error" }), 
         {
@@ -162,11 +178,15 @@ ${dbContext}`;
       );
     }
 
+    const duration = Date.now() - startTime;
+    console.log(`[ai-chat] Request completed successfully`, { requestId, duration: `${duration}ms`, context });
+
     return new Response(response.body, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {
-    console.error("Chat error:", e);
+    const duration = Date.now() - startTime;
+    console.error(`[ai-chat] Request failed`, { requestId, error: e instanceof Error ? e.message : "Unknown error", duration: `${duration}ms` });
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), 
       {
