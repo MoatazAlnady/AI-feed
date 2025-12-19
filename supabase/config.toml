@@ -35,3 +35,9 @@ verify_jwt = true
 
 [functions.customer-portal]
 verify_jwt = true
+
+[functions.create-promotion-checkout]
+verify_jwt = true
+
+[functions.verify-promotion]
+verify_jwt = true

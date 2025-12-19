@@ -389,30 +389,76 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!user) {
+      toast({
+        title: 'Authentication Required',
+        description: 'Please log in to create a promotion campaign.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
-    const promotionData = {
-      contentType,
-      contentId,
-      contentTitle,
-      ...formData,
-      estimatedReach: calculateEstimatedReach(),
-      targetingMode,
-      aiPrompt: targetingMode === 'ai' ? aiPrompt : null,
-      createdBy: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Anonymous',
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const targetingData = {
+        targetAudience: formData.targetAudience,
+        ageRange: { from: parseInt(formData.ageFrom), to: parseInt(formData.ageTo) },
+        countries: formData.selectedCountries,
+        cities: formData.selectedCities,
+        interests: formData.interests,
+        gender: formData.gender,
+        devices: formData.devices,
+        languages: formData.languages,
+        industries: formData.industries,
+        schedule: formData.scheduleEnabled ? {
+          startTime: formData.scheduleStartTime,
+          endTime: formData.scheduleEndTime,
+          days: formData.scheduleDays
+        } : null,
+        estimatedReach: calculateEstimatedReach(),
+        targetingMode,
+        aiPrompt: targetingMode === 'ai' ? aiPrompt : null
+      };
 
-    console.log('Creating promotion campaign:', promotionData);
+      console.log('Creating promotion checkout:', { contentType, contentId, contentTitle, ...formData });
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+      const { data, error } = await supabase.functions.invoke('create-promotion-checkout', {
+        body: {
+          contentType,
+          contentId: String(contentId),
+          contentTitle,
+          budget: formData.budget,
+          duration: formData.duration,
+          objective: formData.objective,
+          targetingData
+        }
+      });
 
-    setIsSubmitting(false);
-    onClose();
-    
-    // Show success message
-    alert(`Promotion campaign created successfully! Your ${contentType} will be promoted to an estimated ${calculateEstimatedReach().toLocaleString()} users.`);
+      if (error) throw error;
+
+      if (data?.url) {
+        // Open Stripe checkout in new tab
+        window.open(data.url, '_blank');
+        onClose();
+        toast({
+          title: 'Redirecting to Payment',
+          description: 'Complete your payment to activate the promotion.',
+        });
+      } else {
+        throw new Error('No checkout URL received');
+      }
+    } catch (error) {
+      console.error('Error creating promotion checkout:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to create promotion. Please try again.',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;

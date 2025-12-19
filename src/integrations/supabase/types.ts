@@ -2475,6 +2475,69 @@ export type Database = {
           },
         ]
       }
+      promotions: {
+        Row: {
+          budget: number
+          clicks: number | null
+          content_id: string
+          content_title: string
+          content_type: string
+          created_at: string
+          duration: number
+          end_date: string | null
+          id: string
+          impressions: number | null
+          objective: string
+          start_date: string | null
+          status: string
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          targeting_data: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          budget: number
+          clicks?: number | null
+          content_id: string
+          content_title: string
+          content_type: string
+          created_at?: string
+          duration: number
+          end_date?: string | null
+          id?: string
+          impressions?: number | null
+          objective: string
+          start_date?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          targeting_data?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          budget?: number
+          clicks?: number | null
+          content_id?: string
+          content_title?: string
+          content_type?: string
+          created_at?: string
+          duration?: number
+          end_date?: string | null
+          id?: string
+          impressions?: number | null
+          objective?: string
+          start_date?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          targeting_data?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       reports: {
         Row: {
           admin_notes: string | null
