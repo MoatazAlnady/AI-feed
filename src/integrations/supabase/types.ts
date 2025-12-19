@@ -1715,7 +1715,9 @@ export type Database = {
           created_at: string | null
           id: string
           likes: number | null
+          parent_comment_id: string | null
           post_id: string
+          shared_post_id: string | null
           updated_at: string | null
           user_id: string
         }
@@ -1724,7 +1726,9 @@ export type Database = {
           created_at?: string | null
           id?: string
           likes?: number | null
+          parent_comment_id?: string | null
           post_id: string
+          shared_post_id?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -1733,16 +1737,32 @@ export type Database = {
           created_at?: string | null
           id?: string
           likes?: number | null
+          parent_comment_id?: string | null
           post_id?: string
+          shared_post_id?: string | null
           updated_at?: string | null
           user_id?: string
         }
         Relationships: [
           {
+            foreignKeyName: "post_comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "post_comments"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "post_comments_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_comments_shared_post_id_fkey"
+            columns: ["shared_post_id"]
+            isOneToOne: false
+            referencedRelation: "shared_posts"
             referencedColumns: ["id"]
           },
         ]
