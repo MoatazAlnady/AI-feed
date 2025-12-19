@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Heart, MessageCircle, Share2, MoreHorizontal, User, Send } from 'lucide-react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { ArrowLeft, Heart, MessageCircle, Share2, MoreHorizontal, User, Send, Edit3, Trash2, Check, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../integrations/supabase/client';
 import { toast } from 'sonner';
 import SharePostModal from '../components/SharePostModal';
 import LoadingSpinner from '../components/LoadingSpinner';
+import CommentReactions from '../components/CommentReactions';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { getCreatorProfileLink } from '@/utils/profileUtils';
 
 interface Author {
   name: string;
@@ -26,6 +29,10 @@ interface Comment {
   user_id: string;
   user_name: string;
   user_avatar?: string;
+  user_handle?: string;
+  canEdit: boolean;
+  reactions: { [key: string]: { count: number; users: string[] } };
+  userReaction?: string;
 }
 
 interface Post {
@@ -57,6 +64,9 @@ const PostDetails: React.FC = () => {
   const [newComment, setNewComment] = useState('');
   const [submittingComment, setSubmittingComment] = useState(false);
   const [likingPost, setLikingPost] = useState(false);
+  const [commentSort, setCommentSort] = useState<'relevant' | 'recent'>('recent');
+  const [editingComment, setEditingComment] = useState<string | null>(null);
+  const [editCommentContent, setEditCommentContent] = useState('');
 
   useEffect(() => {
     if (id) {
@@ -171,15 +181,40 @@ const PostDetails: React.FC = () => {
         const userIds = [...new Set(commentsData.map(c => c.user_id))];
         const { data: profiles } = await supabase.rpc('get_public_profiles_by_ids', { ids: userIds });
 
+        // Fetch comment reactions
+        const commentIds = commentsData.map(c => c.id);
+        const { data: reactionsData } = await supabase
+          .from('comment_reactions')
+          .select('*')
+          .in('comment_id', commentIds);
+
         const formattedComments: Comment[] = commentsData.map(comment => {
           const profile = profiles?.find((p: any) => p.id === comment.user_id);
+          
+          // Group reactions by type
+          const commentReactions = reactionsData?.filter(r => r.comment_id === comment.id) || [];
+          const reactions: { [key: string]: { count: number; users: string[] } } = {};
+          commentReactions.forEach(r => {
+            if (!reactions[r.reaction_type]) {
+              reactions[r.reaction_type] = { count: 0, users: [] };
+            }
+            reactions[r.reaction_type].count++;
+            reactions[r.reaction_type].users.push(r.user_id);
+          });
+
+          const userReaction = user ? commentReactions.find(r => r.user_id === user.id)?.reaction_type : undefined;
+
           return {
             id: comment.id,
             content: comment.content,
             created_at: comment.created_at,
             user_id: comment.user_id,
             user_name: profile?.full_name || 'Anonymous',
-            user_avatar: profile?.profile_photo
+            user_avatar: profile?.profile_photo,
+            user_handle: profile?.handle,
+            canEdit: user?.id === comment.user_id,
+            reactions,
+            userReaction
           };
         });
 
@@ -263,7 +298,11 @@ const PostDetails: React.FC = () => {
         created_at: commentData.created_at,
         user_id: commentData.user_id,
         user_name: profile?.full_name || 'You',
-        user_avatar: profile?.profile_photo
+        user_avatar: profile?.profile_photo,
+        user_handle: profile?.handle,
+        canEdit: true,
+        reactions: {},
+        userReaction: undefined
       };
 
       setComments(prev => [...prev, newCommentObj]);
@@ -275,6 +314,99 @@ const PostDetails: React.FC = () => {
     } finally {
       setSubmittingComment(false);
     }
+  };
+
+  const handleEditComment = (commentId: string, content: string) => {
+    setEditingComment(commentId);
+    setEditCommentContent(content);
+  };
+
+  const handleSaveCommentEdit = async (commentId: string) => {
+    try {
+      const { error } = await supabase
+        .from('post_comments')
+        .update({ content: editCommentContent, updated_at: new Date().toISOString() })
+        .eq('id', commentId);
+
+      if (error) throw error;
+
+      setComments(prev => prev.map(c => 
+        c.id === commentId ? { ...c, content: editCommentContent } : c
+      ));
+      setEditingComment(null);
+      setEditCommentContent('');
+      toast.success('Comment updated!');
+    } catch (error) {
+      console.error('Error updating comment:', error);
+      toast.error(t('common.error'));
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      const { error } = await supabase
+        .from('post_comments')
+        .delete()
+        .eq('id', commentId);
+
+      if (error) throw error;
+
+      setComments(prev => prev.filter(c => c.id !== commentId));
+      toast.success('Comment deleted!');
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      toast.error(t('common.error'));
+    }
+  };
+
+  const handleCommentReaction = async (commentId: string, reactionType: string) => {
+    if (!user) return;
+
+    try {
+      const { data: existingReaction, error: fetchError } = await supabase
+        .from('comment_reactions')
+        .select('*')
+        .eq('comment_id', commentId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        console.error('Error fetching existing reaction:', fetchError);
+        return;
+      }
+
+      if (existingReaction) {
+        if (existingReaction.reaction_type === reactionType) {
+          await supabase.from('comment_reactions').delete().eq('id', existingReaction.id);
+        } else {
+          await supabase.from('comment_reactions').update({ reaction_type: reactionType }).eq('id', existingReaction.id);
+        }
+      } else {
+        await supabase.from('comment_reactions').insert({
+          comment_id: commentId,
+          user_id: user.id,
+          reaction_type: reactionType
+        });
+      }
+
+      // Refresh comments
+      fetchComments();
+    } catch (error) {
+      console.error('Error handling comment reaction:', error);
+    }
+  };
+
+  const getSortedComments = () => {
+    if (commentSort === 'relevant') {
+      return [...comments].sort((a, b) => {
+        const aReactions = Object.values(a.reactions || {}).reduce((sum, r) => sum + r.count, 0);
+        const bReactions = Object.values(b.reactions || {}).reduce((sum, r) => sum + r.count, 0);
+        return bReactions - aReactions;
+      });
+    }
+    return [...comments].sort((a, b) => 
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
   };
 
   const handleShare = () => {
@@ -445,9 +577,21 @@ const PostDetails: React.FC = () => {
 
         {/* Comments Section */}
         <div className="mt-6 bg-card rounded-2xl shadow-sm border border-border p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">
-            {t('post.comments')} ({comments.length})
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-foreground">
+              {t('post.comments')} ({comments.length})
+            </h3>
+            {comments.length > 1 && (
+              <select
+                value={commentSort}
+                onChange={(e) => setCommentSort(e.target.value as 'relevant' | 'recent')}
+                className="text-sm border border-border rounded-lg px-2 py-1 bg-background text-foreground"
+              >
+                <option value="recent">Most Recent</option>
+                <option value="relevant">Most Relevant</option>
+              </select>
+            )}
+          </div>
 
           {/* Comment Input */}
           {user ? (
@@ -478,21 +622,68 @@ const PostDetails: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {comments.map((comment) => (
+              {getSortedComments().map((comment) => (
                 <div key={comment.id} className="flex gap-3 p-3 bg-muted/50 rounded-lg">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                    {comment.user_avatar ? (
-                      <img src={comment.user_avatar} alt="" className="w-8 h-8 rounded-full object-cover" />
-                    ) : (
-                      <User className="h-4 w-4 text-primary" />
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm">{comment.user_name}</span>
-                      <span className="text-xs text-muted-foreground">{formatDate(comment.created_at)}</span>
+                  <Link to={getCreatorProfileLink({ id: comment.user_id, handle: comment.user_handle })}>
+                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 cursor-pointer hover:opacity-80">
+                      {comment.user_avatar ? (
+                        <img src={comment.user_avatar} alt="" className="w-8 h-8 rounded-full object-cover" />
+                      ) : (
+                        <User className="h-4 w-4 text-primary" />
+                      )}
                     </div>
-                    <p className="text-sm text-foreground mt-1">{comment.content}</p>
+                  </Link>
+                  <div className="flex-1">
+                    {editingComment === comment.id ? (
+                      <div>
+                        <input
+                          type="text"
+                          value={editCommentContent}
+                          onChange={(e) => setEditCommentContent(e.target.value)}
+                          className="w-full px-2 py-1 border border-border rounded bg-background text-sm"
+                          autoFocus
+                        />
+                        <div className="flex items-center gap-2 mt-2">
+                          <button onClick={() => handleSaveCommentEdit(comment.id)} className="text-xs text-green-600 flex items-center">
+                            <Check className="h-3 w-3 mr-1" /> Save
+                          </button>
+                          <button onClick={() => setEditingComment(null)} className="text-xs text-muted-foreground flex items-center">
+                            <X className="h-3 w-3 mr-1" /> Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <Link to={getCreatorProfileLink({ id: comment.user_id, handle: comment.user_handle })} className="font-medium text-sm hover:underline">
+                              {comment.user_name}
+                            </Link>
+                            <span className="text-xs text-muted-foreground">{formatDate(comment.created_at)}</span>
+                          </div>
+                          {comment.canEdit && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <button className="p-1 hover:bg-muted rounded"><MoreHorizontal className="h-4 w-4 text-muted-foreground" /></button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleEditComment(comment.id, comment.content)}><Edit3 className="h-4 w-4 mr-2" /> Edit</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleDeleteComment(comment.id)} className="text-red-600"><Trash2 className="h-4 w-4 mr-2" /> Delete</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
+                        </div>
+                        <p className="text-sm text-foreground mt-1">{comment.content}</p>
+                        <div className="mt-2">
+                          <CommentReactions
+                            commentId={comment.id}
+                            reactions={comment.reactions || {}}
+                            userReaction={comment.userReaction}
+                            onReact={handleCommentReaction}
+                          />
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               ))}

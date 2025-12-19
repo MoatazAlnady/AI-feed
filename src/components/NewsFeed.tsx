@@ -25,6 +25,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Link } from 'react-router-dom';
 import PostReactions from './PostReactions';
+import CommentReactions from './CommentReactions';
 import PostOptionsMenu from './PostOptionsMenu';
 import SharePostModal from './SharePostModal';
 import LinkPreview from './LinkPreview';
@@ -60,14 +61,21 @@ interface Post {
 }
 
 interface Comment {
-  id: number;
+  id: string;
+  user_id: string;
   author: {
+    id: string;
     name: string;
     avatar: string;
+    handle?: string;
   };
   content: string;
   timestamp: string;
+  created_at: string;
   likes: number;
+  canEdit: boolean;
+  reactions: { [key: string]: { count: number; users: string[] } };
+  userReaction?: string;
 }
 
 const NewsFeed: React.FC = () => {
@@ -82,6 +90,9 @@ const NewsFeed: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [postReactions, setPostReactions] = useState<{ [key: string]: { [key: string]: { count: number; users: string[] } } }>({});
   const [userReactions, setUserReactions] = useState<{ [key: string]: string }>({});
+  const [commentSort, setCommentSort] = useState<{ [key: string]: 'relevant' | 'recent' }>({});
+  const [editingComment, setEditingComment] = useState<{ postId: string; commentId: string } | null>(null);
+  const [editCommentContent, setEditCommentContent] = useState('');
 
   // Get user interests for personalized feed
   const userInterests = user?.user_metadata?.interests || [];
@@ -465,28 +476,156 @@ const NewsFeed: React.FC = () => {
     }
   };
 
-  const handleComment = (postId: string) => {
+  const handleComment = async (postId: string) => {
     const commentText = newComment[postId];
-    if (!commentText?.trim()) return;
+    if (!commentText?.trim() || !user) return;
 
-    const newCommentObj: Comment = {
-      id: Date.now(),
-      author: {
-        name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Anonymous',
-        avatar: user?.user_metadata?.profile_photo || ''
-      },
-      content: commentText,
-      timestamp: 'Just now',
-      likes: 0
-    };
+    try {
+      const { data: commentData, error } = await supabase
+        .from('post_comments')
+        .insert({
+          post_id: postId,
+          user_id: user.id,
+          content: commentText.trim()
+        })
+        .select()
+        .single();
 
-    setPosts(posts.map(post => 
-      post.id === postId 
-        ? { ...post, comments: [...post.comments, newCommentObj] }
-        : post
-    ));
+      if (error) throw error;
 
-    setNewComment({ ...newComment, [postId]: '' });
+      // Get current user's profile
+      const { data: profiles } = await supabase.rpc('get_public_profiles_by_ids', { ids: [user.id] });
+      const profile = profiles?.[0];
+
+      const newCommentObj: Comment = {
+        id: commentData.id,
+        user_id: user.id,
+        author: {
+          id: user.id,
+          name: profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Anonymous',
+          avatar: profile?.profile_photo || user?.user_metadata?.profile_photo || '',
+          handle: profile?.handle
+        },
+        content: commentText,
+        timestamp: 'Just now',
+        created_at: commentData.created_at,
+        likes: 0,
+        canEdit: true,
+        reactions: {},
+        userReaction: undefined
+      };
+
+      setPosts(posts.map(post => 
+        post.id === postId 
+          ? { ...post, comments: [...post.comments, newCommentObj] }
+          : post
+      ));
+
+      setNewComment({ ...newComment, [postId]: '' });
+    } catch (error) {
+      console.error('Error posting comment:', error);
+    }
+  };
+
+  const handleEditComment = (postId: string, commentId: string, content: string) => {
+    setEditingComment({ postId, commentId });
+    setEditCommentContent(content);
+  };
+
+  const handleSaveCommentEdit = async (postId: string, commentId: string) => {
+    try {
+      const { error } = await supabase
+        .from('post_comments')
+        .update({ content: editCommentContent, updated_at: new Date().toISOString() })
+        .eq('id', commentId);
+
+      if (error) throw error;
+
+      setPosts(posts.map(post => 
+        post.id === postId 
+          ? { 
+              ...post, 
+              comments: post.comments.map(c => 
+                c.id === commentId ? { ...c, content: editCommentContent } : c
+              ) 
+            }
+          : post
+      ));
+      setEditingComment(null);
+      setEditCommentContent('');
+    } catch (error) {
+      console.error('Error updating comment:', error);
+    }
+  };
+
+  const handleDeleteComment = async (postId: string, commentId: string) => {
+    try {
+      const { error } = await supabase
+        .from('post_comments')
+        .delete()
+        .eq('id', commentId);
+
+      if (error) throw error;
+
+      setPosts(posts.map(post => 
+        post.id === postId 
+          ? { ...post, comments: post.comments.filter(c => c.id !== commentId) }
+          : post
+      ));
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+    }
+  };
+
+  const handleCommentReaction = async (commentId: string, reactionType: string) => {
+    if (!user) return;
+
+    try {
+      const { data: existingReaction, error: fetchError } = await supabase
+        .from('comment_reactions')
+        .select('*')
+        .eq('comment_id', commentId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        console.error('Error fetching existing reaction:', fetchError);
+        return;
+      }
+
+      if (existingReaction) {
+        if (existingReaction.reaction_type === reactionType) {
+          await supabase.from('comment_reactions').delete().eq('id', existingReaction.id);
+        } else {
+          await supabase.from('comment_reactions').update({ reaction_type: reactionType }).eq('id', existingReaction.id);
+        }
+      } else {
+        await supabase.from('comment_reactions').insert({
+          comment_id: commentId,
+          user_id: user.id,
+          reaction_type: reactionType
+        });
+      }
+
+      // Refresh comments to get updated reactions
+      fetchPosts();
+    } catch (error) {
+      console.error('Error handling comment reaction:', error);
+    }
+  };
+
+  const getSortedComments = (comments: Comment[], postId: string) => {
+    const sortBy = commentSort[postId] || 'recent';
+    if (sortBy === 'relevant') {
+      return [...comments].sort((a, b) => {
+        const aReactions = Object.values(a.reactions || {}).reduce((sum, r) => sum + r.count, 0);
+        const bReactions = Object.values(b.reactions || {}).reduce((sum, r) => sum + r.count, 0);
+        return bReactions - aReactions;
+      });
+    }
+    return [...comments].sort((a, b) => 
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
   };
 
   const toggleComments = (postId: string) => {
@@ -899,36 +1038,120 @@ const NewsFeed: React.FC = () => {
               {/* Comments Section */}
               {showComments[post.id] && (
                 <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                  {/* Comment Sorting */}
+                  {post.comments.length > 1 && (
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {post.comments.length} comments
+                      </span>
+                      <select
+                        value={commentSort[post.id] || 'recent'}
+                        onChange={(e) => setCommentSort({ ...commentSort, [post.id]: e.target.value as 'relevant' | 'recent' })}
+                        className="text-sm border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                      >
+                        <option value="recent">Most Recent</option>
+                        <option value="relevant">Most Relevant</option>
+                      </select>
+                    </div>
+                  )}
+
                   <div className="space-y-4 mb-4">
-                    {post.comments.map((comment) => (
+                    {getSortedComments(post.comments, post.id).map((comment) => (
                       <div key={comment.id} className="flex items-start space-x-3">
-                        <img
-                          src={comment.author.avatar}
-                          alt={comment.author.name}
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
+                        {/* Avatar with fallback */}
+                        {comment.author.avatar ? (
+                          <Link to={getCreatorProfileLink({ id: comment.author.id, handle: comment.author.handle })}>
+                            <img
+                              src={comment.author.avatar}
+                              alt={comment.author.name}
+                              className="w-8 h-8 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                            />
+                          </Link>
+                        ) : (
+                          <Link to={getCreatorProfileLink({ id: comment.author.id, handle: comment.author.handle })}>
+                            <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
+                              <User className="h-4 w-4 text-white" />
+                            </div>
+                          </Link>
+                        )}
                         <div className="flex-1">
-                          <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-3">
-                            <div className="flex items-center space-x-2 mb-1">
-                              <span className="font-medium text-sm text-gray-900 dark:text-white">
-                                {comment.author.name}
-                              </span>
-                              <span className="text-xs text-gray-500 dark:text-gray-400">
-                                {comment.timestamp}
-                              </span>
+                          {editingComment?.postId === post.id && editingComment?.commentId === comment.id ? (
+                            <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-3">
+                              <input
+                                type="text"
+                                value={editCommentContent}
+                                onChange={(e) => setEditCommentContent(e.target.value)}
+                                className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm"
+                                autoFocus
+                              />
+                              <div className="flex items-center space-x-2 mt-2">
+                                <button
+                                  onClick={() => handleSaveCommentEdit(post.id, comment.id)}
+                                  className="text-xs text-green-600 hover:text-green-700 flex items-center"
+                                >
+                                  <Check className="h-3 w-3 mr-1" /> Save
+                                </button>
+                                <button
+                                  onClick={() => setEditingComment(null)}
+                                  className="text-xs text-gray-500 hover:text-gray-700 flex items-center"
+                                >
+                                  <X className="h-3 w-3 mr-1" /> Cancel
+                                </button>
+                              </div>
                             </div>
-                            <div className="text-sm text-gray-800 dark:text-gray-200">
-                              {comment.content}
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-2 mt-1 ml-3">
-                            <button className="text-xs text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors">
-                              Like ({comment.likes})
-                            </button>
-                            <button className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
-                              Reply
-                            </button>
-                          </div>
+                          ) : (
+                            <>
+                              <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-3">
+                                <div className="flex items-center justify-between mb-1">
+                                  <div className="flex items-center space-x-2">
+                                    <Link 
+                                      to={getCreatorProfileLink({ id: comment.author.id, handle: comment.author.handle })}
+                                      className="font-medium text-sm text-gray-900 dark:text-white hover:underline"
+                                    >
+                                      {comment.author.name}
+                                    </Link>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                      {comment.timestamp}
+                                    </span>
+                                  </div>
+                                  {comment.canEdit && (
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <button className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded">
+                                          <MoreHorizontal className="h-4 w-4 text-gray-500" />
+                                        </button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="end">
+                                        <DropdownMenuItem onClick={() => handleEditComment(post.id, comment.id, comment.content)}>
+                                          <Edit3 className="h-4 w-4 mr-2" /> Edit
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem 
+                                          onClick={() => handleDeleteComment(post.id, comment.id)}
+                                          className="text-red-600"
+                                        >
+                                          <Trash2 className="h-4 w-4 mr-2" /> Delete
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  )}
+                                </div>
+                                <div className="text-sm text-gray-800 dark:text-gray-200">
+                                  {comment.content}
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-3 mt-1 ml-3">
+                                <CommentReactions
+                                  commentId={comment.id}
+                                  reactions={comment.reactions || {}}
+                                  userReaction={comment.userReaction}
+                                  onReact={handleCommentReaction}
+                                />
+                                <button className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+                                  Reply
+                                </button>
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
                     ))}
