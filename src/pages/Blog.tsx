@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import ChatDock from '@/components/ChatDock';
-import { Calendar, User, ArrowRight, Video, FileText, Edit } from 'lucide-react';
+import { Calendar, User, ArrowRight, Video, FileText, Edit, Star, Flag } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import ProfileHoverCard from '@/components/ProfileHoverCard';
+import ReportContentModal from '@/components/ReportContentModal';
 
 interface Article {
   id: string;
@@ -18,12 +19,16 @@ interface Article {
   featured_image_url: string | null;
   views: number | null;
   user_id: string | null;
+  average_rating?: number;
+  review_count?: number;
 }
 
 const Blog: React.FC = () => {
   const { t } = useTranslation();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [reportArticle, setReportArticle] = useState<{ id: string; title: string } | null>(null);
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -245,7 +250,21 @@ const Blog: React.FC = () => {
                           )}
                           <span>{formatDate(article.created_at)}</span>
                         </div>
-                        <span>{estimateReadTime(article.excerpt)}</span>
+                        <div className="flex items-center space-x-2">
+                          <span>{estimateReadTime(article.excerpt)}</span>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setReportArticle({ id: article.id, title: article.title });
+                              setReportModalOpen(true);
+                            }}
+                            className="p-1 hover:bg-destructive/10 rounded transition-colors"
+                            title="Report article"
+                          >
+                            <Flag className="h-3 w-3 text-muted-foreground hover:text-destructive" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </article>
@@ -267,6 +286,20 @@ const Blog: React.FC = () => {
 
       {/* Chat Dock */}
       <ChatDock />
+      
+      {/* Report Modal */}
+      {reportArticle && (
+        <ReportContentModal
+          isOpen={reportModalOpen}
+          onClose={() => {
+            setReportModalOpen(false);
+            setReportArticle(null);
+          }}
+          contentType="article"
+          contentId={reportArticle.id}
+          contentTitle={reportArticle.title}
+        />
+      )}
     </div>
   );
 };

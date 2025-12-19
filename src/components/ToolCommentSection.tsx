@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MessageCircle, User, Send, ThumbsUp, Flag, MoreHorizontal } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import VerificationBadge from './VerificationBadge';
+import ProfileHoverCard from './ProfileHoverCard';
 
 interface Comment {
   id: number;
@@ -258,23 +259,27 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
           {sortedComments.map((comment) => (
             <div key={comment.id} className="border border-gray-200 rounded-xl p-6">
               <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0">
-                  {comment.userPhoto ? (
-                    <img
-                      src={comment.userPhoto}
-                      alt={comment.userName}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
-                      <User className="h-5 w-5 text-white" />
-                    </div>
-                  )}
-                </div>
+                <ProfileHoverCard userId={comment.userId}>
+                  <div className="flex-shrink-0 cursor-pointer">
+                    {comment.userPhoto ? (
+                      <img
+                        src={comment.userPhoto}
+                        alt={comment.userName}
+                        className="w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-primary transition-all"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center hover:ring-2 hover:ring-primary transition-all">
+                        <User className="h-5 w-5 text-white" />
+                      </div>
+                    )}
+                  </div>
+                </ProfileHoverCard>
                 
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-1">
-                    <h4 className="font-semibold text-gray-900">{comment.userName}</h4>
+                    <ProfileHoverCard userId={comment.userId}>
+                      <h4 className="font-semibold text-gray-900 cursor-pointer hover:underline">{comment.userName}</h4>
+                    </ProfileHoverCard>
                     {comment.userVerified && (
                       <VerificationBadge 
                         type={comment.userTopVoice ? 'both' : 'verified'} 
@@ -348,23 +353,27 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
                     <div className="mt-4 pl-6 border-l-2 border-gray-200 space-y-4">
                       {comment.replies.map((reply) => (
                         <div key={reply.id} className="flex items-start space-x-3">
-                          <div className="flex-shrink-0">
-                            {reply.userPhoto ? (
-                              <img
-                                src={reply.userPhoto}
-                                alt={reply.userName}
-                                className="w-8 h-8 rounded-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
-                                <User className="h-4 w-4 text-white" />
-                              </div>
-                            )}
-                          </div>
+                          <ProfileHoverCard userId={reply.userId}>
+                            <div className="flex-shrink-0 cursor-pointer">
+                              {reply.userPhoto ? (
+                                <img
+                                  src={reply.userPhoto}
+                                  alt={reply.userName}
+                                  className="w-8 h-8 rounded-full object-cover hover:ring-2 hover:ring-primary transition-all"
+                                />
+                              ) : (
+                                <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center hover:ring-2 hover:ring-primary transition-all">
+                                  <User className="h-4 w-4 text-white" />
+                                </div>
+                              )}
+                            </div>
+                          </ProfileHoverCard>
                           
                           <div className="flex-1">
                             <div className="flex items-center space-x-2 mb-1">
-                              <h5 className="font-medium text-gray-900 text-sm">{reply.userName}</h5>
+                              <ProfileHoverCard userId={reply.userId}>
+                                <h5 className="font-medium text-gray-900 text-sm cursor-pointer hover:underline">{reply.userName}</h5>
+                              </ProfileHoverCard>
                               {reply.userVerified && (
                                 <VerificationBadge type="verified" size="sm" />
                               )}

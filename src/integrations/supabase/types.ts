@@ -1456,6 +1456,7 @@ export type Database = {
           email: string
           frequency: string
           id: string
+          unsubscribe_token: string | null
           user_id: string | null
         }
         Insert: {
@@ -1463,6 +1464,7 @@ export type Database = {
           email: string
           frequency: string
           id?: string
+          unsubscribe_token?: string | null
           user_id?: string | null
         }
         Update: {
@@ -1470,6 +1472,7 @@ export type Database = {
           email?: string
           frequency?: string
           id?: string
+          unsubscribe_token?: string | null
           user_id?: string | null
         }
         Relationships: []
