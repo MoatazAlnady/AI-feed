@@ -199,6 +199,13 @@ export type Database = {
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "articles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       candidate_tags: {
@@ -342,6 +349,13 @@ export type Database = {
             columns: ["author_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_discussions_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -513,6 +527,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "company_pages_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "company_pages_subscription_plan_id_fkey"
             columns: ["subscription_plan_id"]
             isOneToOne: false
@@ -612,6 +633,13 @@ export type Database = {
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "conversation_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       conversation_participants: {
@@ -674,10 +702,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "conversations_participant_1_id_fkey"
+            columns: ["participant_1_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "conversations_participant_2_id_fkey"
             columns: ["participant_2_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_participant_2_id_fkey"
+            columns: ["participant_2_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -755,6 +797,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "creator_earnings_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "creator_earnings_subscription_id_fkey"
             columns: ["subscription_id"]
             isOneToOne: false
@@ -797,10 +846,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "creator_newsletter_subscribers_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "creator_newsletter_subscribers_subscriber_id_fkey"
             columns: ["subscriber_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_newsletter_subscribers_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -853,6 +916,13 @@ export type Database = {
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "creator_newsletters_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       creator_subscription_tiers: {
@@ -901,6 +971,13 @@ export type Database = {
             columns: ["creator_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_subscription_tiers_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -957,10 +1034,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "creator_subscriptions_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "creator_subscriptions_subscriber_id_fkey"
             columns: ["subscriber_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_subscriptions_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
             referencedColumns: ["id"]
           },
           {
@@ -1061,6 +1152,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employer_projects_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -1315,10 +1413,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "group_join_requests_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "group_join_requests_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_join_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -1358,6 +1470,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -1440,6 +1559,13 @@ export type Database = {
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "group_notification_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       group_posts: {
@@ -1485,6 +1611,13 @@ export type Database = {
             columns: ["author_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
             referencedColumns: ["id"]
           },
           {
@@ -1650,6 +1783,13 @@ export type Database = {
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "jobs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       mentions: {
@@ -1726,10 +1866,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "messages_sender_id_fkey"
             columns: ["sender_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -1822,6 +1976,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "newsletter_content_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -2153,6 +2314,13 @@ export type Database = {
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "organization_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       organizations: {
@@ -2435,6 +2603,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "project_candidates_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "project_candidates_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -2471,6 +2646,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_tags_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -2842,10 +3024,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "support_tickets_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "support_tickets_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "support_tickets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -3029,10 +3225,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tool_edit_requests_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tool_edit_requests_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tool_edit_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -3161,6 +3371,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tools_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -3395,6 +3612,182 @@ export type Database = {
         }
         Relationships: []
       }
+      user_profiles_safe: {
+        Row: {
+          account_type: string | null
+          admin_access_level: string | null
+          age: number | null
+          ai_feed_top_voice: boolean | null
+          articles_written: number | null
+          avatar_url: string | null
+          banned_features: Json | null
+          bio: string | null
+          birth_date: string | null
+          city: string | null
+          company: string | null
+          company_page_id: string | null
+          company_text: string | null
+          contact_visible: boolean | null
+          country: string | null
+          cover_photo: string | null
+          created_at: string | null
+          default_post_groups: string[] | null
+          default_post_visibility: string | null
+          display_name: string | null
+          followers_count: number | null
+          following_count: number | null
+          full_name: string | null
+          gender: string | null
+          github: string | null
+          handle: string | null
+          headline: string | null
+          id: string | null
+          interests: string[] | null
+          is_banned: boolean | null
+          is_premium: boolean | null
+          job_title: string | null
+          languages: Json | null
+          linkedin: string | null
+          location: string | null
+          newsletter_frequency: string | null
+          newsletter_subscription: boolean | null
+          notification_preferences: Json | null
+          online_status_mode: string | null
+          organization_id: string | null
+          phone: string | null
+          phone_country_code: string | null
+          premium_until: string | null
+          profile_photo: string | null
+          role_id: number | null
+          tools_submitted: number | null
+          total_engagement: number | null
+          total_reach: number | null
+          twitter: string | null
+          updated_at: string | null
+          verified: boolean | null
+          visibility: string | null
+          website: string | null
+        }
+        Insert: {
+          account_type?: string | null
+          admin_access_level?: never
+          age?: never
+          ai_feed_top_voice?: boolean | null
+          articles_written?: number | null
+          avatar_url?: string | null
+          banned_features?: never
+          bio?: string | null
+          birth_date?: never
+          city?: string | null
+          company?: string | null
+          company_page_id?: string | null
+          company_text?: string | null
+          contact_visible?: boolean | null
+          country?: string | null
+          cover_photo?: string | null
+          created_at?: string | null
+          default_post_groups?: never
+          default_post_visibility?: never
+          display_name?: string | null
+          followers_count?: number | null
+          following_count?: number | null
+          full_name?: string | null
+          gender?: never
+          github?: string | null
+          handle?: string | null
+          headline?: string | null
+          id?: string | null
+          interests?: string[] | null
+          is_banned?: never
+          is_premium?: boolean | null
+          job_title?: string | null
+          languages?: never
+          linkedin?: string | null
+          location?: string | null
+          newsletter_frequency?: never
+          newsletter_subscription?: never
+          notification_preferences?: never
+          online_status_mode?: string | null
+          organization_id?: never
+          phone?: never
+          phone_country_code?: never
+          premium_until?: string | null
+          profile_photo?: string | null
+          role_id?: never
+          tools_submitted?: number | null
+          total_engagement?: number | null
+          total_reach?: number | null
+          twitter?: string | null
+          updated_at?: string | null
+          verified?: boolean | null
+          visibility?: string | null
+          website?: string | null
+        }
+        Update: {
+          account_type?: string | null
+          admin_access_level?: never
+          age?: never
+          ai_feed_top_voice?: boolean | null
+          articles_written?: number | null
+          avatar_url?: string | null
+          banned_features?: never
+          bio?: string | null
+          birth_date?: never
+          city?: string | null
+          company?: string | null
+          company_page_id?: string | null
+          company_text?: string | null
+          contact_visible?: boolean | null
+          country?: string | null
+          cover_photo?: string | null
+          created_at?: string | null
+          default_post_groups?: never
+          default_post_visibility?: never
+          display_name?: string | null
+          followers_count?: number | null
+          following_count?: number | null
+          full_name?: string | null
+          gender?: never
+          github?: string | null
+          handle?: string | null
+          headline?: string | null
+          id?: string | null
+          interests?: string[] | null
+          is_banned?: never
+          is_premium?: boolean | null
+          job_title?: string | null
+          languages?: never
+          linkedin?: string | null
+          location?: string | null
+          newsletter_frequency?: never
+          newsletter_subscription?: never
+          notification_preferences?: never
+          online_status_mode?: string | null
+          organization_id?: never
+          phone?: never
+          phone_country_code?: never
+          premium_until?: string | null
+          profile_photo?: string | null
+          role_id?: never
+          tools_submitted?: number | null
+          total_engagement?: number | null
+          total_reach?: number | null
+          twitter?: string | null
+          updated_at?: string | null
+          verified?: boolean | null
+          visibility?: string | null
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_profiles_company_page_id_fkey"
+            columns: ["company_page_id"]
+            isOneToOne: false
+            referencedRelation: "company_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       approve_pending_tool: {
@@ -3406,7 +3799,7 @@ export type Database = {
         Returns: undefined
       }
       are_users_connected: {
-        Args: { user1_id: string; user2_id: string }
+        Args: { user_a: string; user_b: string }
         Returns: boolean
       }
       backfill_user_handles: { Args: never; Returns: undefined }
