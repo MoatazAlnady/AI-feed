@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import SharePostModal from '../components/SharePostModal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import CommentReactions from '../components/CommentReactions';
+import ProfileHoverCard from '../components/ProfileHoverCard';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -464,24 +465,28 @@ const PostDetails: React.FC = () => {
 
         {/* Post Card */}
         <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
-          {/* Author Info */}
+          {/* Author Info with ProfileHoverCard */}
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
-                {post.author.avatar ? (
-                  <img 
-                    src={post.author.avatar} 
-                    alt={post.author.name}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                ) : (
-                  <User className="h-6 w-6 text-primary-foreground" />
-                )}
-              </div>
+              <ProfileHoverCard userId={post.user_id}>
+                <Link to={getCreatorProfileLink({ id: post.user_id, handle: post.author.handle })} className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center hover:ring-2 hover:ring-primary transition-all">
+                  {post.author.avatar ? (
+                    <img 
+                      src={post.author.avatar} 
+                      alt={post.author.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  ) : (
+                    <User className="h-6 w-6 text-primary-foreground" />
+                  )}
+                </Link>
+              </ProfileHoverCard>
               <div>
-                <h3 className="font-semibold text-foreground">
-                  {post.author.name}
-                </h3>
+                <ProfileHoverCard userId={post.user_id}>
+                  <Link to={getCreatorProfileLink({ id: post.user_id, handle: post.author.handle })} className="font-semibold text-foreground hover:underline">
+                    {post.author.name}
+                  </Link>
+                </ProfileHoverCard>
                 <p className="text-sm text-muted-foreground">
                   {post.author.title} • {formatDate(post.created_at)}
                 </p>
