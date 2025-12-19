@@ -150,6 +150,7 @@
       "createGroups": "Create and manage groups",
       "createEvents": "Host your own events",
       "submitTools": "Submit AI tools to directory",
+      "promoteContent": "Promote content with AI targeting",
       "premiumBadge": "Premium profile badge",
       "advancedAnalytics": "Advanced analytics dashboard"
     }
@@ -201,6 +202,11 @@
         "title": "Submit Tools",
         "free": "Not available",
         "premium": "Unlimited"
+      },
+      "promoteContent": {
+        "title": "Content Promotion",
+        "free": "Not available",
+        "premium": "AI-powered targeting"
       },
       "premiumBadge": {
         "title": "Premium Badge",
@@ -1640,6 +1646,16 @@
       "groups": "Group",
       "events": "Event",
       "jobs": "Job"
+    }
+  },
+  "promotion": {
+    "contentPromotion": "Content Promotion",
+    "premiumRequired": "Content promotion is a premium feature",
+    "targeting": {
+      "device": "Device Targeting",
+      "language": "Language Targeting",
+      "schedule": "Schedule Promotion",
+      "industry": "Industry Targeting"
     }
   }
 }
