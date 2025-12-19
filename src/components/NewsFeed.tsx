@@ -485,8 +485,12 @@ const NewsFeed: React.FC = () => {
     }
   };
 
+  // Helper to get unique key for comment state (separates reshared posts)
+  const getCommentKey = (postId: string, sharedPostId?: string) => sharedPostId || postId;
+
   const handleComment = async (postId: string, sharedPostId?: string, parentCommentId?: string) => {
-    const commentText = parentCommentId ? replyContent : newComment[postId];
+    const commentKey = getCommentKey(postId, sharedPostId);
+    const commentText = parentCommentId ? replyContent : newComment[commentKey];
     if (!commentText?.trim() || !user) return;
 
     try {
@@ -560,7 +564,7 @@ const NewsFeed: React.FC = () => {
             ? { ...post, comments: [...post.comments, newCommentObj] }
             : post
         ));
-        setNewComment({ ...newComment, [postId]: '' });
+        setNewComment({ ...newComment, [commentKey]: '' });
       }
     } catch (error) {
       console.error('Error posting comment:', error);
@@ -1348,13 +1352,13 @@ const NewsFeed: React.FC = () => {
                     </div>
                     <div className="flex-1 flex space-x-2">
                       <MentionInput
-                        value={newComment[post.id] || ''}
-                        onChange={(value) => setNewComment({ ...newComment, [post.id]: value })}
+                        value={newComment[getCommentKey(post.id, post.sharedPostId)] || ''}
+                        onChange={(value) => setNewComment({ ...newComment, [getCommentKey(post.id, post.sharedPostId)]: value })}
                         placeholder="Write a comment... Use @ to mention"
                         className="flex-1 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                         contentType="comment"
-                        contentId={post.id}
-                        rows={1}
+                        contentId={post.sharedPostId || post.id}
+                        rows={2}
                         onKeyPress={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
