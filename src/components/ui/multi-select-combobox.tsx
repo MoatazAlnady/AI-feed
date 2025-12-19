@@ -56,11 +56,13 @@ export function MultiSelectCombobox({
   };
 
   const handleRemove = (value: string, e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     onChange(selected.filter((item) => item !== value));
   };
 
   const handleClearAll = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     onChange([]);
   };
@@ -101,6 +103,7 @@ export function MultiSelectCombobox({
                     <X
                       className="h-3 w-3 cursor-pointer hover:text-destructive"
                       onClick={(e) => handleRemove(selected[index], e)}
+                      onPointerDown={(e) => e.stopPropagation()}
                     />
                   </Badge>
                 ))}
@@ -117,6 +120,7 @@ export function MultiSelectCombobox({
               <X
                 className="h-4 w-4 shrink-0 opacity-50 hover:opacity-100 cursor-pointer"
                 onClick={handleClearAll}
+                onPointerDown={(e) => e.stopPropagation()}
               />
             )}
             <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
