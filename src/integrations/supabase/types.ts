@@ -917,6 +917,77 @@ export type Database = {
           },
         ]
       }
+      events: {
+        Row: {
+          category: string | null
+          company_page_id: string | null
+          cover_image_url: string | null
+          created_at: string | null
+          description: string | null
+          event_date: string
+          event_end_date: string | null
+          event_type: string | null
+          id: string
+          is_live_video: boolean | null
+          is_public: boolean | null
+          live_video_room_id: string | null
+          live_video_url: string | null
+          location: string | null
+          max_attendees: number | null
+          organizer_id: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          company_page_id?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          event_date: string
+          event_end_date?: string | null
+          event_type?: string | null
+          id?: string
+          is_live_video?: boolean | null
+          is_public?: boolean | null
+          live_video_room_id?: string | null
+          live_video_url?: string | null
+          location?: string | null
+          max_attendees?: number | null
+          organizer_id?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          company_page_id?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          event_date?: string
+          event_end_date?: string | null
+          event_type?: string | null
+          id?: string
+          is_live_video?: boolean | null
+          is_public?: boolean | null
+          live_video_room_id?: string | null
+          live_video_url?: string | null
+          location?: string | null
+          max_attendees?: number | null
+          organizer_id?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_company_page_id_fkey"
+            columns: ["company_page_id"]
+            isOneToOne: false
+            referencedRelation: "company_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       follows: {
         Row: {
           created_at: string

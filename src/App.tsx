@@ -27,6 +27,7 @@ import About from "./pages/About";
 import Categories from "./pages/Categories";
 import Community from "./pages/Community";
 import Blog from "./pages/Blog";
+import ArticleDetails from "./pages/ArticleDetails";
 import ToolDetails from "./pages/ToolDetails";
 import Profile from "./pages/Profile";
 import UserView from "./pages/UserView";
@@ -75,6 +76,7 @@ const App = () => (
                <Route path="posts/:id" element={<PostDetails />} />
                <Route path="create-post" element={<CreatePost />} />
              <Route path="articles/create" element={<SubmitArticle />} />
+              <Route path="articles/:id" element={<ArticleDetails />} />
               <Route path="categories" element={<Categories />} />
               <Route path="about" element={<About />} />
               <Route path="blog" element={<Blog />} />
