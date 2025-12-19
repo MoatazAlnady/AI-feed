@@ -80,7 +80,7 @@ const Tools: React.FC = () => {
   const fetchCreatorDetails = async (creatorId: string) => {
     try {
       const { data, error } = await supabase
-        .from('user_profiles')
+        .from('user_profiles_safe')
         .select('id, full_name')
         .eq('id', creatorId)
         .single();

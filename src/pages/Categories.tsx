@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ChatDock from '@/components/ChatDock';
+import SEOHead from '@/components/SEOHead';
 import { useTranslation } from 'react-i18next';
 import { 
   MessageSquare, Image, Video, Code, BarChart3, Music, FileText, 
@@ -116,6 +117,14 @@ const Categories: React.FC = () => {
   }
 
   return (
+    <>
+      <SEOHead
+        title="AI Tool Categories - Browse AI Tools by Category"
+        description="Explore AI tools organized by category. Find tools for writing, image generation, coding, productivity, data analysis, and more. Discover the perfect AI solution for your needs."
+        keywords="AI categories, AI tool types, AI writing tools, AI image generators, AI coding tools, AI productivity, AI categories list"
+        url="https://aifeed.app/categories"
+        type="website"
+      />
     <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -200,6 +209,7 @@ const Categories: React.FC = () => {
       {/* Chat Dock */}
       <ChatDock />
     </div>
+    </>
   );
 };
 
