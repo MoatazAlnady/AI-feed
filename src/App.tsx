@@ -36,6 +36,8 @@ import CreatorUnsubscribe from "./pages/CreatorUnsubscribe";
 import Settings from "./pages/Settings";
 import Jobs from "./pages/Jobs";
 import Upgrade from "./pages/Upgrade";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentCanceled from "./pages/PaymentCanceled";
 import ToolComparison from "./pages/ToolComparison";
 import AdminNewsletter from "./pages/AdminNewsletter";
 import Notifications from "./pages/Notifications";
@@ -99,6 +101,8 @@ const App = () => (
                
                <Route path="settings" element={<Settings />} />
                <Route path="upgrade" element={<Upgrade />} />
+               <Route path="payment-success" element={<PaymentSuccess />} />
+               <Route path="payment-canceled" element={<PaymentCanceled />} />
                <Route path="employer/onboarding" element={<EmployerOnboarding />} />
                <Route path="employer/upgrade" element={<EmployerUpgrade />} />
                <Route path="employer/*" element={<EmployerDashboard />} />
