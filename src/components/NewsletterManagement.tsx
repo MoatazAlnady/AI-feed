@@ -496,6 +496,86 @@ const NewsletterManagement: React.FC = () => {
     }
   };
 
+  const [isSending, setIsSending] = useState(false);
+
+  const sendNewsletter = async () => {
+    if (!currentIssue || recipientCount === 0) return;
+
+    setIsSending(true);
+    try {
+      // First save the issue
+      await saveIssue();
+
+      // Call the edge function to send the newsletter
+      const { error } = await supabase.functions.invoke('send-newsletter', {
+        body: { issueId: currentIssue.id }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Newsletter sent to ${recipientCount} recipients`
+      });
+
+      // Update issue status locally
+      setCurrentIssue(prev => prev ? { ...prev, status: 'sent' } : null);
+      
+      // Create a new draft issue for next time
+      createOrGetDraftIssue();
+    } catch (error) {
+      console.error('Error sending newsletter:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send newsletter",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const previewNewsletter = () => {
+    if (!currentIssue) return;
+    
+    // Open preview in new tab
+    const previewContent = `
+      <html>
+        <head>
+          <title>Newsletter Preview: ${currentIssue.title}</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+            .header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 40px 20px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { background: white; padding: 30px 20px; }
+            .item { background: #f9fafb; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+            .badge { display: inline-block; background: #e0e7ff; color: #4f46e5; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>${currentIssue.title}</h1>
+            <p>Preview Mode</p>
+          </div>
+          <div class="content">
+            ${currentIssue.intro_text ? `<p>${currentIssue.intro_text}</p>` : ''}
+            ${issueItems.map(item => `
+              <div class="item">
+                <span class="badge">${item.content_type}</span>
+                <h3>${item.title_snapshot}</h3>
+                <p>${item.blurb_snapshot}</p>
+              </div>
+            `).join('')}
+            ${currentIssue.outro_text ? `<p>${currentIssue.outro_text}</p>` : ''}
+          </div>
+        </body>
+      </html>
+    `;
+    
+    const blob = new Blob([previewContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  };
+
   const toggleSubscriberSelection = (subscriberId: string) => {
     const newSelection = new Set(selectedSubscribers);
     if (newSelection.has(subscriberId)) {
@@ -903,15 +983,26 @@ const NewsletterManagement: React.FC = () => {
                           </Button>
                           <Button
                             variant="outline"
+                            onClick={previewNewsletter}
                           >
                             <Eye className="h-4 w-4 mr-1" />
                             Preview
                           </Button>
                           <Button
-                            disabled={recipientCount === 0}
+                            disabled={recipientCount === 0 || isSending}
+                            onClick={sendNewsletter}
                           >
-                            <Send className="h-4 w-4 mr-1" />
-                            Send Now
+                            {isSending ? (
+                              <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-1" />
+                                Sending...
+                              </>
+                            ) : (
+                              <>
+                                <Send className="h-4 w-4 mr-1" />
+                                Send Now
+                              </>
+                            )}
                           </Button>
                           <Button
                             variant="outline"

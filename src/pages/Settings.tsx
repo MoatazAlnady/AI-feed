@@ -794,6 +794,7 @@ const Settings = () => {
           <MyReportsTab />
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 };
