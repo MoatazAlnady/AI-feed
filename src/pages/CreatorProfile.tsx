@@ -22,8 +22,10 @@ import {
   UserCheck,
   UserMinus,
   Users,
-  Check
+  Check,
+  Settings
 } from 'lucide-react';
+import UnsubscribeFromCreatorModal from '@/components/UnsubscribeFromCreatorModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -78,6 +80,8 @@ const CreatorProfile: React.FC = () => {
   const [followLoading, setFollowLoading] = useState(false);
   const [creatorTools, setCreatorTools] = useState<CreatorTool[]>([]);
   const [loadingTools, setLoadingTools] = useState(true);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [showUnsubscribeModal, setShowUnsubscribeModal] = useState(false);
 
   const identifier = handleOrId || id || handle || userId;
 
@@ -91,6 +95,7 @@ const CreatorProfile: React.FC = () => {
     if (user && profile) {
       checkConnectionStatus();
       checkFollowStatus();
+      checkSubscriptionStatus();
     }
     
     const handleConnectionRequestProcessed = () => {
@@ -104,6 +109,24 @@ const CreatorProfile: React.FC = () => {
       window.removeEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
     };
   }, [user, profile]);
+
+  const checkSubscriptionStatus = async () => {
+    if (!user || !profile) return;
+    
+    try {
+      const { data } = await supabase
+        .from('creator_subscriptions')
+        .select('id')
+        .eq('subscriber_id', user.id)
+        .eq('creator_id', profile.id)
+        .eq('status', 'active')
+        .maybeSingle();
+      
+      setIsSubscribed(!!data);
+    } catch (error) {
+      console.error('Error checking subscription status:', error);
+    }
+  };
 
   useEffect(() => {
     if (profile?.id) {
@@ -540,6 +563,17 @@ const CreatorProfile: React.FC = () => {
                         <MessageCircle className="h-4 w-4 mr-2" />
                         {t('creatorProfile.actions.message')}
                       </Button>
+                      
+                      {/* Manage Subscription Button - only for subscribers */}
+                      {isSubscribed && (
+                        <Button 
+                          variant="outline"
+                          onClick={() => setShowUnsubscribeModal(true)}
+                        >
+                          <Settings className="h-4 w-4 mr-2" />
+                          Manage Subscription
+                        </Button>
+                      )}
                     </>
                   )}
                   {isOwnProfile && (
@@ -768,6 +802,19 @@ const CreatorProfile: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      {/* Unsubscribe Modal */}
+      {profile && (
+        <UnsubscribeFromCreatorModal
+          isOpen={showUnsubscribeModal}
+          onClose={() => {
+            setShowUnsubscribeModal(false);
+            checkSubscriptionStatus();
+          }}
+          creatorId={profile.id}
+          creatorName={profile.full_name}
+        />
+      )}
     </div>
   );
 };

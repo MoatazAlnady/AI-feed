@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ExternalLink, Star, Users, TrendingUp, Bookmark } from 'lucide-react';
+import { ExternalLink, Star, Users, TrendingUp, Bookmark, Flag } from 'lucide-react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { ShareButton } from './ShareButton';
 import ToolActionButtons from './ToolActionButtons';
+import ReportContentModal from './ReportContentModal';
 
 interface ToolCardProps {
   tool: {
@@ -34,6 +35,7 @@ interface ToolCardProps {
 
 const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '', onDelete }) => {
   const { theme } = useTheme();
+  const [showReportModal, setShowReportModal] = useState(false);
 
   // Determine if logo should be inverted based on theme and logo type
   const shouldInvertLogo = () => {
@@ -267,10 +269,33 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '', onDelete }) =
                 onDelete={onDelete}
                 className="flex items-center space-x-1"
               />
+              
+              {/* Report Button */}
+              <button
+                onClick={() => setShowReportModal(true)}
+                className="p-1.5 rounded-md transition-all duration-200 border hover:bg-destructive/10"
+                style={{
+                  backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
+                  borderColor: theme === 'dark' ? '#334155' : '#d1d5db',
+                  color: theme === 'dark' ? '#f87171' : '#dc2626'
+                }}
+                title="Report this tool"
+              >
+                <Flag className="h-3 w-3" />
+              </button>
             </div>
           </div>
         </div>
       </div>
+      
+      {/* Report Modal */}
+      <ReportContentModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        contentType="tool"
+        contentId={tool.id}
+        contentTitle={tool.name}
+      />
     </div>
   );
 };

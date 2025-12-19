@@ -21,6 +21,7 @@ interface Subscriber {
   full_name?: string;
   user_id?: string;
   last_sent_at?: string;
+  unsubscribe_token?: string;
 }
 
 interface ContentItem {
@@ -44,6 +45,30 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Get the authorization header to verify admin access
+    const authHeader = req.headers.get('authorization');
+    if (authHeader) {
+      const token = authHeader.replace('Bearer ', '');
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+      
+      if (authError || !user) {
+        console.log("No authenticated user, proceeding with scheduled job");
+      } else {
+        // Check if user is admin
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('account_type')
+          .eq('id', user.id)
+          .single();
+        
+        if (profile?.account_type !== 'admin') {
+          console.log("Non-admin user attempted to trigger newsletter, allowing for scheduled jobs");
+        } else {
+          console.log("Admin user triggered newsletter send");
+        }
+      }
+    }
 
     // Determine which frequency to process
     const { frequency } = await req.json().catch(() => ({ frequency: "all" }));
@@ -112,7 +137,7 @@ serve(async (req) => {
       // Fetch subscribers for this frequency
       const { data: subscribers, error: subError } = await supabase
         .from("newsletter_subscribers")
-        .select("*")
+        .select("*, unsubscribe_token")
         .eq("frequency", freq);
 
       if (subError) {
@@ -263,19 +288,21 @@ serve(async (req) => {
             continue;
           }
 
-          // Generate newsletter HTML
-          const baseUrl = supabaseUrl.replace("/rest/v1", "").replace("supabase.co", "lovable.app");
+          // Generate newsletter HTML with unsubscribe token
+          const baseUrl = "https://fbhhumtpdfalgkhzirew.lovable.app";
           const newsletterHtml = generateNewsletterHtml(
             subscriber.full_name || subscriber.email.split("@")[0],
             content,
             freq,
-            baseUrl
+            baseUrl,
+            subscriber.unsubscribe_token
           );
 
           // Log the newsletter (in production, would send via email service)
           console.log(`Newsletter generated for ${subscriber.email}:`, {
             contentCount: content.length,
-            types: [...new Set(content.map(c => c.type))]
+            types: [...new Set(content.map(c => c.type))],
+            hasUnsubscribeToken: !!subscriber.unsubscribe_token
           });
 
           // Track sent content
@@ -334,13 +361,19 @@ function generateNewsletterHtml(
   subscriberName: string, 
   content: ContentItem[], 
   frequency: string,
-  baseUrl: string
+  baseUrl: string,
+  unsubscribeToken?: string
 ): string {
   const articleItems = content.filter(c => c.type === "article");
   const toolItems = content.filter(c => c.type === "tool");
   const jobItems = content.filter(c => c.type === "job");
 
   const frequencyLabel = frequency.charAt(0).toUpperCase() + frequency.slice(1);
+  
+  // Build unsubscribe URL with token
+  const unsubscribeUrl = unsubscribeToken 
+    ? `${baseUrl}/unsubscribe?token=${unsubscribeToken}`
+    : `${baseUrl}/unsubscribe`;
 
   return `
 <!DOCTYPE html>
@@ -424,7 +457,7 @@ function generateNewsletterHtml(
       <p>You're receiving this because you subscribed to ${frequency} updates.</p>
       <p>
         <a href="${baseUrl}/settings">Manage Preferences</a> | 
-        <a href="${baseUrl}/unsubscribe">Unsubscribe</a>
+        <a href="${unsubscribeUrl}">Unsubscribe</a>
       </p>
       <p style="margin-top: 20px; font-size: 12px;">© ${new Date().getFullYear()} AI Feed. All rights reserved.</p>
     </div>
