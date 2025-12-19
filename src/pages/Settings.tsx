@@ -10,11 +10,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Bell, User, Globe, Shield, Briefcase, MapPin, Phone, Link2, Calendar, Users, Circle, Building2 } from 'lucide-react';
+import { Bell, User, Globe, Shield, Briefcase, MapPin, Phone, Link2, Calendar, Users, Circle, Building2, Flag } from 'lucide-react';
 import NotificationSettings from '@/components/NotificationSettings';
 import SecuritySettings from '@/components/SecuritySettings';
 import InterestTagSelector from '@/components/InterestTagSelector';
 import CompanySelector from '@/components/CompanySelector';
+import MyReportsTab from '@/components/MyReportsTab';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 
@@ -233,22 +234,26 @@ const Settings = () => {
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="h-4 w-4" />
-            {t('settings.profile')}
+            <span className="hidden sm:inline">{t('settings.profile')}</span>
           </TabsTrigger>
           <TabsTrigger value="notifications" className="flex items-center gap-2">
             <Bell className="h-4 w-4" />
-            {t('settings.notifications')}
+            <span className="hidden sm:inline">{t('settings.notifications')}</span>
           </TabsTrigger>
           <TabsTrigger value="privacy" className="flex items-center gap-2">
             <Globe className="h-4 w-4" />
-            {t('settings.privacy')}
+            <span className="hidden sm:inline">{t('settings.privacy')}</span>
           </TabsTrigger>
           <TabsTrigger value="security" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
-            {t('settings.security')}
+            <span className="hidden sm:inline">{t('settings.security')}</span>
+          </TabsTrigger>
+          <TabsTrigger value="reports" className="flex items-center gap-2">
+            <Flag className="h-4 w-4" />
+            <span className="hidden sm:inline">{t('settings.myReports', 'My Reports')}</span>
           </TabsTrigger>
         </TabsList>
 
@@ -781,6 +786,11 @@ const Settings = () => {
         {/* Security Settings */}
         <TabsContent value="security">
           <SecuritySettings />
+        </TabsContent>
+
+        {/* My Reports */}
+        <TabsContent value="reports">
+          <MyReportsTab />
         </TabsContent>
       </Tabs>
     </div>
