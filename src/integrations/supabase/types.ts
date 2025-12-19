@@ -574,6 +574,263 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_earnings: {
+        Row: {
+          created_at: string
+          creator_id: string
+          currency: string
+          gross_amount: number
+          id: string
+          net_amount: number
+          period_end: string
+          period_start: string
+          platform_fee: number
+          status: string
+          subscription_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          currency?: string
+          gross_amount: number
+          id?: string
+          net_amount: number
+          period_end: string
+          period_start: string
+          platform_fee: number
+          status?: string
+          subscription_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          currency?: string
+          gross_amount?: number
+          id?: string
+          net_amount?: number
+          period_end?: string
+          period_start?: string
+          platform_fee?: number
+          status?: string
+          subscription_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_earnings_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_earnings_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "creator_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_newsletter_subscribers: {
+        Row: {
+          creator_id: string
+          id: string
+          subscribed_at: string
+          subscriber_id: string
+        }
+        Insert: {
+          creator_id: string
+          id?: string
+          subscribed_at?: string
+          subscriber_id: string
+        }
+        Update: {
+          creator_id?: string
+          id?: string
+          subscribed_at?: string
+          subscriber_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_newsletter_subscribers_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_newsletter_subscribers_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_newsletters: {
+        Row: {
+          content: string
+          created_at: string
+          creator_id: string
+          excerpt: string | null
+          id: string
+          recipient_count: number | null
+          scheduled_at: string | null
+          sent_at: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          creator_id: string
+          excerpt?: string | null
+          id?: string
+          recipient_count?: number | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          creator_id?: string
+          excerpt?: string | null
+          id?: string
+          recipient_count?: number | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_newsletters_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_subscription_tiers: {
+        Row: {
+          benefits: Json | null
+          created_at: string
+          creator_id: string
+          currency: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          platform_fee_percent: number
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          benefits?: Json | null
+          created_at?: string
+          creator_id: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          platform_fee_percent?: number
+          price?: number
+          updated_at?: string
+        }
+        Update: {
+          benefits?: Json | null
+          created_at?: string
+          creator_id?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          platform_fee_percent?: number
+          price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_subscription_tiers_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_subscriptions: {
+        Row: {
+          cancelled_at: string | null
+          created_at: string
+          creator_id: string
+          expires_at: string | null
+          id: string
+          started_at: string
+          status: string
+          stripe_subscription_id: string | null
+          subscriber_id: string
+          tier_id: string
+          updated_at: string
+        }
+        Insert: {
+          cancelled_at?: string | null
+          created_at?: string
+          creator_id: string
+          expires_at?: string | null
+          id?: string
+          started_at?: string
+          status?: string
+          stripe_subscription_id?: string | null
+          subscriber_id: string
+          tier_id: string
+          updated_at?: string
+        }
+        Update: {
+          cancelled_at?: string | null
+          created_at?: string
+          creator_id?: string
+          expires_at?: string | null
+          id?: string
+          started_at?: string
+          status?: string
+          stripe_subscription_id?: string | null
+          subscriber_id?: string
+          tier_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_subscriptions_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_subscriptions_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_subscriptions_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "creator_subscription_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employer_projects: {
         Row: {
           company_page_id: string | null
@@ -1754,6 +2011,63 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_tickets: {
+        Row: {
+          admin_notes: string | null
+          assigned_to: string | null
+          created_at: string
+          id: string
+          message: string
+          priority: string
+          resolved_at: string | null
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          assigned_to?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          priority?: string
+          resolved_at?: string | null
+          status?: string
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          assigned_to?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          priority?: string
+          resolved_at?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_tickets_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "support_tickets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
         ]

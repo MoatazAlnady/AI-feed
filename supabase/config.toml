@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions."chat-find-or-create-dm"]
 verify_jwt = true
+
+[functions.ai-targeting]
+verify_jwt = false

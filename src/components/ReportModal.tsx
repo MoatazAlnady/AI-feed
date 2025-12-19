@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { X, Flag, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
   targetId,
   targetTitle
 }) => {
+  const { user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [reason, setReason] = useState('');
@@ -57,10 +59,29 @@ const ReportModal: React.FC<ReportModalProps> = ({
       return;
     }
 
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to report content.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const { error } = await supabase
+        .from('reports')
+        .insert({
+          reporter_id: user.id,
+          content_type: type,
+          content_id: targetId,
+          reason: reason,
+          description: details || null,
+          status: 'pending'
+        });
+
+      if (error) throw error;
       
       toast({
         title: "Report Submitted",
@@ -70,10 +91,11 @@ const ReportModal: React.FC<ReportModalProps> = ({
       onClose();
       setReason('');
       setDetails('');
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error submitting report:', error);
       toast({
         title: "Error",
-        description: "Failed to submit report. Please try again.",
+        description: error.message || "Failed to submit report. Please try again.",
         variant: "destructive"
       });
     } finally {
