@@ -183,9 +183,13 @@ const EmployerDashboard = () => {
         </div>
       </div>
 
-      {/* Todo System */}
+      {/* Todo System with employer admin features */}
       <div className="bg-card p-6 rounded-xl shadow-sm">
-        <TodoSystem />
+        <TodoSystem 
+          companyPageId={companyPage?.id}
+          isEmployerAdmin={isCompanyAdmin}
+          viewMode={isCompanyAdmin ? 'employer-admin' : 'personal'}
+        />
       </div>
     </div>
   );
