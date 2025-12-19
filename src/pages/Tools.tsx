@@ -459,8 +459,6 @@ const Tools: React.FC = () => {
           contentTitle={selectedTool.name}
         />
       )}
-        />
-      )}
     </>
   );
 };
