@@ -17,6 +17,7 @@ interface MentionInputProps {
   onMention?: (entityId: string, entityName: string, entityType: string) => void;
   placeholder?: string;
   className?: string;
+  wrapperClassName?: string;
   contentType: 'comment' | 'post' | 'message' | 'article' | 'review';
   contentId: string;
   rows?: number;
@@ -30,6 +31,7 @@ const MentionInput: React.FC<MentionInputProps> = ({
   onMention,
   placeholder = "Type a message...",
   className = "",
+  wrapperClassName = "",
   contentType,
   contentId,
   rows = 3,
@@ -280,7 +282,7 @@ const MentionInput: React.FC<MentionInputProps> = ({
   }, []);
 
   return (
-    <div className="relative">
+    <div className={`relative ${wrapperClassName}`}>
       <textarea
         ref={inputRef}
         value={value}
