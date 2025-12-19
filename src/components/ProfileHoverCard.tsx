@@ -199,8 +199,13 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
     }
   };
 
+  // Don't show hover card for non-logged-in users
+  if (!user) {
+    return <>{children}</>;
+  }
+
   // Don't show hover card for own profile
-  if (userId === user?.id) {
+  if (userId === user.id) {
     return <>{children}</>;
   }
 
