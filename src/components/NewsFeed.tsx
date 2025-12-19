@@ -341,7 +341,7 @@ const NewsFeed: React.FC = () => {
           content: post.content,
           timestamp: new Date(post.created_at).toLocaleDateString(),
           likes: post.likes || 0,
-          comments: [],
+          comments: [] as Comment[],
           shares: post.shares || 0,
           share_count: post.share_count || 0,
           image: post.image_url,
@@ -375,10 +375,20 @@ const NewsFeed: React.FC = () => {
       });
 
       console.log('Formatted posts:', formattedPosts);
-      setPosts(formattedPosts);
+
+      // Fetch comments for each post
+      const postsWithComments = await Promise.all(
+        formattedPosts.map(async (post) => {
+          const extendedPost = post as Post & { sharedPostId?: string };
+          const comments = await fetchCommentsForPost(post.id, extendedPost.sharedPostId);
+          return { ...post, comments };
+        })
+      );
+
+      setPosts(postsWithComments);
 
       // Fetch reactions for all posts
-      formattedPosts.forEach(post => {
+      postsWithComments.forEach(post => {
         fetchPostReactions(post.id);
         // Check user's existing reactions
         if (user) {
@@ -390,6 +400,120 @@ const NewsFeed: React.FC = () => {
       setPosts([]);
     } finally {
       setIsRefreshing(false);
+    }
+  };
+
+  const fetchCommentsForPost = async (postId: string, sharedPostId?: string): Promise<Comment[]> => {
+    try {
+      // Query comments - for reshared posts, filter by shared_post_id; for original posts, filter by post_id with no shared_post_id
+      let query = supabase
+        .from('post_comments')
+        .select('*')
+        .eq('post_id', postId)
+        .is('parent_comment_id', null) // Only fetch top-level comments
+        .order('created_at', { ascending: true });
+
+      if (sharedPostId) {
+        query = query.eq('shared_post_id', sharedPostId);
+      } else {
+        query = query.is('shared_post_id', null);
+      }
+
+      const { data: commentsData, error } = await query;
+
+      if (error) {
+        console.error('Error fetching comments:', error);
+        return [];
+      }
+
+      if (!commentsData || commentsData.length === 0) {
+        return [];
+      }
+
+      // Fetch replies for each comment
+      const commentIds = commentsData.map(c => c.id);
+      const { data: repliesData } = await supabase
+        .from('post_comments')
+        .select('*')
+        .in('parent_comment_id', commentIds)
+        .order('created_at', { ascending: true });
+
+      // Fetch user profiles for all comment authors
+      const allUserIds = [...new Set([
+        ...commentsData.map(c => c.user_id),
+        ...(repliesData || []).map(r => r.user_id)
+      ])];
+
+      const { data: profiles } = await supabase.rpc('get_public_profiles_by_ids', { ids: allUserIds });
+      const profilesMap = new Map((profiles || []).map(p => [p.id, p]));
+
+      // Fetch reactions for all comments and replies
+      const allCommentIds = [...commentIds, ...(repliesData || []).map(r => r.id)];
+      const { data: reactionsData } = await supabase
+        .from('comment_reactions')
+        .select('*')
+        .in('comment_id', allCommentIds);
+
+      // Group reactions by comment_id
+      const reactionsMap = new Map<string, { [key: string]: { count: number; users: string[] } }>();
+      (reactionsData || []).forEach(reaction => {
+        if (!reactionsMap.has(reaction.comment_id)) {
+          reactionsMap.set(reaction.comment_id, {});
+        }
+        const commentReactions = reactionsMap.get(reaction.comment_id)!;
+        if (!commentReactions[reaction.reaction_type]) {
+          commentReactions[reaction.reaction_type] = { count: 0, users: [] };
+        }
+        commentReactions[reaction.reaction_type].count++;
+        commentReactions[reaction.reaction_type].users.push(reaction.user_id);
+      });
+
+      // Format replies
+      const formatComment = (comment: any): Comment => {
+        const profile = profilesMap.get(comment.user_id);
+        const reactions = reactionsMap.get(comment.id) || {};
+        const userReaction = user ? Object.entries(reactions).find(
+          ([_, r]) => r.users.includes(user.id)
+        )?.[0] : undefined;
+
+        return {
+          id: comment.id,
+          user_id: comment.user_id,
+          author: {
+            id: comment.user_id,
+            name: profile?.full_name || 'Anonymous',
+            avatar: profile?.profile_photo || '',
+            handle: profile?.handle
+          },
+          content: comment.content,
+          timestamp: new Date(comment.created_at).toLocaleDateString(),
+          created_at: comment.created_at,
+          likes: comment.likes || 0,
+          canEdit: user ? comment.user_id === user.id : false,
+          reactions,
+          userReaction,
+          parent_comment_id: comment.parent_comment_id
+        };
+      };
+
+      // Group replies by parent
+      const repliesByParent = new Map<string, Comment[]>();
+      (repliesData || []).forEach(reply => {
+        const parentId = reply.parent_comment_id;
+        if (!repliesByParent.has(parentId)) {
+          repliesByParent.set(parentId, []);
+        }
+        repliesByParent.get(parentId)!.push(formatComment(reply));
+      });
+
+      // Format top-level comments with their replies
+      return commentsData.map(comment => ({
+        ...formatComment(comment),
+        replies: repliesByParent.get(comment.id) || []
+      }));
+    } catch (error) {
+      console.error('Error in fetchCommentsForPost:', error);
+      return [];
     }
   };
 
