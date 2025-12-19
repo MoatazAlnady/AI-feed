@@ -99,12 +99,26 @@
     "errorOccurred": "发生错误",
     "rateLimitExceeded": "超出速率限制，请稍后重试",
     "paymentRequired": "需要付费才能继续",
+    "promptsLeft": "剩余",
+    "limitReached": "已达到每日限制",
+    "limitReachedPlaceholder": "已达到每日限制...",
+    "freeUserLimit": "免费用户：每天1条消息",
+    "premiumUserLimit": "高级用户：每天10条消息",
+    "upgradePremiumMessage": "升级到高级版获取每天10条消息",
+    "comeBackTomorrow": "明天再来获取更多消息",
     "contextMode": {
       "creator": "创作者模式",
       "employer": "雇主模式",
       "toolDiscovery": "工具发现模式",
       "general": "一般帮助"
     }
+  },
+  "premium": {
+    "requiredTitle": "需要高级版",
+    "createGroupMessage": "创建群组是高级功能。升级到高级版以创建和管理您自己的群组。",
+    "createEventMessage": "创建活动是高级功能。升级到高级版以创建和举办您自己的活动。",
+    "upgradeToPremium": "升级到高级版",
+    "upgrade": "升级"
   },
   "auto": {
     "totalUsers": "总用户数",

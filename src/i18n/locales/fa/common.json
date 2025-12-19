@@ -99,12 +99,26 @@
     "errorOccurred": "خطایی رخ داد",
     "rateLimitExceeded": "محدودیت نرخ تجاوز شد، لطفاً بعداً دوباره امتحان کنید",
     "paymentRequired": "پرداخت برای ادامه لازم است",
+    "promptsLeft": "باقیمانده",
+    "limitReached": "محدودیت روزانه تمام شد",
+    "limitReachedPlaceholder": "محدودیت روزانه تمام شد...",
+    "freeUserLimit": "کاربران رایگان: ۱ پیام/روز",
+    "premiumUserLimit": "کاربران ویژه: ۱۰ پیام/روز",
+    "upgradePremiumMessage": "ارتقا به ویژه برای ۱۰ پیام/روز",
+    "comeBackTomorrow": "فردا برای پیام‌های بیشتر برگردید",
     "contextMode": {
       "creator": "حالت سازنده",
       "employer": "حالت کارفرما",
       "toolDiscovery": "حالت کشف ابزار",
       "general": "کمک عمومی"
     }
+  },
+  "premium": {
+    "requiredTitle": "اشتراک ویژه لازم است",
+    "createGroupMessage": "ایجاد گروه یک ویژگی ویژه است. برای ایجاد و مدیریت گروه‌های خود ارتقا دهید.",
+    "createEventMessage": "ایجاد رویداد یک ویژگی ویژه است. برای ایجاد و میزبانی رویدادهای خود ارتقا دهید.",
+    "upgradeToPremium": "ارتقا به ویژه",
+    "upgrade": "ارتقا"
   },
   "auto": {
     "totalUsers": "کل کاربران",
