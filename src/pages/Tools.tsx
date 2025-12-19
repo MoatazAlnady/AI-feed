@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Search, Filter, Grid, List, GitCompare, Star, Bookmark, Plus, TrendingUp, ArrowUpDown, Lock, Bot, Crown } from 'lucide-react';
+import { Search, Filter, Grid, List, GitCompare, Star, Bookmark, Plus, TrendingUp, ArrowUpDown, Lock, Bot, Crown, X } from 'lucide-react';
 import PremiumUpgradeModal from '../components/PremiumUpgradeModal';
 import ToolComparisonModal from '../components/ToolComparisonModal';
 import PromoteContentModal from '../components/PromoteContentModal';
@@ -41,6 +41,7 @@ const Tools: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -58,11 +59,46 @@ const Tools: React.FC = () => {
   // Sorting and filtering
   const [sortBy, setSortBy] = useState<'newest' | 'rating' | 'reviews' | 'name'>('newest');
   const [priceFilter, setPriceFilter] = useState<'all' | 'free' | 'freemium' | 'paid'>('all');
+  
+  // Creator filter
+  const [creatorFilter, setCreatorFilter] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     fetchToolsAndCategories();
     checkPremiumStatus();
   }, []);
+
+  // Handle creator filter from URL
+  useEffect(() => {
+    const creatorId = searchParams.get('creator');
+    if (creatorId && !creatorFilter) {
+      fetchCreatorDetails(creatorId);
+    }
+  }, [searchParams]);
+
+  const fetchCreatorDetails = async (creatorId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('id, full_name')
+        .eq('id', creatorId)
+        .single();
+      
+      if (!error && data) {
+        setCreatorFilter({ id: data.id, name: data.full_name || 'Creator' });
+      }
+    } catch (error) {
+      console.error('Error fetching creator details:', error);
+    }
+  };
+
+  const clearCreatorFilter = () => {
+    setCreatorFilter(null);
+    setSearchParams(prev => {
+      prev.delete('creator');
+      return prev;
+    });
+  };
 
   const checkPremiumStatus = async () => {
     if (!user) {
@@ -143,6 +179,8 @@ const Tools: React.FC = () => {
       
       const matchesCategory = selectedCategory === 'all' || tool.category_id === selectedCategory;
       
+      const matchesCreator = !creatorFilter || tool.user_id === creatorFilter.id;
+      
       let matchesPrice = true;
       if (priceFilter !== 'all') {
         const pricing = tool.pricing.toLowerCase();
@@ -155,7 +193,7 @@ const Tools: React.FC = () => {
         }
       }
       
-      return matchesSearch && matchesCategory && matchesPrice;
+      return matchesSearch && matchesCategory && matchesPrice && matchesCreator;
     });
 
     result.sort((a, b) => {
@@ -173,7 +211,7 @@ const Tools: React.FC = () => {
     });
 
     return result;
-  }, [tools, searchTerm, selectedCategory, sortBy, priceFilter]);
+  }, [tools, searchTerm, selectedCategory, sortBy, priceFilter, creatorFilter]);
 
   if (loading) {
     return (
@@ -289,6 +327,18 @@ const Tools: React.FC = () => {
               </Button>
             </div>
           </div>
+
+          {/* Creator filter badge */}
+          {creatorFilter && (
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary" className="flex items-center gap-1 px-3 py-1">
+                <span>Tools by: {creatorFilter.name}</span>
+                <button onClick={clearCreatorFilter} className="ml-1 hover:text-destructive">
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            </div>
+          )}
 
           {/* Results count */}
           <p className="text-sm text-muted-foreground mb-4">

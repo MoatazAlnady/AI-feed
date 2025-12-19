@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Target, DollarSign, Users, Calendar, TrendingUp, MapPin, Sparkles, Bot, ChevronDown, Check, ChevronsUpDown, Smartphone, Monitor, Tablet, Globe, Clock } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Target, DollarSign, Users, Calendar, TrendingUp, MapPin, Sparkles, Bot, ChevronDown, Check, ChevronsUpDown, Smartphone, Monitor, Tablet, Globe, Clock, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface PromoteContentModalProps {
   isOpen: boolean;
@@ -27,6 +28,8 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
   const { user } = useAuth();
   const { toast } = useToast();
   const [targetingMode, setTargetingMode] = useState<'manual' | 'ai'>('manual');
+  const [contentVisibility, setContentVisibility] = useState<string | null>(null);
+  const [isCheckingVisibility, setIsCheckingVisibility] = useState(false);
   const [formData, setFormData] = useState({
     budget: '50',
     duration: '7',
@@ -52,6 +55,61 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
   const [isGeneratingTargeting, setIsGeneratingTargeting] = useState(false);
   const [openCountriesDropdown, setOpenCountriesDropdown] = useState(false);
   const [openCitiesDropdown, setOpenCitiesDropdown] = useState(false);
+
+  // Check content visibility when modal opens
+  useEffect(() => {
+    if (isOpen && contentType === 'post') {
+      checkContentVisibility();
+    }
+  }, [isOpen, contentId, contentType]);
+
+  const checkContentVisibility = async () => {
+    setIsCheckingVisibility(true);
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('visibility')
+        .eq('id', String(contentId))
+        .single();
+      
+      if (!error && data) {
+        setContentVisibility(data.visibility || 'public');
+      } else {
+        setContentVisibility('public'); // Default to public for non-post content
+      }
+    } catch (error) {
+      console.error('Error checking content visibility:', error);
+      setContentVisibility('public');
+    } finally {
+      setIsCheckingVisibility(false);
+    }
+  };
+
+  const makeContentPublic = async () => {
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .update({ visibility: 'public' })
+        .eq('id', String(contentId));
+      
+      if (!error) {
+        setContentVisibility('public');
+        toast({
+          title: 'Content Updated',
+          description: 'Your content is now public and can be promoted.',
+        });
+      }
+    } catch (error) {
+      console.error('Error making content public:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update content visibility.',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const isContentPromotable = contentVisibility === 'public' || contentType !== 'post';
 
   // Complete countries and cities data (from AuthModal)
   const countriesWithCodes = [
@@ -406,6 +464,25 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                 <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
+
+            {/* Visibility Warning */}
+            {contentType === 'post' && !isContentPromotable && (
+              <Alert variant="destructive" className="mb-6">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>Content Must Be Public</AlertTitle>
+                <AlertDescription className="flex items-center justify-between">
+                  <span>Only public content can be promoted. This post is currently set to "{contentVisibility}" visibility.</span>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={makeContentPublic}
+                    className="ml-4"
+                  >
+                    Make Public
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            )}
 
             <form onSubmit={handleSubmit}>
               {/* Targeting Mode Selection */}
@@ -988,7 +1065,7 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmitting || formData.targetAudience.length === 0}
+                  disabled={isSubmitting || formData.targetAudience.length === 0 || !isContentPromotable}
                   className="bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-3 px-6 rounded-xl font-semibold hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                 >
                   {isSubmitting ? (

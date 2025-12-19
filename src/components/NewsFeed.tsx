@@ -27,6 +27,7 @@ import { Link } from 'react-router-dom';
 import PostReactions from './PostReactions';
 import PostOptionsMenu from './PostOptionsMenu';
 import SharePostModal from './SharePostModal';
+import LinkPreview from './LinkPreview';
 
 interface Post {
   id: string;
@@ -834,17 +835,9 @@ const NewsFeed: React.FC = () => {
               )}
 
               {post.link && (
-                <a 
-                  href={post.link} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="block border border-gray-200 dark:border-gray-700 rounded-xl p-4 mb-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <div className="flex items-center space-x-2 text-primary-600 dark:text-primary-400">
-                    <LinkIcon className="h-4 w-4" />
-                    <span className="text-sm font-medium truncate">{post.link}</span>
-                  </div>
-                </a>
+                <div className="mb-4">
+                  <LinkPreview url={post.link} />
+                </div>
               )}
               
               <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">

@@ -55,6 +55,15 @@ interface CreatorProfile {
   contact_visible: boolean;
 }
 
+interface CreatorTool {
+  id: string;
+  name: string;
+  description: string;
+  logo_url?: string;
+  pricing: string;
+  average_rating: number;
+}
+
 const CreatorProfile: React.FC = () => {
   const { t } = useTranslation();
   const { handleOrId, id, handle, userId } = useParams<{ handleOrId?: string; id?: string; handle?: string; userId?: string }>();
@@ -67,6 +76,8 @@ const CreatorProfile: React.FC = () => {
   const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
+  const [creatorTools, setCreatorTools] = useState<CreatorTool[]>([]);
+  const [loadingTools, setLoadingTools] = useState(true);
 
   const identifier = handleOrId || id || handle || userId;
 
@@ -93,6 +104,33 @@ const CreatorProfile: React.FC = () => {
       window.removeEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
     };
   }, [user, profile]);
+
+  useEffect(() => {
+    if (profile?.id) {
+      fetchCreatorTools(profile.id);
+    }
+  }, [profile]);
+
+  const fetchCreatorTools = async (userId: string) => {
+    setLoadingTools(true);
+    try {
+      const { data, error } = await supabase
+        .from('tools')
+        .select('id, name, description, logo_url, pricing, average_rating')
+        .eq('user_id', userId)
+        .eq('status', 'published')
+        .order('created_at', { ascending: false })
+        .limit(6);
+      
+      if (!error && data) {
+        setCreatorTools(data);
+      }
+    } catch (error) {
+      console.error('Error fetching creator tools:', error);
+    } finally {
+      setLoadingTools(false);
+    }
+  };
 
   const fetchProfile = async (id: string) => {
     try {
@@ -646,13 +684,55 @@ const CreatorProfile: React.FC = () => {
               <TabsContent value="tools" className="mt-6">
                 <Card>
                   <CardContent className="p-6">
-                    <div className="text-center py-12">
-                      <Wrench className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('creatorProfile.empty.noTools')}</h3>
-                      <p className="text-gray-500">
-                        {isOwnProfile ? t('creatorProfile.empty.toolsAppearOwn') : t('creatorProfile.empty.toolsAppear')}
-                      </p>
-                    </div>
+                    {loadingTools ? (
+                      <div className="flex items-center justify-center py-12">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      </div>
+                    ) : creatorTools.length > 0 ? (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {creatorTools.map(tool => (
+                            <div
+                              key={tool.id}
+                              onClick={() => navigate(`/tools/${tool.id}`)}
+                              className="flex items-center gap-3 p-3 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                            >
+                              {tool.logo_url ? (
+                                <img src={tool.logo_url} alt={tool.name} className="w-10 h-10 rounded-lg object-contain bg-muted" />
+                              ) : (
+                                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                                  <Wrench className="h-5 w-5 text-primary" />
+                                </div>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-medium truncate">{tool.name}</h4>
+                                <p className="text-xs text-muted-foreground truncate">{tool.description}</p>
+                              </div>
+                              <div className="flex items-center gap-1 text-xs">
+                                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                <span>{(tool.average_rating || 0).toFixed(1)}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="text-center pt-4">
+                          <Button 
+                            variant="outline" 
+                            onClick={() => navigate(`/tools?creator=${profile.id}`)}
+                          >
+                            View All Tools
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <Wrench className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">{t('creatorProfile.empty.noTools')}</h3>
+                        <p className="text-gray-500">
+                          {isOwnProfile ? t('creatorProfile.empty.toolsAppearOwn') : t('creatorProfile.empty.toolsAppear')}
+                        </p>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
