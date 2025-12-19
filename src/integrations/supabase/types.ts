@@ -74,6 +74,62 @@ export type Database = {
         }
         Relationships: []
       }
+      article_reviews: {
+        Row: {
+          article_id: string
+          comment: string | null
+          cons: string[] | null
+          created_at: string | null
+          dislikes: number | null
+          id: string
+          likes: number | null
+          pros: string[] | null
+          rating: number
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          article_id: string
+          comment?: string | null
+          cons?: string[] | null
+          created_at?: string | null
+          dislikes?: number | null
+          id?: string
+          likes?: number | null
+          pros?: string[] | null
+          rating: number
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          article_id?: string
+          comment?: string | null
+          cons?: string[] | null
+          created_at?: string | null
+          dislikes?: number | null
+          id?: string
+          likes?: number | null
+          pros?: string[] | null
+          rating?: number
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_reviews_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       articles: {
         Row: {
           author: string
