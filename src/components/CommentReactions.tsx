@@ -31,7 +31,7 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
     { type: 'bravo', icon: Trophy, label: 'Bravo', color: 'text-yellow-500', emoji: '👏' },
     { type: 'support', icon: Handshake, label: 'Support', color: 'text-green-500', emoji: '🤝' },
     { type: 'funny', icon: Laugh, label: 'Funny', color: 'text-pink-500', emoji: '😂' },
-    { type: 'unlike', icon: ThumbsDown, label: 'Unlike', color: 'text-gray-500', emoji: '👎' }
+    { type: 'unlike', icon: ThumbsDown, label: 'Unlike', color: 'text-muted-foreground', emoji: '👎' }
   ];
 
   const totalReactions = Object.values(reactions).reduce((sum, reaction) => sum + reaction.count, 0);
@@ -52,9 +52,9 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
   };
 
   const getUserReactionColor = () => {
-    if (!userReaction) return 'text-gray-500 dark:text-gray-400';
+    if (!userReaction) return 'text-muted-foreground';
     const reaction = reactionTypes.find(r => r.type === userReaction);
-    return reaction?.color || 'text-gray-500 dark:text-gray-400';
+    return reaction?.color || 'text-muted-foreground';
   };
 
   return (
@@ -67,8 +67,8 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
           onMouseLeave={() => setShowReactionPicker(false)}
           className={`flex items-center space-x-1 px-1.5 py-0.5 rounded transition-colors ${
             userReaction 
-              ? 'bg-blue-50 dark:bg-blue-900/20' 
-              : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+              ? 'bg-primary/10' 
+              : 'hover:bg-muted'
           }`}
         >
           {React.createElement(getUserReactionIcon(), {
@@ -79,7 +79,7 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
         {/* Reaction picker */}
         {showReactionPicker && (
           <div 
-            className="absolute bottom-full left-0 mb-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-1.5 flex space-x-0.5 z-[9999]"
+            className="absolute bottom-full left-0 mb-1 bg-card rounded-lg shadow-lg border border-border p-1.5 flex space-x-0.5 z-[9999]"
             onMouseEnter={() => setShowReactionPicker(true)}
             onMouseLeave={() => setShowReactionPicker(false)}
           >
@@ -87,7 +87,7 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
               <button
                 key={reaction.type}
                 onClick={() => handleReactionClick(reaction.type)}
-                className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors group"
+                className="p-1.5 hover:bg-muted rounded transition-colors group"
                 title={reaction.label}
               >
                 <reaction.icon className={`${compact ? 'h-4 w-4' : 'h-5 w-5'} ${reaction.color} group-hover:scale-110 transition-transform`} />
@@ -108,14 +108,14 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
               return (
                 <div
                   key={type}
-                  className={`${compact ? 'w-4 h-4' : 'w-5 h-5'} bg-white dark:bg-gray-800 rounded-full flex items-center justify-center border border-gray-200 dark:border-gray-700`}
+                  className={`${compact ? 'w-4 h-4' : 'w-5 h-5'} bg-card rounded-full flex items-center justify-center border border-border`}
                 >
                   <reactionType.icon className={`${compact ? 'h-2.5 w-2.5' : 'h-3 w-3'} ${reactionType.color}`} />
                 </div>
               );
             })}
           </div>
-          <span className={`${compact ? 'text-xs' : 'text-sm'} text-gray-500 dark:text-gray-400`}>
+          <span className={`${compact ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
             {totalReactions}
           </span>
         </div>

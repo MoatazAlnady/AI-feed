@@ -268,9 +268,9 @@ const Community: React.FC = () => {
 
   const renderDiscussion = () => (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-        <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">{t('community.discussion.title', 'Community Discussions')}</h3>
-        <p className="text-gray-600 dark:text-gray-400">
+      <div className="bg-card rounded-2xl shadow-sm p-6">
+        <h3 className="text-xl font-semibold mb-4 text-foreground">{t('community.discussion.title', 'Community Discussions')}</h3>
+        <p className="text-muted-foreground">
           {t('community.discussion.subtitle', 'Join discussions about AI tools, share insights, and learn from the community.')}
         </p>
       </div>
@@ -280,7 +280,7 @@ const Community: React.FC = () => {
   const renderEvents = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{t('community.events.title')}</h3>
+        <h3 className="text-xl font-semibold text-foreground">{t('community.events.title')}</h3>
         <button 
           onClick={() => setShowCreateEventModal(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200"
@@ -293,44 +293,44 @@ const Community: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {events.length === 0 ? (
           <>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+            <div className="bg-card rounded-2xl shadow-sm p-6">
               <div className="flex items-center space-x-2 mb-3">
-                <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                <span className="text-sm text-gray-500 dark:text-gray-500">{t('community.events.sample.tomorrow')}</span>
+                <Calendar className="h-5 w-5 text-primary" />
+                <span className="text-sm text-muted-foreground">{t('community.events.sample.tomorrow')}</span>
               </div>
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{t('community.events.sample.aiToolsShowcase')}</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              <h4 className="font-semibold text-foreground mb-2">{t('community.events.sample.aiToolsShowcase')}</h4>
+              <p className="text-sm text-muted-foreground mb-4">
                 {t('community.events.sample.aiToolsShowcaseDesc')}
               </p>
-              <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">{t('community.events.joinEvent')} →</button>
+              <button className="text-primary hover:underline text-sm">{t('community.events.joinEvent')} →</button>
             </div>
             
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+            <div className="bg-card rounded-2xl shadow-sm p-6">
               <div className="flex items-center space-x-2 mb-3">
-                <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                <span className="text-sm text-gray-500 dark:text-gray-500">{t('community.events.sample.friday')}</span>
+                <Calendar className="h-5 w-5 text-primary" />
+                <span className="text-sm text-muted-foreground">{t('community.events.sample.friday')}</span>
               </div>
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{t('community.events.sample.networkingMixer')}</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              <h4 className="font-semibold text-foreground mb-2">{t('community.events.sample.networkingMixer')}</h4>
+              <p className="text-sm text-muted-foreground mb-4">
                 {t('community.events.sample.networkingMixerDesc')}
               </p>
-              <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">{t('community.events.rsvp')} →</button>
+              <button className="text-primary hover:underline text-sm">{t('community.events.rsvp')} →</button>
             </div>
           </>
         ) : (
           events.map((event) => (
-            <div key={event.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+            <div key={event.id} className="bg-card rounded-2xl shadow-sm p-6">
               <div className="flex items-center space-x-2 mb-3">
-                <Calendar className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                <span className="text-sm text-gray-500 dark:text-gray-500">
+                <Calendar className="h-5 w-5 text-primary" />
+                <span className="text-sm text-muted-foreground">
                   {event.date} at {event.time}
                 </span>
               </div>
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{event.title}</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              <h4 className="font-semibold text-foreground mb-2">{event.title}</h4>
+              <p className="text-sm text-muted-foreground mb-4">
                 {event.description}
               </p>
-              <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">Join Event →</button>
+              <button className="text-primary hover:underline text-sm">Join Event →</button>
             </div>
           ))
         )}
@@ -366,7 +366,7 @@ const Community: React.FC = () => {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{t('community.groups.title')}</h3>
+          <h3 className="text-xl font-semibold text-foreground">{t('community.groups.title')}</h3>
           <button 
             onClick={() => setShowCreateGroupModal(true)}
             className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200"
@@ -379,63 +379,63 @@ const Community: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {groups.length === 0 ? (
             <>
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+              <div className="bg-card rounded-2xl shadow-sm p-6">
                 <div className="flex items-center space-x-2 mb-3">
-                  <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                  <span className="font-semibold text-gray-900 dark:text-white">{t('community.groups.sample.machineLearning')}</span>
+                  <Hash className="h-5 w-5 text-primary" />
+                  <span className="font-semibold text-foreground">{t('community.groups.sample.machineLearning')}</span>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-sm text-muted-foreground mb-4">
                   {t('community.groups.sample.machineLearningDesc')}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500 dark:text-gray-500">2.4k {t('community.groups.members')}</span>
-                  <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">{t('community.groups.joinDiscussion')} →</button>
+                  <span className="text-sm text-muted-foreground">2.4k {t('community.groups.members')}</span>
+                  <button className="text-primary hover:underline text-sm">{t('community.groups.joinDiscussion')} →</button>
                 </div>
               </div>
               
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+              <div className="bg-card rounded-2xl shadow-sm p-6">
                 <div className="flex items-center space-x-2 mb-3">
-                  <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                  <span className="font-semibold text-gray-900 dark:text-white">{t('community.groups.sample.aiTools')}</span>
+                  <Hash className="h-5 w-5 text-primary" />
+                  <span className="font-semibold text-foreground">{t('community.groups.sample.aiTools')}</span>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-sm text-muted-foreground mb-4">
                   {t('community.groups.sample.aiToolsDesc')}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500 dark:text-gray-500">5.1k {t('community.groups.members')}</span>
-                  <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">{t('community.groups.joinDiscussion')} →</button>
+                  <span className="text-sm text-muted-foreground">5.1k {t('community.groups.members')}</span>
+                  <button className="text-primary hover:underline text-sm">{t('community.groups.joinDiscussion')} →</button>
                 </div>
               </div>
               
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+              <div className="bg-card rounded-2xl shadow-sm p-6">
                 <div className="flex items-center space-x-2 mb-3">
-                  <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                  <span className="font-semibold text-gray-900 dark:text-white">{t('community.groups.sample.startupsAI')}</span>
+                  <Hash className="h-5 w-5 text-primary" />
+                  <span className="font-semibold text-foreground">{t('community.groups.sample.startupsAI')}</span>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-sm text-muted-foreground mb-4">
                   {t('community.groups.sample.startupsAIDesc')}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500 dark:text-gray-500">1.8k {t('community.groups.members')}</span>
-                  <button className="text-primary-600 dark:text-primary-400 hover:underline text-sm">{t('community.groups.joinDiscussion')} →</button>
+                  <span className="text-sm text-muted-foreground">1.8k {t('community.groups.members')}</span>
+                  <button className="text-primary hover:underline text-sm">{t('community.groups.joinDiscussion')} →</button>
                 </div>
               </div>
             </>
           ) : (
             groups.map((group) => (
-              <div key={group.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+              <div key={group.id} className="bg-card rounded-2xl shadow-sm p-6">
                 <div className="flex items-center space-x-2 mb-3">
-                  <Hash className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                  <span className="font-semibold text-gray-900 dark:text-white">{group.name}</span>
+                  <Hash className="h-5 w-5 text-primary" />
+                  <span className="font-semibold text-foreground">{group.name}</span>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-sm text-muted-foreground mb-4">
                   {group.description}
                 </p>
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm text-gray-500 dark:text-gray-500">{group.member_count || 0} {t('community.groups.members')}</span>
+                  <span className="text-sm text-muted-foreground">{group.member_count || 0} {t('community.groups.members')}</span>
                   <button 
                     onClick={() => joinGroup(group.id)}
-                    className="text-primary-600 dark:text-primary-400 hover:underline text-sm"
+                    className="text-primary hover:underline text-sm"
                   >
                     {t('community.groups.join', 'Join')}
                   </button>
@@ -467,34 +467,34 @@ const Community: React.FC = () => {
   const renderNetworking = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{t('community.networking.title')}</h3>
+        <h3 className="text-xl font-semibold text-foreground">{t('community.networking.title')}</h3>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             placeholder={t('community.networking.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+            className="pl-10 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-card text-foreground placeholder-muted-foreground"
           />
         </div>
       </div>
       
       {loading ? (
         <div className="flex justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
       ) : filteredCreators.length === 0 ? (
         <div className="text-center py-8">
-          <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500 dark:text-gray-500">
+          <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground">
             {searchTerm ? t('community.networking.noCreatorsFound') : t('community.networking.noCreatorsYet')}
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCreators.map((creator) => (
-            <div key={creator.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
+            <div key={creator.id} className="bg-card rounded-2xl shadow-sm p-6">
               <div className="flex items-center space-x-3 mb-4">
                 {creator.profile_photo ? (
                   <img 
@@ -516,7 +516,7 @@ const Community: React.FC = () => {
                 <div className="flex-1">
                   <div className="flex items-center space-x-2">
                     <h4 
-                      className="font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      className="font-semibold text-foreground cursor-pointer hover:text-primary transition-colors"
                       onClick={() => navigate(`/profile/${creator.id}`)}
                     >
                     {creator.full_name || t('community.networking.anonymousUser')}
@@ -530,12 +530,12 @@ const Community: React.FC = () => {
                     <Star className="h-4 w-4 text-yellow-500 fill-current" />
                   )}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-muted-foreground">
                   {creator.job_title || t('community.networking.aiEnthusiast')}
                 </p>
               </div>
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-sm text-muted-foreground mb-4">
               {creator.bio || t('community.networking.defaultBio')}
             </p>
               {user?.id !== creator.id && (
@@ -549,7 +549,7 @@ const Community: React.FC = () => {
                   ) : connectionStates[creator.id]?.hasPendingRequest ? (
                     <button 
                       disabled
-                      className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors disabled:opacity-50 bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200"
+                      className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors disabled:opacity-50 bg-card border-border text-foreground"
                     >
                       <UserCheck className="h-4 w-4 inline mr-1" />
                       {t('community.networking.requestSent')}
@@ -557,7 +557,7 @@ const Community: React.FC = () => {
                   ) : (
                     <button 
                       onClick={() => sendConnectionRequest(creator.id, creator.full_name)}
-                      className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
+                      className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-card border-border text-foreground hover:bg-muted"
                     >
                       <UserPlus className="h-4 w-4 inline mr-1" />
                       {t('community.networking.connect')}
@@ -567,7 +567,7 @@ const Community: React.FC = () => {
                   {/* Always show Message button */}
                   <button 
                     onClick={() => handleMessage(creator.id, creator.full_name)}
-                    className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800"
+                    className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-card border-border text-foreground hover:bg-muted"
                   >
                     <MessageCircle className="h-4 w-4 inline mr-1" />
                     {t('community.networking.message')}
@@ -582,45 +582,45 @@ const Community: React.FC = () => {
   );
 
   return (
-    <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div className="py-8 bg-background min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
             {t('community.title')}
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400">
+          <p className="text-xl text-muted-foreground">
             {t('community.feed.subtitle')}
           </p>
         </div>
 
         {/* Community Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
-            <Users className="h-8 w-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">10K+</div>
-            <div className="text-sm text-gray-500 dark:text-gray-500">{t('community.stats.activeCreators')}</div>
+          <div className="text-center p-6 bg-card rounded-2xl shadow-sm">
+            <Users className="h-8 w-8 text-primary mx-auto mb-2" />
+            <div className="text-2xl font-bold text-foreground">10K+</div>
+            <div className="text-sm text-muted-foreground">{t('community.stats.activeCreators')}</div>
           </div>
-          <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
-            <MessageSquare className="h-8 w-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">50K+</div>
-            <div className="text-sm text-gray-500 dark:text-gray-500">{t('community.stats.discussionGroups')}</div>
+          <div className="text-center p-6 bg-card rounded-2xl shadow-sm">
+            <MessageSquare className="h-8 w-8 text-primary mx-auto mb-2" />
+            <div className="text-2xl font-bold text-foreground">50K+</div>
+            <div className="text-sm text-muted-foreground">{t('community.stats.discussionGroups')}</div>
           </div>
-          <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
-            <Lightbulb className="h-8 w-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">500+</div>
-            <div className="text-sm text-gray-500 dark:text-gray-500">{t('community.stats.weeklyEvents')}</div>
+          <div className="text-center p-6 bg-card rounded-2xl shadow-sm">
+            <Lightbulb className="h-8 w-8 text-primary mx-auto mb-2" />
+            <div className="text-2xl font-bold text-foreground">500+</div>
+            <div className="text-sm text-muted-foreground">{t('community.stats.weeklyEvents')}</div>
           </div>
-          <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
-            <TrendingUp className="h-8 w-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">95%</div>
-            <div className="text-sm text-gray-500 dark:text-gray-500">{t('community.stats.successRate')}</div>
+          <div className="text-center p-6 bg-card rounded-2xl shadow-sm">
+            <TrendingUp className="h-8 w-8 text-primary mx-auto mb-2" />
+            <div className="text-2xl font-bold text-foreground">95%</div>
+            <div className="text-sm text-muted-foreground">{t('community.stats.successRate')}</div>
           </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm mb-8">
-          <div className="border-b border-gray-200 dark:border-gray-700">
+        <div className="bg-card rounded-2xl shadow-sm mb-8">
+          <div className="border-b border-border">
             <nav className="-mb-px flex space-x-0 px-6">
               {[
                 { id: 'networking', label: t('community.tabs.networking'), icon: Users },
@@ -636,8 +636,8 @@ const Community: React.FC = () => {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`relative flex items-center space-x-2 py-4 px-6 font-medium text-sm transition-all duration-200 ${
                       isActive
-                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-gray-700 rounded-t-xl border-b-2 border-primary-600 dark:border-primary-400'
-                        : 'text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-t-xl'
+                        ? 'text-primary bg-primary/10 rounded-t-xl border-b-2 border-primary'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-t-xl'
                     }`}
                   >
                     <Icon className="h-5 w-5" />

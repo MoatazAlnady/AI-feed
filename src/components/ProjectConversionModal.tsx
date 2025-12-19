@@ -72,21 +72,21 @@ const ProjectConversionModal: React.FC<ProjectConversionModalProps> = ({
   if (step === 'choice') {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-2xl w-full">
+        <div className="bg-card rounded-2xl shadow-xl max-w-2xl w-full">
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Job Posted Successfully!</h2>
+              <h2 className="text-2xl font-bold text-foreground">Job Posted Successfully!</h2>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="p-2 hover:bg-muted rounded-lg transition-colors"
               >
-                <X className="h-5 w-5 text-gray-500" />
+                <X className="h-5 w-5 text-muted-foreground" />
               </button>
             </div>
 
             <div className="text-center mb-8">
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-muted-foreground">
                 Your job "<strong>{jobData.title}</strong>" has been posted. What would you like to do next?
               </p>
             </div>
@@ -101,7 +101,7 @@ const ProjectConversionModal: React.FC<ProjectConversionModalProps> = ({
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                  <ul className="text-sm text-muted-foreground space-y-1">
                     <li>• Featured placement</li>
                     <li>• Increased visibility</li>
                     <li>• More applications</li>
@@ -119,7 +119,7 @@ const ProjectConversionModal: React.FC<ProjectConversionModalProps> = ({
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                  <ul className="text-sm text-muted-foreground space-y-1">
                     <li>• Manage candidates</li>
                     <li>• Track progress</li>
                     <li>• Team collaboration</li>
@@ -143,25 +143,25 @@ const ProjectConversionModal: React.FC<ProjectConversionModalProps> = ({
   if (step === 'convert') {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="bg-card rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <Briefcase className="h-6 w-6 text-purple-500" />
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Convert to Project</h2>
+                <h2 className="text-2xl font-bold text-foreground">Convert to Project</h2>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="p-2 hover:bg-muted rounded-lg transition-colors"
               >
-                <X className="h-5 w-5 text-gray-500" />
+                <X className="h-5 w-5 text-muted-foreground" />
               </button>
             </div>
 
             <form onSubmit={handleProjectSubmit}>
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Project Title *
                   </label>
                   <Input
@@ -173,7 +173,7 @@ const ProjectConversionModal: React.FC<ProjectConversionModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Project Description *
                   </label>
                   <Textarea
@@ -187,7 +187,7 @@ const ProjectConversionModal: React.FC<ProjectConversionModalProps> = ({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Timeline
                     </label>
                     <Input
@@ -197,7 +197,7 @@ const ProjectConversionModal: React.FC<ProjectConversionModalProps> = ({
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Budget Range
                     </label>
                     <Input
@@ -209,7 +209,7 @@ const ProjectConversionModal: React.FC<ProjectConversionModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Requirements & Criteria
                   </label>
                   <Textarea
@@ -220,9 +220,9 @@ const ProjectConversionModal: React.FC<ProjectConversionModalProps> = ({
                   />
                 </div>
 
-                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                  <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Project Benefits:</h4>
-                  <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+                <div className="bg-primary/10 p-4 rounded-lg">
+                  <h4 className="font-medium text-primary mb-2">Project Benefits:</h4>
+                  <ul className="text-sm text-primary/80 space-y-1">
                     <li>• Centralized candidate management</li>
                     <li>• Team collaboration tools</li>
                     <li>• Progress tracking and analytics</li>
