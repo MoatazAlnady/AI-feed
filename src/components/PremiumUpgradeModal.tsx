@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Crown, Check, X, Sparkles, Users, Calendar, Wrench, BarChart3, MessageSquare, TrendingUp } from 'lucide-react';
+import { Crown, Check, Users, Calendar, Wrench, BarChart3, MessageSquare, TrendingUp, GitCompare, Video, Gift } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
@@ -26,6 +26,8 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
     { icon: Users, label: 'Unlimited group creation' },
     { icon: Calendar, label: 'Create unlimited events' },
     { icon: Wrench, label: 'Submit unlimited tools' },
+    { icon: GitCompare, label: 'Compare AI tools' },
+    { icon: Video, label: 'Video upload & recording' },
     { icon: TrendingUp, label: 'Promote your content' },
     { icon: Crown, label: 'Premium verified badge' },
     { icon: BarChart3, label: 'Advanced analytics' }
@@ -57,6 +59,14 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
         </DialogHeader>
 
         <div className="py-4">
+          {/* 7-Day Free Trial Badge */}
+          <div className="flex items-center justify-center gap-2 mb-4 py-2 px-4 bg-green-100 dark:bg-green-900/30 rounded-lg">
+            <Gift className="h-5 w-5 text-green-600 dark:text-green-400" />
+            <span className="text-sm font-semibold text-green-700 dark:text-green-300">
+              {t('premiumModal.freeTrial', '7-Day Free Trial Included')}
+            </span>
+          </div>
+
           {/* Features List */}
           <div className="space-y-3 mb-6">
             {features.map(({ icon: Icon, label }, index) => (
@@ -92,12 +102,9 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
                 </span>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-green-500" />
-              <span className="text-sm text-green-600 dark:text-green-400 font-medium">
-                {t('premiumModal.saveAmount', 'Save $40/year (2 months free!)')}
-              </span>
-            </div>
+            <p className="text-sm text-green-600 dark:text-green-400 font-medium">
+              {t('premiumModal.saveAmount', 'Save $40/year (2 months free)')}
+            </p>
           </div>
 
           {/* Actions */}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Crown, Check, Zap, MessageSquare, Users, Calendar, Wrench, BarChart3, ArrowRight, X, TrendingUp, Video, Radio, Lock, Mail, DollarSign, Headphones } from 'lucide-react';
+import { Crown, Check, Zap, MessageSquare, Users, Calendar, Wrench, BarChart3, ArrowRight, X, TrendingUp, Video, Radio, Lock, Mail, DollarSign, Headphones, Gift } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { useAuth } from '../context/AuthContext';
@@ -221,6 +221,13 @@ const Upgrade: React.FC = () => {
                 <Crown className="h-6 w-6 text-yellow-500" />
                 {t('upgrade.plans.premium.title', 'Premium')}
               </CardTitle>
+              {/* 7-Day Free Trial Badge */}
+              <div className="flex items-center justify-center gap-2 mt-2 py-1.5 px-3 bg-green-100 dark:bg-green-900/30 rounded-full">
+                <Gift className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <span className="text-xs font-semibold text-green-700 dark:text-green-300">
+                  {t('upgrade.freeTrial', '7-Day Free Trial')}
+                </span>
+              </div>
               <div className="text-4xl font-bold text-foreground mt-4">
                 {billingPeriod === 'monthly' ? '$20' : '$200'}
                 <span className="text-lg text-muted-foreground font-normal">
@@ -229,7 +236,7 @@ const Upgrade: React.FC = () => {
               </div>
               {billingPeriod === 'yearly' && (
                 <div className="text-sm text-green-600 dark:text-green-400 font-medium mt-2">
-                  {t('upgrade.plans.yearly.discount', 'Save $40/year (2 months free!)')}
+                  {t('upgrade.plans.yearly.discount', 'Save $40/year (2 months free)')}
                 </div>
               )}
               <CardDescription className="mt-2">

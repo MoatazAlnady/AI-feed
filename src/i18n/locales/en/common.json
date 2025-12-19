@@ -138,11 +138,12 @@
     "subtitle": "Unlock all features and boost your productivity",
     "limitReached": "You've reached your free limit for {{feature}}",
     "premiumOnly": "{{feature}} is a premium feature",
+    "freeTrial": "7-Day Free Trial Included",
     "monthlyPrice": "$20",
     "yearlyPrice": "$200",
     "perMonth": "/month",
     "perYear": "/year",
-    "saveAmount": "Save $40/year (2 months free!)",
+    "saveAmount": "Save $40/year (2 months free)",
     "viewPlans": "View Plans & Upgrade",
     "maybeLater": "Maybe Later",
     "features": {
@@ -150,6 +151,8 @@
       "createGroups": "Create and manage groups",
       "createEvents": "Host your own events",
       "submitTools": "Submit AI tools to directory",
+      "compareTools": "Compare AI tools side by side",
+      "videoUpload": "Video upload & recording",
       "promoteContent": "Promote content with AI targeting",
       "premiumBadge": "Premium profile badge",
       "advancedAnalytics": "Advanced analytics dashboard"
@@ -163,6 +166,7 @@
     "monthly": "Monthly",
     "yearly": "Yearly",
     "save2Months": "Save 2 months",
+    "freeTrial": "7-Day Free Trial",
     "mostPopular": "Most Popular",
     "currentPlan": "Current Plan",
     "guarantee": "30-day money-back guarantee",
@@ -179,7 +183,7 @@
         "description": "Full access to all premium features"
       },
       "yearly": {
-        "discount": "Save $40/year (2 months free!)"
+        "discount": "Save $40/year (2 months free)"
       }
     },
     "features": {
@@ -456,6 +460,15 @@
     "validationError": "Category name is required",
     "success": "Category saved successfully",
     "error": "Failed to save category"
+  },
+  "categoriesPage": {
+    "title": "AI Tool Categories",
+    "subtitle": "Browse AI tools by category to find exactly what you need",
+    "toolCount": "{{count}} tools",
+    "viewAll": "View All →",
+    "ctaTitle": "Have an AI Tool to Share?",
+    "ctaDesc": "Help the community discover amazing AI tools by submitting your favorite tools to our directory.",
+    "submitTool": "Submit Your Tool"
   },
   "notifications": {
     "title": "Notification Settings",

@@ -159,12 +159,7 @@ const Tools: React.FC = () => {
 
   const handleCompareClick = () => {
     if (!isPremium) {
-      toast({
-        title: t('toolComparison.premiumRequired'),
-        description: t('toolComparison.premiumDescription'),
-        variant: 'destructive'
-      });
-      navigate('/upgrade');
+      setShowPremiumModal(true);
       return;
     }
     setShowComparison(true);
