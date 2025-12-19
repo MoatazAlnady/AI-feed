@@ -35,6 +35,7 @@ import PostsModeration from '../components/PostsModeration';
 import AdminAnalytics from '../components/AdminAnalytics';
 import AuditLogViewer from '../components/AuditLogViewer';
 import DropdownListsManagement from '../components/DropdownListsManagement';
+import SupportTicketsManagement from '../components/SupportTicketsManagement';
 import { supabase } from '../lib/supabase';
 import useI18nGuard from '../hooks/useI18nGuard';
 
@@ -269,6 +270,13 @@ const AdminDashboard: React.FC = () => {
         return (
           <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
             <ReportsManagement />
+          </div>
+        );
+
+      case 'support-tickets':
+        return (
+          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+            <SupportTicketsManagement />
           </div>
         );
 

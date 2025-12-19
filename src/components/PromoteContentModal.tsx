@@ -6,11 +6,13 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface PromoteContentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  contentType: 'tool' | 'article' | 'post' | 'job' | 'event';
+  contentType: 'tool' | 'article' | 'post' | 'job' | 'event' | 'profile';
   contentId: string | number;
   contentTitle: string;
 }
@@ -23,6 +25,7 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
   contentTitle 
 }) => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [targetingMode, setTargetingMode] = useState<'manual' | 'ai'>('manual');
   const [formData, setFormData] = useState({
     budget: '50',
@@ -257,29 +260,36 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
     
     setIsGeneratingTargeting(true);
     try {
-      // Simulate AI processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const { data, error } = await supabase.functions.invoke('ai-targeting', {
+        body: {
+          contentType,
+          contentTitle,
+          contentDescription: aiPrompt,
+          currentFormData: formData
+        }
+      });
       
-      // Mock AI-generated targeting based on prompt
-      const mockTargeting = {
-        targetAudience: ['AI Researchers', 'Data Scientists', 'Tech Enthusiasts'],
-        interests: ['Machine Learning', 'AI Research', 'Data Science'],
-        selectedCountries: ['United States', 'Canada', 'United Kingdom'],
-        selectedCities: ['New York', 'Toronto', 'London'],
-        ageFrom: '25',
-        ageTo: '45',
-        gender: 'all'
-      };
+      if (error) throw error;
       
-      setFormData(prev => ({
-        ...prev,
-        ...mockTargeting
-      }));
+      // Apply AI-generated targeting
+      if (data?.targeting) {
+        setFormData(prev => ({
+          ...prev,
+          ...data.targeting
+        }));
+      }
       
-      alert('AI targeting generated successfully! Review and adjust the targeting criteria below.');
+      toast({ 
+        title: 'AI Targeting Generated', 
+        description: 'Review and adjust the targeting criteria below.' 
+      });
     } catch (error) {
       console.error('Error generating AI targeting:', error);
-      alert('Error generating targeting. Please try again.');
+      toast({ 
+        title: 'Error', 
+        description: 'Failed to generate AI targeting. Please try again.', 
+        variant: 'destructive' 
+      });
     } finally {
       setIsGeneratingTargeting(false);
     }
