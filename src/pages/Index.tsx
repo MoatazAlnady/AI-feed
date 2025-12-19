@@ -13,6 +13,7 @@ import TrendingTools from '@/components/TrendingTools';
 import TopCreators from '@/components/TopCreators';
 import AIChatBot from '@/components/ChatDock';
 import NewsFeedPage from '@/pages/NewsFeed';
+import SEOHead from '@/components/SEOHead';
 import { useTranslation } from 'react-i18next';
 
 const Index = () => {
@@ -80,6 +81,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative">
+      <SEOHead 
+        title="AI Feed - Discover, Compare & Share AI Tools | The Ultimate AI Platform"
+        description="The ultimate AI tools platform. Discover 1000+ AI tools, compare features, read reviews, and connect with AI enthusiasts. Your go-to hub for everything AI."
+        keywords="AI tools, artificial intelligence, machine learning, AI directory, AI comparison, AI community, ChatGPT, AI assistants, AI image generators"
+        url="https://aifeed.app/"
+      />
       <AnimatedBackground />
       {/* Hero Section */}
       <section ref={heroAnimation.ref} className={`py-20 px-6 transition-all duration-1000 ${

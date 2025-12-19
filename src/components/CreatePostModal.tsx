@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, Image, Video, Link as LinkIcon, Send, User, Calendar, Clock, Upload, Camera, Radio, Crown } from 'lucide-react';
+import { X, Image, Video, Link as LinkIcon, Send, User, Calendar, Clock, Upload, Camera, Radio, Crown, FileText } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
+import { useNavigate } from 'react-router-dom';
 import InterestTagSelector from './InterestTagSelector';
 import LinkPreview from './LinkPreview';
 import PostPrivacySelector from './PostPrivacySelector';
@@ -11,7 +12,18 @@ import LiveVideoModal from './LiveVideoModal';
 import PremiumUpgradeModal from './PremiumUpgradeModal';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
+const MAX_POST_LENGTH = 3000;
 interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -31,7 +43,9 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onPo
   const { user } = useAuth();
   const { toast } = useToast();
   const { isPremium } = usePremiumStatus();
+  const navigate = useNavigate();
   const [content, setContent] = useState('');
+  const [showArticleDialog, setShowArticleDialog] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [image, setImage] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState('');
@@ -85,6 +99,12 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onPo
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim() || !user) return;
+
+    // Check if content exceeds limit
+    if (content.length > MAX_POST_LENGTH) {
+      setShowArticleDialog(true);
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -248,7 +268,13 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onPo
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="What's on your mind about AI?"
-                  className="w-full p-4 border border-border rounded-xl resize-none focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+                  className={`w-full p-4 border rounded-xl resize-none focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                    content.length > MAX_POST_LENGTH 
+                      ? 'border-destructive' 
+                      : content.length > MAX_POST_LENGTH - 300 
+                        ? 'border-yellow-500' 
+                        : 'border-border'
+                  }`}
                   rows={6}
                   required
                 />
@@ -481,8 +507,17 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onPo
                     <LinkIcon className="h-5 w-5" />
                   </button>
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  {content.length}/500
+                <div className={`text-sm ${
+                  content.length > MAX_POST_LENGTH 
+                    ? 'text-destructive font-medium' 
+                    : content.length > MAX_POST_LENGTH - 300 
+                      ? 'text-yellow-600' 
+                      : 'text-muted-foreground'
+                }`}>
+                  {content.length.toLocaleString()}/{MAX_POST_LENGTH.toLocaleString()}
+                  {content.length > MAX_POST_LENGTH && (
+                    <span className="ml-2">• Consider posting as an article</span>
+                  )}
                 </div>
               </div>
 
@@ -521,6 +556,43 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onPo
         onClose={() => setShowPremiumModal(false)}
         featureName="video"
       />
+
+      {/* Article Suggestion Dialog */}
+      <AlertDialog open={showArticleDialog} onOpenChange={setShowArticleDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              Content Too Long for a Post
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Your content exceeds the {MAX_POST_LENGTH.toLocaleString()} character limit for posts. 
+              Consider publishing it as an article instead for better formatting and reach.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowArticleDialog(false)}>
+              Trim to {MAX_POST_LENGTH.toLocaleString()}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowArticleDialog(false);
+                onClose();
+                navigate('/submit-article', { 
+                  state: { 
+                    prefillContent: content,
+                    prefillTitle: content.split('\n')[0]?.substring(0, 100) || ''
+                  } 
+                });
+              }}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Create as Article
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

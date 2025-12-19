@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { Upload, Tag, FileText, Send, Video, Image } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import ChatDock from '../components/ChatDock';
 
+interface LocationState {
+  prefillContent?: string;
+  prefillTitle?: string;
+}
+
 const SubmitArticle: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const location = useLocation();
+  const state = location.state as LocationState | null;
+
   const [formData, setFormData] = useState({
-    title: '',
+    title: state?.prefillTitle || '',
     excerpt: '',
-    content: '',
+    content: state?.prefillContent || '',
     category: '',
     tags: '',
     type: 'article',
@@ -19,6 +28,18 @@ const SubmitArticle: React.FC = () => {
     featuredImage: null as File | null,
     videoUrl: ''
   });
+
+  // Pre-fill form from navigation state (e.g., from post modal)
+  useEffect(() => {
+    if (state?.prefillContent) {
+      setFormData(prev => ({
+        ...prev,
+        content: state.prefillContent || '',
+        title: state.prefillTitle || '',
+        excerpt: state.prefillContent?.substring(0, 200) || ''
+      }));
+    }
+  }, [state]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
