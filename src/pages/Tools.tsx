@@ -7,6 +7,7 @@ import ToolComparisonModal from '../components/ToolComparisonModal';
 import PromoteContentModal from '../components/PromoteContentModal';
 import ToolStars from '../components/ToolStars';
 import ToolActionButtons from '../components/ToolActionButtons';
+import SEOHead from '../components/SEOHead';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -222,6 +223,12 @@ const Tools: React.FC = () => {
 
   return (
     <>
+      <SEOHead 
+        title="AI Tools Directory - Discover & Compare 1000+ AI Tools"
+        description="Browse our comprehensive AI tools directory. Find the best AI tools for writing, image generation, coding, productivity and more. Compare features, read reviews, and discover new AI solutions."
+        keywords="AI tools directory, best AI tools, AI software, AI applications, AI comparison, AI reviews, ChatGPT alternatives, AI image generators, AI writing tools"
+        url="https://aifeed.app/tools"
+      />
       <div className="py-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
