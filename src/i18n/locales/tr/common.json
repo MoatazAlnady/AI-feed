@@ -243,5 +243,65 @@
     "confirmMessage": "Abonelikten çıkmak istediğinizden emin misiniz? Artık en son AI araçları ve içgörüleri hakkında güncellemeler almayacaksınız.",
     "resubscribe": "Tekrar Abone Ol",
     "returnHome": "Ana Sayfaya Dön"
+  },
+  "emailNotifications": {
+    "groupAnnouncement": {
+      "subject": "{{groupName}} grubunda yeni duyuru",
+      "title": "Yeni Grup Duyurusu",
+      "postedBy": "{{senderName}} tarafından yayınlandı",
+      "viewAnnouncement": "Duyuruyu Görüntüle"
+    },
+    "groupInvite": {
+      "subject": "{{groupName}} grubuna davet edildiniz",
+      "title": "Grup Daveti",
+      "invitedBy": "{{senderName}} sizi katılmaya davet etti",
+      "acceptInvite": "Daveti Kabul Et"
+    },
+    "connectionRequest": {
+      "subject": "{{senderName}} sizinle bağlantı kurmak istiyor",
+      "title": "Yeni Bağlantı İsteği",
+      "wantsToConnect": "sizinle bağlantı kurmak istiyor",
+      "viewProfile": "Profili Görüntüle",
+      "acceptRequest": "İsteği Kabul Et"
+    },
+    "jobApplication": {
+      "subject": "{{jobTitle}} için yeni başvuru",
+      "title": "Yeni İş Başvurusu",
+      "appliedFor": "pozisyonuna başvurdu",
+      "atCompany": "{{companyName}} şirketinde",
+      "viewApplication": "Başvuruyu Görüntüle"
+    },
+    "common": {
+      "hello": "Merhaba",
+      "viewDetails": "Detayları Görüntüle",
+      "expiryNote": "Bu bağlantı 7 gün içinde sona erecek",
+      "ignoreNote": "Bu e-postayı beklemiyorsanız, güvenle göz ardı edebilirsiniz"
+    }
+  },
+  "communityDiscussions": {
+    "title": "Topluluk Tartışmaları",
+    "subtitle": "AI araçları hakkında tartışmalara katılın ve görüşlerinizi paylaşın",
+    "startDiscussion": "Tartışma Başlat",
+    "noDiscussions": "Henüz tartışma yok",
+    "beFirst": "İlk tartışmayı başlatan siz olun!",
+    "replies": "{{count}} yanıt",
+    "reply": "Yanıtla",
+    "pinned": "Sabitlenmiş",
+    "discussionTitle": "Tartışma Başlığı",
+    "discussionContent": "Ne hakkında tartışmak istersiniz?",
+    "postDiscussion": "Tartışmayı Yayınla",
+    "cancel": "İptal"
+  },
+  "communityEvents": {
+    "upcomingEvents": "Yaklaşan Etkinlikler",
+    "noUpcoming": "Yaklaşan etkinlik yok",
+    "rsvp": "Katılım Bildirin",
+    "attending": "Katılacağım",
+    "notAttending": "Katılmayacağım",
+    "maybe": "Belki",
+    "attendees": "{{count}} katılımcı",
+    "online": "Çevrimiçi Etkinlik",
+    "inPerson": "Yüz Yüze Etkinlik",
+    "cancelRsvp": "Katılımı İptal Et"
   }
 }

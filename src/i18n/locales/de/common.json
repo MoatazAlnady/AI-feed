@@ -1212,5 +1212,65 @@
       "events": "Event",
       "jobs": "Job"
     }
+  },
+  "emailNotifications": {
+    "groupAnnouncement": {
+      "subject": "Neue Ankündigung in {{groupName}}",
+      "title": "Neue Gruppenankündigung",
+      "postedBy": "Gepostet von {{senderName}}",
+      "viewAnnouncement": "Ankündigung anzeigen"
+    },
+    "groupInvite": {
+      "subject": "Sie wurden eingeladen, {{groupName}} beizutreten",
+      "title": "Gruppeneinladung",
+      "invitedBy": "{{senderName}} hat Sie eingeladen beizutreten",
+      "acceptInvite": "Einladung annehmen"
+    },
+    "connectionRequest": {
+      "subject": "{{senderName}} möchte sich mit Ihnen verbinden",
+      "title": "Neue Verbindungsanfrage",
+      "wantsToConnect": "möchte sich mit Ihnen verbinden",
+      "viewProfile": "Profil anzeigen",
+      "acceptRequest": "Anfrage annehmen"
+    },
+    "jobApplication": {
+      "subject": "Neue Bewerbung für {{jobTitle}}",
+      "title": "Neue Stellenbewerbung",
+      "appliedFor": "hat sich beworben für",
+      "atCompany": "bei {{companyName}}",
+      "viewApplication": "Bewerbung anzeigen"
+    },
+    "common": {
+      "hello": "Hallo",
+      "viewDetails": "Details anzeigen",
+      "expiryNote": "Dieser Link läuft in 7 Tagen ab",
+      "ignoreNote": "Wenn Sie diese E-Mail nicht erwartet haben, können Sie sie ignorieren"
+    }
+  },
+  "communityDiscussions": {
+    "title": "Community-Diskussionen",
+    "subtitle": "Nehmen Sie an Diskussionen über KI-Tools teil und teilen Sie Erkenntnisse",
+    "startDiscussion": "Diskussion starten",
+    "noDiscussions": "Noch keine Diskussionen",
+    "beFirst": "Seien Sie der Erste, der eine Diskussion startet!",
+    "replies": "{{count}} Antworten",
+    "reply": "Antworten",
+    "pinned": "Angeheftet",
+    "discussionTitle": "Diskussionstitel",
+    "discussionContent": "Was möchten Sie diskutieren?",
+    "postDiscussion": "Diskussion posten",
+    "cancel": "Abbrechen"
+  },
+  "communityEvents": {
+    "upcomingEvents": "Kommende Events",
+    "noUpcoming": "Keine kommenden Events",
+    "rsvp": "Teilnehmen",
+    "attending": "Teilnehme",
+    "notAttending": "Nicht teilnehmen",
+    "maybe": "Vielleicht",
+    "attendees": "{{count}} Teilnehmer",
+    "online": "Online-Event",
+    "inPerson": "Vor-Ort-Event",
+    "cancelRsvp": "Teilnahme absagen"
   }
 }

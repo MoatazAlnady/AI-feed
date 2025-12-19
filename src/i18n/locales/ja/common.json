@@ -971,5 +971,65 @@
       "events": "イベント",
       "jobs": "求人"
     }
+  },
+  "emailNotifications": {
+    "groupAnnouncement": {
+      "subject": "{{groupName}}で新しいお知らせ",
+      "title": "新しいグループのお知らせ",
+      "postedBy": "{{senderName}}が投稿",
+      "viewAnnouncement": "お知らせを見る"
+    },
+    "groupInvite": {
+      "subject": "{{groupName}}への招待を受けました",
+      "title": "グループ招待",
+      "invitedBy": "{{senderName}}から招待を受けました",
+      "acceptInvite": "招待を受ける"
+    },
+    "connectionRequest": {
+      "subject": "{{senderName}}がつながりを希望しています",
+      "title": "新しいつながりリクエスト",
+      "wantsToConnect": "があなたとつながりたいと思っています",
+      "viewProfile": "プロフィールを見る",
+      "acceptRequest": "リクエストを承認"
+    },
+    "jobApplication": {
+      "subject": "{{jobTitle}}への新しい応募",
+      "title": "新しい求人応募",
+      "appliedFor": "に応募しました",
+      "atCompany": "{{companyName}}で",
+      "viewApplication": "応募を見る"
+    },
+    "common": {
+      "hello": "こんにちは",
+      "viewDetails": "詳細を見る",
+      "expiryNote": "このリンクは7日で期限切れになります",
+      "ignoreNote": "このメールに心当たりがない場合は、無視してください"
+    }
+  },
+  "communityDiscussions": {
+    "title": "コミュニティディスカッション",
+    "subtitle": "AIツールについてのディスカッションに参加し、知見を共有しましょう",
+    "startDiscussion": "ディスカッションを始める",
+    "noDiscussions": "まだディスカッションがありません",
+    "beFirst": "最初にディスカッションを始めましょう！",
+    "replies": "{{count}}件の返信",
+    "reply": "返信",
+    "pinned": "固定済み",
+    "discussionTitle": "ディスカッションのタイトル",
+    "discussionContent": "何について話し合いたいですか？",
+    "postDiscussion": "ディスカッションを投稿",
+    "cancel": "キャンセル"
+  },
+  "communityEvents": {
+    "upcomingEvents": "今後のイベント",
+    "noUpcoming": "今後のイベントはありません",
+    "rsvp": "参加表明",
+    "attending": "参加する",
+    "notAttending": "参加しない",
+    "maybe": "未定",
+    "attendees": "{{count}}人が参加",
+    "online": "オンラインイベント",
+    "inPerson": "対面イベント",
+    "cancelRsvp": "参加をキャンセル"
   }
 }

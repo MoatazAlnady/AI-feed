@@ -1020,5 +1020,65 @@
       "events": "活动",
       "jobs": "职位"
     }
+  },
+  "emailNotifications": {
+    "groupAnnouncement": {
+      "subject": "{{groupName}}中有新公告",
+      "title": "新群组公告",
+      "postedBy": "{{senderName}}发布",
+      "viewAnnouncement": "查看公告"
+    },
+    "groupInvite": {
+      "subject": "您已被邀请加入{{groupName}}",
+      "title": "群组邀请",
+      "invitedBy": "{{senderName}}邀请您加入",
+      "acceptInvite": "接受邀请"
+    },
+    "connectionRequest": {
+      "subject": "{{senderName}}想与您建立联系",
+      "title": "新的联系请求",
+      "wantsToConnect": "想与您建立联系",
+      "viewProfile": "查看个人资料",
+      "acceptRequest": "接受请求"
+    },
+    "jobApplication": {
+      "subject": "{{jobTitle}}有新申请",
+      "title": "新的职位申请",
+      "appliedFor": "申请了职位",
+      "atCompany": "在{{companyName}}",
+      "viewApplication": "查看申请"
+    },
+    "common": {
+      "hello": "您好",
+      "viewDetails": "查看详情",
+      "expiryNote": "此链接将在7天后过期",
+      "ignoreNote": "如果您没有预期收到此邮件，可以安全忽略"
+    }
+  },
+  "communityDiscussions": {
+    "title": "社区讨论",
+    "subtitle": "参与AI工具讨论并分享见解",
+    "startDiscussion": "发起讨论",
+    "noDiscussions": "暂无讨论",
+    "beFirst": "成为第一个发起讨论的人！",
+    "replies": "{{count}}条回复",
+    "reply": "回复",
+    "pinned": "已置顶",
+    "discussionTitle": "讨论标题",
+    "discussionContent": "您想讨论什么？",
+    "postDiscussion": "发布讨论",
+    "cancel": "取消"
+  },
+  "communityEvents": {
+    "upcomingEvents": "即将举行的活动",
+    "noUpcoming": "没有即将举行的活动",
+    "rsvp": "报名",
+    "attending": "我要参加",
+    "notAttending": "不参加",
+    "maybe": "可能参加",
+    "attendees": "{{count}}人参加",
+    "online": "线上活动",
+    "inPerson": "线下活动",
+    "cancelRsvp": "取消报名"
   }
 }
