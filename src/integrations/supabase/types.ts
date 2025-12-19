@@ -1189,6 +1189,61 @@ export type Database = {
           },
         ]
       }
+      group_join_requests: {
+        Row: {
+          created_at: string | null
+          group_id: string | null
+          id: string
+          invited_by: string | null
+          message: string | null
+          responded_at: string | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          group_id?: string | null
+          id?: string
+          invited_by?: string | null
+          message?: string | null
+          responded_at?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          group_id?: string | null
+          id?: string
+          invited_by?: string | null
+          message?: string | null
+          responded_at?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_join_requests_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_join_requests_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_join_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       group_members: {
         Row: {
           group_id: string
@@ -1260,8 +1315,113 @@ export type Database = {
           },
         ]
       }
+      group_notification_preferences: {
+        Row: {
+          created_at: string | null
+          group_id: string | null
+          id: string
+          notify_admin_actions: boolean | null
+          notify_mentions: boolean | null
+          notify_new_members: boolean | null
+          notify_new_posts: boolean | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          group_id?: string | null
+          id?: string
+          notify_admin_actions?: boolean | null
+          notify_mentions?: boolean | null
+          notify_new_members?: boolean | null
+          notify_new_posts?: boolean | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          group_id?: string | null
+          id?: string
+          notify_admin_actions?: boolean | null
+          notify_mentions?: boolean | null
+          notify_new_members?: boolean | null
+          notify_new_posts?: boolean | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_notification_preferences_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_notification_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_posts: {
+        Row: {
+          author_id: string | null
+          comments_count: number | null
+          content: string
+          created_at: string | null
+          group_id: string | null
+          id: string
+          is_approved: boolean | null
+          likes_count: number | null
+          media_urls: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          comments_count?: number | null
+          content: string
+          created_at?: string | null
+          group_id?: string | null
+          id?: string
+          is_approved?: boolean | null
+          likes_count?: number | null
+          media_urls?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          comments_count?: number | null
+          content?: string
+          created_at?: string | null
+          group_id?: string | null
+          id?: string
+          is_approved?: boolean | null
+          likes_count?: number | null
+          media_urls?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_posts_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       groups: {
         Row: {
+          auto_approve_members: boolean | null
+          auto_approve_posts: boolean | null
+          category: string | null
           cover_image: string | null
           created_at: string
           creator_id: string
@@ -1273,6 +1433,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          auto_approve_members?: boolean | null
+          auto_approve_posts?: boolean | null
+          category?: string | null
           cover_image?: string | null
           created_at?: string
           creator_id: string
@@ -1284,6 +1447,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          auto_approve_members?: boolean | null
+          auto_approve_posts?: boolean | null
+          category?: string | null
           cover_image?: string | null
           created_at?: string
           creator_id?: string
@@ -1488,6 +1654,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      newsletter_batches: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          error_count: number | null
+          frequency: string
+          id: string
+          started_at: string | null
+          success_count: number | null
+          total_subscribers: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          error_count?: number | null
+          frequency: string
+          id?: string
+          started_at?: string | null
+          success_count?: number | null
+          total_subscribers?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          error_count?: number | null
+          frequency?: string
+          id?: string
+          started_at?: string | null
+          success_count?: number | null
+          total_subscribers?: number | null
+        }
+        Relationships: []
       }
       newsletter_content: {
         Row: {
@@ -1702,6 +1901,48 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      newsletter_sent_content: {
+        Row: {
+          content_id: string
+          content_type: string
+          id: string
+          newsletter_batch_id: string | null
+          sent_at: string | null
+          subscriber_id: string | null
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          id?: string
+          newsletter_batch_id?: string | null
+          sent_at?: string | null
+          subscriber_id?: string | null
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          id?: string
+          newsletter_batch_id?: string | null
+          sent_at?: string | null
+          subscriber_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_sent_content_newsletter_batch_id_fkey"
+            columns: ["newsletter_batch_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "newsletter_sent_content_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_subscribers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       newsletter_subscriber_interests: {
         Row: {

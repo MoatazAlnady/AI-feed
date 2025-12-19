@@ -1,5 +1,6 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { Resend } from "npm:resend@2.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -44,7 +45,16 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
+    // Initialize Resend if API key is available
+    const resend = resendApiKey ? new Resend(resendApiKey) : null;
+    
+    if (!resend) {
+      console.warn("RESEND_API_KEY not configured - emails will be logged but not sent");
+    }
 
     // Get the authorization header to verify admin access
     const authHeader = req.headers.get('authorization');
@@ -71,8 +81,13 @@ serve(async (req) => {
     }
 
     // Determine which frequency to process
-    const { frequency } = await req.json().catch(() => ({ frequency: "all" }));
-    console.log(`Processing newsletter for frequency: ${frequency}`);
+    const { frequency, issueId } = await req.json().catch(() => ({ frequency: "all", issueId: null }));
+    console.log(`Processing newsletter for frequency: ${frequency}, issueId: ${issueId}`);
+
+    // If specific issue ID is provided, send that issue
+    if (issueId) {
+      return await sendSpecificIssue(supabase, resend, issueId);
+    }
 
     // Get date thresholds based on frequency
     const now = new Date();
@@ -298,12 +313,36 @@ serve(async (req) => {
             subscriber.unsubscribe_token
           );
 
-          // Log the newsletter (in production, would send via email service)
-          console.log(`Newsletter generated for ${subscriber.email}:`, {
-            contentCount: content.length,
-            types: [...new Set(content.map(c => c.type))],
-            hasUnsubscribeToken: !!subscriber.unsubscribe_token
-          });
+          // Send email via Resend if configured
+          if (resend) {
+            try {
+              const { error: emailError } = await resend.emails.send({
+                from: "AI Feed <newsletter@resend.dev>",
+                to: [subscriber.email],
+                subject: `🤖 AI Feed ${freq.charAt(0).toUpperCase() + freq.slice(1)} Digest`,
+                html: newsletterHtml,
+              });
+
+              if (emailError) {
+                console.error(`Failed to send email to ${subscriber.email}:`, emailError);
+                errorCount++;
+                continue;
+              }
+
+              console.log(`Email sent successfully to ${subscriber.email}`);
+            } catch (emailErr) {
+              console.error(`Error sending email to ${subscriber.email}:`, emailErr);
+              errorCount++;
+              continue;
+            }
+          } else {
+            // Log the newsletter (fallback when Resend not configured)
+            console.log(`Newsletter generated for ${subscriber.email}:`, {
+              contentCount: content.length,
+              types: [...new Set(content.map(c => c.type))],
+              hasUnsubscribeToken: !!subscriber.unsubscribe_token
+            });
+          }
 
           // Track sent content
           for (const item of contentToTrack) {
@@ -334,7 +373,8 @@ serve(async (req) => {
         .update({
           total_subscribers: subscribers?.length || 0,
           success_count: successCount,
-          error_count: errorCount
+          error_count: errorCount,
+          completed_at: new Date().toISOString()
         })
         .eq("id", batchId);
 
@@ -356,6 +396,173 @@ serve(async (req) => {
     );
   }
 });
+
+// Send a specific newsletter issue to its recipients
+async function sendSpecificIssue(supabase: any, resend: any, issueId: string) {
+  console.log(`Sending specific newsletter issue: ${issueId}`);
+  
+  // Get the issue details
+  const { data: issue, error: issueError } = await supabase
+    .from("newsletter_issues")
+    .select("*")
+    .eq("id", issueId)
+    .single();
+
+  if (issueError || !issue) {
+    console.error("Issue not found:", issueError);
+    return new Response(
+      JSON.stringify({ error: "Newsletter issue not found" }),
+      { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
+  // Get issue items
+  const { data: issueItems } = await supabase
+    .from("newsletter_issue_items")
+    .select("*")
+    .eq("issue_id", issueId)
+    .order("sort_order");
+
+  // Get recipients
+  const { data: recipients } = await supabase
+    .from("newsletter_issue_recipients")
+    .select("subscriber_id, newsletter_subscribers(*)")
+    .eq("issue_id", issueId);
+
+  if (!recipients || recipients.length === 0) {
+    console.error("No recipients for issue");
+    return new Response(
+      JSON.stringify({ error: "No recipients for this newsletter issue" }),
+      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
+  const baseUrl = "https://fbhhumtpdfalgkhzirew.lovable.app";
+  let successCount = 0;
+  let errorCount = 0;
+
+  for (const recipient of recipients) {
+    const subscriber = recipient.newsletter_subscribers;
+    if (!subscriber) continue;
+
+    try {
+      const html = generateCustomIssueHtml(
+        subscriber.full_name || subscriber.email.split("@")[0],
+        issue,
+        issueItems || [],
+        baseUrl,
+        subscriber.unsubscribe_token
+      );
+
+      if (resend) {
+        const { error: emailError } = await resend.emails.send({
+          from: "AI Feed <newsletter@resend.dev>",
+          to: [subscriber.email],
+          subject: issue.subject || issue.title,
+          html,
+        });
+
+        if (emailError) {
+          console.error(`Failed to send to ${subscriber.email}:`, emailError);
+          errorCount++;
+          continue;
+        }
+      }
+
+      // Log delivery
+      await supabase.from("newsletter_delivery_log").insert({
+        issue_id: issueId,
+        subscriber_id: subscriber.id,
+        status: "sent",
+        sent_at: new Date().toISOString()
+      });
+
+      successCount++;
+    } catch (err) {
+      console.error(`Error sending to ${subscriber.email}:`, err);
+      errorCount++;
+    }
+  }
+
+  // Update issue status
+  await supabase
+    .from("newsletter_issues")
+    .update({ 
+      status: "sent",
+      scheduled_for: new Date().toISOString()
+    })
+    .eq("id", issueId);
+
+  return new Response(
+    JSON.stringify({ 
+      message: "Newsletter issue sent",
+      successCount,
+      errorCount
+    }),
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+  );
+}
+
+function generateCustomIssueHtml(
+  subscriberName: string,
+  issue: any,
+  items: any[],
+  baseUrl: string,
+  unsubscribeToken?: string
+): string {
+  const unsubscribeUrl = unsubscribeToken 
+    ? `${baseUrl}/unsubscribe?token=${unsubscribeToken}`
+    : `${baseUrl}/unsubscribe`;
+
+  const itemsHtml = items.map(item => `
+    <div style="background: #f9fafb; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+      <span style="display: inline-block; background: #e0e7ff; color: #4f46e5; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-bottom: 8px;">${item.content_type}</span>
+      <h3 style="margin: 0 0 8px; font-size: 16px;">
+        <a href="${baseUrl}${item.url_snapshot}" style="color: #1f2937; text-decoration: none;">${item.title_snapshot}</a>
+      </h3>
+      <p style="margin: 0; color: #6b7280; font-size: 14px;">${item.blurb_snapshot}</p>
+    </div>
+  `).join('');
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${issue.title}</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f5f5f5;">
+  <div style="max-width: 600px; margin: 0 auto; background: #fff;">
+    <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: #fff; padding: 40px 20px; text-align: center;">
+      <h1 style="margin: 0 0 10px; font-size: 28px;">🤖 ${issue.title}</h1>
+      <p style="margin: 0; opacity: 0.9;">Hi ${subscriberName}!</p>
+    </div>
+    
+    <div style="padding: 30px 20px;">
+      ${issue.intro_text ? `<p style="margin-bottom: 20px;">${issue.intro_text}</p>` : ''}
+      
+      ${itemsHtml}
+      
+      ${issue.outro_text ? `<p style="margin-top: 20px;">${issue.outro_text}</p>` : ''}
+      
+      <div style="text-align: center;">
+        <a href="${baseUrl}/newsfeed" style="display: inline-block; background: #6366f1; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin: 20px 0;">Explore More on AI Feed →</a>
+      </div>
+    </div>
+    
+    <div style="background: #1f2937; color: #9ca3af; padding: 30px 20px; text-align: center;">
+      <p>
+        <a href="${baseUrl}/settings" style="color: #6366f1; text-decoration: none;">Manage Preferences</a> | 
+        <a href="${unsubscribeUrl}" style="color: #6366f1; text-decoration: none;">Unsubscribe</a>
+      </p>
+      <p style="margin-top: 20px; font-size: 12px;">© ${new Date().getFullYear()} AI Feed. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+}
 
 function generateNewsletterHtml(
   subscriberName: string, 
