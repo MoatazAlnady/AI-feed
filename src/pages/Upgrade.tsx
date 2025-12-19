@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Crown, Check, Zap, MessageSquare, Users, Calendar, Wrench, BarChart3, ArrowRight, X, TrendingUp } from 'lucide-react';
+import { Crown, Check, Zap, MessageSquare, Users, Calendar, Wrench, BarChart3, ArrowRight, X, TrendingUp, Video, Radio, Lock, Mail, DollarSign, Headphones } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { useAuth } from '../context/AuthContext';
@@ -55,6 +55,42 @@ const Upgrade: React.FC = () => {
       title: 'Advanced Analytics',
       free: 'Basic stats',
       premium: 'Full analytics'
+    },
+    {
+      icon: Video,
+      title: 'Video Upload & Recording',
+      free: 'Not available',
+      premium: 'Upload, record & share videos'
+    },
+    {
+      icon: Radio,
+      title: 'Live Video',
+      free: 'Not available',
+      premium: 'Go live with your audience'
+    },
+    {
+      icon: Lock,
+      title: 'Post Privacy Controls',
+      free: 'Public only',
+      premium: 'Connections & groups visibility'
+    },
+    {
+      icon: Mail,
+      title: 'Creator Newsletter',
+      free: 'Not available',
+      premium: 'Send newsletters to subscribers'
+    },
+    {
+      icon: DollarSign,
+      title: 'Paid Subscriptions',
+      free: 'Not available',
+      premium: 'Monetize with subscriber tiers'
+    },
+    {
+      icon: Headphones,
+      title: 'Priority Support',
+      free: 'Community support',
+      premium: 'Direct support channel'
     }
   ];
 

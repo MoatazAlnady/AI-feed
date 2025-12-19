@@ -688,6 +688,62 @@ const Settings = () => {
             </CardContent>
           </Card>
 
+          {/* Default Post Privacy Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                {t('settings.defaultPostPrivacy', 'Default Post Privacy')}
+              </CardTitle>
+              <CardDescription>
+                {t('settings.defaultPostPrivacyDesc', 'Choose the default visibility for your new posts')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <div
+                  onClick={() => setProfile(prev => ({ ...prev, visibility: 'public' }))}
+                  className={`flex items-center space-x-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                    profile.visibility === 'public' ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'
+                  }`}
+                >
+                  <Globe className="h-5 w-5 text-green-500" />
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{t('settings.visibilityOptions.public')}</p>
+                    <p className="text-xs text-muted-foreground">{t('settings.publicDesc', 'Anyone can see your posts')}</p>
+                  </div>
+                  {profile.visibility === 'public' && <div className="w-2 h-2 rounded-full bg-primary" />}
+                </div>
+                <div
+                  onClick={() => setProfile(prev => ({ ...prev, visibility: 'connections' }))}
+                  className={`flex items-center space-x-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                    profile.visibility === 'connections' ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'
+                  }`}
+                >
+                  <Users className="h-5 w-5 text-blue-500" />
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{t('settings.visibilityOptions.connections')}</p>
+                    <p className="text-xs text-muted-foreground">{t('settings.connectionsDesc', 'Only your connections can see your posts')}</p>
+                  </div>
+                  {profile.visibility === 'connections' && <div className="w-2 h-2 rounded-full bg-primary" />}
+                </div>
+                <div
+                  onClick={() => setProfile(prev => ({ ...prev, visibility: 'private' }))}
+                  className={`flex items-center space-x-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                    profile.visibility === 'private' ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'
+                  }`}
+                >
+                  <Shield className="h-5 w-5 text-orange-500" />
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{t('settings.visibilityOptions.private')}</p>
+                    <p className="text-xs text-muted-foreground">{t('settings.privateDesc', 'Only you can see your posts')}</p>
+                  </div>
+                  {profile.visibility === 'private' && <div className="w-2 h-2 rounded-full bg-primary" />}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
