@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { X, Calendar, MapPin, Clock, Send } from 'lucide-react';
+import { X, Calendar, MapPin, Clock, Crown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { usePremiumStatus } from '../hooks/usePremiumStatus';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 interface CreateEventModalProps {
   isOpen: boolean;
@@ -9,7 +12,10 @@ interface CreateEventModalProps {
 }
 
 const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, onEventCreated }) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
+  const { isPremium, isLoading: isPremiumLoading } = usePremiumStatus();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -76,26 +82,62 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
 
   if (!isOpen) return null;
 
+  // Show premium required screen for non-premium users
+  if (!isPremiumLoading && !isPremium) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-8 text-center">
+          <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Crown className="h-8 w-8 text-white" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            {t('premium.requiredTitle', 'Premium Required')}
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            {t('premium.createEventMessage', 'Creating events is a premium feature. Upgrade to Premium to create and host your own events.')}
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={() => {
+                onClose();
+                navigate('/upgrade');
+              }}
+              className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
+            >
+              {t('premium.upgradeToPremium', 'Upgrade to Premium')}
+            </button>
+            <button
+              onClick={onClose}
+              className="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
+            >
+              {t('common.cancel', 'Cancel')}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Create Event</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('community.events.createEvent', 'Create Event')}</h2>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              <X className="h-5 w-5 text-gray-500" />
+              <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
             </button>
           </div>
 
           <form onSubmit={handleSubmit}>
             {/* Event Title */}
             <div className="mb-6">
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                Event Title *
+              <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('community.events.form.title', 'Event Title')} *
               </label>
               <input
                 type="text"
@@ -104,15 +146,15 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                 value={formData.title}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                placeholder="Enter event title"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                placeholder={t('community.events.form.titlePlaceholder', 'Enter event title')}
               />
             </div>
 
             {/* Description */}
             <div className="mb-6">
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                Description *
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('community.events.form.description', 'Description')} *
               </label>
               <textarea
                 id="description"
@@ -121,16 +163,16 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                 onChange={handleInputChange}
                 required
                 rows={4}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-                placeholder="Describe your event"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                placeholder={t('community.events.form.descriptionPlaceholder', 'Describe your event')}
               />
             </div>
 
             {/* Date and Time */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
-                  Date *
+                <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('community.events.form.date', 'Date')} *
                 </label>
                 <div className="relative">
                   <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -141,13 +183,13 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                     value={formData.date}
                     onChange={handleInputChange}
                     required
-                    className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
               </div>
               <div>
-                <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-2">
-                  Time *
+                <label htmlFor="time" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('community.events.form.time', 'Time')} *
                 </label>
                 <div className="relative">
                   <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -158,7 +200,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                     value={formData.time}
                     onChange={handleInputChange}
                     required
-                    className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                 </div>
               </div>
@@ -166,11 +208,11 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
 
             {/* Event Type */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Event Type *
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                {t('community.events.form.eventType', 'Event Type')} *
               </label>
               <div className="flex space-x-4">
-                <label className="flex items-center">
+                <label className="flex items-center text-gray-900 dark:text-white">
                   <input
                     type="radio"
                     name="type"
@@ -179,9 +221,9 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                     onChange={handleInputChange}
                     className="mr-2"
                   />
-                  Online
+                  {t('community.events.form.online', 'Online')}
                 </label>
-                <label className="flex items-center">
+                <label className="flex items-center text-gray-900 dark:text-white">
                   <input
                     type="radio"
                     name="type"
@@ -190,9 +232,9 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                     onChange={handleInputChange}
                     className="mr-2"
                   />
-                  In-Person
+                  {t('community.events.form.inPerson', 'In-Person')}
                 </label>
-                <label className="flex items-center">
+                <label className="flex items-center text-gray-900 dark:text-white">
                   <input
                     type="radio"
                     name="type"
@@ -201,15 +243,15 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                     onChange={handleInputChange}
                     className="mr-2"
                   />
-                  Hybrid
+                  {t('community.events.form.hybrid', 'Hybrid')}
                 </label>
               </div>
             </div>
 
             {/* Location */}
             <div className="mb-6">
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-                Location *
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('community.events.form.location', 'Location')} *
               </label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -220,16 +262,16 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                   value={formData.location}
                   onChange={handleInputChange}
                   required
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder={formData.type === 'online' ? 'Zoom, Teams, etc.' : 'Venue address'}
+                  className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder={formData.type === 'online' ? 'Zoom, Teams, etc.' : t('community.events.form.locationPlaceholder', 'Venue address')}
                 />
               </div>
             </div>
 
             {/* Category */}
             <div className="mb-8">
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-                Category *
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('community.events.form.category', 'Category')} *
               </label>
               <select
                 id="category"
@@ -237,9 +279,9 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                 value={formData.category}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
-                <option value="">Select a category</option>
+                <option value="">{t('community.events.form.selectCategory', 'Select a category')}</option>
                 {categories.map((category) => (
                   <option key={category} value={category}>
                     {category}
@@ -257,12 +299,12 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
               {isSubmitting ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  <span>Creating Event...</span>
+                  <span>{t('community.events.creating', 'Creating Event...')}</span>
                 </>
               ) : (
                 <>
                   <Calendar className="h-5 w-5" />
-                  <span>Create Event</span>
+                  <span>{t('community.events.createEvent', 'Create Event')}</span>
                 </>
               )}
             </button>

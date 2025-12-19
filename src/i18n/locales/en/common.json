@@ -108,12 +108,26 @@
     "errorOccurred": "An error occurred",
     "rateLimitExceeded": "Rate limit exceeded, please try again later",
     "paymentRequired": "Payment required to continue",
+    "promptsLeft": "left",
+    "limitReached": "Daily limit reached",
+    "limitReachedPlaceholder": "Daily limit reached...",
+    "freeUserLimit": "Free users: 1 prompt/day",
+    "premiumUserLimit": "Premium users: 10 prompts/day",
+    "upgradePremiumMessage": "Upgrade to Premium for 10 prompts/day",
+    "comeBackTomorrow": "Come back tomorrow for more prompts",
     "contextMode": {
       "creator": "Creator mode",
       "employer": "Employer mode",
       "toolDiscovery": "Tool discovery mode",
       "general": "General help"
     }
+  },
+  "premium": {
+    "requiredTitle": "Premium Required",
+    "createGroupMessage": "Creating groups is a premium feature. Upgrade to Premium to create and manage your own groups.",
+    "createEventMessage": "Creating events is a premium feature. Upgrade to Premium to create and host your own events.",
+    "upgradeToPremium": "Upgrade to Premium",
+    "upgrade": "Upgrade"
   },
   "auto": {
     "totalUsers": "Total Users",
