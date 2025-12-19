@@ -12,7 +12,7 @@ import LanguageSelector from './LanguageSelector';
 import ConnectionRequestsPopover from './ConnectionRequestsPopover';
 import NotificationDropdown from './NotificationDropdown';
 import ContactSupportModal from './ContactSupportModal';
-import ReportModal from './ReportModal';
+import ReportProblemModal from './ReportProblemModal';
 import { supabase } from '../integrations/supabase/client';
 
 const Header: React.FC = () => {
@@ -633,7 +633,7 @@ const Header: React.FC = () => {
                               </div>
                             </button>
                           )}
-                          {/* Report Content */}
+                          {/* Report a Problem */}
                           <button
                             onClick={() => {
                               setShowUserMenu(false);
@@ -643,7 +643,7 @@ const Header: React.FC = () => {
                           >
                             <div className="flex items-center">
                               <Flag className="h-4 w-4 mr-2 text-red-500 dark:text-red-400" />
-                              Report Content
+                              Report a Problem
                             </div>
                           </button>
                         </>
@@ -1002,13 +1002,10 @@ const Header: React.FC = () => {
         onClose={() => setShowContactSupportModal(false)}
       />
 
-      {/* Report Modal */}
-      <ReportModal
+      {/* Report a Problem Modal */}
+      <ReportProblemModal
         isOpen={showReportModal}
         onClose={() => setShowReportModal(false)}
-        type="content"
-        targetId=""
-        targetTitle="Report an issue"
       />
     </>
   );
