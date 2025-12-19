@@ -99,12 +99,26 @@
     "errorOccurred": "エラーが発生しました",
     "rateLimitExceeded": "レート制限を超えました。後でもう一度お試しください",
     "paymentRequired": "続行するには支払いが必要です",
+    "promptsLeft": "残り",
+    "limitReached": "1日の制限に達しました",
+    "limitReachedPlaceholder": "1日の制限に達しました...",
+    "freeUserLimit": "無料ユーザー：1日1メッセージ",
+    "premiumUserLimit": "プレミアムユーザー：1日10メッセージ",
+    "upgradePremiumMessage": "プレミアムにアップグレードして1日10メッセージ",
+    "comeBackTomorrow": "明日また来てください",
     "contextMode": {
       "creator": "クリエイターモード",
       "employer": "雇用者モード",
       "toolDiscovery": "ツール発見モード",
       "general": "一般的なヘルプ"
     }
+  },
+  "premium": {
+    "requiredTitle": "プレミアムが必要です",
+    "createGroupMessage": "グループの作成はプレミアム機能です。プレミアムにアップグレードして、独自のグループを作成・管理しましょう。",
+    "createEventMessage": "イベントの作成はプレミアム機能です。プレミアムにアップグレードして、独自のイベントを作成・開催しましょう。",
+    "upgradeToPremium": "プレミアムにアップグレード",
+    "upgrade": "アップグレード"
   },
   "auto": {
     "totalUsers": "総ユーザー数",
