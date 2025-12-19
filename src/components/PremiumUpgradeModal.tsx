@@ -22,13 +22,13 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
   const navigate = useNavigate();
 
   const features = [
-    { icon: MessageSquare, key: 'aiChat' },
-    { icon: Users, key: 'createGroups' },
-    { icon: Calendar, key: 'createEvents' },
-    { icon: Wrench, key: 'submitTools' },
-    { icon: TrendingUp, key: 'promoteContent' },
-    { icon: Crown, key: 'premiumBadge' },
-    { icon: BarChart3, key: 'advancedAnalytics' }
+    { icon: MessageSquare, label: '10 AI Chat prompts/day' },
+    { icon: Users, label: 'Unlimited group creation' },
+    { icon: Calendar, label: 'Create unlimited events' },
+    { icon: Wrench, label: 'Submit unlimited tools' },
+    { icon: TrendingUp, label: 'Promote your content' },
+    { icon: Crown, label: 'Premium verified badge' },
+    { icon: BarChart3, label: 'Advanced analytics' }
   ];
 
   const handleViewPlans = () => {
@@ -59,13 +59,13 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
         <div className="py-4">
           {/* Features List */}
           <div className="space-y-3 mb-6">
-            {features.map(({ icon: Icon, key }) => (
-              <div key={key} className="flex items-center gap-3">
+            {features.map(({ icon: Icon, label }, index) => (
+              <div key={index} className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                   <Icon className="h-4 w-4 text-primary" />
                 </div>
                 <span className="text-sm text-foreground">
-                  {t(`premiumModal.features.${key}`, key)}
+                  {label}
                 </span>
                 <Check className="h-4 w-4 text-green-500 ml-auto" />
               </div>

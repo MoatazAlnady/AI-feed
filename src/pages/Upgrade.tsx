@@ -16,45 +16,45 @@ const Upgrade: React.FC = () => {
   const features = [
     {
       icon: MessageSquare,
-      titleKey: 'upgrade.features.aiChat.title',
-      freeKey: 'upgrade.features.aiChat.free',
-      premiumKey: 'upgrade.features.aiChat.premium'
+      title: 'AI Chat',
+      free: '1 prompt/day',
+      premium: '10 prompts/day'
     },
     {
       icon: Users,
-      titleKey: 'upgrade.features.createGroups.title',
-      freeKey: 'upgrade.features.createGroups.free',
-      premiumKey: 'upgrade.features.createGroups.premium'
+      title: 'Create Groups',
+      free: 'Not available',
+      premium: 'Unlimited groups'
     },
     {
       icon: Calendar,
-      titleKey: 'upgrade.features.createEvents.title',
-      freeKey: 'upgrade.features.createEvents.free',
-      premiumKey: 'upgrade.features.createEvents.premium'
+      title: 'Create Events',
+      free: 'Not available',
+      premium: 'Unlimited events'
     },
     {
       icon: Wrench,
-      titleKey: 'upgrade.features.submitTools.title',
-      freeKey: 'upgrade.features.submitTools.free',
-      premiumKey: 'upgrade.features.submitTools.premium'
+      title: 'Submit Tools',
+      free: '1 tool/month',
+      premium: 'Unlimited tools'
     },
     {
       icon: TrendingUp,
-      titleKey: 'upgrade.features.promoteContent.title',
-      freeKey: 'upgrade.features.promoteContent.free',
-      premiumKey: 'upgrade.features.promoteContent.premium'
+      title: 'Content Promotion',
+      free: 'Not available',
+      premium: 'AI-powered targeting'
     },
     {
       icon: Crown,
-      titleKey: 'upgrade.features.premiumBadge.title',
-      freeKey: 'upgrade.features.premiumBadge.free',
-      premiumKey: 'upgrade.features.premiumBadge.premium'
+      title: 'Premium Badge',
+      free: 'Not available',
+      premium: 'Verified badge'
     },
     {
       icon: BarChart3,
-      titleKey: 'upgrade.features.advancedAnalytics.title',
-      freeKey: 'upgrade.features.advancedAnalytics.free',
-      premiumKey: 'upgrade.features.advancedAnalytics.premium'
+      title: 'Advanced Analytics',
+      free: 'Basic stats',
+      premium: 'Full analytics'
     }
   ];
 
@@ -157,7 +157,7 @@ const Upgrade: React.FC = () => {
                       <X className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                     )}
                     <span className={index < 1 ? 'text-foreground' : 'text-muted-foreground'}>
-                      {t(feature.freeKey)}
+                      {feature.free}
                     </span>
                   </li>
                 ))}
@@ -206,7 +206,7 @@ const Upgrade: React.FC = () => {
                   <li key={index} className="flex items-center gap-3">
                     <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
                     <span className="text-foreground font-medium">
-                      {t(feature.premiumKey)}
+                      {feature.premium}
                     </span>
                   </li>
                 ))}
@@ -244,20 +244,20 @@ const Upgrade: React.FC = () => {
                     <div className="p-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg">
                       <feature.icon className="h-5 w-5 text-white" />
                     </div>
-                    <CardTitle className="text-lg">{t(feature.titleKey)}</CardTitle>
+                    <CardTitle className="text-lg">{feature.title}</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">Free:</span>
-                      <span className="text-foreground">{t(feature.freeKey)}</span>
+                      <span className="text-foreground">{feature.free}</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-yellow-600 dark:text-yellow-400 font-medium">Premium:</span>
                       <span className="text-yellow-600 dark:text-yellow-400 font-medium flex items-center">
                         <Check className="h-4 w-4 mr-1" />
-                        {t(feature.premiumKey)}
+                        {feature.premium}
                       </span>
                     </div>
                   </div>
