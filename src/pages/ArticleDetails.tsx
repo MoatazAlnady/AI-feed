@@ -73,7 +73,7 @@ const ArticleDetails = () => {
       // Fetch author profile if user_id exists
       if (data.user_id) {
         const { data: profile } = await supabase
-          .from('user_profiles')
+          .from('user_profiles_safe')
           .select('id, full_name, avatar_url, headline')
           .eq('id', data.user_id)
           .single();

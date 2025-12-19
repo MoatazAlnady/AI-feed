@@ -1,5 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
+import * as React from "npm:react@18.3.1";
+import { renderAsync } from "npm:@react-email/components@0.0.22";
+import { GroupNotificationEmail } from "../_shared/email-templates/group-notification.tsx";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -13,10 +16,11 @@ interface GroupNotificationRequest {
   recipientEmail: string;
   recipientName: string;
   groupName: string;
-  notificationType: 'announcement' | 'invite' | 'mention';
+  notificationType: 'announcement' | 'invite' | 'mention' | 'new_member' | 'post';
   content?: string;
   groupUrl: string;
   senderName: string;
+  groupImage?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -35,7 +39,8 @@ const handler = async (req: Request): Promise<Response> => {
       notificationType, 
       content, 
       groupUrl,
-      senderName 
+      senderName,
+      groupImage
     }: GroupNotificationRequest = await req.json();
 
     console.log("send-group-notification: Processing notification", { 
@@ -53,66 +58,40 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Generate subject based on notification type
     let subject: string;
-    let htmlContent: string;
-
     switch (notificationType) {
       case 'announcement':
         subject = `📢 New announcement in ${groupName}`;
-        htmlContent = `
-          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h1 style="color: #1a1a1a; font-size: 24px;">New Group Announcement</h1>
-            <p style="color: #666; font-size: 16px;">Hello ${recipientName || 'there'},</p>
-            <p style="color: #666; font-size: 16px;">
-              <strong>${senderName}</strong> posted a new announcement in <strong>${groupName}</strong>:
-            </p>
-            ${content ? `<div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 16px 0;"><p style="color: #333; margin: 0;">${content}</p></div>` : ''}
-            <a href="${groupUrl}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin-top: 16px;">View Announcement</a>
-            <p style="color: #999; font-size: 14px; margin-top: 24px;">— AI Feed Team</p>
-          </div>
-        `;
         break;
-
       case 'invite':
         subject = `🎉 You've been invited to join ${groupName}`;
-        htmlContent = `
-          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h1 style="color: #1a1a1a; font-size: 24px;">Group Invitation</h1>
-            <p style="color: #666; font-size: 16px;">Hello ${recipientName || 'there'},</p>
-            <p style="color: #666; font-size: 16px;">
-              <strong>${senderName}</strong> has invited you to join the group <strong>${groupName}</strong>.
-            </p>
-            ${content ? `<div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 16px 0;"><p style="color: #333; margin: 0;">${content}</p></div>` : ''}
-            <a href="${groupUrl}" style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin-top: 16px;">Accept Invitation</a>
-            <p style="color: #999; font-size: 14px; margin-top: 24px;">This invitation expires in 7 days.</p>
-            <p style="color: #999; font-size: 14px;">— AI Feed Team</p>
-          </div>
-        `;
         break;
-
       case 'mention':
         subject = `💬 ${senderName} mentioned you in ${groupName}`;
-        htmlContent = `
-          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h1 style="color: #1a1a1a; font-size: 24px;">You were mentioned</h1>
-            <p style="color: #666; font-size: 16px;">Hello ${recipientName || 'there'},</p>
-            <p style="color: #666; font-size: 16px;">
-              <strong>${senderName}</strong> mentioned you in a discussion in <strong>${groupName}</strong>:
-            </p>
-            ${content ? `<div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 16px 0;"><p style="color: #333; margin: 0;">${content}</p></div>` : ''}
-            <a href="${groupUrl}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin-top: 16px;">View Discussion</a>
-            <p style="color: #999; font-size: 14px; margin-top: 24px;">— AI Feed Team</p>
-          </div>
-        `;
         break;
-
+      case 'new_member':
+        subject = `👋 ${senderName} joined ${groupName}`;
+        break;
+      case 'post':
+        subject = `📝 New post in ${groupName}`;
+        break;
       default:
-        console.error("send-group-notification: Unknown notification type", notificationType);
-        return new Response(
-          JSON.stringify({ error: "Unknown notification type" }),
-          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-        );
+        subject = `Update from ${groupName}`;
     }
+
+    // Render React Email template
+    const html = await renderAsync(
+      React.createElement(GroupNotificationEmail, {
+        recipientName: recipientName || 'there',
+        groupName,
+        groupImage,
+        notificationType,
+        senderName,
+        content,
+        actionUrl: groupUrl,
+      })
+    );
 
     console.log("send-group-notification: Sending email via Resend", { to: recipientEmail, subject });
 
@@ -120,7 +99,7 @@ const handler = async (req: Request): Promise<Response> => {
       from: "AI Feed <notifications@resend.dev>",
       to: [recipientEmail],
       subject,
-      html: htmlContent,
+      html,
     });
 
     console.log("send-group-notification: Email sent successfully", emailResponse);

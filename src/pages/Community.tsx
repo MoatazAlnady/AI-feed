@@ -19,6 +19,7 @@ import {
   Pin
 } from 'lucide-react';
 import ChatDock from '../components/ChatDock';
+import SEOHead from '../components/SEOHead';
 import CreateEventModal from '../components/CreateEventModal';
 import CreateGroupModal from '../components/CreateGroupModal';
 import GroupDiscussions from '../components/GroupDiscussions';
@@ -821,6 +822,14 @@ const Community: React.FC = () => {
   );
 
   return (
+    <>
+      <SEOHead
+        title="AI Community - Connect, Discuss & Network"
+        description="Join the AI Feed community. Connect with AI professionals, participate in discussions, attend events, and join groups focused on artificial intelligence and machine learning."
+        keywords="AI community, AI networking, AI discussions, AI events, AI groups, machine learning community"
+        url="https://aifeed.app/community"
+        type="website"
+      />
     <div className="py-8 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -919,6 +928,7 @@ const Community: React.FC = () => {
         }}
       />
     </div>
+    </>
   );
 };
 

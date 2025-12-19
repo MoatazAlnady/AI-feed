@@ -41,3 +41,6 @@ verify_jwt = true
 
 [functions.verify-promotion]
 verify_jwt = true
+
+[functions.generate-sitemap]
+verify_jwt = false

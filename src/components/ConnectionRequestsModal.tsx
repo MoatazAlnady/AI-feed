@@ -65,7 +65,7 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
       // Fetch requester profiles separately
       const requesterIds = data?.map(r => r.requester_id) || [];
       const { data: profiles } = await supabase
-        .from('user_profiles')
+        .from('user_profiles_safe')
         .select('id, full_name, profile_photo, job_title')
         .in('id', requesterIds);
 

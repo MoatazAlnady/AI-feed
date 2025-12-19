@@ -13,6 +13,7 @@ import ToolActionButtons from '@/components/ToolActionButtons';
 import { getCreatorProfileLink } from '@/utils/profileUtils';
 import { useAuth } from '@/context/AuthContext';
 import EditToolModal from '@/components/EditToolModal';
+import SEOHead from '@/components/SEOHead';
 
 interface Tool {
   id: string;
@@ -166,6 +167,18 @@ const ToolDetails: React.FC = () => {
   }
 
   return (
+    <>
+      <SEOHead
+        title={`${tool.name} - AI Tool Review & Features`}
+        description={tool.description}
+        keywords={`${tool.name}, AI tool, ${tool.category_name || 'AI'}, ${(tool.tags || []).join(', ')}`}
+        url={`https://aifeed.app/tools/${tool.id}`}
+        type="product"
+        productName={tool.name}
+        productRating={tool.average_rating}
+        productReviewCount={tool.review_count}
+        productCategory={tool.category_name}
+      />
     <div className="min-h-screen bg-background">
       {/* Navigation */}
       <div className="border-b border-border">
@@ -446,6 +459,7 @@ const ToolDetails: React.FC = () => {
         />
       )}
     </div>
+    </>
   );
 };
 
