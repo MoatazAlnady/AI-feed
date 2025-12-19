@@ -10,7 +10,7 @@ interface PremiumStatus {
 }
 
 export function usePremiumStatus(): PremiumStatus {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [isPremium, setIsPremium] = useState(false);
   const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -20,6 +20,14 @@ export function usePremiumStatus(): PremiumStatus {
     const fetchPremiumStatus = async () => {
       if (!user) {
         setIsPremium(false);
+        setPremiumUntil(null);
+        setIsLoading(false);
+        return;
+      }
+
+      // Admins automatically get premium access
+      if (isAdmin) {
+        setIsPremium(true);
         setPremiumUntil(null);
         setIsLoading(false);
         return;
@@ -55,7 +63,7 @@ export function usePremiumStatus(): PremiumStatus {
     };
 
     fetchPremiumStatus();
-  }, [user]);
+  }, [user, isAdmin]);
 
   return { isPremium, premiumUntil, isLoading, error };
 }
