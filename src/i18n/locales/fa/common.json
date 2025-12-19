@@ -957,5 +957,65 @@
       "events": "رویداد",
       "jobs": "شغل"
     }
+  },
+  "emailNotifications": {
+    "groupAnnouncement": {
+      "subject": "اعلان جدید در {{groupName}}",
+      "title": "اعلان جدید گروه",
+      "postedBy": "ارسال شده توسط {{senderName}}",
+      "viewAnnouncement": "مشاهده اعلان"
+    },
+    "groupInvite": {
+      "subject": "شما به {{groupName}} دعوت شده‌اید",
+      "title": "دعوت به گروه",
+      "invitedBy": "{{senderName}} شما را دعوت کرده است",
+      "acceptInvite": "پذیرش دعوت"
+    },
+    "connectionRequest": {
+      "subject": "{{senderName}} می‌خواهد با شما ارتباط برقرار کند",
+      "title": "درخواست ارتباط جدید",
+      "wantsToConnect": "می‌خواهد با شما ارتباط برقرار کند",
+      "viewProfile": "مشاهده پروفایل",
+      "acceptRequest": "پذیرش درخواست"
+    },
+    "jobApplication": {
+      "subject": "درخواست جدید برای {{jobTitle}}",
+      "title": "درخواست شغلی جدید",
+      "appliedFor": "برای موقعیت درخواست داده است",
+      "atCompany": "در {{companyName}}",
+      "viewApplication": "مشاهده درخواست"
+    },
+    "common": {
+      "hello": "سلام",
+      "viewDetails": "مشاهده جزئیات",
+      "expiryNote": "این لینک در 7 روز منقضی می‌شود",
+      "ignoreNote": "اگر انتظار این ایمیل را نداشتید، می‌توانید آن را نادیده بگیرید"
+    }
+  },
+  "communityDiscussions": {
+    "title": "بحث‌های انجمن",
+    "subtitle": "به بحث‌های مربوط به ابزارهای هوش مصنوعی بپیوندید و دیدگاه‌های خود را به اشتراک بگذارید",
+    "startDiscussion": "شروع بحث",
+    "noDiscussions": "هنوز بحثی وجود ندارد",
+    "beFirst": "اولین نفری باشید که بحث را شروع می‌کند!",
+    "replies": "{{count}} پاسخ",
+    "reply": "پاسخ",
+    "pinned": "سنجاق شده",
+    "discussionTitle": "عنوان بحث",
+    "discussionContent": "در مورد چه چیزی می‌خواهید بحث کنید؟",
+    "postDiscussion": "ارسال بحث",
+    "cancel": "لغو"
+  },
+  "communityEvents": {
+    "upcomingEvents": "رویدادهای آینده",
+    "noUpcoming": "رویداد آینده‌ای وجود ندارد",
+    "rsvp": "ثبت‌نام",
+    "attending": "شرکت می‌کنم",
+    "notAttending": "شرکت نمی‌کنم",
+    "maybe": "شاید",
+    "attendees": "{{count}} شرکت‌کننده",
+    "online": "رویداد آنلاین",
+    "inPerson": "رویداد حضوری",
+    "cancelRsvp": "لغو ثبت‌نام"
   }
 }

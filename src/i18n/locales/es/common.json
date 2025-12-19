@@ -1160,5 +1160,65 @@
       "events": "Evento",
       "jobs": "Trabajo"
     }
+  },
+  "emailNotifications": {
+    "groupAnnouncement": {
+      "subject": "Nuevo anuncio en {{groupName}}",
+      "title": "Nuevo anuncio del grupo",
+      "postedBy": "Publicado por {{senderName}}",
+      "viewAnnouncement": "Ver anuncio"
+    },
+    "groupInvite": {
+      "subject": "Has sido invitado a unirte a {{groupName}}",
+      "title": "Invitación al grupo",
+      "invitedBy": "{{senderName}} te invitó a unirte",
+      "acceptInvite": "Aceptar invitación"
+    },
+    "connectionRequest": {
+      "subject": "{{senderName}} quiere conectar contigo",
+      "title": "Nueva solicitud de conexión",
+      "wantsToConnect": "quiere conectar contigo",
+      "viewProfile": "Ver perfil",
+      "acceptRequest": "Aceptar solicitud"
+    },
+    "jobApplication": {
+      "subject": "Nueva solicitud para {{jobTitle}}",
+      "title": "Nueva solicitud de empleo",
+      "appliedFor": "solicitó el puesto de",
+      "atCompany": "en {{companyName}}",
+      "viewApplication": "Ver solicitud"
+    },
+    "common": {
+      "hello": "Hola",
+      "viewDetails": "Ver detalles",
+      "expiryNote": "Este enlace expira en 7 días",
+      "ignoreNote": "Si no esperabas este correo, puedes ignorarlo"
+    }
+  },
+  "communityDiscussions": {
+    "title": "Discusiones de la comunidad",
+    "subtitle": "Únete a discusiones sobre herramientas de IA y comparte ideas",
+    "startDiscussion": "Iniciar discusión",
+    "noDiscussions": "Aún no hay discusiones",
+    "beFirst": "¡Sé el primero en iniciar una discusión!",
+    "replies": "{{count}} respuestas",
+    "reply": "Responder",
+    "pinned": "Fijado",
+    "discussionTitle": "Título de la discusión",
+    "discussionContent": "¿Qué te gustaría discutir?",
+    "postDiscussion": "Publicar discusión",
+    "cancel": "Cancelar"
+  },
+  "communityEvents": {
+    "upcomingEvents": "Próximos eventos",
+    "noUpcoming": "No hay eventos próximos",
+    "rsvp": "Confirmar asistencia",
+    "attending": "Asistiré",
+    "notAttending": "No asistiré",
+    "maybe": "Quizás",
+    "attendees": "{{count}} asistentes",
+    "online": "Evento en línea",
+    "inPerson": "Evento presencial",
+    "cancelRsvp": "Cancelar asistencia"
   }
 }

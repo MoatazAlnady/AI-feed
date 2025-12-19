@@ -1212,5 +1212,65 @@
       "events": "Événement",
       "jobs": "Emploi"
     }
+  },
+  "emailNotifications": {
+    "groupAnnouncement": {
+      "subject": "Nouvelle annonce dans {{groupName}}",
+      "title": "Nouvelle annonce de groupe",
+      "postedBy": "Publié par {{senderName}}",
+      "viewAnnouncement": "Voir l'annonce"
+    },
+    "groupInvite": {
+      "subject": "Vous avez été invité à rejoindre {{groupName}}",
+      "title": "Invitation au groupe",
+      "invitedBy": "{{senderName}} vous a invité à rejoindre",
+      "acceptInvite": "Accepter l'invitation"
+    },
+    "connectionRequest": {
+      "subject": "{{senderName}} souhaite se connecter avec vous",
+      "title": "Nouvelle demande de connexion",
+      "wantsToConnect": "souhaite se connecter avec vous",
+      "viewProfile": "Voir le profil",
+      "acceptRequest": "Accepter la demande"
+    },
+    "jobApplication": {
+      "subject": "Nouvelle candidature pour {{jobTitle}}",
+      "title": "Nouvelle candidature",
+      "appliedFor": "a postulé pour le poste de",
+      "atCompany": "chez {{companyName}}",
+      "viewApplication": "Voir la candidature"
+    },
+    "common": {
+      "hello": "Bonjour",
+      "viewDetails": "Voir les détails",
+      "expiryNote": "Ce lien expire dans 7 jours",
+      "ignoreNote": "Si vous n'attendiez pas cet email, vous pouvez l'ignorer en toute sécurité"
+    }
+  },
+  "communityDiscussions": {
+    "title": "Discussions communautaires",
+    "subtitle": "Rejoignez des discussions sur les outils IA et partagez vos idées",
+    "startDiscussion": "Démarrer une discussion",
+    "noDiscussions": "Pas encore de discussions",
+    "beFirst": "Soyez le premier à lancer une discussion !",
+    "replies": "{{count}} réponses",
+    "reply": "Répondre",
+    "pinned": "Épinglé",
+    "discussionTitle": "Titre de la discussion",
+    "discussionContent": "Que souhaitez-vous discuter ?",
+    "postDiscussion": "Publier la discussion",
+    "cancel": "Annuler"
+  },
+  "communityEvents": {
+    "upcomingEvents": "Événements à venir",
+    "noUpcoming": "Aucun événement à venir",
+    "rsvp": "Confirmer",
+    "attending": "Je participe",
+    "notAttending": "Je ne participe pas",
+    "maybe": "Peut-être",
+    "attendees": "{{count}} participants",
+    "online": "Événement en ligne",
+    "inPerson": "Événement en présentiel",
+    "cancelRsvp": "Annuler la participation"
   }
 }

@@ -971,5 +971,65 @@
       "events": "Событие",
       "jobs": "Вакансия"
     }
+  },
+  "emailNotifications": {
+    "groupAnnouncement": {
+      "subject": "Новое объявление в {{groupName}}",
+      "title": "Новое объявление группы",
+      "postedBy": "Опубликовано {{senderName}}",
+      "viewAnnouncement": "Посмотреть объявление"
+    },
+    "groupInvite": {
+      "subject": "Вас пригласили присоединиться к {{groupName}}",
+      "title": "Приглашение в группу",
+      "invitedBy": "{{senderName}} приглашает вас присоединиться",
+      "acceptInvite": "Принять приглашение"
+    },
+    "connectionRequest": {
+      "subject": "{{senderName}} хочет связаться с вами",
+      "title": "Новый запрос на связь",
+      "wantsToConnect": "хочет связаться с вами",
+      "viewProfile": "Посмотреть профиль",
+      "acceptRequest": "Принять запрос"
+    },
+    "jobApplication": {
+      "subject": "Новая заявка на {{jobTitle}}",
+      "title": "Новая заявка на работу",
+      "appliedFor": "подал заявку на должность",
+      "atCompany": "в {{companyName}}",
+      "viewApplication": "Посмотреть заявку"
+    },
+    "common": {
+      "hello": "Привет",
+      "viewDetails": "Посмотреть детали",
+      "expiryNote": "Срок действия этой ссылки истекает через 7 дней",
+      "ignoreNote": "Если вы не ожидали это письмо, можете его проигнорировать"
+    }
+  },
+  "communityDiscussions": {
+    "title": "Обсуждения сообщества",
+    "subtitle": "Присоединяйтесь к обсуждениям об ИИ-инструментах и делитесь идеями",
+    "startDiscussion": "Начать обсуждение",
+    "noDiscussions": "Пока нет обсуждений",
+    "beFirst": "Будьте первым, кто начнёт обсуждение!",
+    "replies": "{{count}} ответов",
+    "reply": "Ответить",
+    "pinned": "Закреплено",
+    "discussionTitle": "Заголовок обсуждения",
+    "discussionContent": "Что вы хотите обсудить?",
+    "postDiscussion": "Опубликовать обсуждение",
+    "cancel": "Отмена"
+  },
+  "communityEvents": {
+    "upcomingEvents": "Предстоящие события",
+    "noUpcoming": "Нет предстоящих событий",
+    "rsvp": "Подтвердить участие",
+    "attending": "Буду присутствовать",
+    "notAttending": "Не буду присутствовать",
+    "maybe": "Возможно",
+    "attendees": "{{count}} участников",
+    "online": "Онлайн событие",
+    "inPerson": "Офлайн событие",
+    "cancelRsvp": "Отменить участие"
   }
 }

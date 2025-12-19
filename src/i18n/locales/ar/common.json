@@ -1033,5 +1033,65 @@
       "events": "حدث",
       "jobs": "وظيفة"
     }
+  },
+  "emailNotifications": {
+    "groupAnnouncement": {
+      "subject": "إعلان جديد في {{groupName}}",
+      "title": "إعلان مجموعة جديد",
+      "postedBy": "نشره {{senderName}}",
+      "viewAnnouncement": "عرض الإعلان"
+    },
+    "groupInvite": {
+      "subject": "تمت دعوتك للانضمام إلى {{groupName}}",
+      "title": "دعوة للمجموعة",
+      "invitedBy": "دعاك {{senderName}} للانضمام",
+      "acceptInvite": "قبول الدعوة"
+    },
+    "connectionRequest": {
+      "subject": "{{senderName}} يريد التواصل معك",
+      "title": "طلب تواصل جديد",
+      "wantsToConnect": "يريد التواصل معك",
+      "viewProfile": "عرض الملف الشخصي",
+      "acceptRequest": "قبول الطلب"
+    },
+    "jobApplication": {
+      "subject": "طلب جديد لـ {{jobTitle}}",
+      "title": "طلب توظيف جديد",
+      "appliedFor": "تقدم لوظيفة",
+      "atCompany": "في {{companyName}}",
+      "viewApplication": "عرض الطلب"
+    },
+    "common": {
+      "hello": "مرحباً",
+      "viewDetails": "عرض التفاصيل",
+      "expiryNote": "تنتهي صلاحية هذا الرابط خلال 7 أيام",
+      "ignoreNote": "إذا لم تكن تتوقع هذا البريد الإلكتروني، يمكنك تجاهله بأمان"
+    }
+  },
+  "communityDiscussions": {
+    "title": "مناقشات المجتمع",
+    "subtitle": "انضم إلى مناقشات حول أدوات الذكاء الاصطناعي وشارك رؤاك",
+    "startDiscussion": "بدء مناقشة",
+    "noDiscussions": "لا توجد مناقشات بعد",
+    "beFirst": "كن أول من يبدأ مناقشة!",
+    "replies": "{{count}} ردود",
+    "reply": "رد",
+    "pinned": "مثبت",
+    "discussionTitle": "عنوان المناقشة",
+    "discussionContent": "ما الذي تود مناقشته؟",
+    "postDiscussion": "نشر المناقشة",
+    "cancel": "إلغاء"
+  },
+  "communityEvents": {
+    "upcomingEvents": "الأحداث القادمة",
+    "noUpcoming": "لا توجد أحداث قادمة",
+    "rsvp": "الحضور",
+    "attending": "سأحضر",
+    "notAttending": "لن أحضر",
+    "maybe": "ربما",
+    "attendees": "{{count}} حضور",
+    "online": "حدث عبر الإنترنت",
+    "inPerson": "حدث حضوري",
+    "cancelRsvp": "إلغاء الحضور"
   }
 }

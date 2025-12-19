@@ -1693,5 +1693,65 @@
       "schedule": "Schedule Promotion",
       "industry": "Industry Targeting"
     }
+  },
+  "emailNotifications": {
+    "groupAnnouncement": {
+      "subject": "New announcement in {{groupName}}",
+      "title": "New Group Announcement",
+      "postedBy": "Posted by {{senderName}}",
+      "viewAnnouncement": "View Announcement"
+    },
+    "groupInvite": {
+      "subject": "You've been invited to join {{groupName}}",
+      "title": "Group Invitation",
+      "invitedBy": "{{senderName}} invited you to join",
+      "acceptInvite": "Accept Invitation"
+    },
+    "connectionRequest": {
+      "subject": "{{senderName}} wants to connect with you",
+      "title": "New Connection Request",
+      "wantsToConnect": "wants to connect with you",
+      "viewProfile": "View Profile",
+      "acceptRequest": "Accept Request"
+    },
+    "jobApplication": {
+      "subject": "New application for {{jobTitle}}",
+      "title": "New Job Application",
+      "appliedFor": "applied for the position of",
+      "atCompany": "at {{companyName}}",
+      "viewApplication": "View Application"
+    },
+    "common": {
+      "hello": "Hello",
+      "viewDetails": "View Details",
+      "expiryNote": "This link expires in 7 days",
+      "ignoreNote": "If you didn't expect this email, you can safely ignore it"
+    }
+  },
+  "communityDiscussions": {
+    "title": "Community Discussions",
+    "subtitle": "Join discussions about AI tools and share insights",
+    "startDiscussion": "Start a Discussion",
+    "noDiscussions": "No discussions yet",
+    "beFirst": "Be the first to start a discussion!",
+    "replies": "{{count}} replies",
+    "reply": "Reply",
+    "pinned": "Pinned",
+    "discussionTitle": "Discussion Title",
+    "discussionContent": "What would you like to discuss?",
+    "postDiscussion": "Post Discussion",
+    "cancel": "Cancel"
+  },
+  "communityEvents": {
+    "upcomingEvents": "Upcoming Events",
+    "noUpcoming": "No upcoming events",
+    "rsvp": "RSVP",
+    "attending": "Attending",
+    "notAttending": "Not Attending",
+    "maybe": "Maybe",
+    "attendees": "{{count}} attendees",
+    "online": "Online Event",
+    "inPerson": "In-Person Event",
+    "cancelRsvp": "Cancel RSVP"
   }
 }
