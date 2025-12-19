@@ -15,11 +15,11 @@ const languages = [
   { code: 'de', name: 'German', nativeName: 'Deutsch' },
   { code: 'fr', name: 'French', nativeName: 'Français' },
   { code: 'es', name: 'Spanish', nativeName: 'Español' },
+  { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' },
   { code: 'fa', name: 'Persian', nativeName: 'فارسی' },
   { code: 'ru', name: 'Russian', nativeName: 'Русский' },
   { code: 'zh', name: 'Chinese', nativeName: '中文' },
   { code: 'ja', name: 'Japanese', nativeName: '日本語' },
-  { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' },
 ];
 
 const LanguageSelector: React.FC<LanguageSelectorProps> = ({ 

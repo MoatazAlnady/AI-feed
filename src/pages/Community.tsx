@@ -29,7 +29,7 @@ const Community: React.FC = () => {
   const { openChatWith } = useChatDock();
   const navigate = useNavigate();
   
-  const [activeTab, setActiveTab] = useState<'networking' | 'feed' | 'events' | 'groups'>('networking');
+  const [activeTab, setActiveTab] = useState<'networking' | 'discussion' | 'events' | 'groups'>('networking');
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
   const [creators, setCreators] = useState<any[]>([]);
@@ -216,12 +216,12 @@ const Community: React.FC = () => {
            creator.bio?.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
-  const renderFeed = () => (
+  const renderDiscussion = () => (
     <div className="space-y-6">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-        <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">{t('community.feed.title')}</h3>
+        <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">{t('community.discussion.title', 'Community Discussions')}</h3>
         <p className="text-gray-600 dark:text-gray-400">
-          {t('community.feed.subtitle')}
+          {t('community.discussion.subtitle', 'Join discussions about AI tools, share insights, and learn from the community.')}
         </p>
       </div>
     </div>
@@ -527,9 +527,9 @@ const Community: React.FC = () => {
             <nav className="-mb-px flex space-x-0 px-6">
               {[
                 { id: 'networking', label: t('community.tabs.networking'), icon: Users },
-                { id: 'feed', label: t('community.tabs.feed'), icon: MessageSquare },
                 { id: 'events', label: t('community.tabs.events'), icon: Calendar },
-                { id: 'groups', label: t('community.tabs.groups'), icon: Hash }
+                { id: 'groups', label: t('community.tabs.groups'), icon: Hash },
+                { id: 'discussion', label: t('community.tabs.discussion', 'Discussion'), icon: MessageSquare }
               ].map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -554,10 +554,10 @@ const Community: React.FC = () => {
 
         {/* Content */}
         <div>
-          {activeTab === 'feed' && renderFeed()}
+          {activeTab === 'networking' && renderNetworking()}
           {activeTab === 'events' && renderEvents()}
           {activeTab === 'groups' && renderGroups()}
-          {activeTab === 'networking' && renderNetworking()}
+          {activeTab === 'discussion' && renderDiscussion()}
         </div>
       </div>
 
