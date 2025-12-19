@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import ChatDock from '../components/ChatDock';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Filter, Grid, List, GitCompare, Star, ExternalLink, Bookmark, Zap, Plus, TrendingUp, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Search, Filter, Grid, List, GitCompare, Star, Bookmark, Plus, TrendingUp, ArrowUpDown, Lock, Bot } from 'lucide-react';
 import ToolComparisonModal from '../components/ToolComparisonModal';
 import PromoteContentModal from '../components/PromoteContentModal';
 import ToolStars from '../components/ToolStars';
@@ -9,8 +9,11 @@ import ToolActionButtons from '../components/ToolActionButtons';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useTheme } from '@/providers/ThemeProvider';
-import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Tool {
   id: string;
@@ -30,14 +33,14 @@ interface Tool {
   updated_at: string;
   average_rating: number;
   review_count: number;
+  logo_url?: string;
 }
 
 const Tools: React.FC = () => {
   const { t } = useTranslation();
-  const { user, isAdmin } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { theme } = useTheme();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -48,45 +51,54 @@ const Tools: React.FC = () => {
   const [tools, setTools] = useState<Tool[]>([]);
   const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Debug: Log showComparison state changes
-  useEffect(() => {
-    console.log('showComparison state changed:', showComparison);
-  }, [showComparison]);
+  const [isPremium, setIsPremium] = useState(false);
+  
+  // Sorting and filtering
+  const [sortBy, setSortBy] = useState<'newest' | 'rating' | 'reviews' | 'name'>('newest');
+  const [priceFilter, setPriceFilter] = useState<'all' | 'free' | 'freemium' | 'paid'>('all');
 
   useEffect(() => {
     fetchToolsAndCategories();
+    checkPremiumStatus();
   }, []);
+
+  const checkPremiumStatus = async () => {
+    if (!user) {
+      setIsPremium(false);
+      return;
+    }
+    
+    const { data } = await supabase
+      .from('user_profiles')
+      .select('is_premium, premium_until')
+      .eq('id', user.id)
+      .single();
+    
+    if (data) {
+      const isActive = data.is_premium && (!data.premium_until || new Date(data.premium_until) > new Date());
+      setIsPremium(isActive);
+    }
+  };
 
   const fetchToolsAndCategories = async () => {
     try {
-      console.log('Fetching tools and categories...');
-      
-      // Fetch approved tools - use existing denormalized columns
       const { data: toolsData, error: toolsError } = await supabase
         .from('tools')
         .select('*')
         .eq('status', 'published')
         .order('created_at', { ascending: false });
 
-      console.log('Tools query result:', { toolsData, toolsError });
-
       if (toolsError) throw toolsError;
 
-      // Fetch categories separately
       const { data: categoriesData, error: categoriesError } = await supabase
         .from('categories')
         .select('id, name')
         .order('name');
 
-      console.log('Categories query result:', { categoriesData, categoriesError });
-
       if (categoriesError) throw categoriesError;
 
-      // Create a map for quick category lookup
       const categoryMap = new Map(categoriesData?.map(cat => [cat.id, cat.name]) || []);
 
-      // Transform tools data with category names and ratings
       const transformedTools = (toolsData || []).map(tool => ({
         ...tool,
         category_name: categoryMap.get(tool.category_id) || 'Uncategorized',
@@ -94,35 +106,76 @@ const Tools: React.FC = () => {
         review_count: tool.review_count || 0
       }));
 
-      console.log('Transformed tools:', transformedTools);
-      console.log('Categories for dropdown:', categoriesData);
-
       setTools(transformedTools);
-      setCategories([{ id: 'all', name: 'All Categories' }, ...(categoriesData || [])]);
+      setCategories(categoriesData || []);
     } catch (error) {
-      console.error('Error fetching tools and categories:', error);
+      console.error('Error fetching tools:', error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleToolDelete = () => {
-    fetchToolsAndCategories(); // Refresh the tools list
+    fetchToolsAndCategories();
   };
 
-  const filteredTools = tools.filter(tool => {
-    const matchesSearch = tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         tool.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (tool.tags || []).some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesCategory = selectedCategory === 'all' || tool.category_id === selectedCategory;
-    
-    return matchesSearch && matchesCategory;
-  });
+  const handleCompareClick = () => {
+    if (!isPremium) {
+      toast({
+        title: t('toolComparison.premiumRequired'),
+        description: t('toolComparison.premiumDescription'),
+        variant: 'destructive'
+      });
+      navigate('/upgrade');
+      return;
+    }
+    setShowComparison(true);
+  };
+
+  // Filter and sort tools
+  const filteredAndSortedTools = React.useMemo(() => {
+    let result = tools.filter(tool => {
+      const matchesSearch = tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tool.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (tool.tags || []).some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+      const matchesCategory = selectedCategory === 'all' || tool.category_id === selectedCategory;
+      
+      let matchesPrice = true;
+      if (priceFilter !== 'all') {
+        const pricing = tool.pricing.toLowerCase();
+        if (priceFilter === 'free') {
+          matchesPrice = pricing === 'free';
+        } else if (priceFilter === 'freemium') {
+          matchesPrice = pricing.includes('freemium') || pricing.includes('free tier');
+        } else if (priceFilter === 'paid') {
+          matchesPrice = !pricing.includes('free');
+        }
+      }
+      
+      return matchesSearch && matchesCategory && matchesPrice;
+    });
+
+    result.sort((a, b) => {
+      switch (sortBy) {
+        case 'rating':
+          return (b.average_rating || 0) - (a.average_rating || 0);
+        case 'reviews':
+          return (b.review_count || 0) - (a.review_count || 0);
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'newest':
+        default:
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }
+    });
+
+    return result;
+  }, [tools, searchTerm, selectedCategory, sortBy, priceFilter]);
 
   if (loading) {
     return (
-      <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="py-8 bg-background min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -134,319 +187,257 @@ const Tools: React.FC = () => {
 
   return (
     <>
-      <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="py-6 bg-background min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between">
+          <div className="mb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
-                <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
+                <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
                   {t('tools.title')}
                 </h1>
-                <p className="text-xl text-muted-foreground">
+                <p className="text-muted-foreground mt-1">
                   {t('tools.subtitle')}
                 </p>
               </div>
-              <div className="flex items-center space-x-4">
-                <Link
-                  to="/tools/create"
-                  className="flex items-center space-x-2 px-6 py-3 bg-gradient-primary text-white rounded-xl hover:opacity-90 transition-all duration-200 font-semibold shadow-md"
+              <div className="flex items-center gap-2">
+                <Button onClick={() => navigate('/submit-tool')} size="sm">
+                  <Plus className="h-4 w-4 mr-1" />
+                  {t('tools.submitTool')}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleCompareClick}
+                  size="sm"
                 >
-                  <Plus className="h-5 w-5" />
-                  <span>{t('tools.submitTool')}</span>
-                </Link>
-                <button
-                  onClick={() => {
-                    console.log('Compare button clicked, showComparison:', showComparison);
-                    setShowComparison(true);
-                    console.log('setShowComparison(true) called');
-                  }}
-                  className="flex items-center space-x-2 px-6 py-3 border border-border text-foreground bg-card rounded-xl hover:bg-muted transition-all duration-200 font-semibold"
-                >
-                  <GitCompare className="h-5 w-5" />
-                  <span>{t('tools.compareTools')}</span>
-                </button>
+                  {!isPremium && <Lock className="h-3 w-3 mr-1" />}
+                  <GitCompare className="h-4 w-4 mr-1" />
+                  {t('tools.compareTools')}
+                </Button>
               </div>
             </div>
           </div>
 
           {/* Search and Filters */}
-          <div className="bg-card text-card-foreground rounded-2xl shadow-sm p-6 mb-8 border border-border">
-            <div className="flex flex-col lg:flex-row gap-4">
-              {/* Search */}
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder={t('tools.searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
-                />
-              </div>
+          <div className="flex flex-col sm:flex-row gap-3 mb-6">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder={t('tools.searchPlaceholder')}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-full sm:w-[160px]">
+                <Filter className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('common.all')} Categories</SelectItem>
+                {categories.map(cat => (
+                  <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-              {/* Category Filter */}
-              <div className="relative">
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="appearance-none bg-card border border-border rounded-xl px-4 py-3 pr-8 focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
-                >
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <Select value={priceFilter} onValueChange={(v: any) => setPriceFilter(v)}>
+              <SelectTrigger className="w-full sm:w-[130px]">
+                <SelectValue placeholder="Price" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('common.all')} Prices</SelectItem>
+                <SelectItem value="free">Free</SelectItem>
+                <SelectItem value="freemium">Freemium</SelectItem>
+                <SelectItem value="paid">Paid</SelectItem>
+              </SelectContent>
+            </Select>
 
-              {/* View Toggle */}
-              <div className="flex border border-border rounded-xl overflow-hidden">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-3 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}
-                >
-                  <Grid className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`p-3 ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}
-                >
-                  <List className="h-5 w-5" />
-                </button>
-              </div>
+            <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
+              <SelectTrigger className="w-full sm:w-[140px]">
+                <ArrowUpDown className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Sort" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">{t('common.newest')}</SelectItem>
+                <SelectItem value="rating">{t('common.topRated')}</SelectItem>
+                <SelectItem value="reviews">{t('common.mostReviews')}</SelectItem>
+                <SelectItem value="name">Name A-Z</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <div className="flex items-center gap-1 border rounded-md p-1">
+              <Button
+                variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('grid')}
+                className="h-8 w-8 p-0"
+              >
+                <Grid className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('list')}
+                className="h-8 w-8 p-0"
+              >
+                <List className="h-4 w-4" />
+              </Button>
             </div>
           </div>
 
-          {/* Results */}
-          <div className="mb-6">
-            <p className="text-muted-foreground">
-              {t('tools.showing', { count: filteredTools.length })}
-              {searchTerm && ` ${t('tools.searchFor', { term: searchTerm })}`}
-              {selectedCategory !== 'all' && ` ${t('tools.inCategory', { category: categories.find(c => c.id === selectedCategory)?.name || '' })}`}
-            </p>
-          </div>
+          {/* Results count */}
+          <p className="text-sm text-muted-foreground mb-4">
+            {t('tools.showing', { count: filteredAndSortedTools.length })}
+          </p>
 
           {/* Empty State */}
           {tools.length === 0 ? (
-            <div className="text-center py-20">
-              <Zap className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">
-                {t('tools.noTools')}
-              </h3>
-              <p className="text-muted-foreground mb-6">
-                {t('tools.noToolsDesc')}
-              </p>
-              <Link
-                to="/tools/create"
-                className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-primary text-white font-semibold rounded-xl hover:opacity-90 transition-all duration-200 shadow-md"
-              >
-                <Plus className="h-5 w-5" />
-                <span>{t('tools.submitTool')}</span>
-              </Link>
+            <div className="text-center py-16">
+              <Bot className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">{t('tools.noTools')}</h3>
+              <Button onClick={() => navigate('/submit-tool')}>
+                <Plus className="h-4 w-4 mr-2" />
+                {t('tools.submitTool')}
+              </Button>
             </div>
-          ) : filteredTools.length === 0 ? (
-            <div className="text-center py-20">
-              <Filter className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">
-                {t('tools.noResults')}
-              </h3>
-              <p className="text-muted-foreground">
-                {t('tools.adjustFilters')}
-              </p>
+          ) : filteredAndSortedTools.length === 0 ? (
+            <div className="text-center py-16">
+              <Filter className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">{t('tools.noResults')}</h3>
+              <p className="text-muted-foreground">Try adjusting your search or filters</p>
+            </div>
+          ) : viewMode === 'grid' ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+              {filteredAndSortedTools.map((tool) => (
+                <Card 
+                  key={tool.id} 
+                  className="cursor-pointer hover:shadow-md transition-shadow group overflow-hidden"
+                  onClick={() => navigate(`/tools/${tool.id}`)}
+                >
+                  <CardContent className="p-3">
+                    {/* Logo */}
+                    <div className="flex items-center gap-2 mb-2">
+                      {tool.logo_url ? (
+                        <img 
+                          src={tool.logo_url} 
+                          alt={tool.name}
+                          className="w-10 h-10 rounded-lg object-contain bg-muted"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                          <Bot className="h-5 w-5 text-primary" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-sm truncate">{tool.name}</h3>
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                          {tool.category_name}
+                        </Badge>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-xs text-muted-foreground line-clamp-2 mb-2 min-h-[32px]">
+                      {tool.description}
+                    </p>
+
+                    {/* Rating & Price */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1">
+                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                        <span className="text-xs font-medium">{tool.average_rating.toFixed(1)}</span>
+                        <span className="text-[10px] text-muted-foreground">({tool.review_count})</span>
+                      </div>
+                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                        {tool.pricing}
+                      </Badge>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-1 mt-2 pt-2 border-t" onClick={(e) => e.stopPropagation()}>
+                      <ToolActionButtons tool={tool} onDelete={handleToolDelete} />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 ml-auto"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedTool(tool);
+                          setShowPromoteModal(true);
+                        }}
+                      >
+                        <TrendingUp className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           ) : (
-            /* Tools Grid/List - Only show if there are tools */
-            <>
-              {viewMode === 'grid' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {filteredTools.map((tool) => (
-                    <div
-                      key={tool.id}
-                      className="bg-card text-card-foreground rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group border border-border"
-                    >
-                      <div className="relative h-48 bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center">
-                        <div className="text-6xl text-primary/50">🤖</div>
-                        <button 
-                          className="absolute top-4 right-4 p-2 rounded-full border border-border bg-card text-foreground transition-colors hover:bg-muted"
+            <div className="space-y-2">
+              {filteredAndSortedTools.map((tool) => (
+                <Card 
+                  key={tool.id} 
+                  className="cursor-pointer hover:shadow-md transition-shadow"
+                  onClick={() => navigate(`/tools/${tool.id}`)}
+                >
+                  <CardContent className="p-3 flex items-center gap-4">
+                    {/* Logo */}
+                    {tool.logo_url ? (
+                      <img 
+                        src={tool.logo_url} 
+                        alt={tool.name}
+                        className="w-12 h-12 rounded-lg object-contain bg-muted shrink-0"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shrink-0">
+                        <Bot className="h-6 w-6 text-primary" />
+                      </div>
+                    )}
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-semibold truncate">{tool.name}</h3>
+                        <Badge variant="outline" className="text-xs shrink-0">{tool.category_name}</Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground line-clamp-1">{tool.description}</p>
+                    </div>
+
+                    {/* Stats */}
+                    <div className="flex items-center gap-4 shrink-0">
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="font-medium">{tool.average_rating.toFixed(1)}</span>
+                        <span className="text-xs text-muted-foreground">({tool.review_count})</span>
+                      </div>
+                      <Badge variant="secondary">{tool.pricing}</Badge>
+                      <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-1">
+                        <ToolActionButtons tool={tool} onDelete={handleToolDelete} />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedTool(tool);
+                            setShowPromoteModal(true);
+                          }}
                         >
-                          <Bookmark className="h-4 w-4" />
-                        </button>
-                        <div className="absolute bottom-4 left-4">
-                          <span 
-                            className="px-3 py-1 text-sm font-medium rounded-full border border-border bg-card text-foreground"
-                          >
-                            {tool.category_name}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="p-6">
-                        <div className="flex items-start justify-between mb-3">
-                          <div>
-                            <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-1">
-                              {tool.name}
-                            </h3>
-                            <ToolStars 
-                              value={tool.average_rating || 0}
-                              reviewsCount={tool.review_count || 0}
-                              size="sm"
-                            />
-                          </div>
-                          <div className="text-sm font-semibold text-foreground">
-                            {tool.pricing}
-                          </div>
-                        </div>
-
-                        <p className="text-muted-foreground mb-4 line-clamp-2">
-                          {tool.description}
-                        </p>
-
-                        {tool.tags && tool.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mb-4">
-                             {tool.tags.slice(0, 3).map((tag, index) => (
-                               <span
-                                 key={index}
-                                 className="px-2 py-1 text-xs font-medium rounded-md border border-border bg-card text-foreground"
-                               >
-                                 {tag}
-                               </span>
-                             ))}
-                             {tool.tags.length > 3 && (
-                               <span 
-                                 className="px-2 py-1 text-xs font-medium rounded-md border border-border bg-card text-foreground"
-                               >
-                                 +{tool.tags.length - 3} more
-                               </span>
-                             )}
-                          </div>
-                        )}
-
-                         <div className="flex items-center justify-between space-x-2">
-                           <Link
-                             to={`/tools/${tool.id}`}
-                             className="flex-1 text-center py-2 px-4 rounded-lg font-medium transition-colors border border-border bg-card text-foreground hover:bg-muted"
-                           >
-                             {t('tools.learnMore')}
-                           </Link>
-                           
-                           <div className="flex items-center space-x-1">
-                             <button 
-                               onClick={() => {
-                                 setSelectedTool(tool);
-                                 setShowPromoteModal(true);
-                               }}
-                               className="p-2 border border-border rounded-lg transition-colors bg-card text-foreground hover:bg-muted"
-                               title="Promote Tool"
-                             >
-                               <TrendingUp className="h-4 w-4" />
-                             </button>
-                             
-                             <ToolActionButtons 
-                               tool={tool} 
-                               onDelete={handleToolDelete}
-                             />
-                           </div>
-                         </div>
+                          <TrendingUp className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {filteredTools.map((tool) => (
-                    <div
-                      key={tool.id}
-                      className="bg-card text-card-foreground rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 p-6 border border-border"
-                    >
-                      <div className="flex items-start space-x-6">
-                        <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center flex-shrink-0">
-                          <div className="text-3xl">🤖</div>
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between mb-2">
-                            <div>
-                              <h3 className="text-xl font-bold text-foreground mb-1">{tool.name}</h3>
-                              <div className="flex items-center gap-3 mb-2">
-                                <ToolStars 
-                                  value={tool.average_rating || 0}
-                                  reviewsCount={tool.review_count || 0}
-                                  size="sm"
-                                />
-                                <span 
-                                  className="px-3 py-1 text-sm font-medium rounded-full border border-border bg-card text-foreground"
-                                >
-                                  {tool.category_name}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="text-sm font-semibold text-foreground">
-                              {tool.pricing}
-                            </div>
-                          </div>
-                          
-                          <p className="text-muted-foreground mb-3">{tool.description}</p>
-                          
-                          {tool.tags && tool.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mb-4">
-                               {tool.tags.slice(0, 5).map((tag, index) => (
-                                 <span
-                                   key={index}
-                                   className="px-2 py-1 text-xs rounded-md border border-border bg-card text-foreground"
-                                 >
-                                   {tag}
-                                 </span>
-                               ))}
-                               {tool.tags.length > 5 && (
-                                 <span 
-                                   className="px-2 py-1 text-xs rounded-md border border-border bg-card text-foreground"
-                                 >
-                                   +{tool.tags.length - 5} more
-                                 </span>
-                               )}
-                            </div>
-                          )}
-                          
-                           <div className="flex items-center justify-between">
-                             <div className="flex items-center space-x-2">
-                                <Link
-                                  to={`/tools/${tool.id}`}
-                                  className="py-2 px-4 rounded-lg font-medium transition-colors border border-border bg-card text-foreground hover:bg-muted"
-                                >
-                                  Learn More
-                                </Link>
-                                <button 
-                                  onClick={() => {
-                                    setSelectedTool(tool);
-                                    setShowPromoteModal(true);
-                                  }}
-                                  className="p-2 border border-border rounded-lg transition-colors bg-card text-foreground hover:bg-muted"
-                                  title="Promote Tool"
-                                >
-                                  <TrendingUp className="h-4 w-4" />
-                                </button>
-                                
-                                <ToolActionButtons 
-                                  tool={tool} 
-                                  onDelete={handleToolDelete}
-                                />
-                             </div>
-                           </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           )}
         </div>
-
-        {/* Chat Dock */}
-        <ChatDock />
       </div>
 
-      {/* Tool Comparison Modal */}
+      {/* Comparison Modal */}
       <ToolComparisonModal
         isOpen={showComparison}
         onClose={() => setShowComparison(false)}
@@ -456,13 +447,18 @@ const Tools: React.FC = () => {
       />
 
       {/* Promote Modal */}
-      {showPromoteModal && selectedTool && (
+      {selectedTool && (
         <PromoteContentModal
           isOpen={showPromoteModal}
-          onClose={() => setShowPromoteModal(false)}
-          contentType="tool"
+          onClose={() => {
+            setShowPromoteModal(false);
+            setSelectedTool(null);
+          }}
           contentId={selectedTool.id}
+          contentType="tool"
           contentTitle={selectedTool.name}
+        />
+      )}
         />
       )}
     </>

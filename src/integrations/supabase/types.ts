@@ -1772,6 +1772,39 @@ export type Database = {
           },
         ]
       }
+      tool_comparison_cache: {
+        Row: {
+          ai_insight: string
+          category_ids: string[] | null
+          created_at: string | null
+          generated_at: string | null
+          id: string
+          tool_ids: string[]
+          tool_ids_hash: string
+          tools_max_updated_at: string | null
+        }
+        Insert: {
+          ai_insight: string
+          category_ids?: string[] | null
+          created_at?: string | null
+          generated_at?: string | null
+          id?: string
+          tool_ids: string[]
+          tool_ids_hash: string
+          tools_max_updated_at?: string | null
+        }
+        Update: {
+          ai_insight?: string
+          category_ids?: string[] | null
+          created_at?: string | null
+          generated_at?: string | null
+          id?: string
+          tool_ids?: string[]
+          tool_ids_hash?: string
+          tools_max_updated_at?: string | null
+        }
+        Relationships: []
+      }
       tool_edit_requests: {
         Row: {
           admin_notes: string | null
@@ -1984,6 +2017,7 @@ export type Database = {
           id: string
           interests: string[] | null
           is_banned: boolean
+          is_premium: boolean | null
           job_title: string | null
           languages: Json | null
           linkedin: string | null
@@ -1995,6 +2029,7 @@ export type Database = {
           organization_id: string | null
           phone: string | null
           phone_country_code: string | null
+          premium_until: string | null
           profile_photo: string | null
           role_id: number
           tools_submitted: number | null
@@ -2035,6 +2070,7 @@ export type Database = {
           id: string
           interests?: string[] | null
           is_banned?: boolean
+          is_premium?: boolean | null
           job_title?: string | null
           languages?: Json | null
           linkedin?: string | null
@@ -2046,6 +2082,7 @@ export type Database = {
           organization_id?: string | null
           phone?: string | null
           phone_country_code?: string | null
+          premium_until?: string | null
           profile_photo?: string | null
           role_id?: number
           tools_submitted?: number | null
@@ -2086,6 +2123,7 @@ export type Database = {
           id?: string
           interests?: string[] | null
           is_banned?: boolean
+          is_premium?: boolean | null
           job_title?: string | null
           languages?: Json | null
           linkedin?: string | null
@@ -2097,6 +2135,7 @@ export type Database = {
           organization_id?: string | null
           phone?: string | null
           phone_country_code?: string | null
+          premium_until?: string | null
           profile_photo?: string | null
           role_id?: number
           tools_submitted?: number | null

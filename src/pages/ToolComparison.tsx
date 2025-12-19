@@ -6,14 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/AuthContext';
 import { 
   ArrowLeft, 
   ExternalLink, 
   Star, 
-  Users, 
   TrendingUp,
   MessageSquare,
-  Bot
+  Bot,
+  Lock
 } from 'lucide-react';
 
 interface ToolComparisonData {
@@ -30,6 +31,7 @@ interface ToolComparisonData {
   review_count: number;
   logo_url?: string;
   category_name?: string;
+  updated_at?: string;
   reviews: Array<{
     id: string;
     rating: number;
@@ -47,13 +49,30 @@ const ToolComparison: React.FC = () => {
   const { toolIds } = useParams<{ toolIds: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [tools, setTools] = useState<ToolComparisonData[]>([]);
   const [loading, setLoading] = useState(true);
   const [aiInsight, setAiInsight] = useState('');
   const [generatingInsight, setGeneratingInsight] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
+  const [checkingPremium, setCheckingPremium] = useState(true);
 
   useEffect(() => {
-    if (toolIds) {
+    checkPremiumStatus();
+  }, [user]);
+
+  useEffect(() => {
+    if (!checkingPremium && toolIds) {
+      if (!isPremium) {
+        toast({
+          title: t('toolComparison.premiumRequired'),
+          description: t('toolComparison.premiumDescription'),
+          variant: 'destructive'
+        });
+        navigate('/upgrade');
+        return;
+      }
+      
       const ids = toolIds.split(',');
       if (ids.length > 5) {
         toast({
@@ -66,7 +85,28 @@ const ToolComparison: React.FC = () => {
       }
       fetchToolsData(ids);
     }
-  }, [toolIds]);
+  }, [toolIds, checkingPremium, isPremium]);
+
+  const checkPremiumStatus = async () => {
+    setCheckingPremium(true);
+    if (!user) {
+      setIsPremium(false);
+      setCheckingPremium(false);
+      return;
+    }
+    
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('is_premium, premium_until')
+      .eq('id', user.id)
+      .single();
+    
+    if (!error && data) {
+      const isActive = data.is_premium && (!data.premium_until || new Date(data.premium_until) > new Date());
+      setIsPremium(isActive);
+    }
+    setCheckingPremium(false);
+  };
 
   const fetchToolsData = async (ids: string[]) => {
     try {
@@ -90,13 +130,7 @@ const ToolComparison: React.FC = () => {
         toolsData.map(async (tool) => {
           const { data: reviews } = await supabase
             .from('tool_reviews')
-            .select(`
-              id,
-              rating,
-              title,
-              comment,
-              created_at
-            `)
+            .select(`id, rating, title, comment, created_at`)
             .eq('tool_id', tool.id)
             .order('created_at', { ascending: false })
             .limit(10);
@@ -106,10 +140,7 @@ const ToolComparison: React.FC = () => {
             user_profiles: { full_name: 'Anonymous' }
           }));
 
-          return {
-            ...tool,
-            reviews: formattedReviews
-          };
+          return { ...tool, reviews: formattedReviews };
         })
       );
 
@@ -123,7 +154,7 @@ const ToolComparison: React.FC = () => {
       }));
 
       setTools(formattedTools);
-      generateAIInsight(formattedTools);
+      await loadOrGenerateAIInsight(formattedTools, ids);
     } catch (error) {
       console.error('Error fetching tools data:', error);
       toast({
@@ -136,22 +167,76 @@ const ToolComparison: React.FC = () => {
     }
   };
 
-  const generateAIInsight = async (toolsData: ToolComparisonData[]) => {
-    setGeneratingInsight(true);
-    try {
-      const toolNames = toolsData.map(t => t.name).join(', ');
-      const avgRatings = toolsData.map(t => `${t.name}: ${t.average_rating.toFixed(1)}/5`).join(', ');
-      const pricingComparison = toolsData.map(t => `${t.name}: ${t.pricing}`).join(', ');
-      
-      const topRated = toolsData.reduce((prev, current) => 
-        prev.average_rating > current.average_rating ? prev : current
-      );
-      
-      const mostReviewed = toolsData.reduce((prev, current) => 
-        prev.review_count > current.review_count ? prev : current
-      );
+  const generateToolIdsHash = (ids: string[]) => {
+    return [...ids].sort().join('-');
+  };
 
-      const insight = `## AI-Generated Comparison Summary
+  const loadOrGenerateAIInsight = async (toolsData: ToolComparisonData[], ids: string[]) => {
+    setGeneratingInsight(true);
+    const hash = generateToolIdsHash(ids);
+    
+    try {
+      // Check cache first
+      const { data: cached } = await supabase
+        .from('tool_comparison_cache')
+        .select('*')
+        .eq('tool_ids_hash', hash)
+        .single();
+
+      if (cached) {
+        // Check if cache is still valid (tools haven't been updated)
+        const maxUpdatedAt = Math.max(...toolsData.map(t => new Date(t.updated_at || 0).getTime()));
+        const cacheToolsUpdatedAt = cached.tools_max_updated_at ? new Date(cached.tools_max_updated_at).getTime() : 0;
+        
+        if (maxUpdatedAt <= cacheToolsUpdatedAt) {
+          setAiInsight(cached.ai_insight);
+          setGeneratingInsight(false);
+          return;
+        }
+      }
+
+      // Generate new insight
+      const insight = generateInsightContent(toolsData);
+      setAiInsight(insight);
+
+      // Store in cache
+      const maxUpdatedAt = new Date(Math.max(...toolsData.map(t => new Date(t.updated_at || 0).getTime())));
+      const categoryIds = [...new Set(toolsData.map(t => t.category_name))];
+
+      await supabase
+        .from('tool_comparison_cache')
+        .upsert({
+          tool_ids_hash: hash,
+          tool_ids: ids,
+          ai_insight: insight,
+          category_ids: categoryIds,
+          tools_max_updated_at: maxUpdatedAt.toISOString(),
+          generated_at: new Date().toISOString()
+        }, { onConflict: 'tool_ids_hash' });
+
+    } catch (error) {
+      console.error('Error with AI insight:', error);
+      const insight = generateInsightContent(toolsData);
+      setAiInsight(insight);
+    } finally {
+      setGeneratingInsight(false);
+    }
+  };
+
+  const generateInsightContent = (toolsData: ToolComparisonData[]) => {
+    const toolNames = toolsData.map(t => t.name).join(', ');
+    const avgRatings = toolsData.map(t => `${t.name}: ${t.average_rating.toFixed(1)}/5`).join(', ');
+    const pricingComparison = toolsData.map(t => `${t.name}: ${t.pricing}`).join(', ');
+    
+    const topRated = toolsData.reduce((prev, current) => 
+      prev.average_rating > current.average_rating ? prev : current
+    );
+    
+    const mostReviewed = toolsData.reduce((prev, current) => 
+      prev.review_count > current.review_count ? prev : current
+    );
+
+    return `## AI-Generated Comparison Summary
 
 **Tools Compared:** ${toolNames}
 
@@ -166,21 +251,13 @@ const ToolComparison: React.FC = () => {
 **Feature Analysis:**
 ${toolsData.map(tool => `
 **${tool.name}:**
-- Key Features: ${tool.features.slice(0, 3).join(', ')}
-- Main Strengths: ${tool.pros.slice(0, 2).join(', ')}
-- Considerations: ${tool.cons.slice(0, 2).join(', ')}
+- Key Features: ${(tool.features || []).slice(0, 3).join(', ') || 'Not specified'}
+- Main Strengths: ${(tool.pros || []).slice(0, 2).join(', ') || 'Not specified'}
+- Considerations: ${(tool.cons || []).slice(0, 2).join(', ') || 'Not specified'}
 `).join('')}
 
 **Recommendation:**
 Based on the data analysis, ${topRated.name} appears to be the top choice with the highest user satisfaction rating. However, consider ${mostReviewed.name} if you value community feedback and proven adoption. Your final choice should depend on your specific use case, budget, and feature requirements.`;
-
-      setAiInsight(insight);
-    } catch (error) {
-      console.error('Error generating AI insight:', error);
-      setAiInsight(t('toolComparison.aiInsights.error'));
-    } finally {
-      setGeneratingInsight(false);
-    }
   };
 
   const renderStars = (rating: number) => {
@@ -190,19 +267,36 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
         className={`h-4 w-4 ${
           i < Math.floor(rating) 
             ? 'fill-yellow-400 text-yellow-400' 
-            : 'text-gray-300'
+            : 'text-muted-foreground'
         }`}
       />
     ));
   };
 
-  if (loading) {
+  if (checkingPremium || loading) {
     return (
       <div className="container max-w-7xl mx-auto py-8 px-6">
         <div className="text-center">
           <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
           <p>{t('toolComparison.loading')}</p>
         </div>
+      </div>
+    );
+  }
+
+  if (!isPremium) {
+    return (
+      <div className="container max-w-7xl mx-auto py-16 px-6">
+        <Card className="max-w-md mx-auto text-center">
+          <CardContent className="pt-8 pb-6">
+            <Lock className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <h2 className="text-xl font-bold mb-2">{t('toolComparison.premiumRequired')}</h2>
+            <p className="text-muted-foreground mb-6">{t('toolComparison.premiumDescription')}</p>
+            <Button onClick={() => navigate('/upgrade')}>
+              Upgrade to Premium
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -301,7 +395,7 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
               {tools.map(tool => (
                 <td key={tool.id} className="p-4">
                   <div className="space-y-1">
-                    {tool.features.slice(0, 5).map((feature, index) => (
+                    {(tool.features || []).slice(0, 5).map((feature, index) => (
                       <div key={index} className="text-sm flex items-start gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
                         <span>{feature}</span>
@@ -317,7 +411,7 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
               {tools.map(tool => (
                 <td key={tool.id} className="p-4">
                   <div className="space-y-1">
-                    {tool.pros.slice(0, 4).map((pro, index) => (
+                    {(tool.pros || []).slice(0, 4).map((pro, index) => (
                       <div key={index} className="text-sm flex items-start gap-2">
                         <TrendingUp className="h-3 w-3 text-green-600 mt-0.5 shrink-0" />
                         <span>{pro}</span>
@@ -333,7 +427,7 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
               {tools.map(tool => (
                 <td key={tool.id} className="p-4">
                   <div className="space-y-1">
-                    {tool.cons.slice(0, 4).map((con, index) => (
+                    {(tool.cons || []).slice(0, 4).map((con, index) => (
                       <div key={index} className="text-sm flex items-start gap-2">
                         <MessageSquare className="h-3 w-3 text-orange-600 mt-0.5 shrink-0" />
                         <span>{con}</span>
@@ -374,7 +468,7 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
               {tools.map(tool => (
                 <td key={tool.id} className="p-4">
                   <div className="flex flex-wrap gap-1">
-                    {tool.tags.slice(0, 6).map(tag => (
+                    {(tool.tags || []).slice(0, 6).map(tag => (
                       <Badge key={tag} variant="outline" className="text-xs">
                         {tag}
                       </Badge>
