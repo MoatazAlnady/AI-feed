@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { X, Mail, CheckCircle } from 'lucide-react';
+import { X, Mail, CheckCircle, Crown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../integrations/supabase/client';
+import { Badge } from './ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 interface NewsletterPopupProps {
   onClose: () => void;
@@ -14,13 +16,29 @@ const NewsletterPopup: React.FC<NewsletterPopupProps> = ({ onClose }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
   const [frequency, setFrequency] = useState('weekly');
+  const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
-    // Pre-fill email if user is logged in
     if (user?.email) {
       setEmail(user.email);
     }
+    if (user) {
+      fetchPremiumStatus();
+    }
   }, [user]);
+
+  const fetchPremiumStatus = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('user_profiles')
+      .select('is_premium, premium_until')
+      .eq('id', user.id)
+      .single();
+    
+    const isActive = data?.is_premium && 
+      (!data.premium_until || new Date(data.premium_until) > new Date());
+    setIsPremium(!!isActive);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,23 +142,55 @@ const NewsletterPopup: React.FC<NewsletterPopupProps> = ({ onClose }) => {
                     How often would you like to hear from us?
                   </label>
                   <div className="flex space-x-4">
-                    {[
-                      { value: 'daily', label: 'Daily' },
-                      { value: 'weekly', label: 'Weekly' },
-                      { value: 'monthly', label: 'Monthly' }
-                    ].map(({ value, label }) => (
-                      <label key={value} className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="frequency"
-                          value={value}
-                          checked={frequency === value}
-                          onChange={(e) => setFrequency(e.target.value)}
-                          className="text-primary-600 focus:ring-primary-500"
-                        />
-                        <span>{label}</span>
-                      </label>
-                    ))}
+                    <TooltipProvider>
+                      {[
+                        { value: 'daily', label: 'Daily', premium: true },
+                        { value: 'weekly', label: 'Weekly', premium: false },
+                        { value: 'monthly', label: 'Monthly', premium: false }
+                      ].map(({ value, label, premium }) => {
+                        const isDisabled = premium && !isPremium;
+                        const radioOption = (
+                          <label 
+                            key={value} 
+                            className={`flex items-center space-x-2 text-gray-700 dark:text-gray-300 ${
+                              isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="frequency"
+                              value={value}
+                              checked={frequency === value}
+                              onChange={(e) => !isDisabled && setFrequency(e.target.value)}
+                              disabled={isDisabled}
+                              className="text-primary-600 focus:ring-primary-500"
+                            />
+                            <span>{label}</span>
+                            {premium && (
+                              <Badge variant="secondary" className="text-xs flex items-center gap-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+                                <Crown className="h-3 w-3" />
+                                Premium
+                              </Badge>
+                            )}
+                          </label>
+                        );
+
+                        if (isDisabled) {
+                          return (
+                            <Tooltip key={value}>
+                              <TooltipTrigger asChild>
+                                {radioOption}
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Upgrade to Premium for daily updates</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          );
+                        }
+
+                        return radioOption;
+                      })}
+                    </TooltipProvider>
                   </div>
                 </div>
 
