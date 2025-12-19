@@ -202,12 +202,13 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  const windowHeight = isExpanded ? 'h-[700px]' : 'h-[500px]';
-  const windowWidth = isExpanded ? 'w-[450px]' : 'w-96';
+  // Responsive sizing
+  const windowHeight = isExpanded ? 'h-[700px] sm:h-[700px]' : 'h-[100dvh] sm:h-[500px]';
+  const windowWidth = isExpanded ? 'w-full sm:w-[450px]' : 'w-full sm:w-96';
 
   return (
-    <div className={`fixed bottom-24 right-6 z-40 ${windowWidth} ${windowHeight} animate-slide-up transition-all duration-300`}>
-      <Card className="h-full flex flex-col bg-card border border-border shadow-2xl overflow-hidden">
+    <div className={`fixed bottom-0 sm:bottom-24 left-0 right-0 sm:left-auto sm:right-6 z-40 ${windowWidth} ${windowHeight} animate-slide-up transition-all duration-300`}>
+      <Card className="h-full flex flex-col bg-card border border-border shadow-2xl overflow-hidden sm:rounded-lg rounded-none">
         {/* Header */}
         <div className="p-3 border-b flex items-center justify-between bg-primary/5">
           {activeConversation ? (

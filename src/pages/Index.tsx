@@ -11,7 +11,7 @@ import AuthModal from '@/components/AuthModal';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import TrendingTools from '@/components/TrendingTools';
 import TopCreators from '@/components/TopCreators';
-import AIChatBot from '@/components/ChatDock';
+
 import NewsFeedPage from '@/pages/NewsFeed';
 import SEOHead from '@/components/SEOHead';
 import { useTranslation } from 'react-i18next';
@@ -287,8 +287,6 @@ const Index = () => {
         />
       )}
 
-      {/* Chat Dock */}
-      <AIChatBot initialMessage={chatMessage} autoOpen={autoOpenChat} />
     </div>
   );
 };
