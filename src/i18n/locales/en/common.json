@@ -1474,5 +1474,47 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "copyright": "© 2024 AI Feed. All rights reserved."
+  },
+  "toolComparison": {
+    "title": "Tool Comparison",
+    "subtitle": "Comparing {{count}} tools",
+    "backToTools": "Back to Tools",
+    "loading": "Loading comparison...",
+    "tooManyTools": "Too Many Tools",
+    "maxTools": "You can compare up to 5 tools at a time",
+    "loadError": "Failed to load tools data",
+    "premiumRequired": "Premium Required",
+    "premiumDescription": "Upgrade to compare tools side by side",
+    "table": {
+      "tool": "Tool",
+      "rating": "Rating",
+      "pricing": "Pricing",
+      "description": "Description",
+      "keyFeatures": "Key Features",
+      "pros": "Pros",
+      "cons": "Cons",
+      "freePlan": "Free Plan",
+      "website": "Website",
+      "visit": "Visit",
+      "tags": "Tags"
+    },
+    "aiInsights": {
+      "title": "AI-Generated Insights",
+      "subtitle": "Automated analysis based on tool data",
+      "generating": "Generating insights...",
+      "error": "Unable to generate insights"
+    }
+  },
+  "common": {
+    "yes": "Yes",
+    "no": "No",
+    "error": "Error",
+    "sortBy": "Sort by",
+    "filterBy": "Filter by",
+    "all": "All",
+    "newest": "Newest",
+    "topRated": "Top Rated",
+    "mostReviews": "Most Reviews",
+    "priceFilter": "Price"
   }
 }

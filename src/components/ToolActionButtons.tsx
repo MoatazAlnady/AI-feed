@@ -97,15 +97,6 @@ const ToolActionButtons: React.FC<ToolActionButtonsProps> = ({
           <ExternalLink className="h-4 w-4" />
         </a>
 
-        {/* Promotion Button */}
-        <Button
-          variant="outline" 
-          size="sm"
-          className="w-8 h-8 p-0 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0"
-          title="Promote Tool"
-        >
-          <TrendingUp className="h-4 w-4" />
-        </Button>
 
         {/* Delete Button - Show for admins only */}
         {canDelete && (
