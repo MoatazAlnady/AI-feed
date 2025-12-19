@@ -122,7 +122,7 @@ const ToolDetails: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         <div className="container max-w-6xl mx-auto px-6 py-16">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -134,13 +134,13 @@ const ToolDetails: React.FC = () => {
 
   if (notFound || !tool) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         {/* Navigation */}
-        <div className="border-b border-gray-200 dark:border-gray-700">
+        <div className="border-b border-border">
           <div className="container max-w-6xl mx-auto px-6 py-4">
             <Link
               to="/tools"
-              className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+              className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               {t('toolDetails.backToTools')}
@@ -149,8 +149,8 @@ const ToolDetails: React.FC = () => {
         </div>
 
         <div className="container max-w-4xl mx-auto px-6 py-16 text-center">
-          <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">{t('toolDetails.notFound')}</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
+          <h1 className="text-3xl font-bold mb-4 text-foreground">{t('toolDetails.notFound')}</h1>
+          <p className="text-muted-foreground mb-8">
             {t('toolDetails.notFoundDesc')}
           </p>
           <Link
@@ -166,13 +166,13 @@ const ToolDetails: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <div className="border-b border-gray-200 dark:border-gray-700">
+      <div className="border-b border-border">
         <div className="container max-w-6xl mx-auto px-6 py-4">
             <Link
               to="/tools"
-              className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+              className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               {t('toolDetails.backToTools')}
@@ -190,7 +190,7 @@ const ToolDetails: React.FC = () => {
                 <img 
                   src={tool.logo_url} 
                   alt={`${tool.name} logo`}
-                  className="w-24 h-24 lg:w-32 lg:h-32 rounded-2xl object-contain bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-2"
+                  className="w-24 h-24 lg:w-32 lg:h-32 rounded-2xl object-contain bg-card border border-border p-2"
                 />
               ) : (
                 <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center">
@@ -203,10 +203,10 @@ const ToolDetails: React.FC = () => {
             <div className="flex-1">
               <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                 <div>
-                  <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2">
                     {tool.name}
                   </h1>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 mb-4">
+                  <p className="text-lg text-muted-foreground mb-4">
                     {tool.description}
                   </p>
                   <div className="flex flex-wrap items-center gap-3 mb-4">
@@ -273,9 +273,9 @@ const ToolDetails: React.FC = () => {
           <div className="lg:col-span-2 space-y-6">
             {/* Features */}
             {tool.features && tool.features.length > 0 && (
-              <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+              <Card className="bg-card border-border">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
+                  <CardTitle className="flex items-center gap-2 text-foreground">
                     <Zap className="h-5 w-5" />
                     {t('toolDetails.features')}
                   </CardTitle>
@@ -285,7 +285,7 @@ const ToolDetails: React.FC = () => {
                     {tool.features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-700 dark:text-gray-300">{feature}</span>
+                        <span className="text-muted-foreground">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -297,7 +297,7 @@ const ToolDetails: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Pros */}
               {tool.pros && tool.pros.length > 0 && (
-              <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+              <Card className="bg-card border-border">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-green-600 dark:text-green-400">
                       <CheckCircle className="h-5 w-5" />
@@ -309,7 +309,7 @@ const ToolDetails: React.FC = () => {
                       {tool.pros.map((pro, index) => (
                         <li key={index} className="flex items-start gap-2">
                           <div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2 flex-shrink-0" />
-                          <span className="text-sm text-gray-700 dark:text-gray-300">{pro}</span>
+                          <span className="text-sm text-muted-foreground">{pro}</span>
                         </li>
                       ))}
                     </ul>
@@ -319,7 +319,7 @@ const ToolDetails: React.FC = () => {
 
               {/* Cons */}
               {tool.cons && tool.cons.length > 0 && (
-                <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                <Card className="bg-card border-border">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
                       <XCircle className="h-5 w-5" />
@@ -331,7 +331,7 @@ const ToolDetails: React.FC = () => {
                       {tool.cons.map((con, index) => (
                         <li key={index} className="flex items-start gap-2">
                           <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-2 flex-shrink-0" />
-                          <span className="text-sm text-gray-700 dark:text-gray-300">{con}</span>
+                          <span className="text-sm text-muted-foreground">{con}</span>
                         </li>
                       ))}
                     </ul>
@@ -344,13 +344,13 @@ const ToolDetails: React.FC = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Tool Info */}
-            <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-gray-900 dark:text-white">{t('toolDetails.toolInfo')}</CardTitle>
+                <CardTitle className="text-foreground">{t('toolDetails.toolInfo')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-3">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
                     <User className="h-4 w-4" />
                     {t('toolDetails.submittedBy')}
                   </div>
@@ -368,34 +368,34 @@ const ToolDetails: React.FC = () => {
                             id: tool.user_id, 
                             handle: tool.user_profiles.handle 
                           })}
-                          className="font-medium text-gray-900 dark:text-white hover:text-primary transition-colors"
+                          className="font-medium text-foreground hover:text-primary transition-colors"
                         >
                           {tool.user_profiles.full_name}
                         </Link>
                       ) : (
-                        <span className="font-medium text-gray-500 dark:text-gray-400">{t('toolDetails.anonymous')}</span>
+                        <span className="font-medium text-muted-foreground">{t('toolDetails.anonymous')}</span>
                       )}
                     </div>
                   </div>
                 </div>
                 
                 <div>
-                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-1">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                     <Calendar className="h-4 w-4" />
                     {t('toolDetails.addedOn')}
                   </div>
-                  <p className="font-medium text-gray-900 dark:text-white">
+                  <p className="font-medium text-foreground">
                     {new Date(tool.created_at).toLocaleDateString()}
                   </p>
                 </div>
 
                 {tool.updated_at !== tool.created_at && (
                   <div>
-                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-1">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                       <Calendar className="h-4 w-4" />
                       {t('toolDetails.lastUpdated')}
                     </div>
-                    <p className="font-medium text-gray-900 dark:text-white">
+                    <p className="font-medium text-foreground">
                       {new Date(tool.updated_at).toLocaleDateString()}
                     </p>
                   </div>
@@ -405,9 +405,9 @@ const ToolDetails: React.FC = () => {
 
             {/* Tags */}
             {tool.tags && tool.tags.length > 0 && (
-              <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+              <Card className="bg-card border-border">
               <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
+                  <CardTitle className="flex items-center gap-2 text-foreground">
                     <Tag className="h-4 w-4" />
                     {t('toolDetails.tags')}
                   </CardTitle>
@@ -415,7 +415,7 @@ const ToolDetails: React.FC = () => {
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
                     {tool.tags.map((tag, index) => (
-                      <Badge key={index} variant="secondary" className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                      <Badge key={index} variant="secondary" className="bg-muted text-muted-foreground">
                         {tag}
                       </Badge>
                     ))}
@@ -428,7 +428,7 @@ const ToolDetails: React.FC = () => {
 
         {/* Reviews Section - Full Width at Bottom */}
         <div className="mt-12" id="reviews">
-          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <Card className="bg-card border-border">
             <CardContent className="p-6">
               <ToolReviews toolId={tool.id} />
             </CardContent>

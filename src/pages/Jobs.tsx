@@ -43,32 +43,32 @@ const Jobs: React.FC = () => {
   ];
 
   return (
-    <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div className="py-8 bg-background min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">{t('jobs.title')}</h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400">
+          <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">{t('jobs.title')}</h1>
+          <p className="text-xl text-muted-foreground">
             {t('jobs.subtitle')}
           </p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 mb-8">
+        <div className="bg-card rounded-2xl shadow-sm p-6 mb-8 border border-border">
           <div className="flex flex-wrap gap-4">
-            <select className="border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            <select className="border border-border rounded-xl px-4 py-3 text-foreground bg-background focus:ring-2 focus:ring-primary focus:border-transparent">
               <option>{t('jobs.allLocations')}</option>
               <option>{t('jobs.remote')}</option>
               <option>San Francisco</option>
               <option>New York</option>
             </select>
-            <select className="border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            <select className="border border-border rounded-xl px-4 py-3 text-foreground bg-background focus:ring-2 focus:ring-primary focus:border-transparent">
               <option>{t('jobs.allTypes')}</option>
               <option>{t('jobs.fullTime')}</option>
               <option>{t('jobs.partTime')}</option>
               <option>{t('jobs.contract')}</option>
             </select>
-            <select className="border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            <select className="border border-border rounded-xl px-4 py-3 text-foreground bg-background focus:ring-2 focus:ring-primary focus:border-transparent">
               <option>{t('jobs.allExperience')}</option>
               <option>{t('jobs.entryLevel')}</option>
               <option>{t('jobs.midLevel')}</option>
@@ -80,14 +80,14 @@ const Jobs: React.FC = () => {
         {/* Jobs List */}
         <div className="space-y-6">
           {jobs.map((job) => (
-            <div key={job.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300">
+            <div key={job.id} className="bg-card rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 border border-border">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">{job.title}</h3>
-                  <p className="text-gray-900 dark:text-white font-medium mb-2">{job.company}</p>
-                  <p className="text-gray-600 dark:text-gray-400 mb-3">{job.description}</p>
+                  <h3 className="text-xl font-semibold mb-2 text-foreground">{job.title}</h3>
+                  <p className="text-foreground font-medium mb-2">{job.company}</p>
+                  <p className="text-muted-foreground mb-3">{job.description}</p>
                   
-                  <div className="flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-500">
+                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <MapPin className="h-4 w-4" />
                       {job.location}
@@ -105,7 +105,7 @@ const Jobs: React.FC = () => {
                 
                 <div className="text-right ml-6">
                   <div className="text-lg font-semibold text-green-600 dark:text-green-400 mb-2">{job.salary}</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-500 mb-4">{job.postedAt}</div>
+                  <div className="text-sm text-muted-foreground mb-4">{job.postedAt}</div>
                   <button className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-xl hover:shadow-lg transition-all duration-200">
                     {t('jobs.applyNow')}
                     <ExternalLink className="h-4 w-4" />
@@ -118,7 +118,7 @@ const Jobs: React.FC = () => {
 
         {/* Load More */}
         <div className="text-center mt-8">
-          <button className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white px-6 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <button className="bg-card border border-border text-foreground px-6 py-3 rounded-xl hover:bg-muted transition-colors">
             {t('jobs.loadMore')}
           </button>
         </div>

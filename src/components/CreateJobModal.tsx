@@ -147,27 +147,27 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="bg-card rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-border">
           <div className="p-6">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Post a Job</h2>
+              <h2 className="text-2xl font-bold text-foreground">Post a Job</h2>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-muted rounded-lg transition-colors"
               >
-                <X className="h-5 w-5 text-gray-500" />
+                <X className="h-5 w-5 text-muted-foreground" />
               </button>
             </div>
 
             <form onSubmit={handleSubmit}>
               {/* Job Title */}
               <div className="mb-6">
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2">
                   Job Title *
                 </label>
                 <div className="relative">
-                  <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <input
                     type="text"
                     id="title"
@@ -175,7 +175,7 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
                     value={formData.title}
                     onChange={handleInputChange}
                     required
-                    className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full pl-12 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                     placeholder="e.g., Senior AI Engineer"
                   />
                 </div>
@@ -183,11 +183,11 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
 
               {/* Company */}
               <div className="mb-6">
-                <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="company" className="block text-sm font-medium text-foreground mb-2">
                   Company *
                 </label>
                 <div className="relative">
-                  <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <input
                     type="text"
                     id="company"
@@ -195,7 +195,7 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
                     value={formData.company}
                     onChange={handleInputChange}
                     required
-                    className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full pl-12 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                     placeholder="Company name"
                   />
                 </div>
@@ -204,11 +204,11 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
               {/* Location */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="country" className="block text-sm font-medium text-foreground mb-2">
                     Country *
                   </label>
                   <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <select
                       id="country"
                       name="country"
@@ -218,7 +218,7 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
                         setFormData(prev => ({ ...prev, city: '' })); // Reset city when country changes
                       }}
                       required
-                      className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full pl-12 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                     >
                       <option value="">Select country</option>
                       {countries.map((country) => (
@@ -230,7 +230,7 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="city" className="block text-sm font-medium text-foreground mb-2">
                     City *
                   </label>
                   <select
@@ -240,7 +240,7 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
                     onChange={handleInputChange}
                     required
                     disabled={!formData.country}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   >
                     <option value="">Select city</option>
                     {formData.country && cities[formData.country as keyof typeof cities]?.map((city) => (
@@ -255,7 +255,7 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
               {/* Job Type, Work Mode, and Experience */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div>
-                  <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="type" className="block text-sm font-medium text-foreground mb-2">
                     Job Type *
                   </label>
                   <select
@@ -264,7 +264,7 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
                     value={formData.type}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   >
                     {jobTypes.map((type) => (
                       <option key={type} value={type}>
@@ -274,7 +274,7 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="workMode" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="workMode" className="block text-sm font-medium text-foreground mb-2">
                     Work Mode *
                   </label>
                   <select
@@ -283,7 +283,7 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
                     value={formData.workMode}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   >
                     {workModes.map((mode) => (
                       <option key={mode} value={mode}>
@@ -293,7 +293,7 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="experience" className="block text-sm font-medium text-foreground mb-2">
                     Experience Level *
                   </label>
                   <select
@@ -302,7 +302,7 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
                     value={formData.experience}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   >
                     {experienceLevels.map((level) => (
                       <option key={level} value={level}>
