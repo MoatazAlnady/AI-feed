@@ -99,26 +99,12 @@
     "errorOccurred": "حدث خطأ",
     "rateLimitExceeded": "تم تجاوز حد المعدل، يرجى المحاولة لاحقاً",
     "paymentRequired": "الدفع مطلوب للمتابعة",
-    "promptsLeft": "متبقي",
-    "limitReached": "تم الوصول للحد اليومي",
-    "limitReachedPlaceholder": "تم الوصول للحد اليومي...",
-    "freeUserLimit": "المستخدمون المجانيون: سؤال واحد/يوم",
-    "premiumUserLimit": "المستخدمون المميزون: 10 أسئلة/يوم",
-    "upgradePremiumMessage": "ترقية للمميز للحصول على 10 أسئلة/يوم",
-    "comeBackTomorrow": "عد غداً للمزيد من الأسئلة",
     "contextMode": {
       "creator": "وضع المنشئ",
       "employer": "وضع صاحب العمل",
       "toolDiscovery": "وضع اكتشاف الأدوات",
       "general": "مساعدة عامة"
     }
-  },
-  "premium": {
-    "requiredTitle": "مطلوب اشتراك مميز",
-    "createGroupMessage": "إنشاء المجموعات ميزة مميزة. قم بالترقية للمميز لإنشاء وإدارة مجموعاتك الخاصة.",
-    "createEventMessage": "إنشاء الفعاليات ميزة مميزة. قم بالترقية للمميز لإنشاء واستضافة فعالياتك الخاصة.",
-    "upgradeToPremium": "الترقية للمميز",
-    "upgrade": "ترقية"
   },
   "auto": {
     "totalUsers": "إجمالي المستخدمين",

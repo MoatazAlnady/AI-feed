@@ -99,26 +99,12 @@
     "errorOccurred": "Ocurrió un error",
     "rateLimitExceeded": "Límite de tasa excedido, por favor intenta más tarde",
     "paymentRequired": "Pago requerido para continuar",
-    "promptsLeft": "restantes",
-    "limitReached": "Límite diario alcanzado",
-    "limitReachedPlaceholder": "Límite diario alcanzado...",
-    "freeUserLimit": "Usuarios gratuitos: 1 mensaje/día",
-    "premiumUserLimit": "Usuarios premium: 10 mensajes/día",
-    "upgradePremiumMessage": "Actualiza a Premium para 10 mensajes/día",
-    "comeBackTomorrow": "Vuelve mañana para más mensajes",
     "contextMode": {
       "creator": "Modo creador",
       "employer": "Modo empleador",
       "toolDiscovery": "Modo descubrimiento de herramientas",
       "general": "Ayuda general"
     }
-  },
-  "premium": {
-    "requiredTitle": "Premium requerido",
-    "createGroupMessage": "Crear grupos es una función premium. Actualiza a Premium para crear y gestionar tus propios grupos.",
-    "createEventMessage": "Crear eventos es una función premium. Actualiza a Premium para crear y organizar tus propios eventos.",
-    "upgradeToPremium": "Actualizar a Premium",
-    "upgrade": "Actualizar"
   },
   "auto": {
     "totalUsers": "Usuarios totales",

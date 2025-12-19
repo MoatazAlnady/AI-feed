@@ -47,33 +47,6 @@ export type Database = {
         }
         Relationships: []
       }
-      ai_chat_daily_usage: {
-        Row: {
-          created_at: string | null
-          id: string
-          prompts_count: number
-          updated_at: string | null
-          usage_date: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          prompts_count?: number
-          updated_at?: string | null
-          usage_date?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          prompts_count?: number
-          updated_at?: string | null
-          usage_date?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       articles: {
         Row: {
           author: string

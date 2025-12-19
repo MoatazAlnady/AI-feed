@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
-import { X, Users, Upload, Crown } from 'lucide-react';
+import { X, Users, Upload, Send } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { usePremiumStatus } from '../hooks/usePremiumStatus';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
 interface CreateGroupModalProps {
   isOpen: boolean;
@@ -12,10 +9,7 @@ interface CreateGroupModalProps {
 }
 
 const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, onGroupCreated }) => {
-  const { t } = useTranslation();
   const { user } = useAuth();
-  const { isPremium, isLoading: isPremiumLoading } = usePremiumStatus();
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -78,62 +72,26 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
 
   if (!isOpen) return null;
 
-  // Show premium required screen for non-premium users
-  if (!isPremiumLoading && !isPremium) {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-8 text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Crown className="h-8 w-8 text-white" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {t('premium.requiredTitle', 'Premium Required')}
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {t('premium.createGroupMessage', 'Creating groups is a premium feature. Upgrade to Premium to create and manage your own groups.')}
-          </p>
-          <div className="space-y-3">
-            <button
-              onClick={() => {
-                onClose();
-                navigate('/upgrade');
-              }}
-              className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
-            >
-              {t('premium.upgradeToPremium', 'Upgrade to Premium')}
-            </button>
-            <button
-              onClick={onClose}
-              className="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
-            >
-              {t('common.cancel', 'Cancel')}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('community.groups.createGroup', 'Create Group')}</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Create Group</h2>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+              <X className="h-5 w-5 text-gray-500" />
             </button>
           </div>
 
           <form onSubmit={handleSubmit}>
             {/* Group Name */}
             <div className="mb-6">
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('community.groups.form.name', 'Group Name')} *
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                Group Name *
               </label>
               <input
                 type="text"
@@ -142,15 +100,15 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                placeholder={t('community.groups.form.namePlaceholder', 'Enter group name')}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                placeholder="Enter group name"
               />
             </div>
 
             {/* Description */}
             <div className="mb-6">
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('community.groups.form.description', 'Description')} *
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+                Description *
               </label>
               <textarea
                 id="description"
@@ -159,15 +117,15 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                 onChange={handleInputChange}
                 required
                 rows={4}
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                placeholder={t('community.groups.form.descriptionPlaceholder', 'Describe what this group is about')}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                placeholder="Describe what this group is about"
               />
             </div>
 
             {/* Category */}
             <div className="mb-6">
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('community.groups.form.category', 'Category')} *
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                Category *
               </label>
               <select
                 id="category"
@@ -175,9 +133,9 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                 value={formData.category}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
-                <option value="">{t('community.groups.form.selectCategory', 'Select a category')}</option>
+                <option value="">Select a category</option>
                 {categories.map((category) => (
                   <option key={category} value={category}>
                     {category}
@@ -188,8 +146,8 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
 
             {/* Privacy */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                {t('community.groups.form.privacy', 'Privacy')} *
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Privacy *
               </label>
               <div className="space-y-3">
                 <label className="flex items-center">
@@ -202,8 +160,8 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                     className="mr-3"
                   />
                   <div>
-                    <div className="font-medium text-gray-900 dark:text-white">{t('community.groups.form.public', 'Public')}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">{t('community.groups.form.publicDesc', 'Anyone can see and join this group')}</div>
+                    <div className="font-medium text-gray-900">Public</div>
+                    <div className="text-sm text-gray-500">Anyone can see and join this group</div>
                   </div>
                 </label>
                 <label className="flex items-center">
@@ -216,8 +174,8 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                     className="mr-3"
                   />
                   <div>
-                    <div className="font-medium text-gray-900 dark:text-white">{t('community.groups.form.private', 'Private')}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">{t('community.groups.form.privateDesc', 'Only members can see posts and join by invitation')}</div>
+                    <div className="font-medium text-gray-900">Private</div>
+                    <div className="text-sm text-gray-500">Only members can see posts and join by invitation</div>
                   </div>
                 </label>
               </div>
@@ -225,10 +183,10 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
 
             {/* Group Image */}
             <div className="mb-8">
-              <label htmlFor="image" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('community.groups.form.image', 'Group Image')}
+              <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
+                Group Image
               </label>
-              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-6 text-center hover:border-primary-400 dark:hover:border-primary-500 transition-colors">
+              <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary-400 transition-colors">
                 {image ? (
                   <div>
                     <img
@@ -241,16 +199,16 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                       onClick={() => setImage(null)}
                       className="text-red-500 text-sm hover:text-red-700"
                     >
-                      {t('common.removeImage', 'Remove image')}
+                      Remove image
                     </button>
                   </div>
                 ) : (
                   <>
                     <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      {t('community.groups.form.uploadImage', 'Upload a group image')}
+                    <p className="text-sm text-gray-600 mb-2">
+                      Upload a group image
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-500">
+                    <p className="text-xs text-gray-500">
                       PNG, JPG up to 5MB
                     </p>
                     <input
@@ -262,9 +220,9 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                     />
                     <label
                       htmlFor="image"
-                      className="mt-2 inline-block bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 px-4 py-2 rounded-lg cursor-pointer hover:bg-primary-100 dark:hover:bg-primary-800/20 transition-colors"
+                      className="mt-2 inline-block bg-primary-50 text-primary-600 px-4 py-2 rounded-lg cursor-pointer hover:bg-primary-100 transition-colors"
                     >
-                      {t('common.chooseImage', 'Choose Image')}
+                      Choose Image
                     </label>
                   </>
                 )}
@@ -280,12 +238,12 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
               {isSubmitting ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  <span>{t('community.groups.creating', 'Creating Group...')}</span>
+                  <span>Creating Group...</span>
                 </>
               ) : (
                 <>
                   <Users className="h-5 w-5" />
-                  <span>{t('community.groups.createGroup', 'Create Group')}</span>
+                  <span>Create Group</span>
                 </>
               )}
             </button>

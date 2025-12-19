@@ -99,26 +99,12 @@
     "errorOccurred": "Ein Fehler ist aufgetreten",
     "rateLimitExceeded": "Ratenlimit überschritten, bitte versuchen Sie es später erneut",
     "paymentRequired": "Zahlung erforderlich um fortzufahren",
-    "promptsLeft": "übrig",
-    "limitReached": "Tageslimit erreicht",
-    "limitReachedPlaceholder": "Tageslimit erreicht...",
-    "freeUserLimit": "Kostenlose Nutzer: 1 Anfrage/Tag",
-    "premiumUserLimit": "Premium-Nutzer: 10 Anfragen/Tag",
-    "upgradePremiumMessage": "Upgrade auf Premium für 10 Anfragen/Tag",
-    "comeBackTomorrow": "Kommen Sie morgen für mehr Anfragen wieder",
     "contextMode": {
       "creator": "Creator-Modus",
       "employer": "Arbeitgeber-Modus",
       "toolDiscovery": "Tool-Entdeckungsmodus",
       "general": "Allgemeine Hilfe"
     }
-  },
-  "premium": {
-    "requiredTitle": "Premium erforderlich",
-    "createGroupMessage": "Das Erstellen von Gruppen ist eine Premium-Funktion. Upgrade auf Premium, um Ihre eigenen Gruppen zu erstellen und zu verwalten.",
-    "createEventMessage": "Das Erstellen von Events ist eine Premium-Funktion. Upgrade auf Premium, um Ihre eigenen Events zu erstellen und zu hosten.",
-    "upgradeToPremium": "Auf Premium upgraden",
-    "upgrade": "Upgrade"
   },
   "auto": {
     "totalUsers": "Gesamtbenutzer",
