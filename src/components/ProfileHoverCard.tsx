@@ -37,13 +37,11 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
   const [isConnected, setIsConnected] = useState(false);
   const [hasRequestPending, setHasRequestPending] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(true);
 
   useEffect(() => {
     if (userId && userId !== user?.id) {
       fetchProfile();
-      if (profile) {
-        checkConnectionStatus();
-      }
     }
     
     // Listen for connection request processing events
@@ -57,9 +55,17 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
     return () => {
       window.removeEventListener('connectionRequestProcessed', handleConnectionRequestProcessed);
     };
-  }, [userId, user, profile]);
+  }, [userId, user?.id]);
+
+  // Check connection status when profile is loaded
+  useEffect(() => {
+    if (profile && user) {
+      checkConnectionStatus();
+    }
+  }, [profile, user]);
 
   const fetchProfile = async () => {
+    setProfileLoading(true);
     try {
       const { data, error } = await supabase
         .from('user_profiles')
@@ -71,6 +77,8 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
       setProfile(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
+    } finally {
+      setProfileLoading(false);
     }
   };
 
@@ -191,7 +199,8 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
     }
   };
 
-  if (!profile || userId === user?.id) {
+  // Don't show hover card for own profile
+  if (userId === user?.id) {
     return <>{children}</>;
   }
 
@@ -204,6 +213,21 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
     }
   };
 
+  // Loading skeleton for hover card content
+  const LoadingSkeleton = () => (
+    <div className="space-y-3 animate-pulse">
+      <div className="flex items-start space-x-3">
+        <div className="h-12 w-12 rounded-full bg-muted" />
+        <div className="flex-1 space-y-2">
+          <div className="h-4 w-24 bg-muted rounded" />
+          <div className="h-3 w-32 bg-muted rounded" />
+        </div>
+      </div>
+      <div className="h-3 w-full bg-muted rounded" />
+      <div className="h-8 w-full bg-muted rounded" />
+    </div>
+  );
+
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
@@ -212,95 +236,101 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
         </span>
       </HoverCardTrigger>
       <HoverCardContent className="w-80 p-4">
-        <div className="space-y-3">
-          <div className="flex items-start space-x-3">
-            <Avatar className="h-12 w-12">
-              {profile.profile_photo ? (
-                <AvatarImage src={profile.profile_photo} />
+        {profileLoading ? (
+          <LoadingSkeleton />
+        ) : profile ? (
+          <div className="space-y-3">
+            <div className="flex items-start space-x-3">
+              <Avatar className="h-12 w-12">
+                {profile.profile_photo ? (
+                  <AvatarImage src={profile.profile_photo} />
+                ) : (
+                  <AvatarFallback>
+                    <User className="h-6 w-6" />
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              
+              <div className="flex-1 min-w-0">
+                <h4 className="font-semibold truncate">{profile.full_name}</h4>
+                {profile.job_title && (
+                  <div className="flex items-center text-sm text-muted-foreground mt-1">
+                    <Briefcase className="h-3 w-3 mr-1" />
+                    <span className="truncate">
+                      {profile.job_title}
+                      {profile.company && ` at ${profile.company}`}
+                    </span>
+                  </div>
+                )}
+                {profile.location && (
+                  <div className="flex items-center text-sm text-muted-foreground mt-1">
+                    <MapPin className="h-3 w-3 mr-1" />
+                    <span>{profile.location}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {profile.bio && (
+              <p className="text-sm text-muted-foreground line-clamp-2">
+                {profile.bio}
+              </p>
+            )}
+
+            <div className="flex space-x-2">
+              {isConnected ? (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={async () => {
+                    try {
+                      if (typeof window !== 'undefined' && (window as any).chatDock?.open) {
+                        const success = await (window as any).chatDock.open(userId);
+                        if (success) {
+                          toast.success(`Opening chat with ${profile.full_name}`);
+                        } else {
+                          toast.error('Failed to open chat. Please try again.');
+                        }
+                      } else {
+                        toast.error('Chat system not ready. Please try again.');
+                      }
+                    } catch (error) {
+                      console.error('Error opening chat:', error);
+                      toast.error('Failed to open chat');
+                    }
+                  }}
+                >
+                  <MessageCircle className="h-4 w-4 mr-1" />
+                  Message
+                </Button>
+              ) : hasRequestPending ? (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={withdrawConnectionRequest}
+                  disabled={loading}
+                  className="flex-1"
+                >
+                  <Check className="h-4 w-4 mr-1" />
+                  Request Sent
+                </Button>
               ) : (
-                <AvatarFallback>
-                  <User className="h-6 w-6" />
-                </AvatarFallback>
-              )}
-            </Avatar>
-            
-            <div className="flex-1 min-w-0">
-              <h4 className="font-semibold truncate">{profile.full_name}</h4>
-              {profile.job_title && (
-                <div className="flex items-center text-sm text-muted-foreground mt-1">
-                  <Briefcase className="h-3 w-3 mr-1" />
-                  <span className="truncate">
-                    {profile.job_title}
-                    {profile.company && ` at ${profile.company}`}
-                  </span>
-                </div>
-              )}
-              {profile.location && (
-                <div className="flex items-center text-sm text-muted-foreground mt-1">
-                  <MapPin className="h-3 w-3 mr-1" />
-                  <span>{profile.location}</span>
-                </div>
+                <Button 
+                  size="sm" 
+                  onClick={sendConnectionRequest}
+                  disabled={loading}
+                  className="flex-1"
+                >
+                  <UserPlus className="h-4 w-4 mr-1" />
+                  Connect
+                </Button>
               )}
             </div>
           </div>
-
-          {profile.bio && (
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {profile.bio}
-            </p>
-          )}
-
-          <div className="flex space-x-2">
-            {isConnected ? (
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="flex-1"
-                onClick={async () => {
-                  try {
-                    if (typeof window !== 'undefined' && (window as any).chatDock?.open) {
-                      const success = await (window as any).chatDock.open(userId);
-                      if (success) {
-                        toast.success(`Opening chat with ${profile.full_name}`);
-                      } else {
-                        toast.error('Failed to open chat. Please try again.');
-                      }
-                    } else {
-                      toast.error('Chat system not ready. Please try again.');
-                    }
-                  } catch (error) {
-                    console.error('Error opening chat:', error);
-                    toast.error('Failed to open chat');
-                  }
-                }}
-              >
-                <MessageCircle className="h-4 w-4 mr-1" />
-                Message
-              </Button>
-            ) : hasRequestPending ? (
-              <Button 
-                size="sm" 
-                variant="outline" 
-                onClick={withdrawConnectionRequest}
-                disabled={loading}
-                className="flex-1"
-              >
-                <Check className="h-4 w-4 mr-1" />
-                Request Sent
-              </Button>
-            ) : (
-              <Button 
-                size="sm" 
-                onClick={sendConnectionRequest}
-                disabled={loading}
-                className="flex-1"
-              >
-                <UserPlus className="h-4 w-4 mr-1" />
-                Connect
-              </Button>
-            )}
-          </div>
-        </div>
+        ) : (
+          <div className="text-sm text-muted-foreground">Unable to load profile</div>
+        )}
       </HoverCardContent>
     </HoverCard>
   );

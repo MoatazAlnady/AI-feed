@@ -59,6 +59,7 @@ interface Post {
   canEdit: boolean;
   view_count?: number;
   reach_score?: number;
+  sharedPostId?: string; // ID of the shared_posts record for reshared posts
 }
 
 interface Comment {
@@ -77,6 +78,8 @@ interface Comment {
   canEdit: boolean;
   reactions: { [key: string]: { count: number; users: string[] } };
   userReaction?: string;
+  parent_comment_id?: string;
+  replies?: Comment[];
 }
 
 const NewsFeed: React.FC = () => {
@@ -94,6 +97,8 @@ const NewsFeed: React.FC = () => {
   const [commentSort, setCommentSort] = useState<{ [key: string]: 'relevant' | 'recent' }>({});
   const [editingComment, setEditingComment] = useState<{ postId: string; commentId: string } | null>(null);
   const [editCommentContent, setEditCommentContent] = useState('');
+  const [replyingTo, setReplyingTo] = useState<{ postId: string; commentId: string; authorName: string } | null>(null);
+  const [replyContent, setReplyContent] = useState('');
 
   // Get user interests for personalized feed
   const userInterests = user?.user_metadata?.interests || [];
@@ -233,7 +238,8 @@ const NewsFeed: React.FC = () => {
         type: 'shared',
         shared_by: share.user_id,
         share_text: share.share_text,
-        shared_at: share.created_at
+        shared_at: share.created_at,
+        sharedPostId: share.id // Track the shared_posts record ID
       })));
 
       // Sort all posts by creation time
@@ -348,6 +354,7 @@ const NewsFeed: React.FC = () => {
           canEdit: user ? post.user_id === user.id : false,
           view_count: post.view_count || 0,
           reach_score: post.reach_score || 0,
+          sharedPostId: post.sharedPostId, // Include sharedPostId for reshared posts
           // Shared post specific fields
           type: post.type || 'original',
           sharedBy: post.type === 'shared' ? {
@@ -477,18 +484,30 @@ const NewsFeed: React.FC = () => {
     }
   };
 
-  const handleComment = async (postId: string) => {
-    const commentText = newComment[postId];
+  const handleComment = async (postId: string, sharedPostId?: string, parentCommentId?: string) => {
+    const commentText = parentCommentId ? replyContent : newComment[postId];
     if (!commentText?.trim() || !user) return;
 
     try {
+      const insertData: any = {
+        post_id: postId,
+        user_id: user.id,
+        content: commentText.trim()
+      };
+
+      // If this is a comment on a reshared post, link it to the shared_post
+      if (sharedPostId) {
+        insertData.shared_post_id = sharedPostId;
+      }
+
+      // If this is a reply, add parent_comment_id
+      if (parentCommentId) {
+        insertData.parent_comment_id = parentCommentId;
+      }
+
       const { data: commentData, error } = await supabase
         .from('post_comments')
-        .insert({
-          post_id: postId,
-          user_id: user.id,
-          content: commentText.trim()
-        })
+        .insert(insertData)
         .select()
         .single();
 
@@ -513,19 +532,48 @@ const NewsFeed: React.FC = () => {
         likes: 0,
         canEdit: true,
         reactions: {},
-        userReaction: undefined
+        userReaction: undefined,
+        parent_comment_id: parentCommentId
       };
 
-      setPosts(posts.map(post => 
-        post.id === postId 
-          ? { ...post, comments: [...post.comments, newCommentObj] }
-          : post
-      ));
-
-      setNewComment({ ...newComment, [postId]: '' });
+      if (parentCommentId) {
+        // Add reply to parent comment
+        setPosts(posts.map(post => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              comments: post.comments.map(c => 
+                c.id === parentCommentId 
+                  ? { ...c, replies: [...(c.replies || []), newCommentObj] }
+                  : c
+              )
+            };
+          }
+          return post;
+        }));
+        setReplyingTo(null);
+        setReplyContent('');
+      } else {
+        setPosts(posts.map(post => 
+          post.id === postId 
+            ? { ...post, comments: [...post.comments, newCommentObj] }
+            : post
+        ));
+        setNewComment({ ...newComment, [postId]: '' });
+      }
     } catch (error) {
       console.error('Error posting comment:', error);
     }
+  };
+
+  const handleReply = (postId: string, commentId: string, authorName: string) => {
+    setReplyingTo({ postId, commentId, authorName });
+    setReplyContent('');
+  };
+
+  const cancelReply = () => {
+    setReplyingTo(null);
+    setReplyContent('');
   };
 
   const handleEditComment = (postId: string, commentId: string, content: string) => {
@@ -1068,120 +1116,196 @@ const NewsFeed: React.FC = () => {
               {/* Comments Section */}
               {showComments[post.id] && (
                 <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                  {/* Comment Sorting */}
-                  {post.comments.length > 1 && (
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {post.comments.length} comments
-                      </span>
-                      <select
-                        value={commentSort[post.id] || 'recent'}
-                        onChange={(e) => setCommentSort({ ...commentSort, [post.id]: e.target.value as 'relevant' | 'recent' })}
-                        className="text-sm border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-                      >
-                        <option value="recent">Most Recent</option>
-                        <option value="relevant">Most Relevant</option>
-                      </select>
-                    </div>
-                  )}
+                  {/* Comment Sorting - Always show */}
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {post.comments.length} {post.comments.length === 1 ? 'comment' : 'comments'}
+                    </span>
+                    <select
+                      value={commentSort[post.id] || 'recent'}
+                      onChange={(e) => setCommentSort({ ...commentSort, [post.id]: e.target.value as 'relevant' | 'recent' })}
+                      className="text-sm border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                    >
+                      <option value="recent">Most Recent</option>
+                      <option value="relevant">Most Relevant</option>
+                    </select>
+                  </div>
 
                   <div className="space-y-4 mb-4">
-                    {getSortedComments(post.comments, post.id).map((comment) => (
-                      <div key={comment.id} className="flex items-start space-x-3">
-                        {/* Avatar with fallback */}
-                        {comment.author.avatar ? (
-                          <Link to={getCreatorProfileLink({ id: comment.author.id, handle: comment.author.handle })}>
-                            <img
-                              src={comment.author.avatar}
-                              alt={comment.author.name}
-                              className="w-8 h-8 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                            />
-                          </Link>
-                        ) : (
-                          <Link to={getCreatorProfileLink({ id: comment.author.id, handle: comment.author.handle })}>
-                            <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
-                              <User className="h-4 w-4 text-white" />
-                            </div>
-                          </Link>
-                        )}
-                        <div className="flex-1">
-                          {editingComment?.postId === post.id && editingComment?.commentId === comment.id ? (
-                            <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-3">
-                              <input
-                                type="text"
-                                value={editCommentContent}
-                                onChange={(e) => setEditCommentContent(e.target.value)}
-                                className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm"
-                                autoFocus
+                    {getSortedComments(post.comments.filter(c => !c.parent_comment_id), post.id).map((comment) => (
+                      <div key={comment.id} className="space-y-2">
+                        <div className="flex items-start space-x-3">
+                          {/* Avatar with fallback */}
+                          {comment.author.avatar ? (
+                            <Link to={getCreatorProfileLink({ id: comment.author.id, handle: comment.author.handle })}>
+                              <img
+                                src={comment.author.avatar}
+                                alt={comment.author.name}
+                                className="w-8 h-8 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
                               />
-                              <div className="flex items-center space-x-2 mt-2">
-                                <button
-                                  onClick={() => handleSaveCommentEdit(post.id, comment.id)}
-                                  className="text-xs text-green-600 hover:text-green-700 flex items-center"
-                                >
-                                  <Check className="h-3 w-3 mr-1" /> Save
-                                </button>
-                                <button
-                                  onClick={() => setEditingComment(null)}
-                                  className="text-xs text-gray-500 hover:text-gray-700 flex items-center"
-                                >
-                                  <X className="h-3 w-3 mr-1" /> Cancel
-                                </button>
-                              </div>
-                            </div>
+                            </Link>
                           ) : (
-                            <>
-                              <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-3">
-                                <div className="flex items-center justify-between mb-1">
-                                  <div className="flex items-center space-x-2">
-                                    <Link 
-                                      to={getCreatorProfileLink({ id: comment.author.id, handle: comment.author.handle })}
-                                      className="font-medium text-sm text-gray-900 dark:text-white hover:underline"
-                                    >
-                                      {comment.author.name}
-                                    </Link>
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                                      {comment.timestamp}
-                                    </span>
-                                  </div>
-                                  {comment.canEdit && (
-                                    <DropdownMenu>
-                                      <DropdownMenuTrigger asChild>
-                                        <button className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded">
-                                          <MoreHorizontal className="h-4 w-4 text-gray-500" />
-                                        </button>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onClick={() => handleEditComment(post.id, comment.id, comment.content)}>
-                                          <Edit3 className="h-4 w-4 mr-2" /> Edit
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem 
-                                          onClick={() => handleDeleteComment(post.id, comment.id)}
-                                          className="text-red-600"
-                                        >
-                                          <Trash2 className="h-4 w-4 mr-2" /> Delete
-                                        </DropdownMenuItem>
-                                      </DropdownMenuContent>
-                                    </DropdownMenu>
-                                  )}
-                                </div>
-                                <div className="text-sm text-gray-800 dark:text-gray-200">
-                                  {comment.content}
-                                </div>
+                            <Link to={getCreatorProfileLink({ id: comment.author.id, handle: comment.author.handle })}>
+                              <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
+                                <User className="h-4 w-4 text-white" />
                               </div>
-                              <div className="flex items-center space-x-3 mt-1 ml-3">
-                                <CommentReactions
-                                  commentId={comment.id}
-                                  reactions={comment.reactions || {}}
-                                  userReaction={comment.userReaction}
-                                  onReact={handleCommentReaction}
-                                />
-                                <button className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
-                                  Reply
-                                </button>
-                              </div>
-                            </>
+                            </Link>
                           )}
+                          <div className="flex-1">
+                            {editingComment?.postId === post.id && editingComment?.commentId === comment.id ? (
+                              <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-3">
+                                <input
+                                  type="text"
+                                  value={editCommentContent}
+                                  onChange={(e) => setEditCommentContent(e.target.value)}
+                                  className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm"
+                                  autoFocus
+                                />
+                                <div className="flex items-center space-x-2 mt-2">
+                                  <button
+                                    onClick={() => handleSaveCommentEdit(post.id, comment.id)}
+                                    className="text-xs text-green-600 hover:text-green-700 flex items-center"
+                                  >
+                                    <Check className="h-3 w-3 mr-1" /> Save
+                                  </button>
+                                  <button
+                                    onClick={() => setEditingComment(null)}
+                                    className="text-xs text-gray-500 hover:text-gray-700 flex items-center"
+                                  >
+                                    <X className="h-3 w-3 mr-1" /> Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-3">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <div className="flex items-center space-x-2">
+                                      <Link 
+                                        to={getCreatorProfileLink({ id: comment.author.id, handle: comment.author.handle })}
+                                        className="font-medium text-sm text-gray-900 dark:text-white hover:underline"
+                                      >
+                                        {comment.author.name}
+                                      </Link>
+                                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                                        {comment.timestamp}
+                                      </span>
+                                    </div>
+                                    {comment.canEdit && (
+                                      <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                          <button className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded">
+                                            <MoreHorizontal className="h-4 w-4 text-gray-500" />
+                                          </button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                          <DropdownMenuItem onClick={() => handleEditComment(post.id, comment.id, comment.content)}>
+                                            <Edit3 className="h-4 w-4 mr-2" /> Edit
+                                          </DropdownMenuItem>
+                                          <DropdownMenuItem 
+                                            onClick={() => handleDeleteComment(post.id, comment.id)}
+                                            className="text-red-600"
+                                          >
+                                            <Trash2 className="h-4 w-4 mr-2" /> Delete
+                                          </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                      </DropdownMenu>
+                                    )}
+                                  </div>
+                                  <div className="text-sm text-gray-800 dark:text-gray-200">
+                                    {comment.content}
+                                  </div>
+                                </div>
+                                <div className="flex items-center space-x-3 mt-1 ml-3">
+                                  <CommentReactions
+                                    commentId={comment.id}
+                                    reactions={comment.reactions || {}}
+                                    userReaction={comment.userReaction}
+                                    onReact={handleCommentReaction}
+                                  />
+                                  <button 
+                                    onClick={() => handleReply(post.id, comment.id, comment.author.name)}
+                                    className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+                                  >
+                                    Reply
+                                  </button>
+                                </div>
+
+                                {/* Reply Input */}
+                                {replyingTo?.postId === post.id && replyingTo?.commentId === comment.id && (
+                                  <div className="mt-2 ml-3 flex items-center space-x-2">
+                                    <div className="w-6 h-6 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
+                                      <User className="h-3 w-3 text-white" />
+                                    </div>
+                                    <div className="flex-1 flex space-x-2">
+                                      <input
+                                        type="text"
+                                        value={replyContent}
+                                        onChange={(e) => setReplyContent(e.target.value)}
+                                        placeholder={`Reply to ${replyingTo.authorName}...`}
+                                        className="flex-1 px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-xs bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                        onKeyPress={(e) => e.key === 'Enter' && handleComment(post.id, (post as any).sharedPostId, comment.id)}
+                                        autoFocus
+                                      />
+                                      <button
+                                        onClick={() => handleComment(post.id, (post as any).sharedPostId, comment.id)}
+                                        className="px-2 py-1.5 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                                      >
+                                        <Send className="h-3 w-3" />
+                                      </button>
+                                      <button
+                                        onClick={cancelReply}
+                                        className="px-2 py-1.5 text-gray-500 hover:text-gray-700 transition-colors"
+                                      >
+                                        <X className="h-3 w-3" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Nested Replies */}
+                                {comment.replies && comment.replies.length > 0 && (
+                                  <div className="ml-8 mt-2 space-y-2">
+                                    {comment.replies.map((reply) => (
+                                      <div key={reply.id} className="flex items-start space-x-2">
+                                        {reply.author.avatar ? (
+                                          <Link to={getCreatorProfileLink({ id: reply.author.id, handle: reply.author.handle })}>
+                                            <img
+                                              src={reply.author.avatar}
+                                              alt={reply.author.name}
+                                              className="w-6 h-6 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                                            />
+                                          </Link>
+                                        ) : (
+                                          <Link to={getCreatorProfileLink({ id: reply.author.id, handle: reply.author.handle })}>
+                                            <div className="w-6 h-6 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
+                                              <User className="h-3 w-3 text-white" />
+                                            </div>
+                                          </Link>
+                                        )}
+                                        <div className="flex-1 bg-gray-50 dark:bg-gray-600 rounded-lg p-2">
+                                          <div className="flex items-center space-x-2 mb-1">
+                                            <Link 
+                                              to={getCreatorProfileLink({ id: reply.author.id, handle: reply.author.handle })}
+                                              className="font-medium text-xs text-gray-900 dark:text-white hover:underline"
+                                            >
+                                              {reply.author.name}
+                                            </Link>
+                                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                              {reply.timestamp}
+                                            </span>
+                                          </div>
+                                          <div className="text-xs text-gray-800 dark:text-gray-200">
+                                            {reply.content}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -1199,10 +1323,10 @@ const NewsFeed: React.FC = () => {
                         onChange={(e) => setNewComment({ ...newComment, [post.id]: e.target.value })}
                         placeholder="Write a comment..."
                         className="flex-1 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        onKeyPress={(e) => e.key === 'Enter' && handleComment(post.id)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleComment(post.id, (post as any).sharedPostId)}
                       />
                       <button
-                        onClick={() => handleComment(post.id)}
+                        onClick={() => handleComment(post.id, (post as any).sharedPostId)}
                         className="px-3 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
                       >
                         <Send className="h-4 w-4" />
