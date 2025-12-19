@@ -88,7 +88,7 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
     try {
       // Check if connected
       const { data: connectionData } = await supabase
-        .rpc('are_users_connected', { user1_id: user.id, user2_id: userId });
+        .rpc('are_users_connected', { user_a: user.id, user_b: userId });
 
       setIsConnected(connectionData || false);
 
