@@ -376,13 +376,27 @@ const Profile: React.FC = () => {
                       </div>
                     </div>
                     
-                    <button 
-                      onClick={handleEditProfile}
-                      className="flex items-center space-x-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300"
-                    >
-                      <Edit className="h-4 w-4" />
-                      <span>Edit Profile</span>
-                    </button>
+                    <div className="flex items-center gap-3">
+                      {isPremium && (
+                        <button 
+                          onClick={() => {
+                            setSelectedContent({ id: user?.id, title: user?.user_metadata?.full_name || 'My Profile' });
+                            setShowPromoteModal(true);
+                          }}
+                          className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-lg hover:shadow-lg transition-all"
+                        >
+                          <Target className="h-4 w-4" />
+                          <span>Promote Profile</span>
+                        </button>
+                      )}
+                      <button 
+                        onClick={handleEditProfile}
+                        className="flex items-center space-x-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300"
+                      >
+                        <Edit className="h-4 w-4" />
+                        <span>Edit Profile</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -667,7 +681,7 @@ const Profile: React.FC = () => {
         <PromoteContentModal
           isOpen={showPromoteModal}
           onClose={() => setShowPromoteModal(false)}
-          contentType={selectedContent.type}
+          contentType="profile"
           contentId={selectedContent.id}
           contentTitle={selectedContent.title}
         />

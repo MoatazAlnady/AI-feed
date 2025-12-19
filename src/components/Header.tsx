@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Search, Zap, Plus, Settings, User, LogOut, Bell, MessageCircle, Building, BarChart3, Moon, Sun, Briefcase, Users, Crown, BookOpen, Shield, LayoutDashboard } from 'lucide-react';
+import { Menu, X, Search, Zap, Plus, Settings, User, LogOut, Bell, MessageCircle, Building, BarChart3, Moon, Sun, Briefcase, Users, Crown, BookOpen, Shield, LayoutDashboard, Flag, Headphones } from 'lucide-react';
 import ChatDock from './ChatDock';
 import GlobalSearch from './GlobalSearch';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,8 @@ import VerificationBadge from './VerificationBadge';
 import LanguageSelector from './LanguageSelector';
 import ConnectionRequestsPopover from './ConnectionRequestsPopover';
 import NotificationDropdown from './NotificationDropdown';
+import ContactSupportModal from './ContactSupportModal';
+import ReportModal from './ReportModal';
 import { supabase } from '../integrations/supabase/client';
 
 const Header: React.FC = () => {
@@ -19,11 +21,14 @@ const Header: React.FC = () => {
   const [showCreateMenu, setShowCreateMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showContactSupportModal, setShowContactSupportModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [notificationCount, setNotificationCount] = useState(0);
   const [messageCount, setMessageCount] = useState(0);
   const [connectionRequestsCount, setConnectionRequestsCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isPremium, setIsPremium] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut, isAdmin, isEmployer, loading } = useAuth();
@@ -145,15 +150,20 @@ const Header: React.FC = () => {
         try {
           const { data, error } = await supabase
             .from('user_profiles')
-            .select('profile_photo')
+            .select('profile_photo, is_premium, premium_until')
             .eq('id', user.id)
             .single();
           
-          if (!error && data?.profile_photo) {
-            setUserProfilePhoto(data.profile_photo);
+          if (!error && data) {
+            if (data.profile_photo) {
+              setUserProfilePhoto(data.profile_photo);
+            }
+            // Check premium status
+            const isActive = data.is_premium && (!data.premium_until || new Date(data.premium_until) > new Date());
+            setIsPremium(isActive);
           }
         } catch (error) {
-          console.error('Error fetching user profile photo:', error);
+          console.error('Error fetching user profile:', error);
         }
       }
     };
@@ -608,6 +618,34 @@ const Header: React.FC = () => {
                                 </div>
                               </Link>
                             )}
+                          {/* Contact Support - Premium Only */}
+                          {isPremium && (
+                            <button
+                              onClick={() => {
+                                setShowUserMenu(false);
+                                setShowContactSupportModal(true);
+                              }}
+                              className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                            >
+                              <div className="flex items-center">
+                                <Headphones className="h-4 w-4 mr-2 text-green-500 dark:text-green-400" />
+                                Contact Support
+                              </div>
+                            </button>
+                          )}
+                          {/* Report Content */}
+                          <button
+                            onClick={() => {
+                              setShowUserMenu(false);
+                              setShowReportModal(true);
+                            }}
+                            className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          >
+                            <div className="flex items-center">
+                              <Flag className="h-4 w-4 mr-2 text-red-500 dark:text-red-400" />
+                              Report Content
+                            </div>
+                          </button>
                         </>
                       )}
                       {/* Dashboard Switcher Section - Only show for employers and admins */}
@@ -956,6 +994,21 @@ const Header: React.FC = () => {
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         initialMode={authMode}
+      />
+
+      {/* Contact Support Modal */}
+      <ContactSupportModal
+        isOpen={showContactSupportModal}
+        onClose={() => setShowContactSupportModal(false)}
+      />
+
+      {/* Report Modal */}
+      <ReportModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        type="content"
+        targetId=""
+        targetTitle="Report an issue"
       />
     </>
   );

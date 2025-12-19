@@ -21,7 +21,8 @@ import {
   ClipboardList,
   Tag,
   Globe,
-  Users2
+  Users2,
+  Headphones
 } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
@@ -98,6 +99,11 @@ const AdminSidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }
       id: 'reports',
       label: 'Content Reports',
       icon: Flag
+    },
+    {
+      id: 'support-tickets',
+      label: 'Support Tickets',
+      icon: Headphones
     },
     {
       id: 'pricing',
