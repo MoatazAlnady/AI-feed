@@ -128,11 +128,11 @@ const NewsFeed: React.FC = () => {
         })
         .subscribe();
 
-      // Set up automatic refresh every 15 minutes
+      // Set up automatic refresh every 10 minutes
       refreshInterval = setInterval(() => {
         console.log('Auto-refreshing newsfeed...');
         fetchPosts();
-      }, 15 * 60 * 1000); // 15 minutes
+      }, 10 * 60 * 1000); // 10 minutes
     }
 
     return () => {
