@@ -667,20 +667,26 @@ export type Database = {
         Row: {
           creator_id: string
           id: string
+          is_active: boolean | null
           subscribed_at: string
           subscriber_id: string
+          unsubscribe_token: string | null
         }
         Insert: {
           creator_id: string
           id?: string
+          is_active?: boolean | null
           subscribed_at?: string
           subscriber_id: string
+          unsubscribe_token?: string | null
         }
         Update: {
           creator_id?: string
           id?: string
+          is_active?: boolean | null
           subscribed_at?: string
           subscriber_id?: string
+          unsubscribe_token?: string | null
         }
         Relationships: [
           {
@@ -806,6 +812,7 @@ export type Database = {
           creator_id: string
           expires_at: string | null
           id: string
+          receive_newsletter: boolean | null
           started_at: string
           status: string
           stripe_subscription_id: string | null
@@ -819,6 +826,7 @@ export type Database = {
           creator_id: string
           expires_at?: string | null
           id?: string
+          receive_newsletter?: boolean | null
           started_at?: string
           status?: string
           stripe_subscription_id?: string | null
@@ -832,6 +840,7 @@ export type Database = {
           creator_id?: string
           expires_at?: string | null
           id?: string
+          receive_newsletter?: boolean | null
           started_at?: string
           status?: string
           stripe_subscription_id?: string | null

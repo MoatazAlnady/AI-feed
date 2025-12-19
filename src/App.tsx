@@ -31,6 +31,7 @@ import ToolDetails from "./pages/ToolDetails";
 import Profile from "./pages/Profile";
 import UserView from "./pages/UserView";
 import CreatorProfile from "./pages/CreatorProfile";
+import CreatorUnsubscribe from "./pages/CreatorUnsubscribe";
 import Settings from "./pages/Settings";
 import Jobs from "./pages/Jobs";
 import Upgrade from "./pages/Upgrade";
@@ -83,6 +84,7 @@ const App = () => (
                
                 {/* Creator Profile Routes */}
                 <Route path="creator/:handleOrId" element={<CreatorProfile />} />
+                <Route path="creator/:creatorId/unsubscribe" element={<CreatorUnsubscribe />} />
                
                {/* Legacy Profile Routes - Redirect to creator profile for handle-based navigation */}
                <Route path="profile/:id" element={<CreatorProfile />} />

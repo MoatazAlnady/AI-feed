@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { X, Calendar, MapPin, Clock, Crown } from 'lucide-react';
+import { X, Calendar, MapPin, Clock, Crown, Video, Copy, RefreshCw } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { usePremiumStatus } from '../hooks/usePremiumStatus';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import PremiumUpgradeModal from './PremiumUpgradeModal';
 
 interface CreateEventModalProps {
@@ -11,6 +12,15 @@ interface CreateEventModalProps {
   onClose: () => void;
   onEventCreated: (event: any) => void;
 }
+
+const generateRoomId = () => {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < 8; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return `event-live-${Date.now()}-${result}`;
+};
 
 const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, onEventCreated }) => {
   const { t } = useTranslation();
@@ -24,7 +34,10 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
     time: '',
     location: '',
     type: 'online',
-    category: ''
+    category: '',
+    isLiveVideo: false,
+    liveVideoRoomId: '',
+    liveVideoUrl: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -42,8 +55,41 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
   ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData(prev => ({ ...prev, [name]: checked }));
+      
+      // Auto-generate live video link when checkbox is enabled
+      if (name === 'isLiveVideo' && checked) {
+        const roomId = generateRoomId();
+        const liveUrl = `${window.location.origin}/live/${roomId}`;
+        setFormData(prev => ({ 
+          ...prev, 
+          isLiveVideo: true,
+          liveVideoRoomId: roomId,
+          liveVideoUrl: liveUrl 
+        }));
+      }
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const regenerateLiveLink = () => {
+    const roomId = generateRoomId();
+    const liveUrl = `${window.location.origin}/live/${roomId}`;
+    setFormData(prev => ({ 
+      ...prev, 
+      liveVideoRoomId: roomId,
+      liveVideoUrl: liveUrl 
+    }));
+    toast.success(t('community.events.form.linkRegenerated', 'New link generated'));
+  };
+
+  const copyLiveLink = () => {
+    navigator.clipboard.writeText(formData.liveVideoUrl);
+    toast.success(t('community.events.form.linkCopied', 'Link copied to clipboard'));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,12 +102,15 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
       description: formData.description,
       date: formData.date,
       time: formData.time,
-      location: formData.location,
+      location: formData.isLiveVideo ? formData.liveVideoUrl : formData.location,
       type: formData.type,
       category: formData.category,
       organizer: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Anonymous',
       attendees: 0,
-      createdAt: 'Just now'
+      createdAt: 'Just now',
+      isLiveVideo: formData.isLiveVideo,
+      liveVideoRoomId: formData.liveVideoRoomId,
+      liveVideoUrl: formData.liveVideoUrl
     };
 
     // Simulate API call
@@ -75,7 +124,10 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
       time: '',
       location: '',
       type: 'online',
-      category: ''
+      category: '',
+      isLiveVideo: false,
+      liveVideoRoomId: '',
+      liveVideoUrl: ''
     });
     setIsSubmitting(false);
     onClose();
@@ -224,6 +276,59 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                 </label>
               </div>
             </div>
+
+            {/* Live Video Option */}
+            {(formData.type === 'online' || formData.type === 'hybrid') && (
+              <div className="mb-6 p-4 bg-muted/50 rounded-xl border border-border">
+                <label className="flex items-center gap-3 cursor-pointer mb-4">
+                  <input
+                    type="checkbox"
+                    name="isLiveVideo"
+                    checked={formData.isLiveVideo}
+                    onChange={handleInputChange}
+                    className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                  <div className="flex items-center gap-2">
+                    <Video className="h-5 w-5 text-primary" />
+                    <span className="font-medium text-foreground">
+                      {t('community.events.form.liveVideo', 'This is a live video event')}
+                    </span>
+                  </div>
+                </label>
+
+                {formData.isLiveVideo && (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={formData.liveVideoUrl}
+                        readOnly
+                        className="flex-1 px-4 py-2 bg-background border border-border rounded-lg text-sm text-foreground"
+                      />
+                      <button
+                        type="button"
+                        onClick={copyLiveLink}
+                        className="p-2 hover:bg-muted rounded-lg transition-colors"
+                        title={t('common.copy', 'Copy')}
+                      >
+                        <Copy className="h-4 w-4 text-muted-foreground" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={regenerateLiveLink}
+                        className="p-2 hover:bg-muted rounded-lg transition-colors"
+                        title={t('community.events.form.regenerate', 'Generate new link')}
+                      >
+                        <RefreshCw className="h-4 w-4 text-muted-foreground" />
+                      </button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {t('community.events.form.liveVideoHelp', 'Share this link with attendees to join your live event')}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Location */}
             <div className="mb-6">
