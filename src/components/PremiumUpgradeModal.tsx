@@ -1,7 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Crown, Check, Users, Calendar, Wrench, BarChart3, MessageSquare, TrendingUp, GitCompare, Video, Gift } from 'lucide-react';
+import { 
+  Crown, Check, Users, Calendar, Wrench, BarChart3, MessageSquare, 
+  TrendingUp, GitCompare, Video, Gift, Radio, Lock, Mail, DollarSign, 
+  Headphones, Sparkles 
+} from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
@@ -26,11 +30,17 @@ const PremiumUpgradeModal: React.FC<PremiumUpgradeModalProps> = ({
     { icon: Users, label: 'Unlimited group creation' },
     { icon: Calendar, label: 'Create unlimited events' },
     { icon: Wrench, label: 'Submit unlimited tools' },
-    { icon: GitCompare, label: 'Compare AI tools' },
+    { icon: GitCompare, label: 'Compare AI tools side-by-side' },
     { icon: Video, label: 'Video upload & recording' },
-    { icon: TrendingUp, label: 'Promote your content' },
+    { icon: Radio, label: 'Go live with your audience' },
+    { icon: TrendingUp, label: 'AI-powered content promotion' },
     { icon: Crown, label: 'Premium verified badge' },
-    { icon: BarChart3, label: 'Advanced analytics' }
+    { icon: BarChart3, label: 'Advanced analytics dashboard' },
+    { icon: Lock, label: 'Post privacy controls' },
+    { icon: Mail, label: 'Creator newsletter to subscribers' },
+    { icon: DollarSign, label: 'Paid subscription tiers' },
+    { icon: Headphones, label: 'Priority support' },
+    { icon: Sparkles, label: 'Early access to new features' },
   ];
 
   const handleViewPlans = () => {

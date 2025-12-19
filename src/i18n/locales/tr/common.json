@@ -1,0 +1,247 @@
+{
+  "onlineStatus": {
+    "title": "Çevrimiçi Durumu",
+    "description": "Çevrimiçi durumunuzun başkalarına nasıl görüneceğini kontrol edin",
+    "auto": "Otomatik",
+    "autoDesc": "Gerçek durumumu otomatik olarak göster",
+    "online": "Çevrimiçi",
+    "onlineDesc": "Her zaman çevrimiçi görün",
+    "offline": "Çevrimdışı",
+    "offlineDesc": "Her zaman çevrimdışı görün",
+    "quickChange": "Durumu değiştir"
+  },
+  "nav": {
+    "home": "Ana Sayfa",
+    "tools": "Araçlar",
+    "categories": "Kategoriler",
+    "talent": "Yetenekler",
+    "jobs": "İş İlanları",
+    "newsfeed": "Haber Akışı",
+    "community": "Topluluk",
+    "blog": "Blog",
+    "about": "Hakkında",
+    "dashboard": "Panel",
+    "profile": "Profil",
+    "settings": "Ayarlar",
+    "messages": "Mesajlar",
+    "notifications": "Bildirimler",
+    "admin": "Yönetici",
+    "guidelines": "Kurallar ve Yönergeler",
+    "signIn": "Giriş Yap",
+    "signUp": "Kayıt Ol",
+    "signOut": "Çıkış Yap"
+  },
+  "auth": {
+    "signOut": "Çıkış yap"
+  },
+  "common": {
+    "search": "Ara",
+    "submit": "Gönder",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "loading": "Yükleniyor...",
+    "language": "Dil",
+    "theme": "Tema",
+    "create": "Oluştur",
+    "share": "Paylaş",
+    "like": "Beğen",
+    "comment": "Yorum",
+    "view": "Görüntüle",
+    "back": "Geri",
+    "views": "görüntüleme",
+    "justNow": "Az önce",
+    "hoursAgo": "{{hours}} saat önce",
+    "yesterday": "Dün",
+    "returnToNewsfeed": "Haber akışına dön",
+    "postNotFound": "Gönderi bulunamadı",
+    "error": "Hata",
+    "success": "Başarılı",
+    "contentTypes": {
+      "tool": "Araç",
+      "article": "Makale",
+      "post": "Gönderi",
+      "event": "Etkinlik",
+      "job": "İş İlanı"
+    }
+  },
+  "hero": {
+    "title": "İşinizi Dönüştüren AI Araçlarını Keşfedin",
+    "subtitle": "İş akışlarınızı devrim niteliğinde değiştirmek için en son AI araçlarını keşfeden, paylaşan ve kullanan binlerce profesyonele katılın.",
+    "cta": "Araçları Keşfet"
+  },
+  "chat": {
+    "chats": "Sohbetler",
+    "aiAssistant": "AI Asistan",
+    "aiThinking": "AI düşünüyor...",
+    "typeMessage": "Mesajınızı yazın...",
+    "send": "Gönder",
+    "clearChat": "Sohbeti temizle",
+    "errorOccurred": "Bir hata oluştu",
+    "rateLimitExceeded": "Hız limiti aşıldı, lütfen daha sonra tekrar deneyin",
+    "paymentRequired": "Devam etmek için ödeme gerekli",
+    "promptsLeft": "kaldı",
+    "limitReached": "Günlük limit doldu",
+    "limitReachedPlaceholder": "Günlük limit doldu...",
+    "freeUserLimit": "Ücretsiz kullanıcılar: Günde 1 istem",
+    "premiumUserLimit": "Premium kullanıcılar: Günde 10 istem",
+    "upgradePremiumMessage": "Günde 10 istem için Premium'a yükseltin",
+    "comeBackTomorrow": "Daha fazla istem için yarın gelin"
+  },
+  "premium": {
+    "requiredTitle": "Premium Gerekli",
+    "createGroupMessage": "Grup oluşturma premium bir özelliktir. Kendi gruplarınızı oluşturmak ve yönetmek için Premium'a yükseltin.",
+    "createEventMessage": "Etkinlik oluşturma premium bir özelliktir. Kendi etkinliklerinizi oluşturmak ve düzenlemek için Premium'a yükseltin.",
+    "submitToolMessage": "AI araç gönderme premium bir özelliktir. Dizinimize araç göndermek için Premium'a yükseltin.",
+    "upgradeToPremium": "Premium'a Yükselt",
+    "upgrade": "Yükselt"
+  },
+  "premiumModal": {
+    "title": "Premium'a Yükselt",
+    "subtitle": "Tüm özelliklerin kilidini açın ve verimliliğinizi artırın",
+    "limitReached": "{{feature}} için ücretsiz limitinize ulaştınız",
+    "premiumOnly": "{{feature}} premium bir özelliktir",
+    "freeTrial": "7 Günlük Ücretsiz Deneme Dahil",
+    "monthlyPrice": "$20",
+    "yearlyPrice": "$200",
+    "perMonth": "/ay",
+    "perYear": "/yıl",
+    "saveAmount": "Yılda $40 tasarruf edin (2 ay ücretsiz)",
+    "viewPlans": "Planları Görüntüle ve Yükselt",
+    "maybeLater": "Belki Daha Sonra"
+  },
+  "newsletter": {
+    "title": "Güncel Kalın",
+    "subtitle": "En son AI araçlarını ve içgörülerini e-postanıza alın",
+    "emailPlaceholder": "E-posta adresinizi girin",
+    "cta": "Abone Ol"
+  },
+  "jobs": {
+    "title": "AI İş İlanları",
+    "subtitle": "Yapay zeka ve makine öğreniminde heyecan verici kariyer fırsatlarını keşfedin.",
+    "allLocations": "Tüm Konumlar",
+    "remote": "Uzaktan",
+    "allTypes": "Tüm Türler",
+    "fullTime": "Tam Zamanlı",
+    "partTime": "Yarı Zamanlı",
+    "contract": "Sözleşmeli",
+    "allExperience": "Tüm Deneyimler",
+    "entryLevel": "Giriş Seviyesi",
+    "midLevel": "Orta Seviye",
+    "seniorLevel": "Üst Seviye",
+    "applyNow": "Şimdi Başvur",
+    "loadMore": "Daha Fazla Yükle"
+  },
+  "blog": {
+    "title": "AI İçgörüleri Blogu",
+    "subtitle": "Yapay zeka dünyasından en son trendler, öğreticiler ve içgörülerle güncel kalın.",
+    "noArticles": "Henüz Makale Yok",
+    "beFirstToShare": "AI içgörülerinizi paylaşan ilk kişi olun! Makaleler gönderilip onaylandıktan sonra burada görünecektir.",
+    "writeArticle": "Makale Yaz",
+    "loadMore": "Daha Fazla Yükle",
+    "featured": "Öne Çıkan",
+    "readMore": "Devamını Oku"
+  },
+  "messages": {
+    "title": "Mesajlar",
+    "subtitle": "Topluluğun diğer üyeleriyle bağlantı kurun ve sohbet edin",
+    "searchPlaceholder": "Sohbetlerde ara...",
+    "noConversations": "Henüz sohbet yok",
+    "startConnecting": "Mesajlaşmaya başlamak için diğer AI meraklılarıyla bağlantı kurun.",
+    "selectConversation": "Bir sohbet seçin",
+    "chooseConversation": "Mesajlaşmaya başlamak için listeden bir sohbet seçin.",
+    "typeMessage": "Bir mesaj yazın...",
+    "online": "Çevrimiçi",
+    "offline": "Çevrimdışı"
+  },
+  "community": {
+    "title": "AI Topluluğu",
+    "subtitle": "Yapay zeka ve makine öğrenimi tutkunlarıyla bağlantı kurun",
+    "groups": {
+      "title": "Gruplar",
+      "createGroup": "Grup Oluştur",
+      "joinGroup": "Katıl",
+      "leaveGroup": "Ayrıl",
+      "members": "üye"
+    },
+    "events": {
+      "title": "Etkinlikler",
+      "createEvent": "Etkinlik Oluştur",
+      "attending": "Katılıyorum",
+      "attend": "Katıl",
+      "form": {
+        "title": "Etkinlik Başlığı",
+        "titlePlaceholder": "Etkinlik başlığını girin",
+        "description": "Açıklama",
+        "descriptionPlaceholder": "Etkinliğinizi tanımlayın",
+        "date": "Tarih",
+        "time": "Saat",
+        "eventType": "Etkinlik Türü",
+        "online": "Çevrimiçi",
+        "inPerson": "Yüz Yüze",
+        "hybrid": "Hibrit",
+        "location": "Konum",
+        "locationPlaceholder": "Mekan adresi",
+        "category": "Kategori",
+        "selectCategory": "Bir kategori seçin",
+        "liveVideo": "Canlı Video Etkinliği",
+        "liveVideoDesc": "Bu etkinlik için canlı video yayını etkinleştirin",
+        "generateLink": "Canlı Bağlantı Oluştur",
+        "liveVideoLink": "Canlı Video Bağlantısı"
+      },
+      "creating": "Oluşturuluyor..."
+    }
+  },
+  "report": {
+    "problem": {
+      "title": "Bir Sorun Bildir",
+      "subtitle": "Yaşadığınız sorunları bize bildirin",
+      "category": "Ne tür bir sorun yaşıyorsunuz?",
+      "subject": "Konu",
+      "description": "Sorunu Açıklayın",
+      "screenshot": "Ekran Görüntüsü Ekle (İsteğe Bağlı)",
+      "submit": "Rapor Gönder",
+      "categories": {
+        "bug": "Hata / Teknik Sorun",
+        "feature": "Özellik Talebi",
+        "account": "Hesap Sorunu",
+        "payment": "Ödeme Sorunu",
+        "performance": "Performans / Hız Sorunu",
+        "accessibility": "Erişilebilirlik Sorunu",
+        "other": "Diğer"
+      }
+    },
+    "content": {
+      "title": "İçeriği Bildir",
+      "whyReporting": "Bu içeriği neden bildiriyorsunuz?",
+      "additionalDetails": "Ek Detaylar (İsteğe Bağlı)",
+      "submit": "Rapor Gönder",
+      "reasons": {
+        "spam": "Spam",
+        "fraud": "Dolandırıcılık / Sahtekarlık",
+        "fake": "Sahte / Yanıltıcı",
+        "sensitive": "Hassas İçerik",
+        "harassment": "Taciz / Zorbalık",
+        "hate_speech": "Nefret Söylemi",
+        "violence": "Şiddet / Tehdit",
+        "copyright": "Telif Hakkı İhlali",
+        "impersonation": "Taklit",
+        "privacy": "Gizlilik İhlali",
+        "other": "Diğer"
+      }
+    }
+  },
+  "unsubscribe": {
+    "title": "Bülten Aboneliğinden Çık",
+    "subtitle": "Bültenimizden çıkmak için e-posta adresinizi girin",
+    "success": "Abonelikten Çıkıldı!",
+    "successMessage": "Posta listemizden başarıyla çıkarıldınız.",
+    "notFound": "E-posta Bulunamadı",
+    "notFoundMessage": "Bu e-posta adresi bültenimize abone değil.",
+    "confirm": "{{email}} için abonelikten çıkışı onaylayın",
+    "confirmMessage": "Abonelikten çıkmak istediğinizden emin misiniz? Artık en son AI araçları ve içgörüleri hakkında güncellemeler almayacaksınız.",
+    "resubscribe": "Tekrar Abone Ol",
+    "returnHome": "Ana Sayfaya Dön"
+  }
+}
