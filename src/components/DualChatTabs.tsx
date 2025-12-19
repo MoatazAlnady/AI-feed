@@ -37,7 +37,10 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
   const { user } = useAuth();
   const { t } = useTranslation();
   const { conversationUsers, onlineUsers, refreshConnections, loading, myOnlineStatusMode, updateMyStatusMode, getEffectiveOnlineStatus } = useChatDock();
-  const [activeTab, setActiveTab] = useState('chats');
+  
+  // For non-logged-in users, always show AI tab
+  const isLoggedIn = !!user;
+  const [activeTab, setActiveTab] = useState(isLoggedIn ? 'chats' : 'ai');
   const [searchTerm, setSearchTerm] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeConversation, setActiveConversation] = useState<ActiveConversation | null>(null);
@@ -46,6 +49,13 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [sendingMessage, setSendingMessage] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Switch to AI tab when user logs out
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setActiveTab('ai');
+    }
+  }, [isLoggedIn]);
 
   // Refresh connections when tab opens
   useEffect(() => {
@@ -237,71 +247,81 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
           ) : (
-            // Normal tabs header with status toggle
+            // Normal tabs header with status toggle (only for logged-in users)
             <div className="flex items-center space-x-2 flex-1">
-              {/* Status indicator dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-10 w-6 p-0 flex flex-col items-center justify-center gap-0.5">
-                    <Circle className={`h-3 w-3 ${
-                      myOnlineStatusMode === 'offline' ? 'fill-muted-foreground text-muted-foreground' :
-                      myOnlineStatusMode === 'online' ? 'fill-green-500 text-green-500' :
-                      'fill-green-500 text-green-500'
-                    }`} />
-                    <ChevronDown className="h-2 w-2" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-48">
-                  <DropdownMenuItem 
-                    onClick={() => updateMyStatusMode('auto')}
-                    className={myOnlineStatusMode === 'auto' ? 'bg-muted' : ''}
-                  >
-                    <Circle className="h-3 w-3 mr-2 fill-green-500 text-green-500" />
-                    <div>
-                      <p className="text-sm font-medium">{t('onlineStatus.auto')}</p>
-                      <p className="text-xs text-muted-foreground">{t('onlineStatus.autoDesc')}</p>
-                    </div>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => updateMyStatusMode('online')}
-                    className={myOnlineStatusMode === 'online' ? 'bg-muted' : ''}
-                  >
-                    <Circle className="h-3 w-3 mr-2 fill-green-500 text-green-500" />
-                    <div>
-                      <p className="text-sm font-medium">{t('onlineStatus.online')}</p>
-                      <p className="text-xs text-muted-foreground">{t('onlineStatus.onlineDesc')}</p>
-                    </div>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => updateMyStatusMode('offline')}
-                    className={myOnlineStatusMode === 'offline' ? 'bg-muted' : ''}
-                  >
-                    <Circle className="h-3 w-3 mr-2 fill-muted-foreground text-muted-foreground" />
-                    <div>
-                      <p className="text-sm font-medium">{t('onlineStatus.offline')}</p>
-                      <p className="text-xs text-muted-foreground">{t('onlineStatus.offlineDesc')}</p>
-                    </div>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {/* Status indicator dropdown - only for logged-in users */}
+              {isLoggedIn && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-10 w-6 p-0 flex flex-col items-center justify-center gap-0.5">
+                      <Circle className={`h-3 w-3 ${
+                        myOnlineStatusMode === 'offline' ? 'fill-muted-foreground text-muted-foreground' :
+                        myOnlineStatusMode === 'online' ? 'fill-green-500 text-green-500' :
+                        'fill-green-500 text-green-500'
+                      }`} />
+                      <ChevronDown className="h-2 w-2" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-48">
+                    <DropdownMenuItem 
+                      onClick={() => updateMyStatusMode('auto')}
+                      className={myOnlineStatusMode === 'auto' ? 'bg-muted' : ''}
+                    >
+                      <Circle className="h-3 w-3 mr-2 fill-green-500 text-green-500" />
+                      <div>
+                        <p className="text-sm font-medium">{t('onlineStatus.auto')}</p>
+                        <p className="text-xs text-muted-foreground">{t('onlineStatus.autoDesc')}</p>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => updateMyStatusMode('online')}
+                      className={myOnlineStatusMode === 'online' ? 'bg-muted' : ''}
+                    >
+                      <Circle className="h-3 w-3 mr-2 fill-green-500 text-green-500" />
+                      <div>
+                        <p className="text-sm font-medium">{t('onlineStatus.online')}</p>
+                        <p className="text-xs text-muted-foreground">{t('onlineStatus.onlineDesc')}</p>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => updateMyStatusMode('offline')}
+                      className={myOnlineStatusMode === 'offline' ? 'bg-muted' : ''}
+                    >
+                      <Circle className="h-3 w-3 mr-2 fill-muted-foreground text-muted-foreground" />
+                      <div>
+                        <p className="text-sm font-medium">{t('onlineStatus.offline')}</p>
+                        <p className="text-xs text-muted-foreground">{t('onlineStatus.offlineDesc')}</p>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
 
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
-                <TabsList className="grid w-full grid-cols-2 h-9">
-                  <TabsTrigger value="chats" className="text-sm relative">
-                    <MessageCircle className="h-4 w-4 mr-1.5" />
-                    {t('chat.chats') || 'Chats'}
-                    {totalUnread > 0 && (
-                      <Badge variant="destructive" className="ml-1.5 h-5 min-w-[20px] px-1.5 text-xs">
-                        {totalUnread}
-                      </Badge>
-                    )}
-                  </TabsTrigger>
-                  <TabsTrigger value="ai" className="text-sm">
-                    <Bot className="h-4 w-4 mr-1.5" />
-                    {t('chat.aiAssistant') || 'AI Assistant'}
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+              {isLoggedIn ? (
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
+                  <TabsList className="grid w-full grid-cols-2 h-9">
+                    <TabsTrigger value="chats" className="text-sm relative">
+                      <MessageCircle className="h-4 w-4 mr-1.5" />
+                      {t('chat.chats') || 'Chats'}
+                      {totalUnread > 0 && (
+                        <Badge variant="destructive" className="ml-1.5 h-5 min-w-[20px] px-1.5 text-xs">
+                          {totalUnread}
+                        </Badge>
+                      )}
+                    </TabsTrigger>
+                    <TabsTrigger value="ai" className="text-sm">
+                      <Bot className="h-4 w-4 mr-1.5" />
+                      {t('chat.aiAssistant') || 'AI Assistant'}
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              ) : (
+                // Only show AI tab header for non-logged-in users
+                <div className="flex items-center gap-2 flex-1">
+                  <Bot className="h-5 w-5 text-primary" />
+                  <span className="font-medium text-sm">{t('chat.aiAssistant') || 'AI Assistant'}</span>
+                </div>
+              )}
             </div>
           )}
           
@@ -385,7 +405,7 @@ const DualChatTabs: React.FC<DualChatTabsProps> = ({ isOpen, onClose }) => {
                 </div>
               </form>
             </>
-          ) : activeTab === 'chats' ? (
+          ) : activeTab === 'chats' && isLoggedIn ? (
             <div className="h-full flex flex-col">
               {/* Search */}
               <div className="p-3 border-b bg-card">

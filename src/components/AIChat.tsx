@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, Send, User, Crown, Sparkles } from 'lucide-react';
+import { Bot, Send, User, Crown, Sparkles, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAIChat } from '@/hooks/useAIChat';
 import { useAIChatUsage } from '@/hooks/useAIChatUsage';
+import { useAnonymousAIChatUsage } from '@/hooks/useAnonymousAIChatUsage';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import PremiumUpgradeModal from './PremiumUpgradeModal';
+import AuthModal from './AuthModal';
 
 interface AIChatProps {
   context?: string;
@@ -19,6 +21,12 @@ const AIChat: React.FC<AIChatProps> = ({ context = 'general', initialGreeting })
   const navigate = useNavigate();
   const [input, setInput] = useState('');
   const { messages, isLoading, error, sendMessage, clearMessages } = useAIChat(context);
+  
+  // Use different usage hooks based on auth status
+  const loggedInUsage = useAIChatUsage();
+  const anonymousUsage = useAnonymousAIChatUsage();
+  
+  const isLoggedIn = !!user;
   const { 
     promptsUsed, 
     dailyLimit, 
@@ -26,10 +34,12 @@ const AIChat: React.FC<AIChatProps> = ({ context = 'general', initialGreeting })
     isLimitReached, 
     isLoading: isUsageLoading,
     incrementUsage 
-  } = useAIChatUsage();
+  } = isLoggedIn ? loggedInUsage : anonymousUsage;
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Auto-scroll
   useEffect(() => {
@@ -43,8 +53,10 @@ const AIChat: React.FC<AIChatProps> = ({ context = 'general', initialGreeting })
     // Increment usage first
     const canProceed = await incrementUsage();
     if (!canProceed) {
-      // Show upgrade modal when limit is reached
-      if (dailyLimit === 1) {
+      // Show appropriate modal when limit is reached
+      if (!isLoggedIn) {
+        setShowAuthModal(true);
+      } else if (dailyLimit === 1) {
         setShowUpgradeModal(true);
       }
       return;
@@ -73,7 +85,7 @@ const AIChat: React.FC<AIChatProps> = ({ context = 'general', initialGreeting })
             <Bot className="h-5 w-5" />
             <h3 className="font-semibold">{t('chat.aiAssistant', 'AI Assistant')}</h3>
           </div>
-          {user && !isUsageLoading && (
+          {!isUsageLoading && (
             <div className="flex items-center gap-2 text-xs bg-white/20 px-2 py-1 rounded-full">
               <Sparkles className="h-3 w-3" />
               <span>{remainingPrompts}/{dailyLimit} {t('chat.promptsLeft', 'left')}</span>
@@ -95,13 +107,13 @@ const AIChat: React.FC<AIChatProps> = ({ context = 'general', initialGreeting })
             <p className="text-lg font-medium mb-2">Welcome! 👋</p>
             <p>I'm here to help you with anything about AI Feed.</p>
             <p className="mt-2">Start by asking a question!</p>
-            {user && (
-              <p className="mt-4 text-xs text-muted-foreground">
-                {dailyLimit === 1 
+            <p className="mt-4 text-xs text-muted-foreground">
+              {!isLoggedIn
+                ? t('chat.guestLimit', 'Guest: 1 prompt/day. Sign in for more!')
+                : dailyLimit === 1 
                   ? t('chat.freeUserLimit', 'Free users: 1 prompt/day')
                   : t('chat.premiumUserLimit', 'Premium users: 10 prompts/day')}
-              </p>
-            )}
+            </p>
           </div>
         )}
         
@@ -166,21 +178,35 @@ const AIChat: React.FC<AIChatProps> = ({ context = 'general', initialGreeting })
       </div>
       
       {/* Rate Limit Warning */}
-      {user && isLimitReached && (
+      {isLimitReached && (
         <div className="px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border-t border-amber-200 dark:border-amber-800">
           <div className="flex items-center gap-3">
-            <Crown className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+            {isLoggedIn ? (
+              <Crown className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+            ) : (
+              <LogIn className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+            )}
             <div className="flex-1">
               <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
                 {t('chat.limitReached', 'Daily limit reached')}
               </p>
               <p className="text-xs text-amber-600 dark:text-amber-400">
-                {dailyLimit === 1 
-                  ? t('chat.upgradePremiumMessage', 'Upgrade to Premium for 10 prompts/day')
-                  : t('chat.comeBackTomorrow', 'Come back tomorrow for more prompts')}
+                {!isLoggedIn 
+                  ? t('chat.signInForMore', 'Sign in for more prompts per day')
+                  : dailyLimit === 1 
+                    ? t('chat.upgradePremiumMessage', 'Upgrade to Premium for 10 prompts/day')
+                    : t('chat.comeBackTomorrow', 'Come back tomorrow for more prompts')}
               </p>
             </div>
-            {dailyLimit === 1 && (
+            {!isLoggedIn ? (
+              <Button
+                size="sm"
+                onClick={() => setShowAuthModal(true)}
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white"
+              >
+                {t('auth.signIn', 'Sign In')}
+              </Button>
+            ) : dailyLimit === 1 && (
               <Button
                 size="sm"
                 onClick={() => setShowUpgradeModal(true)}
@@ -199,6 +225,12 @@ const AIChat: React.FC<AIChatProps> = ({ context = 'general', initialGreeting })
         onClose={() => setShowUpgradeModal(false)}
         featureName={t('chat.aiAssistant', 'AI Chat')}
         trigger="limit_reached"
+      />
+      
+      {/* Auth Modal for anonymous users */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
       />
       
       {/* Input */}

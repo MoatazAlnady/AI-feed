@@ -74,6 +74,36 @@ export type Database = {
         }
         Relationships: []
       }
+      anonymous_ai_chat_usage: {
+        Row: {
+          created_at: string | null
+          device_fingerprint: string
+          id: string
+          ip_address: string | null
+          prompts_count: number
+          updated_at: string | null
+          usage_date: string
+        }
+        Insert: {
+          created_at?: string | null
+          device_fingerprint: string
+          id?: string
+          ip_address?: string | null
+          prompts_count?: number
+          updated_at?: string | null
+          usage_date?: string
+        }
+        Update: {
+          created_at?: string | null
+          device_fingerprint?: string
+          id?: string
+          ip_address?: string | null
+          prompts_count?: number
+          updated_at?: string | null
+          usage_date?: string
+        }
+        Relationships: []
+      }
       article_reviews: {
         Row: {
           article_id: string
