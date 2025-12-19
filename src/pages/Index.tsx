@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Zap, FolderOpen, Briefcase, Star, Search } from 'lucide-react';
+import { ArrowRight, Zap, FolderOpen, Briefcase, Star, Search, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
@@ -158,7 +158,7 @@ const Index = () => {
             <p className="text-xl text-muted-foreground">{t('index.features.subtitle')}</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <Card className={`group hover:shadow-lg transition-all duration-500 bg-white dark:bg-[#091527] border-gray-200 dark:border-gray-700 ${
               featuresAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`} style={{ transitionDelay: '100ms' }}>
@@ -206,6 +206,23 @@ const Index = () => {
                 </p>
                 <Link to="/talent" className="text-primary hover:underline font-medium">
                   {t('index.features.jobs.cta')} →
+                </Link>
+              </CardContent>
+            </Card>
+            
+            <Card className={`group hover:shadow-lg transition-all duration-500 bg-white dark:bg-[#091527] border-gray-200 dark:border-gray-700 ${
+              featuresAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+            }`} style={{ transitionDelay: '400ms' }}>
+              <CardContent className="p-8 text-center">
+                <div className="mb-6 mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                  <BookOpen className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4">{t('index.features.blog.title')}</h3>
+                <p className="text-muted-foreground mb-6">
+                  {t('index.features.blog.desc')}
+                </p>
+                <Link to="/blog" className="text-primary hover:underline font-medium">
+                  {t('index.features.blog.cta')} →
                 </Link>
               </CardContent>
             </Card>

@@ -225,6 +225,11 @@
         "title": "KI-Jobs",
         "desc": "Sehen Sie Live-Angebote von Arbeitgebern",
         "cta": "Jobs anzeigen"
+      },
+      "blog": {
+        "title": "KI-Blog",
+        "desc": "Lesen Sie Einblicke, Tutorials und Neuigkeiten über KI",
+        "cta": "Artikel lesen"
       }
     },
     "stats": {

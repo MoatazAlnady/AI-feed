@@ -6,6 +6,9 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  const requestId = crypto.randomUUID();
+  const startTime = Date.now();
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -15,25 +18,32 @@ serve(async (req) => {
     const { url } = await req.json();
     
     if (!url) {
+      console.warn(`[fetch-link-metadata] Missing URL parameter`, { requestId });
       return new Response(
         JSON.stringify({ error: 'URL is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Fetching metadata for URL:', url);
-
-    // Validate URL
     let parsedUrl: URL;
     try {
       parsedUrl = new URL(url);
     } catch {
+      console.warn(`[fetch-link-metadata] Invalid URL`, { requestId, url });
       return new Response(
         JSON.stringify({ error: 'Invalid URL' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    console.log(`[fetch-link-metadata] Request started`, { 
+      requestId, 
+      timestamp: new Date().toISOString(),
+      domain: parsedUrl.hostname 
+    });
+
+    const fetchStartTime = Date.now();
+    
     // Fetch the webpage
     const response = await fetch(url, {
       headers: {
@@ -42,7 +52,10 @@ serve(async (req) => {
       },
     });
 
+    const fetchDuration = Date.now() - fetchStartTime;
+
     if (!response.ok) {
+      console.warn(`[fetch-link-metadata] Fetch failed`, { requestId, status: response.status, fetchDuration: `${fetchDuration}ms` });
       return new Response(
         JSON.stringify({ error: 'Failed to fetch URL', status: response.status }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -50,6 +63,7 @@ serve(async (req) => {
     }
 
     const html = await response.text();
+    const parseStartTime = Date.now();
 
     // Parse metadata
     const metadata = {
@@ -66,7 +80,19 @@ serve(async (req) => {
       metadata.image = new URL(metadata.image, url).toString();
     }
 
-    console.log('Extracted metadata:', metadata);
+    const parseDuration = Date.now() - parseStartTime;
+    const totalDuration = Date.now() - startTime;
+
+    console.log(`[fetch-link-metadata] Request completed`, { 
+      requestId,
+      domain: parsedUrl.hostname,
+      fetchDuration: `${fetchDuration}ms`,
+      parseDuration: `${parseDuration}ms`,
+      totalDuration: `${totalDuration}ms`,
+      hasTitle: !!metadata.title,
+      hasDescription: !!metadata.description,
+      hasImage: !!metadata.image
+    });
 
     return new Response(
       JSON.stringify(metadata),
@@ -74,7 +100,8 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Error fetching link metadata:', error);
+    const duration = Date.now() - startTime;
+    console.error(`[fetch-link-metadata] Request failed`, { requestId, error: error.message, duration: `${duration}ms` });
     return new Response(
       JSON.stringify({ error: 'Failed to fetch metadata', message: error.message }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

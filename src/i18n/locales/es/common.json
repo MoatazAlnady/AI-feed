@@ -225,6 +225,11 @@
         "title": "Trabajos de IA",
         "desc": "Ve ofertas en vivo de empleadores",
         "cta": "Ver trabajos"
+      },
+      "blog": {
+        "title": "Blog de IA",
+        "desc": "Lee artículos, tutoriales y noticias sobre IA",
+        "cta": "Leer artículos"
       }
     },
     "stats": {

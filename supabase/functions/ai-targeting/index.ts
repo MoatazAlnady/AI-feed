@@ -7,6 +7,9 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  const requestId = crypto.randomUUID();
+  const startTime = Date.now();
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -15,7 +18,13 @@ serve(async (req) => {
   try {
     const { contentType, contentTitle, contentDescription, aiPrompt } = await req.json();
 
-    console.log('AI Targeting request:', { contentType, contentTitle, aiPrompt });
+    console.log(`[ai-targeting] Request started`, { 
+      requestId, 
+      timestamp: new Date().toISOString(),
+      contentType, 
+      contentTitle,
+      promptLength: aiPrompt?.length || 0
+    });
 
     const systemPrompt = `You are an AI marketing strategist specializing in content promotion targeting. Based on the content information and user prompt provided, generate optimal targeting parameters for a promotional campaign.
 
@@ -64,9 +73,11 @@ Generate the optimal targeting parameters for this promotional campaign.`;
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('AI API error:', errorText);
+      const duration = Date.now() - startTime;
+      console.error(`[ai-targeting] AI API error`, { requestId, status: response.status, error: errorText, duration: `${duration}ms` });
       
       // Return default targeting if API fails
+      console.log(`[ai-targeting] Using fallback targeting`, { requestId, contentType });
       return new Response(JSON.stringify({
         targeting: getDefaultTargeting(contentType, contentTitle),
         source: 'fallback'
@@ -76,7 +87,7 @@ Generate the optimal targeting parameters for this promotional campaign.`;
     }
 
     const data = await response.json();
-    console.log('AI response:', data);
+    console.log(`[ai-targeting] AI response received`, { requestId, hasContent: !!data.content });
 
     const aiContent = data.content?.[0]?.text || '';
     
@@ -111,12 +122,22 @@ Generate the optimal targeting parameters for this promotional campaign.`;
       scheduleEndTime: targeting.scheduleEndTime || '21:00'
     };
 
+    const duration = Date.now() - startTime;
+    console.log(`[ai-targeting] Request completed`, { 
+      requestId, 
+      duration: `${duration}ms`,
+      source: 'ai',
+      countriesCount: targeting.selectedCountries?.length || 0,
+      audienceSegments: targeting.targetAudience?.length || 0
+    });
+
     return new Response(JSON.stringify({ targeting, source: 'ai' }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error('Error in ai-targeting function:', error);
+    const duration = Date.now() - startTime;
+    console.error(`[ai-targeting] Request failed`, { requestId, error: error.message, duration: `${duration}ms` });
     return new Response(JSON.stringify({ 
       error: error.message,
       targeting: getDefaultTargeting('content', 'Unknown')
