@@ -2872,27 +2872,33 @@ export type Database = {
       shared_posts: {
         Row: {
           created_at: string
+          group_ids: string[] | null
           id: string
           original_post_id: string
           share_text: string | null
           updated_at: string
           user_id: string
+          visibility: string | null
         }
         Insert: {
           created_at?: string
+          group_ids?: string[] | null
           id?: string
           original_post_id: string
           share_text?: string | null
           updated_at?: string
           user_id: string
+          visibility?: string | null
         }
         Update: {
           created_at?: string
+          group_ids?: string[] | null
           id?: string
           original_post_id?: string
           share_text?: string | null
           updated_at?: string
           user_id?: string
+          visibility?: string | null
         }
         Relationships: [
           {
@@ -3312,6 +3318,38 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      tool_views: {
+        Row: {
+          created_at: string
+          device_fingerprint: string | null
+          id: string
+          tool_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          device_fingerprint?: string | null
+          id?: string
+          tool_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          device_fingerprint?: string | null
+          id?: string
+          tool_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tool_views_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "tools"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tools: {
         Row: {
