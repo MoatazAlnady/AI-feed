@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
-import { ArrowLeft, Eye, Share2, Flag, Calendar, User } from 'lucide-react';
+import { ArrowLeft, Eye, Share2, Flag, Calendar, User, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,7 +11,8 @@ import { useAuth } from '@/context/AuthContext';
 import ArticleReviewSystem from '@/components/ArticleReviewSystem';
 import ProfileHoverCard from '@/components/ProfileHoverCard';
 import ReportContentModal from '@/components/ReportContentModal';
-import { ShareButton } from '@/components/ShareButton';
+import SharePostModal from '@/components/SharePostModal';
+import PromoteContentModal from '@/components/PromoteContentModal';
 import SEOHead from '@/components/SEOHead';
 
 interface Article {
@@ -45,6 +46,8 @@ const ArticleDetails = () => {
   const [authorProfile, setAuthorProfile] = useState<AuthorProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showPromoteModal, setShowPromoteModal] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -210,21 +213,38 @@ const ArticleDetails = () => {
           )}
 
           <div className="flex items-center gap-4 py-4 border-t border-border">
-            <ShareButton
-              contentType="article"
-              contentId={article.id}
-            />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowShareModal(true)}
+              className="gap-2 text-muted-foreground hover:text-primary"
+            >
+              <Share2 className="h-4 w-4" />
+              Share
+            </Button>
             
             {user && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setReportModalOpen(true)}
-                className="gap-2 text-muted-foreground hover:text-destructive"
-              >
-                <Flag className="h-4 w-4" />
-                Report
-              </Button>
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowPromoteModal(true)}
+                  className="gap-2 text-muted-foreground hover:text-primary"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Promote
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setReportModalOpen(true)}
+                  className="gap-2 text-muted-foreground hover:text-destructive"
+                >
+                  <Flag className="h-4 w-4" />
+                  Report
+                </Button>
+              </>
             )}
           </div>
         </article>
@@ -236,6 +256,27 @@ const ArticleDetails = () => {
             articleTitle={article.title}
           />
         </div>
+
+        {/* Share Modal */}
+        <SharePostModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          post={{
+            id: article.id,
+            content: article.excerpt || article.content.substring(0, 300),
+            user_id: article.user_id || '',
+            image_url: article.featured_image_url || undefined,
+          }}
+        />
+
+        {/* Promote Modal */}
+        <PromoteContentModal
+          isOpen={showPromoteModal}
+          onClose={() => setShowPromoteModal(false)}
+          contentType="article"
+          contentId={article.id}
+          contentTitle={article.title}
+        />
 
         {/* Report Modal */}
         <ReportContentModal

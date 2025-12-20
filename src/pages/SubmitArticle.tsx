@@ -23,8 +23,6 @@ const SubmitArticle: React.FC = () => {
     category: '',
     tags: '',
     type: 'article',
-    author: '',
-    email: '',
     featuredImage: null as File | null,
     videoUrl: ''
   });
@@ -110,8 +108,6 @@ const SubmitArticle: React.FC = () => {
                   category: '',
                   tags: '',
                   type: 'article',
-                  author: '',
-                  email: '',
                   featuredImage: null,
                   videoUrl: ''
                 });
@@ -150,40 +146,6 @@ const SubmitArticle: React.FC = () => {
           }}
           className="bg-white rounded-2xl shadow-sm p-8"
         >
-          {/* Author Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 pb-8 border-b border-gray-200">
-            <div>
-              <label htmlFor="author" className="block text-sm font-medium text-gray-700 mb-2">
-                {t('submitArticle.form.authorName')} *
-              </label>
-              <input
-                type="text"
-                id="author"
-                name="author"
-                value={formData.author}
-                onChange={handleInputChange}
-                required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                placeholder={t('submitArticle.form.authorPlaceholder')}
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                {t('submitArticle.form.email')} *
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                placeholder={t('submitArticle.form.emailPlaceholder')}
-              />
-            </div>
-          </div>
-
           {/* Content Type */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-3">
