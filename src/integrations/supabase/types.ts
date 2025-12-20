@@ -4049,6 +4049,7 @@ export type Database = {
         Args: { permission_key_param: string; user_id_param: string }
         Returns: boolean
       }
+      increment_tool_views: { Args: { tool_id: string }; Returns: undefined }
       is_admin: { Args: never; Returns: boolean }
       is_company_admin: {
         Args: { company_id: string; user_uuid: string }

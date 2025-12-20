@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ExternalLink, Star, Users, TrendingUp, Bookmark, Flag } from 'lucide-react';
+import { ExternalLink, Star, Users, TrendingUp, Bookmark, Flag, Share2 } from 'lucide-react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { ShareButton } from './ShareButton';
 import ToolActionButtons from './ToolActionButtons';
 import ReportContentModal from './ReportContentModal';
+import ShareToolModal from './ShareToolModal';
 
 interface ToolCardProps {
   tool: {
@@ -36,6 +37,7 @@ interface ToolCardProps {
 const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '', onDelete }) => {
   const { theme } = useTheme();
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   // Determine if logo should be inverted based on theme and logo type
   const shouldInvertLogo = () => {
@@ -202,6 +204,15 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '', onDelete }) =
             />
             
             <div className="flex items-center space-x-2">
+              {/* Reshare Button */}
+              <button
+                onClick={() => setShowShareModal(true)}
+                className="p-1.5 rounded-md transition-all duration-200 border hover:bg-primary/10 bg-card border-border text-primary"
+                title="Share this tool"
+              >
+                <Share2 className="h-3 w-3" />
+              </button>
+              
               {/* View Details Button */}
               <Link
                 to={`/tools/${tool.id}`}
@@ -237,6 +248,13 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '', onDelete }) =
         contentType="tool"
         contentId={tool.id}
         contentTitle={tool.name}
+      />
+      
+      {/* Share Modal */}
+      <ShareToolModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        tool={tool}
       />
     </div>
   );

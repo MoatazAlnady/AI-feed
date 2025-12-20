@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Share2, MessageSquare, Copy, Users, Search, Send, Globe, UsersRound } from 'lucide-react';
+import { X, Share2, MessageSquare, Copy, Users, Search, Send, Globe, Lock, UsersRound } from 'lucide-react';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Input } from './ui/input';
@@ -17,25 +17,23 @@ interface Connection {
   title?: string;
 }
 
-interface SharePostModalProps {
+interface ShareToolModalProps {
   isOpen: boolean;
   onClose: () => void;
-  post: {
+  tool: {
     id: string;
-    content: string;
-    user_id: string;
-    image_url?: string;
-    video_url?: string;
-    link_url?: string;
-    shares?: number;
+    name: string;
+    description: string;
+    logo_url?: string;
+    website?: string;
   };
   onShare?: () => void;
 }
 
-const SharePostModal: React.FC<SharePostModalProps> = ({
+const ShareToolModal: React.FC<ShareToolModalProps> = ({
   isOpen,
   onClose,
-  post,
+  tool,
   onShare
 }) => {
   const [shareText, setShareText] = useState('');
@@ -46,7 +44,7 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
   const [loadingConnections, setLoadingConnections] = useState(false);
   const [selectedConnection, setSelectedConnection] = useState<Connection | null>(null);
   const [isSendingToConnection, setIsSendingToConnection] = useState(false);
-  const [visibility, setVisibility] = useState<'public' | 'connections'>('public');
+  const [visibility, setVisibility] = useState<'public' | 'connections' | 'groups'>('public');
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
@@ -63,7 +61,6 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
     setLoadingConnections(true);
     
     try {
-      // Fetch connections where user is either user_1 or user_2
       const { data: connectionsData, error: connectionsError } = await supabase
         .from('connections')
         .select('id, user_1_id, user_2_id')
@@ -76,12 +73,10 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
         return;
       }
 
-      // Get the other user's ID from each connection
       const connectionUserIds = connectionsData.map(conn => 
         conn.user_1_id === user.id ? conn.user_2_id : conn.user_1_id
       );
 
-      // Fetch profiles for connected users
       const { data: profilesData, error: profilesError } = await supabase.rpc(
         'get_public_profiles_by_ids',
         { ids: connectionUserIds }
@@ -99,11 +94,6 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
       setConnections(formattedConnections);
     } catch (error) {
       console.error('Error fetching connections:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load connections.",
-        variant: "destructive",
-      });
     } finally {
       setLoadingConnections(false);
     }
@@ -116,17 +106,16 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
 
   if (!isOpen) return null;
 
-  const postUrl = `${window.location.origin}/post/${post.id}`;
+  const toolUrl = `${window.location.origin}/tools/${tool.id}`;
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(postUrl);
+      await navigator.clipboard.writeText(toolUrl);
       toast({
         title: "Link copied!",
-        description: "Post link has been copied to your clipboard.",
+        description: "Tool link has been copied to your clipboard.",
       });
     } catch (error) {
-      console.error('Failed to copy link:', error);
       toast({
         title: "Error",
         description: "Failed to copy link. Please try again.",
@@ -138,8 +127,9 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
   const handleExternalShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: 'Check out this post on AI Feed',
-        url: postUrl,
+        title: `Check out ${tool.name} on AI Feed`,
+        text: tool.description,
+        url: toolUrl,
       }).catch(console.error);
     } else {
       handleCopyLink();
@@ -155,44 +145,40 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
     setIsSharing(true);
 
     try {
+      // Record the share
       const { error: sharesError } = await supabase
         .from('shares')
         .insert({
           user_id: user.id,
-          content_type: 'post',
-          content_id: post.id,
-          target_type: 'post',
-          target_id: post.id
+          content_type: 'tool',
+          content_id: tool.id,
+          target_type: 'tool',
+          target_id: tool.id
         });
 
       if (sharesError && !sharesError.message.includes('duplicate')) {
         throw sharesError;
       }
 
-      const { error: shareError } = await supabase
-        .from('shared_posts')
-        .insert({
-          user_id: user.id,
-          original_post_id: post.id,
-          share_text: shareText.trim() || null,
-          visibility: visibility,
-        });
-
-      if (shareError) throw shareError;
+      // Update share count on tool
+      await supabase
+        .from('tools')
+        .update({ share_count: (tool as any).share_count ? (tool as any).share_count + 1 : 1 })
+        .eq('id', tool.id);
 
       toast({
-        title: "Post shared!",
-        description: "The post has been shared to your followers.",
+        title: "Tool shared!",
+        description: "The tool has been shared successfully.",
       });
 
       onShare?.();
       onClose();
       setShareText('');
     } catch (error) {
-      console.error('Error sharing post:', error);
+      console.error('Error sharing tool:', error);
       toast({
         title: "Error",
-        description: "Failed to share post. Please try again.",
+        description: "Failed to share tool. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -201,19 +187,22 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
   };
 
   const handleSendToConnection = async () => {
-    if (!user || !selectedConnection) return;
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+    
+    if (!selectedConnection) return;
 
     setIsSendingToConnection(true);
 
     try {
-      // Open chat with the selected connection
       const chatOpened = await openChatWith(selectedConnection.id, { createIfMissing: true });
       
       if (!chatOpened) {
         throw new Error('Failed to open chat');
       }
 
-      // Find or create conversation
       const { data: existingConvo } = await supabase
         .from('conversations')
         .select('id')
@@ -236,10 +225,8 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
         conversationId = newConvo.id;
       }
 
-      // Format the message with the shared post
-      const messageContent = `📢 Shared a post with you:\n\n"${post.content.substring(0, 200)}${post.content.length > 200 ? '...' : ''}"\n\n🔗 View post: ${postUrl}`;
+      const messageContent = `🛠️ Shared an AI tool with you:\n\n**${tool.name}**\n${tool.description.substring(0, 150)}${tool.description.length > 150 ? '...' : ''}\n\n🔗 View tool: ${toolUrl}`;
 
-      // Send the message
       const { error: messageError } = await supabase
         .from('conversation_messages')
         .insert({
@@ -250,7 +237,6 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
 
       if (messageError) throw messageError;
 
-      // Also insert into messages table for compatibility
       await supabase
         .from('messages')
         .insert({
@@ -261,8 +247,8 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
         });
 
       toast({
-        title: "Post sent!",
-        description: `Post shared with ${selectedConnection.name}`,
+        title: "Tool sent!",
+        description: `Tool shared with ${selectedConnection.name}`,
       });
 
       onShare?.();
@@ -274,7 +260,7 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
       console.error('Error sending to connection:', error);
       toast({
         title: "Error",
-        description: "Failed to send post. Please try again.",
+        description: "Failed to send tool. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -283,68 +269,73 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-card rounded-xl shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto border border-border">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">
-            Share Post
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-muted rounded-lg transition-colors"
-          >
-            <X className="h-5 w-5 text-muted-foreground" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="p-4 space-y-4">
-          {/* Post Preview */}
-          <div className="p-3 bg-muted rounded-lg">
-            <p className="text-sm text-muted-foreground line-clamp-3">
-              {post.content}
-            </p>
-            {post.image_url && (
-              <div className="mt-2">
-                <img 
-                  src={post.image_url} 
-                  alt="Post" 
-                  className="w-full h-32 object-cover rounded-lg"
-                />
-              </div>
-            )}
+    <>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="bg-card rounded-xl shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto border border-border">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-border">
+            <h2 className="text-lg font-semibold text-foreground">
+              Share Tool
+            </h2>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
+            >
+              <X className="h-5 w-5 text-muted-foreground" />
+            </button>
           </div>
 
-          {/* Share Options */}
-          <div className="space-y-3">
-            {/* External Share */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium text-foreground">
-                Share Externally
-              </h3>
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleExternalShare}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Share
-                </Button>
-                <Button
-                  onClick={handleCopyLink}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  <Copy className="h-4 w-4 mr-2" />
-                  Copy Link
-                </Button>
+          {/* Content */}
+          <div className="p-4 space-y-4">
+            {/* Tool Preview */}
+            <div className="p-3 bg-muted rounded-lg flex items-start gap-3">
+              {tool.logo_url ? (
+                <img 
+                  src={tool.logo_url} 
+                  alt={tool.name} 
+                  className="w-12 h-12 rounded-lg object-contain"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <span className="text-lg font-bold text-primary">{tool.name.charAt(0)}</span>
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <h3 className="font-medium text-foreground truncate">{tool.name}</h3>
+                <p className="text-sm text-muted-foreground line-clamp-2">
+                  {tool.description}
+                </p>
               </div>
             </div>
 
-            {/* Send to Connection */}
-            {user && (
+            {/* Share Options */}
+            <div className="space-y-3">
+              {/* External Share */}
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium text-foreground">
+                  Share Externally
+                </h3>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleExternalShare}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    <Share2 className="h-4 w-4 mr-2" />
+                    Share
+                  </Button>
+                  <Button
+                    onClick={handleCopyLink}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy Link
+                  </Button>
+                </div>
+              </div>
+
+              {/* Send to Connection */}
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-foreground">
                   Send to Connection
@@ -352,7 +343,13 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
                 
                 {!showConnectionSearch ? (
                   <Button
-                    onClick={() => setShowConnectionSearch(true)}
+                    onClick={() => {
+                      if (!user) {
+                        setShowAuthModal(true);
+                        return;
+                      }
+                      setShowConnectionSearch(true);
+                    }}
                     variant="outline"
                     className="w-full"
                   >
@@ -361,7 +358,6 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
                   </Button>
                 ) : (
                   <div className="space-y-2">
-                    {/* Search Input */}
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -372,7 +368,6 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
                       />
                     </div>
 
-                    {/* Connection List */}
                     <div className="max-h-40 overflow-y-auto border border-border rounded-lg">
                       {loadingConnections ? (
                         <div className="p-4 text-center text-muted-foreground">
@@ -417,7 +412,6 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
                       )}
                     </div>
 
-                    {/* Send Button */}
                     {selectedConnection && (
                       <Button
                         onClick={handleSendToConnection}
@@ -446,13 +440,11 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
                   </div>
                 )}
               </div>
-            )}
 
-            {/* Internal Share */}
-            {user && (
+              {/* Share to Feed */}
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-foreground">
-                  Share to AI Feed
+                  Share to Feed
                 </h3>
                 
                 {/* Visibility Selector */}
@@ -475,7 +467,7 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
                     className="flex-1"
                   >
                     <UsersRound className="h-3 w-3 mr-1" />
-                    Connections Only
+                    Connections
                   </Button>
                 </div>
                 
@@ -502,33 +494,18 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
                   {isSharing ? 'Sharing...' : 'Share to Feed'}
                 </Button>
               </div>
-            )}
-
-            {!user && (
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-sm text-muted-foreground mb-2">
-                  Sign in to share this post to your AI Feed feed
-                </p>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setShowAuthModal(true)}
-                >
-                  Sign In
-                </Button>
-              </div>
-            )}
+            </div>
           </div>
         </div>
       </div>
-      
+
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         initialMode="signin"
       />
-    </div>
+    </>
   );
 };
 
-export default SharePostModal;
+export default ShareToolModal;

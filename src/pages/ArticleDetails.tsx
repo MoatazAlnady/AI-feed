@@ -96,15 +96,17 @@ const ArticleDetails = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <Skeleton className="h-8 w-32 mb-6" />
-        <Skeleton className="h-12 w-3/4 mb-4" />
-        <Skeleton className="h-6 w-1/2 mb-8" />
-        <Skeleton className="h-[400px] w-full mb-8" />
-        <div className="space-y-4">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-3/4" />
+      <div className="bg-muted/50 min-h-screen">
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
+          <Skeleton className="h-8 w-32 mb-6" />
+          <Skeleton className="h-12 w-3/4 mb-4" />
+          <Skeleton className="h-6 w-1/2 mb-8" />
+          <Skeleton className="h-[400px] w-full mb-8" />
+          <div className="space-y-4">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
         </div>
       </div>
     );
@@ -112,9 +114,11 @@ const ArticleDetails = () => {
 
   if (!article) {
     return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <h1 className="text-2xl font-bold text-foreground mb-4">Article Not Found</h1>
-        <Button onClick={() => navigate('/blog')}>Back to Blog</Button>
+      <div className="bg-muted/50 min-h-screen">
+        <div className="container mx-auto px-4 py-8 text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-4">Article Not Found</h1>
+          <Button onClick={() => navigate('/blog')}>Back to Blog</Button>
+        </div>
       </div>
     );
   }
@@ -126,6 +130,7 @@ const ArticleDetails = () => {
         description={article.excerpt || article.content.substring(0, 160)}
       />
       
+      <div className="bg-muted/50 min-h-screen">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Back Button */}
         <Button
@@ -285,6 +290,7 @@ const ArticleDetails = () => {
           contentType="article"
           contentId={article.id}
         />
+      </div>
       </div>
     </>
   );
