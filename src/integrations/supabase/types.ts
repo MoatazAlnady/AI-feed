@@ -3339,6 +3339,7 @@ export type Database = {
           tags: string[] | null
           updated_at: string | null
           user_id: string | null
+          views: number | null
           website: string
         }
         Insert: {
@@ -3366,6 +3367,7 @@ export type Database = {
           tags?: string[] | null
           updated_at?: string | null
           user_id?: string | null
+          views?: number | null
           website: string
         }
         Update: {
@@ -3393,6 +3395,7 @@ export type Database = {
           tags?: string[] | null
           updated_at?: string | null
           user_id?: string | null
+          views?: number | null
           website?: string
         }
         Relationships: [

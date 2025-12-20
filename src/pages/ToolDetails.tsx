@@ -95,6 +95,12 @@ const ToolDetails: React.FC = () => {
         return;
       }
 
+      // Increment view count
+      await supabase
+        .from('tools')
+        .update({ views: (data.views || 0) + 1 })
+        .eq('id', id);
+
       // Fetch category separately if tool has category_id
       let categoryName = 'Uncategorized';
       if (data.category_id) {

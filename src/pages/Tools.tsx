@@ -109,11 +109,19 @@ const Tools: React.FC = () => {
     
     const { data } = await supabase
       .from('user_profiles')
-      .select('is_premium, premium_until')
+      .select('is_premium, premium_until, account_type, role_id')
       .eq('id', user.id)
       .single();
     
     if (data) {
+      // Check admin status first - admins get premium access
+      const isAdminUser = data.role_id === 1 || data.account_type === 'admin';
+      if (isAdminUser) {
+        setIsPremium(true);
+        return;
+      }
+      
+      // Check if premium is active and not expired
       const isActive = data.is_premium && (!data.premium_until || new Date(data.premium_until) > new Date());
       setIsPremium(isActive);
     }
