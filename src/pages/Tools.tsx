@@ -114,8 +114,10 @@ const Tools: React.FC = () => {
       .single();
     
     if (data) {
-      // Check admin status first - admins get premium access
-      const isAdminUser = data.role_id === 1 || data.account_type === 'admin';
+      // Check admin status first - use Number() to handle potential string type
+      const roleIdNum = Number(data.role_id);
+      const isAdminUser = roleIdNum === 1 || data.account_type === 'admin';
+      console.log('Tools premium check:', { role_id: data.role_id, roleIdNum, account_type: data.account_type, isAdminUser });
       if (isAdminUser) {
         setIsPremium(true);
         return;
