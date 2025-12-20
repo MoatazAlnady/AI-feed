@@ -67,6 +67,11 @@ const App = () => (
               <Route index element={<Index />} />
               <Route path="newsfeed" element={<Index />} />
               <Route path="tools" element={<Tools />} />
+              <Route path="submit-tool" element={
+                <div className="animate-fade-in">
+                  <SubmitTool />
+                </div>
+              } />
               <Route path="tools/create" element={
                 <div className="animate-fade-in">
                   <SubmitTool />
