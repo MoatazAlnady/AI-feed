@@ -509,8 +509,17 @@ const SubmitTool: React.FC = () => {
     );
   }
 
+  // Show loading state while checking premium status
+  if (!isEditMode && isPremiumLoading) {
+    return (
+      <div className="py-8 bg-background min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   // Show premium upgrade modal for non-premium users (except in edit mode)
-  if (!isEditMode && !isPremiumLoading && !isPremium) {
+  if (!isEditMode && !isPremium) {
     return (
       <>
         <PremiumUpgradeModal
@@ -519,7 +528,7 @@ const SubmitTool: React.FC = () => {
           featureName={t('premium.features.submitTools', 'Tool Submission')}
           trigger="premium_feature"
         />
-        <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen" />
+        <div className="py-8 bg-background min-h-screen" />
       </>
     );
   }

@@ -2,26 +2,32 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
-interface PremiumStatus {
+interface PremiumState {
   isPremium: boolean;
   premiumUntil: string | null;
   isLoading: boolean;
   error: string | null;
 }
 
-export function usePremiumStatus(): PremiumStatus {
+export function usePremiumStatus(): PremiumState {
   const { user } = useAuth();
-  const [isPremium, setIsPremium] = useState(false);
-  const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [state, setState] = useState<PremiumState>({
+    isPremium: false,
+    premiumUntil: null,
+    isLoading: true,
+    error: null
+  });
 
   useEffect(() => {
     const fetchPremiumStatus = async () => {
+      // If no user, immediately set as not premium and not loading
       if (!user) {
-        setIsPremium(false);
-        setPremiumUntil(null);
-        setIsLoading(false);
+        setState({
+          isPremium: false,
+          premiumUntil: null,
+          isLoading: false,
+          error: null
+        });
         return;
       }
 
@@ -34,40 +40,71 @@ export function usePremiumStatus(): PremiumStatus {
 
         if (fetchError) {
           console.error('Error fetching premium status:', fetchError);
-          setError(fetchError.message);
-          setIsPremium(false);
-        } else if (data) {
+          setState({
+            isPremium: false,
+            premiumUntil: null,
+            isLoading: false,
+            error: fetchError.message
+          });
+          return;
+        }
+
+        if (data) {
           // Check admin status - use Number() to handle potential string type from DB
           const roleIdNum = Number(data.role_id);
           const isAdminUser = roleIdNum === 1 || data.account_type === 'admin';
           
-          console.log('Premium status check:', { role_id: data.role_id, roleIdNum, account_type: data.account_type, is_premium: data.is_premium, isAdminUser });
+          console.log('Premium status check:', { 
+            role_id: data.role_id, 
+            roleIdNum, 
+            account_type: data.account_type, 
+            is_premium: data.is_premium, 
+            isAdminUser 
+          });
           
           // Admins automatically get premium access
           if (isAdminUser) {
-            setIsPremium(true);
-            setPremiumUntil(null);
+            setState({
+              isPremium: true,
+              premiumUntil: null,
+              isLoading: false,
+              error: null
+            });
           } else {
             // Check if premium is active and not expired
             const now = new Date();
             const premiumExpiry = data.premium_until ? new Date(data.premium_until) : null;
             const isActive = data.is_premium && (!premiumExpiry || premiumExpiry > now);
             
-            setIsPremium(isActive);
-            setPremiumUntil(data.premium_until);
+            setState({
+              isPremium: isActive,
+              premiumUntil: data.premium_until,
+              isLoading: false,
+              error: null
+            });
           }
+        } else {
+          // No data found
+          setState({
+            isPremium: false,
+            premiumUntil: null,
+            isLoading: false,
+            error: null
+          });
         }
       } catch (err) {
         console.error('Error fetching premium status:', err);
-        setError(err instanceof Error ? err.message : 'Unknown error');
-        setIsPremium(false);
-      } finally {
-        setIsLoading(false);
+        setState({
+          isPremium: false,
+          premiumUntil: null,
+          isLoading: false,
+          error: err instanceof Error ? err.message : 'Unknown error'
+        });
       }
     };
 
     fetchPremiumStatus();
   }, [user]);
 
-  return { isPremium, premiumUntil, isLoading, error };
+  return state;
 }
