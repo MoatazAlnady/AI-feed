@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
-import { ArrowLeft, Eye, Share2, Flag, Calendar, User, Sparkles } from 'lucide-react';
+import { ArrowLeft, Eye, Share2, Flag, Calendar, User, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -231,7 +231,7 @@ const ArticleDetails = () => {
                   onClick={() => setShowPromoteModal(true)}
                   className="gap-2 text-muted-foreground hover:text-primary"
                 >
-                  <Sparkles className="h-4 w-4" />
+                  <TrendingUp className="h-4 w-4" />
                   Promote
                 </Button>
                 

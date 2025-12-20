@@ -10,7 +10,7 @@ interface PremiumStatus {
 }
 
 export function usePremiumStatus(): PremiumStatus {
-  const { user, isAdmin } = useAuth();
+  const { user } = useAuth();
   const [isPremium, setIsPremium] = useState(false);
   const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,18 +25,10 @@ export function usePremiumStatus(): PremiumStatus {
         return;
       }
 
-      // Admins automatically get premium access
-      if (isAdmin) {
-        setIsPremium(true);
-        setPremiumUntil(null);
-        setIsLoading(false);
-        return;
-      }
-
       try {
         const { data, error: fetchError } = await supabase
           .from('user_profiles')
-          .select('is_premium, premium_until')
+          .select('is_premium, premium_until, account_type, role_id')
           .eq('id', user.id)
           .single();
 
@@ -45,13 +37,22 @@ export function usePremiumStatus(): PremiumStatus {
           setError(fetchError.message);
           setIsPremium(false);
         } else if (data) {
-          // Check if premium is active and not expired
-          const now = new Date();
-          const premiumExpiry = data.premium_until ? new Date(data.premium_until) : null;
-          const isActive = data.is_premium && (!premiumExpiry || premiumExpiry > now);
+          // Check admin status directly from database
+          const isAdminUser = data.role_id === 1 || data.account_type === 'admin';
           
-          setIsPremium(isActive);
-          setPremiumUntil(data.premium_until);
+          // Admins automatically get premium access
+          if (isAdminUser) {
+            setIsPremium(true);
+            setPremiumUntil(null);
+          } else {
+            // Check if premium is active and not expired
+            const now = new Date();
+            const premiumExpiry = data.premium_until ? new Date(data.premium_until) : null;
+            const isActive = data.is_premium && (!premiumExpiry || premiumExpiry > now);
+            
+            setIsPremium(isActive);
+            setPremiumUntil(data.premium_until);
+          }
         }
       } catch (err) {
         console.error('Error fetching premium status:', err);
@@ -63,7 +64,7 @@ export function usePremiumStatus(): PremiumStatus {
     };
 
     fetchPremiumStatus();
-  }, [user, isAdmin]);
+  }, [user]);
 
   return { isPremium, premiumUntil, isLoading, error };
 }
