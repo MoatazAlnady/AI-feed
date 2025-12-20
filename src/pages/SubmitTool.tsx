@@ -9,6 +9,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useParams, useNavigate } from 'react-router-dom';
 import ChatDock from '../components/ChatDock';
 import PremiumUpgradeModal from '../components/PremiumUpgradeModal';
+import AuthModal from '../components/AuthModal';
+
 const SubmitTool: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -18,6 +20,7 @@ const SubmitTool: React.FC = () => {
   const navigate = useNavigate();
   const isEditMode = !!id;
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [subCategories, setSubCategories] = useState<any[]>([]);
   const [submissionMode, setSubmissionMode] = useState<'form' | 'csv'>('form');
@@ -510,7 +513,7 @@ const SubmitTool: React.FC = () => {
   }
 
   // Show loading state while checking premium status
-  if (!isEditMode && isPremiumLoading) {
+  if (!isEditMode && (isPremiumLoading || (user && isPremiumLoading))) {
     return (
       <div className="py-8 bg-background min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -518,7 +521,21 @@ const SubmitTool: React.FC = () => {
     );
   }
 
-  // Show premium upgrade modal for non-premium users (except in edit mode)
+  // Check authentication FIRST - show auth modal if not logged in
+  if (!isEditMode && !user) {
+    return (
+      <>
+        <AuthModal
+          isOpen={true}
+          onClose={() => navigate(-1)}
+          initialMode="signin"
+        />
+        <div className="py-8 bg-background min-h-screen" />
+      </>
+    );
+  }
+
+  // Then check premium status - show premium upgrade modal for non-premium users (except in edit mode)
   if (!isEditMode && !isPremium) {
     return (
       <>

@@ -14,6 +14,7 @@ import { getCreatorProfileLink } from '@/utils/profileUtils';
 import { useAuth } from '@/context/AuthContext';
 import EditToolModal from '@/components/EditToolModal';
 import SEOHead from '@/components/SEOHead';
+import { getDeviceFingerprint } from '@/utils/deviceFingerprint';
 
 interface Tool {
   id: string;
@@ -95,11 +96,8 @@ const ToolDetails: React.FC = () => {
         return;
       }
 
-      // Increment view count
-      await supabase
-        .from('tools')
-        .update({ views: (data.views || 0) + 1 })
-        .eq('id', id);
+      // Track unique view - deduplicated
+      await trackUniqueView(id!);
 
       // Fetch category separately if tool has category_id
       let categoryName = 'Uncategorized';
@@ -124,6 +122,34 @@ const ToolDetails: React.FC = () => {
       setNotFound(true);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const trackUniqueView = async (toolId: string) => {
+    try {
+      const viewData: any = { tool_id: toolId };
+      
+      if (user) {
+        // For logged-in users, use user_id
+        viewData.user_id = user.id;
+      } else {
+        // For anonymous users, use device fingerprint
+        const fingerprint = await getDeviceFingerprint();
+        viewData.device_fingerprint = fingerprint;
+      }
+
+      // Try to insert the view (will fail silently if duplicate due to unique constraint)
+      const { error: viewError } = await supabase
+        .from('tool_views')
+        .insert(viewData);
+
+      // If insert succeeded (not a duplicate), increment the view count
+      if (!viewError) {
+        await supabase.rpc('increment_tool_views', { tool_id: toolId });
+      }
+    } catch (error) {
+      // Silently fail - view tracking shouldn't break the page
+      console.error('Error tracking view:', error);
     }
   };
 
