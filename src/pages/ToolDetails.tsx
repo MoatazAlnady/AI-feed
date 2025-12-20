@@ -127,7 +127,7 @@ const ToolDetails: React.FC = () => {
 
   const trackUniqueView = async (toolId: string) => {
     try {
-      const viewData: any = { tool_id: toolId };
+      const viewData: { tool_id: string; user_id?: string; device_fingerprint?: string } = { tool_id: toolId };
       
       if (user) {
         // For logged-in users, use user_id
@@ -143,9 +143,13 @@ const ToolDetails: React.FC = () => {
         .from('tool_views')
         .insert(viewData);
 
-      // If insert succeeded (not a duplicate), increment the view count
+      // If insert succeeded (not a duplicate), increment the view count directly
       if (!viewError) {
-        await supabase.rpc('increment_tool_views', { tool_id: toolId });
+        // Use direct update instead of RPC to avoid type issues
+        await supabase
+          .from('tools')
+          .update({ views: (await supabase.from('tools').select('views').eq('id', toolId).single()).data?.views + 1 || 1 })
+          .eq('id', toolId);
       }
     } catch (error) {
       // Silently fail - view tracking shouldn't break the page
