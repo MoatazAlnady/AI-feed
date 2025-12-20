@@ -37,8 +37,11 @@ export function usePremiumStatus(): PremiumStatus {
           setError(fetchError.message);
           setIsPremium(false);
         } else if (data) {
-          // Check admin status directly from database
-          const isAdminUser = data.role_id === 1 || data.account_type === 'admin';
+          // Check admin status - use Number() to handle potential string type from DB
+          const roleIdNum = Number(data.role_id);
+          const isAdminUser = roleIdNum === 1 || data.account_type === 'admin';
+          
+          console.log('Premium status check:', { role_id: data.role_id, roleIdNum, account_type: data.account_type, is_premium: data.is_premium, isAdminUser });
           
           // Admins automatically get premium access
           if (isAdminUser) {
