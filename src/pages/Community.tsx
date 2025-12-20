@@ -830,7 +830,7 @@ const Community: React.FC = () => {
         url="https://aifeed.app/community"
         type="website"
       />
-    <div className="py-8 min-h-screen">
+    <div className="py-8 min-h-screen bg-muted/50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">

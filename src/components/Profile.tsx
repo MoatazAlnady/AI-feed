@@ -2,13 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   User, Mail, Calendar, Heart, Bookmark, MessageSquare, Upload, 
   Briefcase, MapPin, Edit, Camera, Target, TrendingUp, ExternalLink,
-  Plus, Code, FileText, Users, Star, Building, Lock
+  Plus, Code, FileText, Users, Star, Building, Lock, Share2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Zap } from 'lucide-react';
 import PromoteContentModal from '../components/PromoteContentModal';
 import PremiumUpgradeModal from '../components/PremiumUpgradeModal';
 import InterestManagement from '../components/InterestManagement';
+import ShareToolModal from '../components/ShareToolModal';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
@@ -38,6 +39,9 @@ const Profile: React.FC = () => {
   const [savedItems, setSavedItems] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
+  const [userTools, setUserTools] = useState<any[]>([]);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [selectedToolForShare, setSelectedToolForShare] = useState<any>(null);
   
   // Workplace selection state
   const [companies, setCompanies] = useState<CompanyOption[]>([]);
@@ -46,7 +50,7 @@ const Profile: React.FC = () => {
   const [manualCompanyName, setManualCompanyName] = useState<string>('');
   const [savingWorkplace, setSavingWorkplace] = useState(false);
 
-  // Fetch companies, current workplace, and premium status
+  // Fetch companies, current workplace, premium status, and user tools
   useEffect(() => {
     const fetchCompanies = async () => {
       const { data } = await supabase
@@ -78,8 +82,19 @@ const Profile: React.FC = () => {
       }
     };
 
+    const fetchUserTools = async () => {
+      if (!user?.id) return;
+      const { data } = await supabase
+        .from('tools')
+        .select('id, name, description, logo_url, views, likes, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      if (data) setUserTools(data);
+    };
+
     fetchCompanies();
     fetchUserWorkplace();
+    fetchUserTools();
   }, [user?.id]);
 
   const handleSaveWorkplace = async () => {
@@ -476,38 +491,61 @@ const Profile: React.FC = () => {
 
               {activeTab === 'posts' && (
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">My Content</h3>
-                  {userContent.length > 0 ? (
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">My Tools</h3>
+                  {userTools.length > 0 ? (
                     <div className="space-y-4">
-                      {userContent.map((content) => (
-                        <div key={content.id} className="border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+                      {userTools.map((tool) => (
+                        <div key={tool.id} className="border border-gray-200 dark:border-gray-700 rounded-xl p-6">
                           <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-2 mb-2">
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  content.type === 'tool' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                }`}>
-                                  {t(`common.contentTypes.${content.type}`, { defaultValue: content.type })}
-                                </span>
-                                <span className="text-sm text-gray-500 dark:text-gray-400">{content.createdAt}</span>
-                              </div>
-                              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{content.title}</h4>
-                              <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">{content.description}</p>
-                              <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                                <span>{content.views.toLocaleString()} views</span>
-                                <span>{content.likes} likes</span>
+                            <div className="flex items-start space-x-4 flex-1">
+                              {tool.logo_url ? (
+                                <img src={tool.logo_url} alt={tool.name} className="w-12 h-12 rounded-lg object-cover" />
+                              ) : (
+                                <div className="w-12 h-12 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
+                                  <Zap className="h-6 w-6 text-white" />
+                                </div>
+                              )}
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-2 mb-2">
+                                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+                                    Tool
+                                  </span>
+                                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                                    {new Date(tool.created_at).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                <Link to={`/tools/${tool.id}`} className="font-semibold text-gray-900 dark:text-white mb-2 hover:text-primary-600 dark:hover:text-primary-400">
+                                  {tool.name}
+                                </Link>
+                                <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">{tool.description}</p>
+                                <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                                  <span>{(tool.views || 0).toLocaleString()} views</span>
+                                  <span>{tool.likes || 0} likes</span>
+                                </div>
                               </div>
                             </div>
                             <div className="flex space-x-2 ml-4">
                               <button
-                                onClick={() => handlePromoteContent(content)}
+                                onClick={() => {
+                                  setSelectedToolForShare({
+                                    id: tool.id,
+                                    name: tool.name,
+                                    description: tool.description,
+                                    logo_url: tool.logo_url
+                                  });
+                                  setShowShareModal(true);
+                                }}
+                                className="flex items-center space-x-1 px-3 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors"
+                              >
+                                <Share2 className="h-4 w-4" />
+                                <span>Share</span>
+                              </button>
+                              <button
+                                onClick={() => handlePromoteContent({ id: tool.id, title: tool.name, type: 'tool' })}
                                 className="flex items-center space-x-1 px-3 py-2 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-lg hover:bg-primary-200 dark:hover:bg-primary-800/30 transition-colors"
                               >
                                 <Target className="h-4 w-4" />
                                 <span>Promote</span>
-                              </button>
-                              <button className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
-                                <TrendingUp className="h-4 w-4" />
                               </button>
                             </div>
                           </div>
@@ -518,20 +556,14 @@ const Profile: React.FC = () => {
                     <div className="text-center py-8">
                       <FileText className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
                       <p className="text-gray-600 dark:text-gray-400 mb-4">
-                        You haven't created any content yet.
+                        You haven't submitted any tools yet.
                       </p>
                       <div className="flex flex-wrap justify-center gap-2">
                         <Link
-                          to="/tools/create"
+                          to="/submit-tool"
                           className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
                         >
                           Submit Tool
-                        </Link>
-                        <Link
-                          to="/articles/create"
-                          className="px-4 py-2 bg-secondary-500 text-white rounded-lg hover:bg-secondary-600 transition-colors"
-                        >
-                          Write Article
                         </Link>
                       </div>
                     </div>
@@ -684,6 +716,18 @@ const Profile: React.FC = () => {
           contentType="profile"
           contentId={selectedContent.id}
           contentTitle={selectedContent.title}
+        />
+      )}
+
+      {/* Share Tool Modal */}
+      {showShareModal && selectedToolForShare && (
+        <ShareToolModal
+          isOpen={showShareModal}
+          onClose={() => {
+            setShowShareModal(false);
+            setSelectedToolForShare(null);
+          }}
+          tool={selectedToolForShare}
         />
       )}
 
