@@ -566,7 +566,7 @@ const SubmitTool: React.FC = () => {
         {!isEditMode && (
         <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('submitTool.chooseMethod')}</h3>
-          <div className="flex space-x-4">
+          <div className="flex flex-wrap gap-4">
             <button
               onClick={() => setSubmissionMode('form')}
               className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-colors ${
@@ -588,6 +588,23 @@ const SubmitTool: React.FC = () => {
             >
               <Upload className="h-5 w-5" />
               <span>{t('submitTool.csvUpload')}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const csvContent = generateCSVTemplate();
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'ai-tools-template.csv';
+                a.click();
+                window.URL.revokeObjectURL(url);
+              }}
+              className="flex items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-colors bg-secondary/10 text-secondary-foreground hover:bg-secondary/20 border border-secondary/20"
+            >
+              <Download className="h-5 w-5" />
+              <span>{t('submitTool.downloadSample', 'Download Sample CSV')}</span>
             </button>
           </div>
         </div>
