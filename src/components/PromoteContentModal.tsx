@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, Target, DollarSign, Users, Calendar, TrendingUp, MapPin, Sparkles, Bot, ChevronDown, Check, ChevronsUpDown, Smartphone, Monitor, Tablet, Globe, Clock, AlertTriangle } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { X, Target, DollarSign, Users, Calendar, TrendingUp, MapPin, Sparkles, Bot, ChevronDown, Check, ChevronsUpDown, Smartphone, Monitor, Tablet, Globe, Clock, AlertTriangle, Eye, MousePointer, Zap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
@@ -10,6 +10,8 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { MultiSelectCombobox } from '@/components/ui/multi-select-combobox';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { format, differenceInDays, addDays } from 'date-fns';
 
 interface PromoteContentModalProps {
   isOpen: boolean;
@@ -17,6 +19,15 @@ interface PromoteContentModalProps {
   contentType: 'tool' | 'article' | 'post' | 'job' | 'event' | 'profile';
   contentId: string | number;
   contentTitle: string;
+}
+
+interface DetailedReach {
+  impressions: number;
+  impressionsPerDay: number;
+  clicks: number;
+  cpm: string;
+  cpc: string;
+  targetingScore: number;
 }
 
 const PromoteContentModal: React.FC<PromoteContentModalProps> = ({ 
@@ -31,9 +42,15 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
   const [targetingMode, setTargetingMode] = useState<'manual' | 'ai'>('manual');
   const [contentVisibility, setContentVisibility] = useState<string | null>(null);
   const [isCheckingVisibility, setIsCheckingVisibility] = useState(false);
+  
+  // Date range state
+  const [startDate, setStartDate] = useState<Date>(addDays(new Date(), 1)); // Tomorrow
+  const [endDate, setEndDate] = useState<Date>(addDays(new Date(), 8)); // 7 days from tomorrow
+  const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
+  const [openEndDatePicker, setOpenEndDatePicker] = useState(false);
+  
   const [formData, setFormData] = useState({
     budget: '50',
-    duration: '7',
     targetAudience: [] as string[],
     ageFrom: '18',
     ageTo: '65',
@@ -42,7 +59,6 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
     interests: [] as string[],
     gender: 'all',
     objective: 'awareness',
-    // New targeting options
     devices: [] as string[],
     languages: [] as string[],
     scheduleEnabled: false,
@@ -56,6 +72,11 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
   const [isGeneratingTargeting, setIsGeneratingTargeting] = useState(false);
   const [openCountriesDropdown, setOpenCountriesDropdown] = useState(false);
   const [openCitiesDropdown, setOpenCitiesDropdown] = useState(false);
+
+  // Calculate duration from date range
+  const duration = useMemo(() => {
+    return Math.max(1, differenceInDays(endDate, startDate));
+  }, [startDate, endDate]);
 
   // Check content visibility when modal opens
   useEffect(() => {
@@ -76,7 +97,7 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
       if (!error && data) {
         setContentVisibility(data.visibility || 'public');
       } else {
-        setContentVisibility('public'); // Default to public for non-post content
+        setContentVisibility('public');
       }
     } catch (error) {
       console.error('Error checking content visibility:', error);
@@ -112,7 +133,7 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
 
   const isContentPromotable = contentVisibility === 'public' || contentType !== 'post';
 
-  // Complete countries and cities data (from AuthModal)
+  // Complete countries and cities data
   const countriesWithCodes = [
     { name: 'United States', code: '+1' },
     { name: 'Canada', code: '+1' },
@@ -206,42 +227,7 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
     'United Kingdom': ['London', 'Birmingham', 'Manchester', 'Glasgow', 'Liverpool', 'Leeds', 'Sheffield', 'Edinburgh', 'Bristol', 'Cardiff', 'Leicester', 'Coventry', 'Bradford', 'Belfast', 'Nottingham', 'Hull', 'Newcastle', 'Stoke-on-Trent', 'Southampton', 'Derby', 'Portsmouth', 'Brighton', 'Plymouth', 'Northampton', 'Reading', 'Luton', 'Wolverhampton', 'Bolton', 'Bournemouth', 'Norwich'],
     'Germany': ['Berlin', 'Hamburg', 'Munich', 'Cologne', 'Frankfurt', 'Stuttgart', 'Düsseldorf', 'Dortmund', 'Essen', 'Leipzig', 'Bremen', 'Dresden', 'Hanover', 'Nuremberg', 'Duisburg', 'Bochum', 'Wuppertal', 'Bielefeld', 'Bonn', 'Münster', 'Karlsruhe', 'Mannheim', 'Augsburg', 'Wiesbaden', 'Gelsenkirchen', 'Mönchengladbach', 'Braunschweig', 'Chemnitz', 'Kiel', 'Aachen'],
     'France': ['Paris', 'Marseille', 'Lyon', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille', 'Rennes', 'Reims', 'Le Havre', 'Saint-Étienne', 'Toulon', 'Grenoble', 'Dijon', 'Angers', 'Nîmes', 'Villeurbanne', 'Saint-Denis', 'Le Mans', 'Aix-en-Provence', 'Clermont-Ferrand', 'Brest', 'Limoges', 'Tours', 'Amiens', 'Perpignan', 'Metz'],
-    'Palestine': ['Gaza', 'Ramallah', 'Hebron', 'Nablus', 'Bethlehem', 'Jenin', 'Tulkarm', 'Qalqilya', 'Salfit', 'Jericho', 'Tubas', 'Khan Yunis', 'Rafah', 'Deir al-Balah', 'Beit Lahia', 'Beit Hanoun', 'Jabalya'],
-    'Saudi Arabia': ['Riyadh', 'Jeddah', 'Mecca', 'Medina', 'Dammam', 'Khobar', 'Dhahran', 'Taif', 'Buraidah', 'Tabuk', 'Hail', 'Khamis Mushait', 'Najran', 'Jizan', 'Yanbu', 'Al Jubail', 'Abha', 'Arar', 'Sakaka', 'Al Qatif'],
-    'Egypt': ['Cairo', 'Alexandria', 'Giza', 'Shubra El Kheima', 'Port Said', 'Suez', 'Luxor', 'Mansoura', 'El Mahalla El Kubra', 'Tanta', 'Asyut', 'Ismailia', 'Fayyum', 'Zagazig', 'Aswan', 'Damietta', 'Damanhur', 'Minya', 'Beni Suef', 'Hurghada'],
-    'Iraq': ['Baghdad', 'Basra', 'Mosul', 'Erbil', 'Sulaymaniyah', 'Najaf', 'Karbala', 'Kirkuk', 'Nasiriyah', 'Amarah', 'Diwaniyah', 'Kut', 'Ramadi', 'Fallujah', 'Samarra', 'Baqubah', 'Tikrit', 'Hilla', 'Dohuk', 'Zakho'],
-    'Jordan': ['Amman', 'Zarqa', 'Irbid', 'Russeifa', 'Wadi as-Sir', 'Aqaba', 'Madaba', 'As-Salt', 'Mafraq', 'Jerash', 'Karak', 'Tafilah', 'Maan', 'Ajloun', 'Sahab', 'Fuheis', 'Ain al-Basha', 'Qadisiyah', 'Kufranja', 'Jubeiha'],
-    'Lebanon': ['Beirut', 'Tripoli', 'Sidon', 'Tyre', 'Nabatieh', 'Jounieh', 'Zahle', 'Baalbek', 'Byblos', 'Aley', 'Bint Jbeil', 'Marjayoun', 'Jezzine', 'Halba', 'Chekka', 'Anjar', 'Rashaya', 'Hermel', 'Qbayyat', 'Minieh'],
-    'Syria': ['Damascus', 'Aleppo', 'Homs', 'Latakia', 'Hama', 'Deir ez-Zor', 'Raqqa', 'Daraa', 'Al-Hasakah', 'Qamishli', 'Tartus', 'Idlib', 'Douma', 'As-Suwayda', 'Quneitra', 'Palmyra', 'Manbij', 'Afrin', 'Azaz', 'Jarablus'],
-    'Yemen': ['Sanaa', 'Aden', 'Taiz', 'Hodeidah', 'Ibb', 'Dhamar', 'Mukalla', 'Saada', 'Zinjibar', 'Sayyan', 'Zabid', 'Hajjah', 'Sadah', 'Amran', 'Yarim', 'Marib', 'Bayhan', 'Lawdar', 'Ataq', 'Shibam'],
-    'Kuwait': ['Kuwait City', 'Hawalli', 'As Salimiyah', 'Sabah as Salim', 'Al Farwaniyah', 'Al Ahmadi', 'Ar Riqqah', 'Ar Rabiyah', 'Al Fahahil', 'Salwa', 'Jaber Al-Ali', 'Mangaf', 'Mahboula', 'Abu Halifa', 'Fintas', 'Fahaheel', 'Al Wafra', 'Kaifan', 'Khaitan', 'Abraq Khaitan'],
-    'Qatar': ['Doha', 'Al Rayyan', 'Umm Salal', 'Al Wakrah', 'Al Khor', 'Madinat ash Shamal', 'Al Daayen', 'Al Shamal', 'Lusail', 'Mesaieed', 'Dukhan', 'Al Shahaniya', 'Al Thakhira', 'Al Kharrara', 'Simaisma', 'Al Ghuwariyah', 'Fuwayrit', 'Al Jumayliyah', 'Umm Bab', 'Zekreet'],
-    'Bahrain': ['Manama', 'Riffa', 'Muharraq', 'Hamad Town', 'A\'ali', 'Isa Town', 'Sitra', 'Budaiya', 'Jidhafs', 'Al-Malikiyah', 'Sanabis', 'Tubli', 'Barbar', 'Galali', 'Malkiya', 'Karzakan', 'Samaheej', 'Karbabad', 'Duraz', 'Bani Jamra'],
-    'Oman': ['Muscat', 'Seeb', 'Salalah', 'Bawshar', 'Sohar', 'As Suwayq', 'Ibri', 'Saham', 'Barka', 'Rustaq', 'Burka', 'Nizwa', 'Sur', 'Bahla', 'Khasab', 'Shinas', 'Izki', 'Jabrin', 'Manah', 'Ibra'],
-    'Libya': ['Tripoli', 'Benghazi', 'Misrata', 'Tarhuna', 'Al Bayda', 'Zawiya', 'Zliten', 'Ajdabiya', 'Tobruk', 'Sabha', 'Derna', 'Sirte', 'Gharyan', 'Kufra', 'Marj', 'Bani Walid', 'Sabratha', 'Sorman', 'Zuwara', 'Murzuq'],
-    'Tunisia': ['Tunis', 'Sfax', 'Sousse', 'Ettadhamen', 'Kairouan', 'Bizerte', 'Gabès', 'Ariana', 'Gafsa', 'Monastir', 'Ben Arous', 'Kasserine', 'Médenine', 'Nabeul', 'Tataouine', 'Béja', 'Jendouba', 'Mahdia', 'Siliana', 'Manouba'],
-    'Algeria': ['Algiers', 'Oran', 'Constantine', 'Annaba', 'Blida', 'Batna', 'Djelfa', 'Sétif', 'Sidi Bel Abbès', 'Biskra', 'Tébessa', 'El Oued', 'Skikda', 'Tiaret', 'Béjaïa', 'Tlemcen', 'Ouargla', 'Béchar', 'Mostaganem', 'Bordj Bou Arréridj'],
-    'Morocco': ['Casablanca', 'Rabat', 'Fez', 'Marrakech', 'Agadir', 'Tangier', 'Meknes', 'Oujda', 'Kenitra', 'Tetouan', 'Safi', 'Mohammedia', 'Khouribga', 'El Jadida', 'Beni Mellal', 'Nador', 'Taza', 'Settat', 'Berrechid', 'Khemisset'],
-    'Sudan': ['Khartoum', 'Omdurman', 'Khartoum North', 'Nyala', 'Port Sudan', 'Kassala', 'Al-Ubayyid', 'Kosti', 'Wad Madani', 'El Fasher', 'Atbara', 'Dongola', 'Malakal', 'El Geneina', 'Rabak', 'Geneina', 'Kadugli', 'El Daein', 'Sennar', 'Zalingei'],
-    'UAE': ['Dubai', 'Abu Dhabi', 'Sharjah', 'Al Ain', 'Ajman', 'Ras Al Khaimah', 'Fujairah', 'Umm Al Quwain', 'Khor Fakkan', 'Kalba', 'Dibba Al-Fujairah', 'Dibba Al-Hisn', 'Madinat Zayed', 'Liwa Oasis', 'Ghayathi', 'Ruwais', 'Jebel Ali', 'Al Dhafra', 'Hatta', 'Masafi'],
-    'Somalia': ['Mogadishu', 'Hargeisa', 'Bosaso', 'Kismayo', 'Merca', 'Galcaio', 'Baidoa', 'Garowe', 'Berbera', 'Burao', 'Las Anod', 'Erigavo', 'Galkayo', 'Beledweyne', 'Jowhar', 'Luuq', 'Hudur', 'Qardho', 'Borama', 'Zeila'],
-    'Djibouti': ['Djibouti City', 'Ali Sabieh', 'Dikhil', 'Tadjourah', 'Obock', 'Arta', 'Holhol', 'Yoboki', 'As Eyla', 'Balho', 'Galafi', 'Loyada', 'Randa', 'Sagallou', 'Khor Angar', 'Dorale', 'Damerjog', 'Airolaf', 'Assamo', 'Gobaad'],
-    'Comoros': ['Moroni', 'Mutsamudu', 'Fomboni', 'Domoni', 'Sima', 'Mitsoudje', 'Ouani', 'Adda-Douéni', 'Tsémbéhou', 'Koni-Djodjo', 'Mirontsy', 'Nioumachoua', 'Mbéni', 'Iconi', 'Mitsamiouli', 'Foumbouni', 'Salamani', 'Chindini', 'Vouvouni', 'Bandamadji'],
-    'Mauritania': ['Nouakchott', 'Nouadhibou', 'Néma', 'Kaédi', 'Zouérat', 'Rosso', 'Atar', 'Adel Bagrou', 'Aleg', 'Boutilimit', 'Tidjikja', 'Akjoujt', 'Kiffa', 'Sélibaby', 'Aioun', 'Bogué', 'Chinguetti', 'Ouadane', 'Tichitt', 'Oualata'],
-    // Additional countries with major cities
-    'Spain': ['Madrid', 'Barcelona', 'Valencia', 'Seville', 'Zaragoza', 'Málaga', 'Murcia', 'Palma', 'Las Palmas', 'Bilbao', 'Alicante', 'Córdoba', 'Valladolid', 'Vigo', 'Gijón', 'Hospitalet de Llobregat', 'A Coruña', 'Vitoria-Gasteiz', 'Granada', 'Elche'],
-    'Italy': ['Rome', 'Milan', 'Naples', 'Turin', 'Palermo', 'Genoa', 'Bologna', 'Florence', 'Bari', 'Catania', 'Venice', 'Verona', 'Messina', 'Padua', 'Trieste', 'Taranto', 'Brescia', 'Prato', 'Parma', 'Modena'],
-    'Netherlands': ['Amsterdam', 'Rotterdam', 'The Hague', 'Utrecht', 'Eindhoven', 'Tilburg', 'Groningen', 'Almere', 'Breda', 'Nijmegen', 'Enschede', 'Haarlem', 'Arnhem', 'Zaanstad', 'Amersfoort', 'Apeldoorn', 'Maastricht', 'Dordrecht', 's-Hertogenbosch', 'Leiden'],
-    'Sweden': ['Stockholm', 'Gothenburg', 'Malmö', 'Uppsala', 'Västerås', 'Örebro', 'Linköping', 'Helsingborg', 'Jönköping', 'Norrköping', 'Lund', 'Umeå', 'Gävle', 'Borås', 'Södertälje', 'Eskilstuna', 'Halmstad', 'Växjö', 'Karlstad', 'Sundsvall'],
-    'Norway': ['Oslo', 'Bergen', 'Stavanger', 'Trondheim', 'Drammen', 'Fredrikstad', 'Kristiansand', 'Sandnes', 'Tromsø', 'Sarpsborg', 'Skien', 'Ålesund', 'Sandefjord', 'Haugesund', 'Tønsberg', 'Moss', 'Bodø', 'Arendal', 'Hamar', 'Ytrebygda'],
-    'Denmark': ['Copenhagen', 'Aarhus', 'Odense', 'Aalborg', 'Esbjerg', 'Randers', 'Kolding', 'Horsens', 'Vejle', 'Roskilde', 'Herning', 'Hørsholm', 'Helsingør', 'Silkeborg', 'Næstved', 'Fredericia', 'Viborg', 'Køge', 'Holstebro', 'Taastrup'],
-    'Australia': ['Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide', 'Gold Coast', 'Newcastle', 'Canberra', 'Sunshine Coast', 'Wollongong', 'Geelong', 'Hobart', 'Townsville', 'Cairns', 'Darwin', 'Toowoomba', 'Ballarat', 'Bendigo', 'Albury', 'Launceston'],
-    'New Zealand': ['Auckland', 'Wellington', 'Christchurch', 'Hamilton', 'Tauranga', 'Napier-Hastings', 'Dunedin', 'Palmerston North', 'Nelson', 'Rotorua', 'New Plymouth', 'Whangarei', 'Invercargill', 'Wanganui', 'Gisborne', 'Timaru', 'Oamaru', 'Greymouth', 'Westport'],
-    'Japan': ['Tokyo', 'Yokohama', 'Osaka', 'Nagoya', 'Sapporo', 'Fukuoka', 'Kobe', 'Kawasaki', 'Kyoto', 'Saitama', 'Hiroshima', 'Sendai', 'Kitakyushu', 'Chiba', 'Sakai', 'Niigata', 'Hamamatsu', 'Okayama', 'Sagamihara', 'Kumamoto'],
-    'South Korea': ['Seoul', 'Busan', 'Incheon', 'Daegu', 'Daejeon', 'Gwangju', 'Suwon', 'Ulsan', 'Changwon', 'Goyang', 'Yongin', 'Seongnam', 'Bucheon', 'Cheongju', 'Ansan', 'Jeonju', 'Anyang', 'Pohang', 'Uijeongbu', 'Pyeongtaek'],
-    'Singapore': ['Singapore'],
-    'India': ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Ahmedabad', 'Chennai', 'Kolkata', 'Surat', 'Pune', 'Jaipur', 'Lucknow', 'Kanpur', 'Nagpur', 'Indore', 'Thane', 'Bhopal', 'Visakhapatnam', 'Pimpri & Chinchwad', 'Patna', 'Vadodara'],
-    'Brazil': ['São Paulo', 'Rio de Janeiro', 'Brasília', 'Salvador', 'Fortaleza', 'Belo Horizonte', 'Manaus', 'Curitiba', 'Recife', 'Goiânia', 'Belém', 'Porto Alegre', 'Guarulhos', 'Campinas', 'São Luís', 'São Gonçalo', 'Maceió', 'Duque de Caxias', 'Nova Iguaçu', 'Teresina']
+    'UAE': ['Dubai', 'Abu Dhabi', 'Sharjah', 'Al Ain', 'Ajman', 'Ras Al Khaimah', 'Fujairah', 'Umm Al Quwain']
   } as Record<string, string[]>;
 
   const availableInterests = [
@@ -258,34 +244,24 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
     'Developers', 'Designers', 'Marketers', 'Consultants', 'Freelancers'
   ];
 
-  const objectives = [
-    { value: 'awareness', label: 'Brand Awareness', description: 'Increase visibility and recognition' },
-    { value: 'engagement', label: 'Engagement', description: 'Drive likes, comments, and shares' },
-    { value: 'traffic', label: 'Website Traffic', description: 'Direct users to your content' },
-    { value: 'conversions', label: 'Conversions', description: 'Encourage specific actions' }
-  ];
-
-  const genderOptions = [
-    { value: 'all', label: 'All Genders' },
-    { value: 'male', label: 'Male' },
-    { value: 'female', label: 'Female' }
-  ];
-
   const deviceOptions = [
-    { value: 'mobile', label: 'Mobile', icon: Smartphone },
     { value: 'desktop', label: 'Desktop', icon: Monitor },
+    { value: 'mobile', label: 'Mobile', icon: Smartphone },
     { value: 'tablet', label: 'Tablet', icon: Tablet }
   ];
 
   const languageOptions = [
-    'English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese', 
-    'Arabic', 'Russian', 'Portuguese', 'Hindi', 'Korean', 'Italian'
+    'English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 
+    'Russian', 'Chinese', 'Japanese', 'Korean', 'Arabic', 'Hindi',
+    'Dutch', 'Swedish', 'Norwegian', 'Danish', 'Finnish', 'Polish',
+    'Turkish', 'Greek', 'Hebrew', 'Thai', 'Vietnamese', 'Indonesian'
   ];
 
   const industryOptions = [
-    'Technology', 'Healthcare', 'Finance', 'Education', 'Marketing',
-    'E-commerce', 'Manufacturing', 'Legal', 'Real Estate', 'Media',
-    'Consulting', 'Startups', 'Enterprise', 'Government', 'Non-profit'
+    'Technology', 'Healthcare', 'Finance', 'Education', 'E-commerce',
+    'Manufacturing', 'Media & Entertainment', 'Real Estate', 'Legal',
+    'Consulting', 'Marketing & Advertising', 'Non-profit', 'Government',
+    'Transportation', 'Energy', 'Agriculture', 'Retail', 'Hospitality'
   ];
 
   const weekDays = [
@@ -298,93 +274,143 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
     { value: 'sunday', label: 'Sun' }
   ];
 
-  const ageRanges = [
-    '18-24', '25-34', '35-44', '45-54', '55-64', '65+', '18-34', '25-45', '35-55', '18+'
-  ];
+  // Enhanced detailed reach calculation
+  const calculateDetailedReach = useMemo((): DetailedReach => {
+    const budgetNum = parseFloat(formData.budget) || 0;
+    const durationDays = duration;
+    
+    // Base: $1 = 100 impressions per day
+    const baseImpressions = budgetNum * 100 * durationDays;
+    
+    // Targeting multipliers (narrow targeting = smaller but more relevant audience)
+    let audienceMultiplier = 1.0;
+    
+    // Country targeting
+    if (formData.selectedCountries.length === 0) {
+      audienceMultiplier *= 1.5; // Global reach
+    } else if (formData.selectedCountries.length <= 3) {
+      audienceMultiplier *= 0.8; // Focused countries
+    } else {
+      audienceMultiplier *= 1.0; // Multiple countries
+    }
+    
+    // Interest/Industry targeting
+    if (formData.interests.length > 3) {
+      audienceMultiplier *= 0.7;
+    } else if (formData.interests.length > 0) {
+      audienceMultiplier *= 0.85;
+    }
+    
+    // Demographics - age range
+    const ageRange = parseInt(formData.ageTo) - parseInt(formData.ageFrom);
+    if (ageRange < 20) {
+      audienceMultiplier *= 0.75;
+    } else if (ageRange < 30) {
+      audienceMultiplier *= 0.85;
+    }
+    
+    // Gender targeting
+    if (formData.gender !== 'all') {
+      audienceMultiplier *= 0.85;
+    }
+    
+    // Device targeting
+    if (formData.devices.length > 0 && formData.devices.length < 3) {
+      audienceMultiplier *= 0.9;
+    }
+    
+    // Industry targeting
+    if (formData.industries.length > 0) {
+      audienceMultiplier *= 0.8;
+    }
+    
+    // CTR by objective
+    const ctrByObjective: Record<string, number> = {
+      awareness: 0.02,    // 2% CTR
+      engagement: 0.05,   // 5% CTR
+      traffic: 0.08,      // 8% CTR
+      conversions: 0.03   // 3% CTR (focused)
+    };
+    
+    const estimatedImpressions = Math.round(baseImpressions * audienceMultiplier);
+    const ctr = ctrByObjective[formData.objective] || 0.03;
+    const estimatedClicks = Math.round(estimatedImpressions * ctr);
+    const costPerImpression = budgetNum > 0 && estimatedImpressions > 0 ? budgetNum / estimatedImpressions : 0;
+    const costPerClick = budgetNum > 0 && estimatedClicks > 0 ? budgetNum / estimatedClicks : 0;
+    
+    return {
+      impressions: estimatedImpressions,
+      impressionsPerDay: durationDays > 0 ? Math.round(estimatedImpressions / durationDays) : 0,
+      clicks: estimatedClicks,
+      cpm: (costPerImpression * 1000).toFixed(2),
+      cpc: costPerClick.toFixed(2),
+      targetingScore: audienceMultiplier
+    };
+  }, [formData, duration]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  // Simple reach calculation for backward compatibility
+  const calculateEstimatedReach = () => {
+    return calculateDetailedReach.impressions;
   };
 
-  const handleArrayToggle = (array: string[], item: string, field: keyof typeof formData) => {
-    const newArray = array.includes(item) 
-      ? array.filter(i => i !== item)
-      : [...array, item];
+  const handleArrayToggle = (currentArray: string[], value: string, field: string) => {
+    const newArray = currentArray.includes(value)
+      ? currentArray.filter(item => item !== value)
+      : [...currentArray, value];
     setFormData(prev => ({ ...prev, [field]: newArray }));
   };
 
   const generateAITargeting = async () => {
-    if (!aiPrompt.trim()) return;
-    
+    if (!aiPrompt.trim()) {
+      toast({
+        title: 'Please describe your ideal audience',
+        description: 'Enter a description to generate AI-powered targeting.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     setIsGeneratingTargeting(true);
+    
     try {
       const { data, error } = await supabase.functions.invoke('ai-targeting', {
-        body: {
+        body: { 
+          prompt: aiPrompt,
           contentType,
-          contentTitle,
-          contentDescription: aiPrompt,
-          currentFormData: formData
+          contentTitle
         }
       });
-      
+
       if (error) throw error;
-      
-      // Apply AI-generated targeting
+
       if (data?.targeting) {
         setFormData(prev => ({
           ...prev,
-          ...data.targeting
+          targetAudience: data.targeting.targetAudience || prev.targetAudience,
+          interests: data.targeting.interests || prev.interests,
+          selectedCountries: data.targeting.countries || prev.selectedCountries,
+          ageFrom: data.targeting.ageFrom?.toString() || prev.ageFrom,
+          ageTo: data.targeting.ageTo?.toString() || prev.ageTo,
+          gender: data.targeting.gender || prev.gender,
+          industries: data.targeting.industries || prev.industries,
+          languages: data.targeting.languages || prev.languages
         }));
+        
+        toast({
+          title: 'AI Targeting Generated',
+          description: 'Your targeting settings have been updated based on your description.',
+        });
       }
-      
-      toast({ 
-        title: 'AI Targeting Generated', 
-        description: 'Review and adjust the targeting criteria below.' 
-      });
     } catch (error) {
       console.error('Error generating AI targeting:', error);
-      toast({ 
-        title: 'Error', 
-        description: 'Failed to generate AI targeting. Please try again.', 
-        variant: 'destructive' 
+      toast({
+        title: 'Error',
+        description: 'Failed to generate AI targeting. Please try again.',
+        variant: 'destructive'
       });
     } finally {
       setIsGeneratingTargeting(false);
     }
-  };
-
-  const calculateEstimatedReach = () => {
-    const budget = parseInt(formData.budget);
-    const duration = parseInt(formData.duration);
-    
-    // $1 = 10 new creators per day
-    const baseReach = budget * 10 * duration;
-    
-    // Adjust based on targeting specificity
-    let multiplier = 1;
-    
-    // Age targeting adjustment
-    const ageRange = parseInt(formData.ageTo) - parseInt(formData.ageFrom);
-    if (ageRange < 20) multiplier *= 0.8;
-    else if (ageRange > 40) multiplier *= 1.2;
-    
-    // Location targeting adjustment
-    const countryCount = formData.selectedCountries.length;
-    if (countryCount === 0) multiplier *= 1.5; // Global reach
-    else if (countryCount <= 3) multiplier *= 0.9;
-    else if (countryCount > 10) multiplier *= 1.1;
-    
-    // Interest targeting adjustment
-    const interestCount = formData.interests.length;
-    if (interestCount === 0) multiplier *= 1.2; // Broad targeting
-    else if (interestCount <= 3) multiplier *= 0.8;
-    else multiplier *= 0.9;
-    
-    // Gender targeting adjustment
-    if (formData.gender !== 'all') multiplier *= 0.85;
-    
-    return Math.round(baseReach * multiplier);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -393,7 +419,35 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
     if (!user) {
       toast({
         title: 'Authentication Required',
-        description: 'Please log in to create a promotion campaign.',
+        description: 'Please sign in to promote content.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (!isContentPromotable) {
+      toast({
+        title: 'Content Not Promotable',
+        description: 'Please make your content public before promoting.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    // Validate dates
+    if (startDate >= endDate) {
+      toast({
+        title: 'Invalid Date Range',
+        description: 'End date must be after start date.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (startDate < new Date()) {
+      toast({
+        title: 'Invalid Start Date',
+        description: 'Start date must be in the future.',
         variant: 'destructive'
       });
       return;
@@ -417,7 +471,7 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
           endTime: formData.scheduleEndTime,
           days: formData.scheduleDays
         } : null,
-        estimatedReach: calculateEstimatedReach(),
+        estimatedReach: calculateDetailedReach,
         targetingMode,
         aiPrompt: targetingMode === 'ai' ? aiPrompt : null
       };
@@ -430,7 +484,8 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
           contentId: String(contentId),
           contentTitle,
           budget: formData.budget,
-          duration: formData.duration,
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
           objective: formData.objective,
           targetingData
         }
@@ -439,7 +494,6 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
       if (error) throw error;
 
       if (data?.url) {
-        // Open Stripe checkout in new tab
         window.open(data.url, '_blank');
         onClose();
         toast({
@@ -531,6 +585,74 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
               </Alert>
             )}
 
+            {/* Expected Performance Panel */}
+            <div className="bg-gradient-to-r from-primary/10 via-secondary/5 to-accent/10 dark:from-primary/20 dark:via-secondary/10 dark:to-accent/20 rounded-xl p-6 mb-8 border border-primary/20">
+              <div className="flex items-center mb-4">
+                <TrendingUp className="h-5 w-5 text-primary mr-2" />
+                <h3 className="font-semibold text-gray-900 dark:text-white">Expected Campaign Performance</h3>
+              </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div className="text-center p-3 bg-white/50 dark:bg-slate-800/50 rounded-lg">
+                  <div className="flex items-center justify-center mb-1">
+                    <Eye className="h-4 w-4 text-primary mr-1" />
+                  </div>
+                  <div className="text-2xl font-bold text-primary">
+                    {calculateDetailedReach.impressions.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">Est. Impressions</div>
+                </div>
+                <div className="text-center p-3 bg-white/50 dark:bg-slate-800/50 rounded-lg">
+                  <div className="flex items-center justify-center mb-1">
+                    <MousePointer className="h-4 w-4 text-green-600 mr-1" />
+                  </div>
+                  <div className="text-2xl font-bold text-green-600">
+                    {calculateDetailedReach.clicks.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">Est. Clicks</div>
+                </div>
+                <div className="text-center p-3 bg-white/50 dark:bg-slate-800/50 rounded-lg">
+                  <div className="flex items-center justify-center mb-1">
+                    <DollarSign className="h-4 w-4 text-blue-600 mr-1" />
+                  </div>
+                  <div className="text-2xl font-bold text-blue-600">
+                    ${calculateDetailedReach.cpm}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">CPM</div>
+                </div>
+                <div className="text-center p-3 bg-white/50 dark:bg-slate-800/50 rounded-lg">
+                  <div className="flex items-center justify-center mb-1">
+                    <Zap className="h-4 w-4 text-purple-600 mr-1" />
+                  </div>
+                  <div className="text-2xl font-bold text-purple-600">
+                    ${calculateDetailedReach.cpc}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">CPC</div>
+                </div>
+              </div>
+              
+              <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1 border-t border-gray-200 dark:border-slate-700 pt-3">
+                <p className="flex items-center">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  <span className="font-medium">Campaign:</span>
+                  <span className="ml-2">{format(startDate, 'MMM dd, yyyy')} → {format(endDate, 'MMM dd, yyyy')} ({duration} days)</span>
+                </p>
+                <p className="flex items-center">
+                  <Target className="h-4 w-4 mr-2" />
+                  <span className="font-medium">Daily Reach:</span>
+                  <span className="ml-2">~{calculateDetailedReach.impressionsPerDay.toLocaleString()} impressions/day</span>
+                </p>
+                <p className="flex items-center">
+                  <Users className="h-4 w-4 mr-2" />
+                  <span className="font-medium">Targeting Score:</span>
+                  <span className="ml-2">
+                    {calculateDetailedReach.targetingScore >= 1 ? 'Broad reach' : 
+                     calculateDetailedReach.targetingScore >= 0.7 ? 'Focused audience' : 'Highly targeted'}
+                  </span>
+                </p>
+              </div>
+            </div>
+
             <form onSubmit={handleSubmit}>
               {/* Targeting Mode Selection */}
               <div className="mb-8">
@@ -548,13 +670,16 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                       className="mt-1"
                     />
                     <div>
-                      <div className="font-medium text-gray-900 dark:text-white flex items-center">
-                        <Target className="h-4 w-4 mr-2" />
-                        Manual Targeting
+                      <div className="flex items-center">
+                        <Target className="h-4 w-4 mr-2 text-primary-500" />
+                        <span className="font-medium text-gray-900 dark:text-white">Manual Targeting</span>
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">Choose specific criteria manually</div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Customize your audience with precise targeting options
+                      </p>
                     </div>
                   </label>
+                  
                   <label className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-slate-700 rounded-xl cursor-pointer hover:border-primary-300 dark:hover:border-primary-600 transition-colors">
                     <input
                       type="radio"
@@ -565,11 +690,14 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                       className="mt-1"
                     />
                     <div>
-                      <div className="font-medium text-gray-900 dark:text-white flex items-center">
-                        <Bot className="h-4 w-4 mr-2" />
-                        AI-Powered Targeting
+                      <div className="flex items-center">
+                        <Bot className="h-4 w-4 mr-2 text-purple-500" />
+                        <span className="font-medium text-gray-900 dark:text-white">AI-Powered Targeting</span>
+                        <span className="ml-2 px-2 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 text-xs rounded-full">Beta</span>
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">Let AI generate targeting based on your description</div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Describe your ideal audience and let AI optimize targeting
+                      </p>
                     </div>
                   </label>
                 </div>
@@ -577,112 +705,183 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
 
               {/* AI Targeting Prompt */}
               {targetingMode === 'ai' && (
-                <div className="mb-8 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-slate-800 dark:to-slate-700 rounded-xl border border-blue-200 dark:border-slate-600">
-                  <div className="flex items-center mb-3">
-                    <Sparkles className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" />
-                    <h3 className="font-medium text-gray-900 dark:text-white">AI Targeting Assistant</h3>
-                  </div>
+                <div className="mb-8 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-200 dark:border-purple-800">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Describe Your Ideal Audience
+                  </label>
                   <textarea
                     value={aiPrompt}
                     onChange={(e) => setAiPrompt(e.target.value)}
+                    placeholder="Example: Tech-savvy professionals aged 25-45 interested in AI tools for productivity, primarily in the US and Europe..."
+                    className="w-full px-4 py-3 border border-purple-200 dark:border-purple-700 bg-white dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 dark:text-white resize-none"
                     rows={3}
-                    className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none dark:text-white"
-                    placeholder="Describe your target audience in natural language. For example: 'Target AI researchers and data scientists in North America who are interested in machine learning and work at tech companies or universities, aged 25-45'"
                   />
-                  <button
+                  <Button
                     type="button"
                     onClick={generateAITargeting}
                     disabled={isGeneratingTargeting || !aiPrompt.trim()}
-                    className="mt-3 flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="mt-3 bg-purple-600 hover:bg-purple-700"
                   >
                     {isGeneratingTargeting ? (
                       <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        <span>Generating...</span>
+                        <Sparkles className="h-4 w-4 mr-2 animate-spin" />
+                        Generating...
                       </>
                     ) : (
                       <>
-                        <Bot className="h-4 w-4" />
-                        <span>Generate Targeting</span>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Generate Targeting
                       </>
                     )}
-                  </button>
+                  </Button>
                 </div>
               )}
 
               {/* Campaign Objective */}
               <div className="mb-8">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                  Campaign Objective *
+                  Campaign Objective
                 </label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {objectives.map((objective) => (
-                    <label key={objective.value} className="flex items-start space-x-3 p-4 border border-gray-200 dark:border-slate-700 rounded-xl cursor-pointer hover:border-primary-300 dark:hover:border-primary-600 transition-colors">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {[
+                    { value: 'awareness', label: 'Awareness', description: 'Maximize reach' },
+                    { value: 'engagement', label: 'Engagement', description: 'Get interactions' },
+                    { value: 'traffic', label: 'Traffic', description: 'Drive clicks' },
+                    { value: 'conversions', label: 'Conversions', description: 'Get actions' }
+                  ].map((objective) => (
+                    <label
+                      key={objective.value}
+                      className={`p-4 border rounded-xl cursor-pointer transition-all ${
+                        formData.objective === objective.value
+                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
+                          : 'border-gray-200 dark:border-slate-700 hover:border-primary-300'
+                      }`}
+                    >
                       <input
                         type="radio"
                         name="objective"
                         value={objective.value}
                         checked={formData.objective === objective.value}
-                        onChange={handleInputChange}
-                        className="mt-1"
+                        onChange={(e) => setFormData(prev => ({ ...prev, objective: e.target.value }))}
+                        className="sr-only"
                       />
-                      <div>
+                      <div className="text-center">
                         <div className="font-medium text-gray-900 dark:text-white">{objective.label}</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">{objective.description}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">{objective.description}</div>
                       </div>
                     </label>
                   ))}
                 </div>
               </div>
 
-              {/* Budget and Duration */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {/* Budget & Campaign Period */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                {/* Budget */}
                 <div>
-                  <label htmlFor="budget" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Daily Budget (USD) *
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <DollarSign className="h-4 w-4 inline mr-1" />
+                    Total Budget (USD)
                   </label>
                   <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
                     <input
                       type="number"
-                      id="budget"
-                      name="budget"
                       value={formData.budget}
-                      onChange={handleInputChange}
+                      onChange={(e) => setFormData(prev => ({ ...prev, budget: e.target.value }))}
                       min="1"
-                      max="1000"
-                      required
-                      className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white"
+                      max="10000"
+                      step="1"
+                      className="w-full pl-8 pr-4 py-3 border border-gray-200 dark:border-slate-600 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 dark:text-white"
+                      placeholder="Enter any amount"
                     />
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">$1 = 10 new creators daily • Minimum $1/day</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Min: $1 • Any amount accepted
+                  </p>
                 </div>
+
+                {/* Start Date */}
                 <div>
-                  <label htmlFor="duration" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Campaign Duration (days) *
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <Calendar className="h-4 w-4 inline mr-1" />
+                    Start Date
                   </label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <input
-                      type="number"
-                      id="duration"
-                      name="duration"
-                      value={formData.duration}
-                      onChange={handleInputChange}
-                      min="1"
-                      max="30"
-                      required
-                      className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white"
-                    />
-                  </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">1-30 days</p>
+                  <Popover open={openStartDatePicker} onOpenChange={setOpenStartDatePicker}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal h-12 dark:bg-slate-800 dark:border-slate-600",
+                          !startDate && "text-muted-foreground"
+                        )}
+                      >
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {startDate ? format(startDate, "MMM dd, yyyy") : "Pick a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={startDate}
+                        onSelect={(date) => {
+                          if (date) {
+                            setStartDate(date);
+                            // Ensure end date is after start date
+                            if (date >= endDate) {
+                              setEndDate(addDays(date, 7));
+                            }
+                          }
+                          setOpenStartDatePicker(false);
+                        }}
+                        disabled={(date) => date < new Date()}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                {/* End Date */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <Calendar className="h-4 w-4 inline mr-1" />
+                    End Date
+                  </label>
+                  <Popover open={openEndDatePicker} onOpenChange={setOpenEndDatePicker}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal h-12 dark:bg-slate-800 dark:border-slate-600",
+                          !endDate && "text-muted-foreground"
+                        )}
+                      >
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {endDate ? format(endDate, "MMM dd, yyyy") : "Pick a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={endDate}
+                        onSelect={(date) => {
+                          if (date) setEndDate(date);
+                          setOpenEndDatePicker(false);
+                        }}
+                        disabled={(date) => date <= startDate}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Duration: {duration} day{duration !== 1 ? 's' : ''}
+                  </p>
                 </div>
               </div>
 
-              {/* Target Audience */}
+              {/* Audience Targeting */}
               <div className="mb-8">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                  Target Audience *
+                  Target Audience
                 </label>
                 <MultiSelectCombobox
                   options={audienceOptions.map(a => ({ value: a, label: a }))}
@@ -698,54 +897,45 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
               </div>
 
               {/* Demographics */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div>
-                  <label htmlFor="ageFrom" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Age From
-                  </label>
-                  <input
-                    type="number"
-                    id="ageFrom"
-                    name="ageFrom"
-                    value={formData.ageFrom}
-                    onChange={handleInputChange}
-                    min="18"
-                    max="100"
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="ageTo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Age To
-                  </label>
-                  <input
-                    type="number"
-                    id="ageTo"
-                    name="ageTo"
-                    value={formData.ageTo}
-                    onChange={handleInputChange}
-                    min="18"
-                    max="100"
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="gender" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Gender
-                  </label>
-                  <select
-                    id="gender"
-                    name="gender"
-                    value={formData.gender}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 dark:bg-slate-900 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white"
-                  >
-                    {genderOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
+              <div className="mb-8">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  Demographics
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Age Range</label>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="number"
+                        value={formData.ageFrom}
+                        onChange={(e) => setFormData(prev => ({ ...prev, ageFrom: e.target.value }))}
+                        min="13"
+                        max="99"
+                        className="w-20 px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-800 rounded-lg text-center dark:text-white"
+                      />
+                      <span className="text-gray-500">to</span>
+                      <input
+                        type="number"
+                        value={formData.ageTo}
+                        onChange={(e) => setFormData(prev => ({ ...prev, ageTo: e.target.value }))}
+                        min="13"
+                        max="99"
+                        className="w-20 px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-800 rounded-lg text-center dark:text-white"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Gender</label>
+                    <select
+                      value={formData.gender}
+                      onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-200 dark:border-slate-600 dark:bg-slate-800 rounded-lg dark:text-white"
+                    >
+                      <option value="all">All Genders</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -1039,13 +1229,13 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                   <div>
                     <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">
-                      ${parseInt(formData.budget) * parseInt(formData.duration)}
+                      ${parseFloat(formData.budget) || 0}
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">Total Budget</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">
-                      {formData.duration}
+                      {duration}
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">Days</div>
                   </div>
@@ -1057,44 +1247,41 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">
-                      {formData.targetAudience.length + formData.selectedCountries.length + formData.selectedCities.length + formData.interests.length}
+                      ${((parseFloat(formData.budget) || 0) / duration).toFixed(2)}
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Targeting Criteria</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Daily Budget</div>
                   </div>
                 </div>
               </div>
 
-              {/* Submit Buttons */}
-              <div className="flex justify-end gap-x-4">
-                <button
+              {/* Submit Button */}
+              <div className="flex justify-end space-x-4">
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={onClose}
-                  className="px-6 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
+                  className="px-6"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
-                  disabled={isSubmitting || formData.targetAudience.length === 0 || !isContentPromotable}
-                  className="bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-3 px-6 rounded-xl font-semibold hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  disabled={isSubmitting || !isContentPromotable}
+                  className="px-8 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      <span>Creating Campaign...</span>
+                      <Sparkles className="h-4 w-4 mr-2 animate-spin" />
+                      Processing...
                     </>
                   ) : (
                     <>
-                      <Target className="h-5 w-5" />
-                      <span>Launch Campaign (${parseInt(formData.budget) * parseInt(formData.duration)})</span>
+                      <TrendingUp className="h-4 w-4 mr-2" />
+                      Launch Campaign - ${formData.budget}
                     </>
                   )}
-                </button>
+                </Button>
               </div>
-
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-4">
-                Your campaign will be reviewed and activated within 24 hours.
-              </p>
             </form>
           </div>
         </div>

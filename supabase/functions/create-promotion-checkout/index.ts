@@ -7,25 +7,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Promotion credit packages
-const PROMOTION_PACKAGES = {
-  "25": {
-    priceId: "price_1SgAR3HdycB2B7zvw2FOVFyB",
-    amount: 2500,
-    credits: 25
-  },
-  "50": {
-    priceId: "price_1SgARIHdycB2B7zvImEI80jF",
-    amount: 5000,
-    credits: 50
-  },
-  "100": {
-    priceId: "price_1SgARPHdycB2B7zvNtdS6pdv",
-    amount: 10000,
-    credits: 100
-  }
-};
-
 const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CREATE-PROMOTION-CHECKOUT] ${step}${detailsStr}`);
@@ -65,26 +46,36 @@ serve(async (req) => {
       contentId, 
       contentTitle, 
       budget, 
-      duration, 
+      startDate,
+      endDate,
       objective, 
       targetingData 
     } = body;
 
-    logStep("Received promotion data", { contentType, contentId, budget, duration, objective });
-
-    // Determine which package to use based on budget
-    let selectedPackage;
-    const budgetNum = parseInt(budget);
-    if (budgetNum >= 100) {
-      selectedPackage = PROMOTION_PACKAGES["100"];
-    } else if (budgetNum >= 50) {
-      selectedPackage = PROMOTION_PACKAGES["50"];
-    } else {
-      selectedPackage = PROMOTION_PACKAGES["25"];
+    // Parse budget as float and convert to cents
+    const budgetAmount = parseFloat(budget);
+    if (isNaN(budgetAmount) || budgetAmount < 1) {
+      throw new Error("Invalid budget amount. Minimum is $1.");
     }
-    logStep("Selected package", selectedPackage);
+    const amountInCents = Math.round(budgetAmount * 100);
 
-    // Create pending promotion in database
+    // Calculate duration from dates
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const durationDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+
+    logStep("Received promotion data", { 
+      contentType, 
+      contentId, 
+      budget: budgetAmount, 
+      amountInCents,
+      startDate,
+      endDate,
+      durationDays,
+      objective 
+    });
+
+    // Create pending promotion in database with actual dates
     const { data: promotion, error: promotionError } = await supabaseClient
       .from('promotions')
       .insert({
@@ -92,8 +83,10 @@ serve(async (req) => {
         content_type: contentType,
         content_id: String(contentId),
         content_title: contentTitle,
-        budget: parseFloat(budget),
-        duration: parseInt(duration),
+        budget: budgetAmount,
+        duration: durationDays,
+        start_date: startDate,
+        end_date: endDate,
         objective: objective,
         targeting_data: targetingData,
         status: 'pending_payment'
@@ -119,13 +112,20 @@ serve(async (req) => {
 
     const origin = req.headers.get("origin") || "https://lovable.dev";
 
-    // Create checkout session
+    // Create checkout session with dynamic price_data instead of predefined price IDs
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       line_items: [
         {
-          price: selectedPackage.priceId,
+          price_data: {
+            currency: 'usd',
+            unit_amount: amountInCents,
+            product_data: {
+              name: `Promotion Campaign - ${contentTitle}`,
+              description: `${durationDays} day promotion for ${contentType} (${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()})`,
+            },
+          },
           quantity: 1,
         },
       ],
@@ -136,7 +136,10 @@ serve(async (req) => {
         user_id: user.id,
         promotion_id: promotion.id,
         content_type: contentType,
-        content_id: String(contentId)
+        content_id: String(contentId),
+        budget: String(budgetAmount),
+        start_date: startDate,
+        end_date: endDate
       },
     });
 
