@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Crown, Check, Zap, MessageSquare, Users, Calendar, Wrench, BarChart3, ArrowRight, X, TrendingUp, Video, Radio, Lock, Mail, DollarSign, Headphones, Gift } from 'lucide-react';
+import { Crown, Check, Zap, MessageSquare, Users, Calendar, Wrench, BarChart3, ArrowRight, X, TrendingUp, Video, Radio, Lock, Mail, DollarSign, Headphones, Gift, Ticket } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { RedeemPromoCodeModal } from '@/components/RedeemPromoCodeModal';
 
 const Upgrade: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('yearly');
+  const [isPromoModalOpen, setIsPromoModalOpen] = useState(false);
 
   const features = [
     {
@@ -314,6 +316,30 @@ const Upgrade: React.FC = () => {
           </div>
         </div>
 
+        {/* Promo Code Section */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 text-muted-foreground mb-4">
+            <Ticket className="h-5 w-5" />
+            <span>{t('upgrade.havePromoCode', 'Have a promo code?')}</span>
+          </div>
+          <div>
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={() => setIsPromoModalOpen(true)}
+              disabled={!user}
+            >
+              <Ticket className="h-4 w-4 mr-2" />
+              {t('upgrade.redeemCode', 'Redeem Promo Code')}
+            </Button>
+            {!user && (
+              <p className="text-xs text-muted-foreground mt-2">
+                {t('upgrade.signInToRedeem', 'Sign in to redeem a promo code')}
+              </p>
+            )}
+          </div>
+        </div>
+
         {/* FAQ Section */}
         <div className="text-center">
           <h3 className="text-xl font-semibold text-foreground mb-4">
@@ -327,6 +353,17 @@ const Upgrade: React.FC = () => {
           </Button>
         </div>
       </div>
+
+      {/* Promo Code Modal */}
+      <RedeemPromoCodeModal
+        isOpen={isPromoModalOpen}
+        onClose={() => setIsPromoModalOpen(false)}
+        onSuccess={() => {
+          setIsPromoModalOpen(false);
+          // Refresh the page to reflect new premium status
+          window.location.reload();
+        }}
+      />
     </div>
   );
 };
