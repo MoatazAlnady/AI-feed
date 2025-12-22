@@ -150,7 +150,7 @@ const Header: React.FC = () => {
         try {
           const { data, error } = await supabase
             .from('user_profiles')
-            .select('profile_photo, is_premium, premium_until')
+            .select('profile_photo, is_premium, premium_until, role_id, account_type')
             .eq('id', user.id)
             .single();
           
@@ -158,8 +158,9 @@ const Header: React.FC = () => {
             if (data.profile_photo) {
               setUserProfilePhoto(data.profile_photo);
             }
-            // Check premium status
-            const isActive = data.is_premium && (!data.premium_until || new Date(data.premium_until) > new Date());
+            // Check premium status - admins automatically get premium access
+            const isAdminUser = data.role_id === 1 || data.account_type === 'admin';
+            const isActive = isAdminUser || (data.is_premium && (!data.premium_until || new Date(data.premium_until) > new Date()));
             setIsPremium(isActive);
           }
         } catch (error) {
@@ -606,7 +607,7 @@ const Header: React.FC = () => {
                               {t('nav.guidelines')}
                             </div>
                           </Link>
-                           {isCreator && (
+                           {isCreator && !isPremium && (
                               <Link
                                 to="/upgrade"
                                 className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -863,7 +864,7 @@ const Header: React.FC = () => {
                     </>
                   )}
                   
-                  {isCreator && !isEmployerView && (
+                  {isCreator && !isEmployerView && !isPremium && (
                       <Link
                         to="/upgrade"
                         className="block px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
