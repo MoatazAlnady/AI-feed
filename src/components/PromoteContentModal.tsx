@@ -12,6 +12,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { MultiSelectCombobox } from '@/components/ui/multi-select-combobox';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format, differenceInDays, addDays } from 'date-fns';
+import { usePromotionAnalytics } from '@/hooks/usePromotionAnalytics';
+import CampaignSummary from './CampaignSummary';
 
 interface PromoteContentModalProps {
   isOpen: boolean;
@@ -585,73 +587,6 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
               </Alert>
             )}
 
-            {/* Expected Performance Panel */}
-            <div className="bg-gradient-to-r from-primary/10 via-secondary/5 to-accent/10 dark:from-primary/20 dark:via-secondary/10 dark:to-accent/20 rounded-xl p-6 mb-8 border border-primary/20">
-              <div className="flex items-center mb-4">
-                <TrendingUp className="h-5 w-5 text-primary mr-2" />
-                <h3 className="font-semibold text-gray-900 dark:text-white">Expected Campaign Performance</h3>
-              </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                <div className="text-center p-3 bg-white/50 dark:bg-slate-800/50 rounded-lg">
-                  <div className="flex items-center justify-center mb-1">
-                    <Eye className="h-4 w-4 text-primary mr-1" />
-                  </div>
-                  <div className="text-2xl font-bold text-primary">
-                    {calculateDetailedReach.impressions.toLocaleString()}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">Est. Impressions</div>
-                </div>
-                <div className="text-center p-3 bg-white/50 dark:bg-slate-800/50 rounded-lg">
-                  <div className="flex items-center justify-center mb-1">
-                    <MousePointer className="h-4 w-4 text-green-600 mr-1" />
-                  </div>
-                  <div className="text-2xl font-bold text-green-600">
-                    {calculateDetailedReach.clicks.toLocaleString()}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">Est. Clicks</div>
-                </div>
-                <div className="text-center p-3 bg-white/50 dark:bg-slate-800/50 rounded-lg">
-                  <div className="flex items-center justify-center mb-1">
-                    <DollarSign className="h-4 w-4 text-blue-600 mr-1" />
-                  </div>
-                  <div className="text-2xl font-bold text-blue-600">
-                    ${calculateDetailedReach.cpm}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">CPM</div>
-                </div>
-                <div className="text-center p-3 bg-white/50 dark:bg-slate-800/50 rounded-lg">
-                  <div className="flex items-center justify-center mb-1">
-                    <Zap className="h-4 w-4 text-purple-600 mr-1" />
-                  </div>
-                  <div className="text-2xl font-bold text-purple-600">
-                    ${calculateDetailedReach.cpc}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">CPC</div>
-                </div>
-              </div>
-              
-              <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1 border-t border-gray-200 dark:border-slate-700 pt-3">
-                <p className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  <span className="font-medium">Campaign:</span>
-                  <span className="ml-2">{format(startDate, 'MMM dd, yyyy')} → {format(endDate, 'MMM dd, yyyy')} ({duration} days)</span>
-                </p>
-                <p className="flex items-center">
-                  <Target className="h-4 w-4 mr-2" />
-                  <span className="font-medium">Daily Reach:</span>
-                  <span className="ml-2">~{calculateDetailedReach.impressionsPerDay.toLocaleString()} impressions/day</span>
-                </p>
-                <p className="flex items-center">
-                  <Users className="h-4 w-4 mr-2" />
-                  <span className="font-medium">Targeting Score:</span>
-                  <span className="ml-2">
-                    {calculateDetailedReach.targetingScore >= 1 ? 'Broad reach' : 
-                     calculateDetailedReach.targetingScore >= 0.7 ? 'Focused audience' : 'Highly targeted'}
-                  </span>
-                </p>
-              </div>
-            </div>
 
             <form onSubmit={handleSubmit}>
               {/* Targeting Mode Selection */}
@@ -1220,39 +1155,15 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                 )}
               </div>
 
-              {/* Campaign Summary */}
-              <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-6 mb-6">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                  <TrendingUp className="h-5 w-5 mr-2" />
-                  Campaign Summary
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                  <div>
-                    <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">
-                      ${parseFloat(formData.budget) || 0}
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Total Budget</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">
-                      {duration}
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Days</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">
-                      {calculateEstimatedReach().toLocaleString()}
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Est. Reach</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">
-                      ${((parseFloat(formData.budget) || 0) / duration).toFixed(2)}
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Daily Budget</div>
-                  </div>
-                </div>
-              </div>
+              {/* Comprehensive Campaign Summary */}
+              <CampaignSummary 
+                formData={formData}
+                duration={duration}
+                startDate={startDate}
+                endDate={endDate}
+                calculateDetailedReach={calculateDetailedReach}
+                objective={formData.objective}
+              />
 
               {/* Submit Button */}
               <div className="flex justify-end space-x-4">
