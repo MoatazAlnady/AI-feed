@@ -36,6 +36,7 @@ import AdminAnalytics from '../components/AdminAnalytics';
 import AuditLogViewer from '../components/AuditLogViewer';
 import DropdownListsManagement from '../components/DropdownListsManagement';
 import SupportTicketsManagement from '../components/SupportTicketsManagement';
+import { PromoCodesManagement } from '../components/PromoCodesManagement';
 import { supabase } from '../lib/supabase';
 import useI18nGuard from '../hooks/useI18nGuard';
 
@@ -377,6 +378,13 @@ const AdminDashboard: React.FC = () => {
         return (
           <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
             <DropdownListsManagement />
+          </div>
+        );
+
+      case 'promo-codes':
+        return (
+          <div className="bg-card text-card-foreground rounded-xl p-6 border border-border shadow-lg">
+            <PromoCodesManagement />
           </div>
         );
 
