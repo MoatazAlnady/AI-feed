@@ -424,9 +424,8 @@ const Tools: React.FC = () => {
                     <div className="flex items-center gap-1 mt-2 pt-2 border-t" onClick={(e) => e.stopPropagation()}>
                       <ToolActionButtons tool={tool} onDelete={handleToolDelete} />
                       <Button
-                        variant="ghost"
                         size="sm"
-                        className="h-7 px-2 ml-auto"
+                        className="h-7 px-2 ml-auto bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
                         onClick={(e) => {
                           e.stopPropagation();
                           if (!isPremium) {
@@ -487,8 +486,8 @@ const Tools: React.FC = () => {
                       <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-1">
                         <ToolActionButtons tool={tool} onDelete={handleToolDelete} />
                         <Button
-                          variant="ghost"
                           size="sm"
+                          className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
                           onClick={() => {
                             if (!isPremium) {
                               setShowPremiumModal(true);
@@ -499,7 +498,8 @@ const Tools: React.FC = () => {
                           }}
                         >
                           {!isPremium && <Lock className="h-3 w-3 mr-1" />}
-                          <TrendingUp className="h-4 w-4" />
+                          <TrendingUp className="h-4 w-4 mr-1" />
+                          <span>Promote</span>
                         </Button>
                       </div>
                     </div>
