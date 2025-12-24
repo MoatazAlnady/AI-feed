@@ -36,7 +36,7 @@ import AdminAnalytics from '../components/AdminAnalytics';
 import AuditLogViewer from '../components/AuditLogViewer';
 import DropdownListsManagement from '../components/DropdownListsManagement';
 import SupportTicketsManagement from '../components/SupportTicketsManagement';
-import { PromoCodesManagement } from '../components/PromoCodesManagement';
+import { PromoCodesManagement } from '@/components/PromoCodesManagement';
 import { supabase } from '../lib/supabase';
 import useI18nGuard from '../hooks/useI18nGuard';
 
