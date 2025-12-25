@@ -422,12 +422,10 @@ const Tools: React.FC = () => {
 
                     {/* Actions */}
                     <div className="flex items-center gap-1 mt-2 pt-2 border-t" onClick={(e) => e.stopPropagation()}>
-                      <ToolActionButtons tool={tool} onDelete={handleToolDelete} />
-                      <button
-                        className="p-1.5 rounded-md transition-all duration-200 border hover:bg-primary/10 bg-card border-border text-primary"
-                        title="Promote this tool"
-                        onClick={(e) => {
-                          e.stopPropagation();
+                      <ToolActionButtons 
+                        tool={tool} 
+                        onDelete={handleToolDelete}
+                        onPromote={() => {
                           if (!isPremium) {
                             setShowPremiumModal(true);
                             return;
@@ -435,10 +433,8 @@ const Tools: React.FC = () => {
                           setSelectedTool(tool);
                           setShowPromoteModal(true);
                         }}
-                      >
-                        {!isPremium && <Lock className="h-2 w-2" />}
-                        <TrendingUp className="h-3 w-3" />
-                      </button>
+                        isPremium={isPremium}
+                      />
                     </div>
                   </CardContent>
                 </Card>
@@ -484,11 +480,10 @@ const Tools: React.FC = () => {
                       </div>
                       <Badge variant="secondary">{tool.pricing}</Badge>
                       <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-1">
-                        <ToolActionButtons tool={tool} onDelete={handleToolDelete} />
-                        <button
-                          className="p-1.5 rounded-md transition-all duration-200 border hover:bg-primary/10 bg-card border-border text-primary"
-                          title="Promote this tool"
-                          onClick={() => {
+                        <ToolActionButtons 
+                          tool={tool} 
+                          onDelete={handleToolDelete}
+                          onPromote={() => {
                             if (!isPremium) {
                               setShowPremiumModal(true);
                               return;
@@ -496,10 +491,8 @@ const Tools: React.FC = () => {
                             setSelectedTool(tool);
                             setShowPromoteModal(true);
                           }}
-                        >
-                          {!isPremium && <Lock className="h-3 w-3" />}
-                          <TrendingUp className="h-4 w-4" />
-                        </button>
+                          isPremium={isPremium}
+                        />
                       </div>
                     </div>
                   </CardContent>
