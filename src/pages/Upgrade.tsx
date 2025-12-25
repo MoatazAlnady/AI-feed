@@ -276,6 +276,25 @@ const Upgrade: React.FC = () => {
               <p className="text-xs text-center text-muted-foreground">
                 {t('upgrade.guarantee', '30-day money-back guarantee')}
               </p>
+              
+              {/* Promo Code Link - Visible in the card */}
+              <div className="mt-4 pt-4 border-t border-border text-center">
+                <Button 
+                  variant="link" 
+                  size="sm"
+                  onClick={() => setIsPromoModalOpen(true)}
+                  disabled={!user}
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  <Ticket className="h-4 w-4 mr-1" />
+                  {t('upgrade.havePromoCode', 'Have a promo code?')}
+                </Button>
+                {!user && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {t('upgrade.signInToRedeem', 'Sign in to redeem a promo code')}
+                  </p>
+                )}
+              </div>
             </CardContent>
           </Card>
         </div>
