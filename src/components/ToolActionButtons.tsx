@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Edit, Trash2, ExternalLink, TrendingUp } from 'lucide-react';
+import { Edit, Trash2, ExternalLink, TrendingUp, Lock } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -24,12 +24,16 @@ interface ToolActionButtonsProps {
     user_id?: string;
   };
   onDelete?: () => void;
+  onPromote?: () => void;
+  isPremium?: boolean;
   className?: string;
 }
 
 const ToolActionButtons: React.FC<ToolActionButtonsProps> = ({ 
   tool, 
   onDelete,
+  onPromote,
+  isPremium = false,
   className = '' 
 }) => {
   const { user, isAdmin } = useAuth();
@@ -97,6 +101,18 @@ const ToolActionButtons: React.FC<ToolActionButtonsProps> = ({
           <ExternalLink className="h-4 w-4" />
         </a>
 
+
+        {/* Promote Button - Before Delete */}
+        {onPromote && (
+          <button
+            onClick={onPromote}
+            className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg relative"
+            title="Promote Tool"
+          >
+            {!isPremium && <Lock className="h-2 w-2 absolute top-1 right-1" />}
+            <TrendingUp className="h-4 w-4" />
+          </button>
+        )}
 
         {/* Delete Button - Show for admins only */}
         {canDelete && (
