@@ -423,9 +423,9 @@ const Tools: React.FC = () => {
                     {/* Actions */}
                     <div className="flex items-center gap-1 mt-2 pt-2 border-t" onClick={(e) => e.stopPropagation()}>
                       <ToolActionButtons tool={tool} onDelete={handleToolDelete} />
-                      <Button
-                        size="sm"
-                        className="h-7 px-2 ml-auto bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
+                      <button
+                        className="p-1.5 rounded-md transition-all duration-200 border hover:bg-primary/10 bg-card border-border text-primary"
+                        title="Promote this tool"
                         onClick={(e) => {
                           e.stopPropagation();
                           if (!isPremium) {
@@ -436,9 +436,9 @@ const Tools: React.FC = () => {
                           setShowPromoteModal(true);
                         }}
                       >
-                        {!isPremium && <Lock className="h-2 w-2 mr-0.5" />}
+                        {!isPremium && <Lock className="h-2 w-2" />}
                         <TrendingUp className="h-3 w-3" />
-                      </Button>
+                      </button>
                     </div>
                   </CardContent>
                 </Card>
@@ -485,9 +485,9 @@ const Tools: React.FC = () => {
                       <Badge variant="secondary">{tool.pricing}</Badge>
                       <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-1">
                         <ToolActionButtons tool={tool} onDelete={handleToolDelete} />
-                        <Button
-                          size="sm"
-                          className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
+                        <button
+                          className="p-1.5 rounded-md transition-all duration-200 border hover:bg-primary/10 bg-card border-border text-primary"
+                          title="Promote this tool"
                           onClick={() => {
                             if (!isPremium) {
                               setShowPremiumModal(true);
@@ -497,10 +497,9 @@ const Tools: React.FC = () => {
                             setShowPromoteModal(true);
                           }}
                         >
-                          {!isPremium && <Lock className="h-3 w-3 mr-1" />}
-                          <TrendingUp className="h-4 w-4 mr-1" />
-                          <span>Promote</span>
-                        </Button>
+                          {!isPremium && <Lock className="h-3 w-3" />}
+                          <TrendingUp className="h-4 w-4" />
+                        </button>
                       </div>
                     </div>
                   </CardContent>
