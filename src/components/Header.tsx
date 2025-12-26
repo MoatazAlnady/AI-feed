@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Search, Zap, Plus, Settings, User, LogOut, Bell, MessageCircle, Building, BarChart3, Moon, Sun, Briefcase, Users, Crown, BookOpen, Shield, LayoutDashboard, Flag, Headphones } from 'lucide-react';
+import { Menu, X, Search, Zap, Plus, Settings, User, LogOut, Bell, MessageCircle, Building, BarChart3, Moon, Sun, Briefcase, Users, Crown, BookOpen, Shield, LayoutDashboard, Flag, Headphones, CreditCard } from 'lucide-react';
 import ChatDock from './ChatDock';
 import GlobalSearch from './GlobalSearch';
 import { useTranslation } from 'react-i18next';
@@ -631,6 +631,29 @@ const Header: React.FC = () => {
                               <div className="flex items-center">
                                 <Headphones className="h-4 w-4 mr-2 text-green-500 dark:text-green-400" />
                                 Contact Support
+                              </div>
+                            </button>
+                          )}
+                          {/* Manage Subscription - Premium Only */}
+                          {isPremium && (
+                            <button
+                              onClick={async () => {
+                                setShowUserMenu(false);
+                                try {
+                                  const { data, error } = await supabase.functions.invoke('customer-portal');
+                                  if (error) throw error;
+                                  if (data?.url) {
+                                    window.open(data.url, '_blank');
+                                  }
+                                } catch (err) {
+                                  console.error('Error opening customer portal:', err);
+                                }
+                              }}
+                              className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                            >
+                              <div className="flex items-center">
+                                <CreditCard className="h-4 w-4 mr-2 text-orange-500 dark:text-orange-400" />
+                                Manage Subscription
                               </div>
                             </button>
                           )}

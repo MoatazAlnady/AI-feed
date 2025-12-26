@@ -49,7 +49,8 @@ const ConnectionRequests: React.FC = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      // First fetch the connection requests
+      const { data: requestsData, error: requestsError } = await supabase
         .from('connection_requests')
         .select(`
           id,
@@ -58,21 +59,38 @@ const ConnectionRequests: React.FC = () => {
           status,
           message,
           created_at,
-          updated_at,
-          user_profiles!requester_id (
-            id,
-            full_name,
-            profile_photo,
-            job_title,
-            company,
-            handle
-          )
+          updated_at
         `)
         .eq('recipient_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (!error && data) {
-        const formattedRequests: ConnectionRequest[] = data.map(request => ({
+      if (requestsError) {
+        console.error('Error fetching requests:', requestsError);
+        setLoading(false);
+        return;
+      }
+
+      if (!requestsData || requestsData.length === 0) {
+        setRequests([]);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch profiles separately using user_profiles table directly
+      const requesterIds = requestsData.map(r => r.requester_id);
+      
+      const { data: profiles, error: profilesError } = await supabase
+        .from('user_profiles')
+        .select('id, full_name, profile_photo, job_title, company, handle')
+        .in('id', requesterIds);
+
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+      }
+
+      const formattedRequests: ConnectionRequest[] = requestsData.map(request => {
+        const profile = profiles?.find(p => p.id === request.requester_id);
+        return {
           id: request.id,
           requester_id: request.requester_id,
           recipient_id: request.recipient_id,
@@ -80,18 +98,25 @@ const ConnectionRequests: React.FC = () => {
           message: request.message,
           created_at: request.created_at,
           updated_at: request.updated_at,
-          requester: (request as any).user_profiles ? {
-            id: (request as any).user_profiles.id,
-            full_name: (request as any).user_profiles.full_name || 'Deleted User',
-            profile_photo: (request as any).user_profiles.profile_photo,
-            job_title: (request as any).user_profiles.job_title,
-            company: (request as any).user_profiles.company,
-            handle: (request as any).user_profiles.handle
-          } : undefined
-        }));
-        
-        setRequests(formattedRequests);
-      }
+          requester: profile ? {
+            id: profile.id,
+            full_name: profile.full_name || 'Unknown User',
+            profile_photo: profile.profile_photo,
+            job_title: profile.job_title,
+            company: profile.company,
+            handle: profile.handle
+          } : {
+            id: request.requester_id,
+            full_name: 'Deleted User',
+            profile_photo: undefined,
+            job_title: undefined,
+            company: undefined,
+            handle: undefined
+          }
+        };
+      });
+      
+      setRequests(formattedRequests);
     } catch (error) {
       console.error('Error fetching connection requests:', error);
     } finally {

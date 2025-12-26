@@ -48,6 +48,7 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
 
     setLoading(true);
     try {
+      // Fetch connection requests with requester profiles using direct join
       const { data, error } = await supabase
         .from('connection_requests')
         .select(`
@@ -62,21 +63,38 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
 
       if (error) throw error;
 
-      // Fetch requester profiles separately
+      // Fetch profiles separately using user_profiles table directly
       const requesterIds = data?.map(r => r.requester_id) || [];
-      const { data: profiles } = await supabase
-        .from('user_profiles_safe')
+      
+      if (requesterIds.length === 0) {
+        setRequests([]);
+        return;
+      }
+
+      const { data: profiles, error: profilesError } = await supabase
+        .from('user_profiles')
         .select('id, full_name, profile_photo, job_title')
         .in('id', requesterIds);
 
-      const requestsWithProfiles = data?.map(request => ({
-        ...request,
-        requester: profiles?.find(p => p.id === request.requester_id) || {
-          full_name: 'Deleted User',
-          profile_photo: undefined,
-          job_title: undefined
-        }
-      })) || [];
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+      }
+
+      const requestsWithProfiles = data?.map(request => {
+        const profile = profiles?.find(p => p.id === request.requester_id);
+        return {
+          ...request,
+          requester: profile ? {
+            full_name: profile.full_name || 'Unknown User',
+            profile_photo: profile.profile_photo,
+            job_title: profile.job_title
+          } : {
+            full_name: 'Deleted User',
+            profile_photo: undefined,
+            job_title: undefined
+          }
+        };
+      }) || [];
 
       setRequests(requestsWithProfiles);
     } catch (error) {
