@@ -634,6 +634,19 @@ const Header: React.FC = () => {
                               </div>
                             </button>
                           )}
+                          {/* Professional Dashboard - Premium Only */}
+                          {isPremium && (
+                            <Link
+                              to="/professional-dashboard"
+                              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                              onClick={() => setShowUserMenu(false)}
+                            >
+                              <div className="flex items-center">
+                                <LayoutDashboard className="h-4 w-4 mr-2 text-indigo-500 dark:text-indigo-400" />
+                                Professional Dashboard
+                              </div>
+                            </Link>
+                          )}
                           {/* Manage Subscription - Premium Only */}
                           {isPremium && (
                             <button
