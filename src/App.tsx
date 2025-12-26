@@ -48,6 +48,7 @@ import InvitationAccept from "./pages/InvitationAccept";
 import EmployerUpgrade from "./pages/EmployerUpgrade";
 import Unsubscribe from "./pages/Unsubscribe";
 import PromotionSuccess from "./pages/PromotionSuccess";
+import ProfessionalDashboard from "./pages/ProfessionalDashboard";
 
 const queryClient = new QueryClient();
 
@@ -122,6 +123,7 @@ const App = () => (
                   <Route path="invite/:token" element={<InvitationAccept />} />
                   <Route path="unsubscribe" element={<Unsubscribe />} />
                   <Route path="promotion-success" element={<PromotionSuccess />} />
+                  <Route path="professional-dashboard" element={<ProfessionalDashboard />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
