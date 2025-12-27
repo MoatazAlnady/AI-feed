@@ -57,7 +57,7 @@ const CreatorSubscriptionManager: React.FC = () => {
     benefits: ''
   });
 
-  const PLATFORM_FEE = 15; // 15% platform fee
+  const PLATFORM_FEE = 5; // 5% platform fee
 
   useEffect(() => {
     if (user) {
@@ -365,16 +365,26 @@ const CreatorSubscriptionManager: React.FC = () => {
                 />
               </div>
               {formData.price && (
-                <div className="p-4 bg-muted rounded-lg">
-                  <p className="text-sm">
-                    <strong>Price:</strong> ${parseFloat(formData.price || '0').toFixed(2)}/month
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Platform fee ({PLATFORM_FEE}%): ${(parseFloat(formData.price || '0') * PLATFORM_FEE / 100).toFixed(2)}
-                  </p>
-                  <p className="text-sm text-green-600 dark:text-green-400">
-                    You receive: ${(parseFloat(formData.price || '0') * (100 - PLATFORM_FEE) / 100).toFixed(2)}/subscriber
-                  </p>
+                <div className="p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-medium">Price per subscriber:</p>
+                    <p className="text-lg font-bold">${parseFloat(formData.price || '0').toFixed(2)}/month</p>
+                  </div>
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span>Platform fee ({PLATFORM_FEE}%):</span>
+                    <span className="text-orange-500">-${(parseFloat(formData.price || '0') * PLATFORM_FEE / 100).toFixed(2)}</span>
+                  </div>
+                  <div className="border-t border-green-500/20 mt-2 pt-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold text-green-600 dark:text-green-400">You receive per subscriber:</span>
+                      <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                        ${(parseFloat(formData.price || '0') * (100 - PLATFORM_FEE) / 100).toFixed(2)}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      That's {100 - PLATFORM_FEE}% of each subscription payment directly to you!
+                    </p>
+                  </div>
                 </div>
               )}
               <div className="flex gap-3">
