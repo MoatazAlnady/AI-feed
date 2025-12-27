@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent } from '@/components/ui/card';
 import { AdCampaignManager } from '@/components/AdCampaignManager';
 import { AdAnalytics } from '@/components/AdAnalytics';
 import CreatorSubscriptionManager from '@/components/CreatorSubscriptionManager';
 import CreatorNewsletterManager from '@/components/CreatorNewsletterManager';
-import { LayoutDashboard, Megaphone, BarChart3, Users, Mail, Crown } from 'lucide-react';
+import CreatorAdRevenue from '@/components/CreatorAdRevenue';
+import { LayoutDashboard, Megaphone, BarChart3, Users, Mail, Crown, DollarSign } from 'lucide-react';
 import { toast } from 'sonner';
 import SEOHead from '@/components/SEOHead';
 
@@ -50,7 +50,6 @@ export default function ProfessionalDashboard() {
       />
       
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10">
@@ -64,9 +63,8 @@ export default function ProfessionalDashboard() {
           </p>
         </div>
 
-        {/* Main Content */}
         <Tabs defaultValue="campaigns" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
             <TabsTrigger value="campaigns" className="flex items-center gap-2">
               <Megaphone className="h-4 w-4" />
               <span className="hidden sm:inline">Campaigns</span>
@@ -74,6 +72,10 @@ export default function ProfessionalDashboard() {
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">Analytics</span>
+            </TabsTrigger>
+            <TabsTrigger value="ad-revenue" className="flex items-center gap-2">
+              <DollarSign className="h-4 w-4" />
+              <span className="hidden sm:inline">Ad Revenue</span>
             </TabsTrigger>
             <TabsTrigger value="subscribers" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
@@ -91,6 +93,10 @@ export default function ProfessionalDashboard() {
 
           <TabsContent value="analytics" className="mt-6">
             <AdAnalytics />
+          </TabsContent>
+
+          <TabsContent value="ad-revenue" className="mt-6">
+            <CreatorAdRevenue />
           </TabsContent>
 
           <TabsContent value="subscribers" className="mt-6">
