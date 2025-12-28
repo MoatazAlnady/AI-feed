@@ -16,6 +16,7 @@ import CreatePostModal from '../components/CreatePostModal';
 import HashtagSystem from '../components/HashtagSystem';
 import ChatDock from '../components/ChatDockProvider';
 import NewsletterPopup from '../components/NewsletterPopup';
+import GoogleAd from '../components/GoogleAd';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 
@@ -220,6 +221,15 @@ const Newsfeed: React.FC = () => {
 
               {/* Hashtag System */}
               <HashtagSystem onHashtagClick={handleHashtagClick} />
+
+              {/* Sidebar Ad - 100% platform revenue (no creatorId) */}
+              <div className="mt-6">
+                <GoogleAd 
+                  adFormat="display" 
+                  className="min-h-[250px] rounded-xl overflow-hidden"
+                  // No contentId or creatorId = 100% platform revenue
+                />
+              </div>
             </div>
 
             {/* Main Content */}

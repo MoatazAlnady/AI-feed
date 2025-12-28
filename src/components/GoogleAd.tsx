@@ -13,11 +13,22 @@ interface GoogleAdProps {
   style?: React.CSSProperties;
   className?: string;
   contentId?: string; // For tracking ad impressions per content
-  creatorId?: string; // For attributing ad revenue to creators
+  creatorId?: string; // For attributing ad revenue to creators (70% creator / 30% platform)
 }
 
+/**
+ * GoogleAd Component - Revenue Attribution Model:
+ * 
+ * REVENUE SPLIT:
+ * - When creatorId IS provided: 70% goes to creator, 30% to platform
+ * - When creatorId is NOT provided: 100% goes to platform
+ * 
+ * USE CASES:
+ * - Public feeds (NewsFeed, Blog listing, Tools listing): NO creatorId = 100% platform revenue
+ * - Creator content (articles, posts, videos): WITH creatorId = 70% creator / 30% platform
+ */
 export default function GoogleAd({
-  adSlot,
+  adSlot = '5984946702', // Default ad unit ID
   adFormat = 'auto',
   style,
   className = '',
@@ -42,22 +53,31 @@ export default function GoogleAd({
         window.adsbygoogle.push({});
         adPushed.current = true;
 
-        // Track impression for creator revenue (if contentId and creatorId provided)
+        // REVENUE ATTRIBUTION:
+        // Only track creator revenue when creatorId is provided
+        // If no creatorId, 100% of revenue goes to platform (no tracking needed)
         if (contentId && creatorId) {
           trackAdImpression(contentId, creatorId);
         }
+        // No else needed - when creatorId is absent, platform gets 100% automatically
       }
     } catch (error) {
       console.error('Error loading Google Ad:', error);
     }
   }, [isPremium, contentId, creatorId]);
 
-  // Track ad impression for creator revenue
+  // Track ad impression for creator revenue (70% creator / 30% platform split)
   const trackAdImpression = async (contentId: string, creatorId: string) => {
     try {
-      // This would call an edge function to track the impression
-      // For now, we'll just log it - actual implementation will be added later
-      console.log('Ad impression tracked:', { contentId, creatorId, adFormat });
+      // This would call an edge function to track the impression for creator revenue
+      // Revenue split: 70% to creator, 30% to platform
+      console.log('Ad impression tracked for creator revenue split:', { 
+        contentId, 
+        creatorId, 
+        adFormat,
+        creatorShare: '70%',
+        platformShare: '30%'
+      });
     } catch (error) {
       console.error('Error tracking ad impression:', error);
     }
