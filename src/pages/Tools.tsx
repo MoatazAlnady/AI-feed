@@ -8,6 +8,7 @@ import PromoteContentModal from '../components/PromoteContentModal';
 import ToolStars from '../components/ToolStars';
 import ToolActionButtons from '../components/ToolActionButtons';
 import SEOHead from '../components/SEOHead';
+import { DisplayAd } from '@/components/GoogleAd';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -356,6 +357,11 @@ const Tools: React.FC = () => {
           <p className="text-sm text-muted-foreground mb-4">
             {t('tools.showing', { count: filteredAndSortedTools.length })}
           </p>
+
+          {/* Top Ad */}
+          <div className="mb-6">
+            <DisplayAd />
+          </div>
 
           {/* Empty State */}
           {tools.length === 0 ? (

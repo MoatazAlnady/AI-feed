@@ -9,11 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { User, Calendar, MapPin, Phone, Globe } from 'lucide-react';
 
-interface OAuthProfileCompletionProps {
-  isOpen: boolean;
-  onComplete: () => void;
-}
-
 const countriesWithCodes = [
   { name: 'United States', code: '+1' },
   { name: 'United Kingdom', code: '+44' },
@@ -72,18 +67,25 @@ const countriesWithCodes = [
   { name: 'Peru', code: '+51' },
   { name: 'Venezuela', code: '+58' },
   { name: 'Ecuador', code: '+593' },
+  { name: 'Palestine', code: '+970' },
+  { name: 'Jordan', code: '+962' },
+  { name: 'Lebanon', code: '+961' },
+  { name: 'Iraq', code: '+964' },
+  { name: 'Kuwait', code: '+965' },
+  { name: 'Qatar', code: '+974' },
+  { name: 'Bahrain', code: '+973' },
+  { name: 'Oman', code: '+968' },
 ].sort((a, b) => a.name.localeCompare(b.name));
 
-const genderOptions = ['Male', 'Female', 'Non-binary', 'Prefer not to say'];
+const genderOptions = ['Male', 'Female'];
 
 const accountTypes = [
-  { value: 'personal', label: 'Personal', description: 'For individual users' },
   { value: 'creator', label: 'Creator', description: 'For content creators' },
-  { value: 'business', label: 'Business', description: 'For companies and organizations' },
+  { value: 'employer', label: 'Employer', description: 'For companies' },
 ];
 
-export default function OAuthProfileCompletion({ isOpen, onComplete }: OAuthProfileCompletionProps) {
-  const { user } = useAuth();
+export default function OAuthProfileCompletion() {
+  const { user, profileComplete, setProfileComplete } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     full_name: '',
@@ -93,8 +95,11 @@ export default function OAuthProfileCompletion({ isOpen, onComplete }: OAuthProf
     city: '',
     phone_country_code: '',
     phone: '',
-    account_type: 'personal',
+    account_type: 'creator',
   });
+
+  // Only show for logged-in users with incomplete profiles
+  const isOpen = !!user && !profileComplete;
 
   useEffect(() => {
     if (user && isOpen) {
@@ -157,6 +162,10 @@ export default function OAuthProfileCompletion({ isOpen, onComplete }: OAuthProf
       toast.error('Please enter your city');
       return;
     }
+    if (!formData.phone.trim()) {
+      toast.error('Please enter your phone number');
+      return;
+    }
 
     setLoading(true);
     try {
@@ -167,20 +176,19 @@ export default function OAuthProfileCompletion({ isOpen, onComplete }: OAuthProf
           email: user.email,
           full_name: formData.full_name.trim(),
           birth_date: formData.birth_date,
+          age: calculateAge(formData.birth_date),
           gender: formData.gender,
           country: formData.country,
           city: formData.city.trim(),
-          phone_country_code: formData.phone_country_code,
-          phone: formData.phone.trim() || null,
+          phone: `${formData.phone_country_code} ${formData.phone.trim()}`,
           account_type: formData.account_type,
-          profile_completed: true,
           updated_at: new Date().toISOString(),
         }, { onConflict: 'id' });
 
       if (error) throw error;
 
       toast.success('Profile completed successfully!');
-      onComplete();
+      setProfileComplete(true);
     } catch (error: any) {
       console.error('Error completing profile:', error);
       toast.error(error.message || 'Failed to complete profile');
@@ -188,6 +196,8 @@ export default function OAuthProfileCompletion({ isOpen, onComplete }: OAuthProf
       setLoading(false);
     }
   };
+
+  if (!isOpen) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
@@ -279,11 +289,11 @@ export default function OAuthProfileCompletion({ isOpen, onComplete }: OAuthProf
             />
           </div>
 
-          {/* Phone (Optional) */}
+          {/* Phone */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
               <Phone className="h-4 w-4" />
-              Phone Number (Optional)
+              Phone Number *
             </Label>
             <div className="flex gap-2">
               <Input
@@ -297,26 +307,27 @@ export default function OAuthProfileCompletion({ isOpen, onComplete }: OAuthProf
                 onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                 placeholder="Phone number"
                 className="flex-1"
+                required
               />
             </div>
           </div>
 
           {/* Account Type */}
           <div className="space-y-2">
-            <Label>Account Type</Label>
-            <div className="grid grid-cols-3 gap-2">
+            <Label>Account Type *</Label>
+            <div className="grid grid-cols-2 gap-3">
               {accountTypes.map(type => (
                 <button
                   key={type.value}
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, account_type: type.value }))}
-                  className={`p-3 rounded-lg border text-center transition-all ${
+                  className={`p-4 rounded-lg border text-center transition-all ${
                     formData.account_type === type.value
                       ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
                       : 'border-border hover:border-primary/50'
                   }`}
                 >
-                  <div className="font-medium text-sm">{type.label}</div>
+                  <div className="font-medium">{type.label}</div>
                   <div className="text-xs text-muted-foreground mt-1">{type.description}</div>
                 </button>
               ))}

@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import ProfileHoverCard from '@/components/ProfileHoverCard';
 import ReportContentModal from '@/components/ReportContentModal';
 import SEOHead from '@/components/SEOHead';
+import GoogleAd, { DisplayAd } from '@/components/GoogleAd';
 
 interface Article {
   id: string;
@@ -223,6 +224,11 @@ const Blog: React.FC = () => {
                 </div>
               </div>
             )}
+
+            {/* Ad between featured and grid */}
+            <div className="my-8">
+              <DisplayAd />
+            </div>
 
             {/* Blog Posts Grid */}
             {articles.length > 1 && (
