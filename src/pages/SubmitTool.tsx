@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Upload, Link, Tag, DollarSign, Star, Send, Plus, Minus, Download, FileText, AlertCircle } from 'lucide-react';
-import { generateCSVTemplate } from '../utils/csvTemplate';
+import { Upload, Link, Tag, DollarSign, Star, Send, Plus, Minus, FileText, AlertCircle, FileSpreadsheet } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { usePremiumStatus } from '../hooks/usePremiumStatus';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,6 +9,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ChatDock from '../components/ChatDock';
 import PremiumUpgradeModal from '../components/PremiumUpgradeModal';
 import AuthModal from '../components/AuthModal';
+import CsvImportModal from '../components/CsvImportModal';
 
 const SubmitTool: React.FC = () => {
   const { t } = useTranslation();
@@ -23,7 +23,7 @@ const SubmitTool: React.FC = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [subCategories, setSubCategories] = useState<any[]>([]);
-  const [submissionMode, setSubmissionMode] = useState<'form' | 'csv'>('form');
+  const [showCsvModal, setShowCsvModal] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -480,7 +480,7 @@ const SubmitTool: React.FC = () => {
     setCsvFile(null);
     setCsvData([]);
     setCsvError('');
-    setSubmissionMode('form');
+    setShowCsvModal(false);
   };
 
   if (submitted) {
@@ -564,698 +564,461 @@ const SubmitTool: React.FC = () => {
 
         {/* Submission Mode Toggle - Hide in edit mode */}
         {!isEditMode && (
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('submitTool.chooseMethod')}</h3>
+        <div className="bg-white dark:bg-card rounded-2xl shadow-sm p-6 mb-8">
+          <h3 className="text-lg font-semibold text-foreground mb-4">{t('submitTool.chooseMethod')}</h3>
           <div className="flex flex-wrap gap-4">
-            <button
-              onClick={() => setSubmissionMode('form')}
-              className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-colors ${
-                submissionMode === 'form'
-                  ? 'bg-gradient-primary text-white shadow-md'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600'
-              }`}
-            >
+            <div className="flex items-center space-x-2 px-6 py-3 rounded-xl font-medium bg-gradient-primary text-white shadow-md">
               <FileText className="h-5 w-5" />
               <span>{t('submitTool.singleToolForm')}</span>
-            </button>
+            </div>
             <button
-              onClick={() => setSubmissionMode('csv')}
-              className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-colors ${
-                submissionMode === 'csv'
-                  ? 'bg-gradient-primary text-white shadow-md'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600'
-              }`}
-            >
-              <Upload className="h-5 w-5" />
-              <span>{t('submitTool.csvUpload')}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                const csvContent = generateCSVTemplate();
-                const blob = new Blob([csvContent], { type: 'text/csv' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'ai-tools-template.csv';
-                a.click();
-                window.URL.revokeObjectURL(url);
-              }}
+              onClick={() => setShowCsvModal(true)}
               className="flex items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-colors bg-secondary/10 text-secondary-foreground hover:bg-secondary/20 border border-secondary/20"
             >
-              <Download className="h-5 w-5" />
-              <span>{t('submitTool.downloadSample', 'Download Sample CSV')}</span>
+              <FileSpreadsheet className="h-5 w-5" />
+              <span>{t('submitTool.bulkImport', 'Bulk Import')}</span>
             </button>
           </div>
         </div>
-
         )}
 
-        {(submissionMode === 'form' || isEditMode) ? (
-          /* Individual Tool Form */
-          <form 
-            onSubmit={handleFormSubmit} 
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
-                e.preventDefault();
-              }
-            }}
-            className="bg-white rounded-2xl shadow-sm p-8"
-          >
-            {/* Tool Name */}
-            <div className="mb-6">
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                {t('submitTool.form.name')} *
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                placeholder={t('submitTool.form.namePlaceholder')}
-              />
-            </div>
+        {/* Individual Tool Form */}
+        <form 
+          onSubmit={handleFormSubmit} 
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+              e.preventDefault();
+            }
+          }}
+          className="bg-white dark:bg-card rounded-2xl shadow-sm p-8"
+        >
+          {/* Tool Name */}
+          <div className="mb-6">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t('submitTool.form.name')} *
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              required
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+              placeholder={t('submitTool.form.namePlaceholder')}
+            />
+          </div>
 
-            {/* Description */}
-            <div className="mb-6">
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                {t('submitTool.form.description')} *
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                required
-                rows={4}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-                placeholder={t('submitTool.form.descriptionPlaceholder')}
-              />
-            </div>
+          {/* Description */}
+          <div className="mb-6">
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t('submitTool.form.description')} *
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              required
+              rows={4}
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none bg-background"
+              placeholder={t('submitTool.form.descriptionPlaceholder')}
+            />
+          </div>
 
-            {/* Category, Subcategory & Tool Type */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <div>
-                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-                  Category *
-                </label>
-                <div className="relative">
-                  <select
-                    id="category"
-                    name="category"
-                    value={formData.category}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white appearance-none"
-                    style={{ 
-                      backgroundImage: `url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'><path fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /></svg>")`,
-                      backgroundRepeat: 'no-repeat',
-                      backgroundPosition: 'right 12px center',
-                      backgroundSize: '16px'
-                    }}
-                  >
-                    <option value="">Select a category</option>
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.name}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label htmlFor="subcategory" className="block text-sm font-medium text-gray-700 mb-2">
-                  Subcategory *
-                </label>
+          {/* Category, Subcategory & Tool Type */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div>
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Category *
+              </label>
+              <div className="relative">
                 <select
-                  id="subcategory"
-                  name="subcategory"
-                  value={formData.subcategory}
+                  id="category"
+                  name="category"
+                  value={formData.category}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  disabled={!formData.category}
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background appearance-none"
+                  style={{ 
+                    backgroundImage: `url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'><path fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /></svg>")`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'right 12px center',
+                    backgroundSize: '16px'
+                  }}
                 >
-                  <option value="">Select a subcategory</option>
-                  {formData.category && getSubCategoriesForCategory(
-                    categories.find(cat => cat.name === formData.category)?.id || ''
-                  ).map((subcategory) => (
-                    <option key={subcategory.id} value={subcategory.name}>
-                      {subcategory.name}
+                  <option value="">Select a category</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.name}>
+                      {category.name}
                     </option>
                   ))}
                 </select>
               </div>
-                <div>
-                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                   Tool Type *
-                 </label>
-                 <div className="relative tool-type-dropdown">
-                   <button
-                     type="button"
-                     onClick={() => setFormData(prev => ({ ...prev, showToolTypeDropdown: !prev.showToolTypeDropdown }))}
-                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 text-left flex items-center justify-between"
-                   >
-                     <span className={formData.toolType.length === 0 ? 'text-gray-500 dark:text-gray-400' : 'text-gray-900 dark:text-white'}>
-                       {formData.toolType.length > 0 ? `${formData.toolType.length} selected` : 'Select tool types'}
-                     </span>
-                     <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                     </svg>
-                   </button>
-                   {formData.showToolTypeDropdown && (
-                     <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl shadow-lg">
-                       {['Web App', 'Desktop App', 'Mobile App', 'API', 'Browser Extension', 'Plugin', 'Cloud Service', 'Library/Framework'].map((type) => (
-                         <label key={type} className="flex items-center px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer">
-                           <input
-                             type="checkbox"
-                             checked={formData.toolType.includes(type)}
-                             onChange={(e) => {
-                               const newTypes = e.target.checked 
-                                 ? [...formData.toolType, type]
-                                 : formData.toolType.filter(t => t !== type);
-                               setFormData(prev => ({ ...prev, toolType: newTypes }));
-                             }}
-                             className="mr-3 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                           />
-                           <span className="text-gray-900 dark:text-gray-200">{type}</span>
-                         </label>
-                       ))}
-                     </div>
-                   )}
-                 </div>
-               </div>
             </div>
-
-            {/* Free Plan/Credits */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Free Plan / Free Credits Available? *
-                </label>
-                <div className="flex space-x-4">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="freePlan"
-                      value="Yes"
-                      checked={formData.freePlan === 'Yes'}
-                      onChange={handleInputChange}
-                      className="mr-2 text-primary-600 focus:ring-primary-500"
-                    />
-                    <span className="text-gray-700">Yes</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="freePlan"
-                      value="No"
-                      checked={formData.freePlan === 'No'}
-                      onChange={handleInputChange}
-                      className="mr-2 text-primary-600 focus:ring-primary-500"
-                    />
-                    <span className="text-gray-700">No</span>
-                  </label>
-                </div>
-              </div>
-              <div></div>
-            </div>
-
-            {/* Website URL */}
-            <div className="mb-6">
-              <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-2">
-                Website URL *
+            <div>
+              <label htmlFor="subcategory" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Subcategory *
               </label>
-              <div className="relative">
-                <Link className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="url"
-                  id="website"
-                  name="website"
-                  value={formData.website}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="https://example.com"
-                />
-              </div>
+              <select
+                id="subcategory"
+                name="subcategory"
+                value={formData.subcategory}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+                disabled={!formData.category}
+              >
+                <option value="">Select subcategory</option>
+                {formData.category && categories.find(c => c.name === formData.category) && 
+                  getSubCategoriesForCategory(categories.find(c => c.name === formData.category)?.id).map((sub: any) => (
+                    <option key={sub.id} value={sub.name}>
+                      {sub.name}
+                    </option>
+                  ))
+                }
+              </select>
             </div>
-
-            {/* Logo URL */}
-            <div className="mb-6">
-              <label htmlFor="logoUrl" className="block text-sm font-medium text-gray-700 mb-2">
-                Logo URL (Optional)
+            <div className="relative tool-type-dropdown">
+              <label htmlFor="toolType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Tool Type *
               </label>
-              <div className="relative">
-                <Link className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="url"
-                  id="logoUrl"
-                  name="logoUrl"
-                  value={formData.logoUrl}
-                  onChange={handleInputChange}
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="https://example.com/logo.png"
-                />
-              </div>
-              {formData.logoUrl && (
-                <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Logo Preview:</p>
-                  <img 
-                    src={formData.logoUrl} 
-                    alt="Tool logo preview"
-                    className="w-16 h-16 object-contain rounded-lg border border-gray-200 dark:border-gray-600"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                      target.nextElementSibling!.textContent = 'Failed to load logo';
-                    }}
-                  />
-                  <span className="text-sm text-red-500"></span>
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, showToolTypeDropdown: !prev.showToolTypeDropdown }))}
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background text-left flex justify-between items-center"
+              >
+                <span className="truncate">
+                  {formData.toolType.length > 0 ? formData.toolType.join(', ') : 'Select tool types'}
+                </span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {formData.showToolTypeDropdown && (
+                <div className="absolute z-10 mt-1 w-full bg-background border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                  {['Web App', 'Desktop App', 'Mobile App', 'Chrome Extension', 'VS Code Extension', 'API', 'CLI Tool', 'Plugin'].map((type) => (
+                    <label key={type} className="flex items-center px-4 py-2 hover:bg-muted cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.toolType.includes(type)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setFormData(prev => ({ ...prev, toolType: [...prev.toolType, type] }));
+                          } else {
+                            setFormData(prev => ({ ...prev, toolType: prev.toolType.filter(t => t !== type) }));
+                          }
+                        }}
+                        className="mr-2"
+                      />
+                      {type}
+                    </label>
+                  ))}
                 </div>
               )}
             </div>
+          </div>
 
-            {/* Pricing */}
-            <div className="mb-6">
-              <label htmlFor="pricing" className="block text-sm font-medium text-gray-700 mb-2">
-                Pricing Model *
+          {/* Pricing & Free Plan */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label htmlFor="pricing" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Pricing Model
               </label>
               <select
                 id="pricing"
                 name="pricing"
                 value={formData.pricing}
                 onChange={handleInputChange}
-                required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
               >
                 <option value="free">Free</option>
                 <option value="freemium">Freemium</option>
                 <option value="paid">Paid</option>
-                <option value="subscription">Subscription</option>
+                <option value="contact">Contact for Pricing</option>
               </select>
             </div>
-
-            {/* Pros and Cons */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              {/* Pros */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Pros
-                </label>
-                <div className="space-y-2">
-                  {formData.pros.map((pro, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <input
-                        type="text"
-                        value={pro}
-                        onChange={(e) => handleProsChange(index, e.target.value)}
-                        onKeyDown={(e) => handleKeyDown(e, addPro)}
-                        className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                        placeholder="Enter a positive aspect"
-                      />
-                      {formData.pros.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removePro(index)}
-                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        >
-                          <Minus className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={addPro}
-                    className="flex items-center space-x-1 text-green-600 hover:text-green-700 transition-colors"
-                  >
-                    <Plus className="h-4 w-4" />
-                    <span className="text-sm">Add Pro</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Cons */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Cons
-                </label>
-                <div className="space-y-2">
-                  {formData.cons.map((con, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <input
-                        type="text"
-                        value={con}
-                        onChange={(e) => handleConsChange(index, e.target.value)}
-                        onKeyDown={(e) => handleKeyDown(e, addCon)}
-                        className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                        placeholder="Enter a limitation or drawback"
-                      />
-                      {formData.cons.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeCon(index)}
-                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        >
-                          <Minus className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={addCon}
-                    className="flex items-center space-x-1 text-red-600 hover:text-red-700 transition-colors"
-                  >
-                    <Plus className="h-4 w-4" />
-                    <span className="text-sm">Add Con</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Tags */}
-            <div className="mb-6">
-              <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
-                Tags (Press Enter to add)
+            <div>
+              <label htmlFor="freePlan" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Free Plan Available?
               </label>
-              <div className="space-y-2">
-                {formData.tags && (
-                  <div className="flex flex-wrap gap-2">
-                    {formData.tags.split(',').filter(tag => tag.trim()).map((tag, index) => (
-                      <span
-                        key={index}
-                        className="inline-flex items-center gap-1 px-3 py-1 bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 text-sm rounded-full"
-                      >
-                        {tag.trim()}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const tags = formData.tags.split(',').filter((t, i) => i !== index);
-                            setFormData(prev => ({ ...prev, tags: tags.join(',') }));
-                          }}
-                          className="ml-1 text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-200"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-                <input
-                  type="text"
-                  id="tags"
-                  name="newTag"
-                  placeholder="Type a tag and press Enter"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      const input = e.target as HTMLInputElement;
-                      const newTag = input.value.trim();
-                      if (newTag) {
-                        const currentTags = formData.tags ? formData.tags.split(',').filter(tag => tag.trim()) : [];
-                        if (!currentTags.includes(newTag)) {
-                          currentTags.push(newTag);
-                          setFormData(prev => ({ ...prev, tags: currentTags.join(',') }));
-                        }
-                        input.value = '';
-                      }
-                    }
-                  }}
-                />
-              </div>
+              <select
+                id="freePlan"
+                name="freePlan"
+                value={formData.freePlan}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+              >
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
             </div>
+          </div>
 
-            {/* Key Features */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Key Features
-              </label>
-              <div className="space-y-2">
-                {formData.features.map((feature, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <input
-                      type="text"
-                      value={feature}
-                      onChange={(e) => handleFeaturesChange(index, e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(e, addFeature)}
-                      className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="Enter a key feature"
-                    />
-                    {formData.features.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeFeature(index)}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <Minus className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={addFeature}
-                  className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 transition-colors"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span className="text-sm">Add Feature</span>
-                </button>
-              </div>
+          {/* Website */}
+          <div className="mb-6">
+            <label htmlFor="website" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t('submitTool.form.website')} *
+            </label>
+            <div className="relative">
+              <Link className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="url"
+                id="website"
+                name="website"
+                value={formData.website}
+                onChange={handleInputChange}
+                required
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+                placeholder="https://example.com"
+              />
             </div>
+          </div>
 
-            {/* Logo Upload */}
-            <div className="mb-6">
-              <label htmlFor="logo" className="block text-sm font-medium text-gray-700 mb-2">
-                Tool Logo/Screenshot
-              </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary-400 transition-colors">
-                <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-600 mb-2">
-                  Click to upload or drag and drop
-                </p>
-                <p className="text-xs text-gray-500">
-                  PNG, JPG up to 2MB
-                </p>
+          {/* Logo Upload */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t('submitTool.form.logo')}
+            </label>
+            <div className="flex items-center space-x-4">
+              <div className="flex-1">
                 <input
                   type="file"
-                  id="logo"
                   accept="image/*"
                   onChange={handleFileChange}
                   className="hidden"
+                  id="logo-upload"
                 />
                 <label
-                  htmlFor="logo"
-                  className="mt-2 inline-block bg-primary-50 text-primary-600 px-4 py-2 rounded-lg cursor-pointer hover:bg-primary-100 transition-colors"
+                  htmlFor="logo-upload"
+                  className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer hover:border-primary-500 transition-colors bg-background"
                 >
-                  Choose File
+                  <Upload className="h-5 w-5 text-gray-400 mr-2" />
+                  <span className="text-gray-600 dark:text-gray-400">
+                    {formData.logo ? formData.logo.name : t('submitTool.form.uploadLogo')}
+                  </span>
                 </label>
-                {formData.logo && (
-                  <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Logo Preview:</p>
-                    <img 
-                      src={URL.createObjectURL(formData.logo)} 
-                      alt="Tool logo preview"
-                      className="w-16 h-16 object-contain rounded-lg border border-gray-200 dark:border-gray-600 mx-auto"
-                    />
-                    <p className="mt-2 text-sm text-gray-600">
-                      Selected: {formData.logo.name}
-                    </p>
-                  </div>
-                )}
               </div>
-            </div>
-
-            {/* Logo Detection Options */}
-            <div className="mb-8">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Logo Characteristics (for dark/light theme compatibility)
-              </label>
-              <div className="space-y-3">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="is_light_logo"
-                    checked={formData.is_light_logo}
-                    onChange={(e) => setFormData(prev => ({ ...prev, is_light_logo: e.target.checked }))}
-                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              {(formData.logo || formData.logoUrl) && (
+                <div className="w-16 h-16 border rounded-xl overflow-hidden flex-shrink-0 bg-muted">
+                  <img 
+                    src={formData.logo ? URL.createObjectURL(formData.logo) : formData.logoUrl} 
+                    alt="Logo preview" 
+                    className="w-full h-full object-contain"
                   />
-                  <label htmlFor="is_light_logo" className="ml-2 text-sm text-gray-600">
-                    Logo is primarily light/white (will be inverted in dark mode)
-                  </label>
                 </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="is_dark_logo"
-                    checked={formData.is_dark_logo}
-                    onChange={(e) => setFormData(prev => ({ ...prev, is_dark_logo: e.target.checked }))}
-                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-                  />
-                  <label htmlFor="is_dark_logo" className="ml-2 text-sm text-gray-600">
-                    Logo is primarily dark/black (will be inverted in light mode)
-                  </label>
-                </div>
-              </div>
-              <p className="mt-2 text-xs text-gray-500">
-                <AlertCircle className="h-3 w-3 inline mr-1" />
-                Check the appropriate option to ensure your logo displays correctly in both light and dark themes
-              </p>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-gradient-primary text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 focus:ring-2 focus:ring-primary/20 focus:outline-none"
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  <span>Submitting...</span>
-                </>
-              ) : (
-                <>
-                  <Send className="h-5 w-5" />
-                  <span>{isEditMode ? 'Update Tool' : 'Submit Tool for Review'}</span>
-                </>
               )}
-            </button>
-
-            <p className="text-sm text-gray-500 text-center mt-4">
-              By submitting, you agree that the information is accurate and you have the right to share this tool.
-            </p>
-          </form>
-        ) : (
-          /* CSV Upload Section */
-          <div className="bg-white rounded-2xl shadow-sm p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-              {/* Download Template */}
-              <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Download CSV Template</h3>
-                <div className="border border-gray-200 rounded-xl p-6 text-center">
-                  <Download className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600 mb-4">
-                    Download the CSV template with sample data and proper formatting
-                  </p>
-                   <button
-                    onClick={() => {
-                      const csvContent = generateCSVTemplate();
-                      const blob = new Blob([csvContent], { type: 'text/csv' });
-                      const url = window.URL.createObjectURL(blob);
-                      const a = document.createElement('a');
-                      a.href = url;
-                      a.download = 'tools-template.csv';
-                      a.click();
-                      window.URL.revokeObjectURL(url);
-                    }}
-                    className="bg-secondary-500 text-white px-6 py-2 rounded-lg hover:bg-secondary-600 transition-colors"
-                  >
-                    Download Template
-                  </button>
-                </div>
-              </div>
-
-              {/* Upload CSV */}
-              <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Upload Your CSV File</h3>
-                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center">
-                  <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600 mb-2">
-                    Upload CSV file to add multiple tools
-                  </p>
-                  <p className="text-xs text-gray-500 mb-4">
-                    Use the template format for best results
-                  </p>
-                  <input
-                    type="file"
-                    accept=".csv"
-                    onChange={handleCsvUpload}
-                    className="hidden"
-                    id="csv-upload"
-                  />
-                  <label
-                    htmlFor="csv-upload"
-                    className="inline-block bg-primary-50 text-primary-600 px-4 py-2 rounded-lg cursor-pointer hover:bg-primary-100 transition-colors"
-                  >
-                    Choose CSV File
-                  </label>
-                  
-                  {csvError && (
-                    <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-                      {csvError}
-                    </div>
-                  )}
-                  
-                  {csvFile && !csvError && (
-                    <div className="mt-4">
-                      <p className="text-sm text-gray-600 mb-2">
-                        Selected: {csvFile.name}
-                      </p>
-                      <p className="text-sm text-green-600 mb-3">
-                        ✓ Found {csvData.length} valid tools
-                      </p>
-                      <button
-                        onClick={handleCsvSubmit}
-                        disabled={isProcessingCsv}
-                        className="bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 mx-auto"
-                      >
-                        {isProcessingCsv ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                            <span>Processing...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Send className="h-4 w-4" />
-                            <span>Submit {csvData.length} Tools</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* CSV Format Guide */}
-            <div className="p-6 bg-gray-50 rounded-xl">
-              <h4 className="font-medium text-gray-900 mb-4">CSV Format Guide</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <h5 className="font-medium text-gray-800 mb-2">Required Columns:</h5>
-                  <ul className="space-y-1 text-gray-600">
-                    <li>• Category</li>
-                    <li>• Subcategory</li>
-                    <li>• Tool Name</li>
-                    <li>• Link</li>
-                    <li>• Tool Description</li>
-                  </ul>
-                </div>
-                <div>
-                  <h5 className="font-medium text-gray-800 mb-2">Optional Columns:</h5>
-                  <ul className="space-y-1 text-gray-600">
-                    <li>• Pricing</li>
-                    <li>• Pros (separate with semicolons)</li>
-                    <li>• Cons (separate with semicolons)</li>
-                    <li>• Tags (separate with commas)</li>
-                    <li>• Features (separate with semicolons)</li>
-                  </ul>
-                </div>
-              </div>
-              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-700">
-                  <strong>Tip:</strong> Use semicolons (;) to separate multiple pros/cons/features, and commas (,) to separate tags.
-                </p>
-              </div>
             </div>
           </div>
-        )}
+
+          {/* Pros */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t('submitTool.form.pros')}
+            </label>
+            {formData.pros.map((pro, index) => (
+              <div key={index} className="flex items-center space-x-2 mb-2">
+                <input
+                  type="text"
+                  value={pro}
+                  onChange={(e) => handleProsChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(e, addPro)}
+                  className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+                  placeholder={`Pro ${index + 1}`}
+                />
+                {formData.pros.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removePro(index)}
+                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={addPro}
+              className="flex items-center space-x-1 text-primary-600 hover:text-primary-700 text-sm mt-2"
+            >
+              <Plus className="h-4 w-4" />
+              <span>{t('submitTool.form.addPro')}</span>
+            </button>
+          </div>
+
+          {/* Cons */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t('submitTool.form.cons')}
+            </label>
+            {formData.cons.map((con, index) => (
+              <div key={index} className="flex items-center space-x-2 mb-2">
+                <input
+                  type="text"
+                  value={con}
+                  onChange={(e) => handleConsChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(e, addCon)}
+                  className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+                  placeholder={`Con ${index + 1}`}
+                />
+                {formData.cons.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeCon(index)}
+                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={addCon}
+              className="flex items-center space-x-1 text-primary-600 hover:text-primary-700 text-sm mt-2"
+            >
+              <Plus className="h-4 w-4" />
+              <span>{t('submitTool.form.addCon')}</span>
+            </button>
+          </div>
+
+          {/* Tags */}
+          <div className="mb-6">
+            <label htmlFor="tags" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t('submitTool.form.tags')}
+            </label>
+            <div className="relative">
+              <Tag className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                id="tags"
+                name="tags"
+                value={formData.tags}
+                onChange={handleInputChange}
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+                placeholder={t('submitTool.form.tagsPlaceholder')}
+              />
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {t('submitTool.form.tagsHint')}
+            </p>
+          </div>
+
+          {/* Features */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t('submitTool.form.features')}
+            </label>
+            {formData.features.map((feature, index) => (
+              <div key={index} className="flex items-center space-x-2 mb-2">
+                <input
+                  type="text"
+                  value={feature}
+                  onChange={(e) => handleFeaturesChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(e, addFeature)}
+                  className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+                  placeholder={`Feature ${index + 1}`}
+                />
+                {formData.features.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeFeature(index)}
+                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={addFeature}
+              className="flex items-center space-x-1 text-primary-600 hover:text-primary-700 text-sm mt-2"
+            >
+              <Plus className="h-4 w-4" />
+              <span>{t('submitTool.form.addFeature')}</span>
+            </button>
+          </div>
+
+          {/* Logo Type Selection */}
+          <div className="mb-6 p-4 bg-muted/50 rounded-xl">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Logo Visibility Settings
+            </label>
+            <div className="space-y-2">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="is_light_logo"
+                  name="is_light_logo"
+                  checked={formData.is_light_logo}
+                  onChange={(e) => setFormData(prev => ({ ...prev, is_light_logo: e.target.checked }))}
+                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                />
+                <label htmlFor="is_light_logo" className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                  Logo is primarily light/white (will be inverted in dark mode)
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="is_dark_logo"
+                  name="is_dark_logo"
+                  checked={formData.is_dark_logo}
+                  onChange={(e) => setFormData(prev => ({ ...prev, is_dark_logo: e.target.checked }))}
+                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                />
+                <label htmlFor="is_dark_logo" className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                  Logo is primarily dark/black (will be inverted in light mode)
+                </label>
+              </div>
+            </div>
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              <AlertCircle className="h-3 w-3 inline mr-1" />
+              Check the appropriate option to ensure your logo displays correctly in both light and dark themes
+            </p>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-gradient-primary text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+          >
+            {isSubmitting ? (
+              <>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                <span>Submitting...</span>
+              </>
+            ) : (
+              <>
+                <Send className="h-5 w-5" />
+                <span>{isEditMode ? 'Update Tool' : 'Submit Tool for Review'}</span>
+              </>
+            )}
+          </button>
+
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-4">
+            By submitting, you agree that the information is accurate and you have the right to share this tool.
+          </p>
+        </form>
+
+        {/* CSV Import Modal */}
+        <CsvImportModal
+          isOpen={showCsvModal}
+          onClose={() => setShowCsvModal(false)}
+          onCsvSelect={(file, data) => {
+            setCsvFile(file);
+            setCsvData(data);
+            setCsvError('');
+          }}
+          onSubmit={handleCsvSubmit}
+          csvFile={csvFile}
+          csvData={csvData}
+          csvError={csvError}
+          isProcessing={isProcessingCsv}
+        />
       </div>
 
       {/* Chat Dock */}
