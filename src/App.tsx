@@ -10,6 +10,7 @@ import { I18nextProvider } from "react-i18next";
 import { HelmetProvider } from "react-helmet-async";
 import i18n from "@/i18n/config";
 import AppLayout from "@/components/AppLayout";
+import OAuthProfileCompletion from "@/components/OAuthProfileCompletion";
 import Index from "./pages/Index";
 import Tools from "./pages/Tools";
 import Talent from "./pages/Talent";
@@ -62,6 +63,7 @@ const App = () => (
             <TooltipProvider>
               <Toaster />
               <Sonner />
+              <OAuthProfileCompletion />
               <BrowserRouter>
           <Routes>
             <Route path="/" element={<AppLayout />}>

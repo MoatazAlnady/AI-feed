@@ -22,6 +22,8 @@ interface AuthContextType {
   companyPageId: string | null;
   subscription: SubscriptionStatus;
   checkSubscription: () => Promise<void>;
+  profileComplete: boolean;
+  setProfileComplete: (complete: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -168,6 +170,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAdmin, setIsAdmin] = useState(false);
   const [isEmployer, setIsEmployer] = useState(false);
   const [companyPageId, setCompanyPageId] = useState<string | null>(null);
+  const [profileComplete, setProfileComplete] = useState(true);
   const [subscription, setSubscription] = useState<SubscriptionStatus>({
     subscribed: false,
     subscriptionTier: null,
@@ -214,7 +217,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           const { data: profile, error } = await supabase
             .from('user_profiles')
-            .select('account_type, role_id, company_page_id')
+            .select('account_type, role_id, company_page_id, full_name, birth_date, gender, country, city, phone')
             .eq('id', user.id)
             .single();
           
@@ -224,12 +227,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             // Employer access: has company_page_id
             setIsEmployer(!!profile.company_page_id);
             setCompanyPageId(profile.company_page_id);
+            
+            // Check if profile is complete (for OAuth users)
+            const isComplete = !!(
+              profile.full_name &&
+              profile.birth_date &&
+              profile.gender &&
+              profile.country &&
+              profile.city &&
+              profile.phone &&
+              profile.account_type
+            );
+            setProfileComplete(isComplete);
+          } else {
+            // No profile found - needs completion
+            setProfileComplete(false);
           }
         } catch (error) {
           console.error('Error checking user access:', error);
           setIsAdmin(false);
           setIsEmployer(false);
           setCompanyPageId(null);
+          setProfileComplete(false);
         }
         
         // Check subscription status
@@ -238,6 +257,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsAdmin(false);
         setIsEmployer(false);
         setCompanyPageId(null);
+        setProfileComplete(true);
         setSubscription({
           subscribed: false,
           subscriptionTier: null,
@@ -274,6 +294,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     companyPageId,
     subscription,
     checkSubscription,
+    profileComplete,
+    setProfileComplete,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
