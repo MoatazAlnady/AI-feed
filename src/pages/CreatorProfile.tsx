@@ -23,9 +23,11 @@ import {
   UserMinus,
   Users,
   Check,
-  Settings
+  Settings,
+  Crown
 } from 'lucide-react';
 import UnsubscribeFromCreatorModal from '@/components/UnsubscribeFromCreatorModal';
+import SubscribeToCreatorModal from '@/components/SubscribeToCreatorModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -82,6 +84,8 @@ const CreatorProfile: React.FC = () => {
   const [loadingTools, setLoadingTools] = useState(true);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [showUnsubscribeModal, setShowUnsubscribeModal] = useState(false);
+  const [showSubscribeModal, setShowSubscribeModal] = useState(false);
+  const [hasTiers, setHasTiers] = useState(false);
 
   const identifier = handleOrId || id || handle || userId;
 
@@ -96,6 +100,10 @@ const CreatorProfile: React.FC = () => {
       checkConnectionStatus();
       checkFollowStatus();
       checkSubscriptionStatus();
+      checkHasActiveTiers();
+    } else if (profile) {
+      // Check for tiers even if user not logged in
+      checkHasActiveTiers();
     }
     
     const handleConnectionRequestProcessed = () => {
@@ -125,6 +133,23 @@ const CreatorProfile: React.FC = () => {
       setIsSubscribed(!!data);
     } catch (error) {
       console.error('Error checking subscription status:', error);
+    }
+  };
+
+  const checkHasActiveTiers = async () => {
+    if (!profile) return;
+    
+    try {
+      const { data } = await supabase
+        .from('creator_subscription_tiers')
+        .select('id')
+        .eq('creator_id', profile.id)
+        .eq('is_active', true)
+        .limit(1);
+      
+      setHasTiers((data?.length || 0) > 0);
+    } catch (error) {
+      console.error('Error checking creator tiers:', error);
     }
   };
 
@@ -574,6 +599,17 @@ const CreatorProfile: React.FC = () => {
                           Manage Subscription
                         </Button>
                       )}
+                      
+                      {/* Subscribe Button - for non-subscribers when creator has tiers */}
+                      {!isSubscribed && hasTiers && (
+                        <Button 
+                          onClick={() => setShowSubscribeModal(true)}
+                          className="bg-gradient-to-r from-primary to-secondary text-primary-foreground"
+                        >
+                          <Crown className="h-4 w-4 mr-2" />
+                          Subscribe
+                        </Button>
+                      )}
                     </>
                   )}
                   {isOwnProfile && (
@@ -587,6 +623,16 @@ const CreatorProfile: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Subscribe Modal */}
+      {showSubscribeModal && profile && (
+        <SubscribeToCreatorModal
+          isOpen={showSubscribeModal}
+          onClose={() => setShowSubscribeModal(false)}
+          creatorId={profile.id}
+          creatorName={profile.full_name}
+        />
+      )}
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
