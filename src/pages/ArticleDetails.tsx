@@ -14,6 +14,7 @@ import ReportContentModal from '@/components/ReportContentModal';
 import SharePostModal from '@/components/SharePostModal';
 import PromoteContentModal from '@/components/PromoteContentModal';
 import SEOHead from '@/components/SEOHead';
+import { InArticleAd } from '@/components/GoogleAd';
 
 interface Article {
   id: string;
@@ -205,6 +206,9 @@ const ArticleDetails = () => {
             className="prose prose-lg dark:prose-invert max-w-none mb-8"
             dangerouslySetInnerHTML={{ __html: article.content }}
           />
+
+          {/* In-Article Ad */}
+          <InArticleAd contentId={article.id} creatorId={article.user_id || undefined} />
 
           {/* Tags */}
           {article.tags && article.tags.length > 0 && (

@@ -623,6 +623,45 @@ export type Database = {
         }
         Relationships: []
       }
+      content_ad_impressions: {
+        Row: {
+          ad_type: string
+          click_count: number | null
+          content_id: string
+          content_type: string
+          created_at: string | null
+          creator_id: string | null
+          date: string
+          estimated_revenue: number | null
+          id: string
+          impression_count: number | null
+        }
+        Insert: {
+          ad_type: string
+          click_count?: number | null
+          content_id: string
+          content_type: string
+          created_at?: string | null
+          creator_id?: string | null
+          date: string
+          estimated_revenue?: number | null
+          id?: string
+          impression_count?: number | null
+        }
+        Update: {
+          ad_type?: string
+          click_count?: number | null
+          content_id?: string
+          content_type?: string
+          created_at?: string | null
+          creator_id?: string | null
+          date?: string
+          estimated_revenue?: number | null
+          id?: string
+          impression_count?: number | null
+        }
+        Relationships: []
+      }
       conversation_messages: {
         Row: {
           body: string
@@ -775,6 +814,51 @@ export type Database = {
           created_at?: string
           id?: string
           phone_code?: string
+        }
+        Relationships: []
+      }
+      creator_ad_earnings: {
+        Row: {
+          created_at: string | null
+          creator_id: string
+          creator_payout: number | null
+          gross_revenue: number | null
+          id: string
+          payout_date: string | null
+          period_end: string
+          period_start: string
+          platform_fee: number | null
+          status: string | null
+          total_clicks: number | null
+          total_impressions: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          creator_id: string
+          creator_payout?: number | null
+          gross_revenue?: number | null
+          id?: string
+          payout_date?: string | null
+          period_end: string
+          period_start: string
+          platform_fee?: number | null
+          status?: string | null
+          total_clicks?: number | null
+          total_impressions?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          creator_id?: string
+          creator_payout?: number | null
+          gross_revenue?: number | null
+          id?: string
+          payout_date?: string | null
+          period_end?: string
+          period_start?: string
+          platform_fee?: number | null
+          status?: string | null
+          total_clicks?: number | null
+          total_impressions?: number | null
         }
         Relationships: []
       }
