@@ -168,7 +168,7 @@ export default function CreatorAdRevenue() {
             Ad Revenue
           </h2>
           <p className="text-muted-foreground">
-            Earn from ads shown on your content (70% creator / 30% platform)
+            Earn 70% from ads on your content. Ads on public feeds go to the platform.
           </p>
         </div>
         
@@ -189,12 +189,16 @@ export default function CreatorAdRevenue() {
       {/* Revenue Info Banner */}
       <Card className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/20">
         <CardContent className="py-4">
-          <div className="flex items-center gap-2 text-sm">
-            <Info className="h-4 w-4 text-green-600" />
-            <span className="text-green-800 dark:text-green-200">
-              You receive <strong>70%</strong> of all ad revenue generated from your content. 
-              Revenue is calculated based on ad impressions (CPM) and clicks.
-            </span>
+          <div className="flex items-start gap-2 text-sm">
+            <Info className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+            <div className="text-green-800 dark:text-green-200">
+              <p className="mb-1">
+                You receive <strong>70%</strong> of all ad revenue from ads displayed on <strong>your content</strong> (articles, posts, videos).
+              </p>
+              <p className="text-xs opacity-80">
+                Note: Ads shown on public areas (main feed, category pages, search results) generate 100% platform revenue.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
