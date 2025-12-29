@@ -6,6 +6,7 @@ import OnboardingFlow from './OnboardingFlow';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import { getAuthRedirectUrl } from '@/utils/authRedirect';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -544,7 +545,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: 'google',
                         options: {
-                          redirectTo: `${window.location.origin}/`
+                          redirectTo: getAuthRedirectUrl('/')
                         }
                       });
                       if (error) throw error;
@@ -578,7 +579,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: 'linkedin_oidc',
                         options: {
-                          redirectTo: `${window.location.origin}/`
+                          redirectTo: getAuthRedirectUrl('/')
                         }
                       });
                       if (error) throw error;
@@ -612,7 +613,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: 'discord',
                         options: {
-                          redirectTo: `${window.location.origin}/`
+                          redirectTo: getAuthRedirectUrl('/')
                         }
                       });
                       if (error) throw error;
@@ -643,7 +644,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: 'github',
                         options: {
-                          redirectTo: `${window.location.origin}/`
+                          redirectTo: getAuthRedirectUrl('/')
                         }
                       });
                       if (error) throw error;
