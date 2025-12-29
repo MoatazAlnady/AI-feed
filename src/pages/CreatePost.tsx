@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { X, Image, Video, Link as LinkIcon, Send, User, Calendar, Clock, ArrowLeft, Upload, Camera, Radio, Crown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import InterestTagSelector from '../components/InterestTagSelector';
 import LinkPreview from '../components/LinkPreview';
 import PostPrivacySelector from '../components/PostPrivacySelector';

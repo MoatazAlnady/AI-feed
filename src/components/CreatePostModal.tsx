@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Image, Video, Link as LinkIcon, Send, User, Calendar, Clock, Upload, Camera, Radio, Crown, FileText } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import InterestTagSelector from './InterestTagSelector';
 import LinkPreview from './LinkPreview';

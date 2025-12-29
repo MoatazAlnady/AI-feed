@@ -10,7 +10,7 @@ import { Slider } from '@/components/ui/slider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { MultiSelectCombobox, SingleSelectCombobox, MultiSelectOption } from '@/components/ui/multi-select-combobox';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 interface TalentSearchFiltersProps {
   onFilterChange?: (filters: TalentFilters) => void;

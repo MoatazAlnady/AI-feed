@@ -37,7 +37,7 @@ import AuditLogViewer from '../components/AuditLogViewer';
 import DropdownListsManagement from '../components/DropdownListsManagement';
 import SupportTicketsManagement from '../components/SupportTicketsManagement';
 import { PromoCodesManagement } from '@/components/PromoCodesManagement';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import useI18nGuard from '../hooks/useI18nGuard';
 
 const AdminDashboard: React.FC = () => {
