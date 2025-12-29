@@ -539,6 +539,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                     try {
                       setLoading(true);
                       setError('');
+                      // Clear any existing session before OAuth to prevent stale session issues on mobile
+                      await supabase.auth.signOut({ scope: 'local' });
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: 'google',
                         options: {
@@ -571,6 +573,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                     try {
                       setLoading(true);
                       setError('');
+                      // Clear any existing session before OAuth to prevent stale session issues on mobile
+                      await supabase.auth.signOut({ scope: 'local' });
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: 'linkedin_oidc',
                         options: {
@@ -603,6 +607,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                     try {
                       setLoading(true);
                       setError('');
+                      // Clear any existing session before OAuth to prevent stale session issues on mobile
+                      await supabase.auth.signOut({ scope: 'local' });
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: 'discord',
                         options: {
@@ -632,6 +638,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                     try {
                       setLoading(true);
                       setError('');
+                      // Clear any existing session before OAuth to prevent stale session issues on mobile
+                      await supabase.auth.signOut({ scope: 'local' });
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: 'github',
                         options: {
