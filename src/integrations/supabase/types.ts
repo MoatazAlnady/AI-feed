@@ -4235,6 +4235,10 @@ export type Database = {
         Args: { company_id: string }
         Returns: boolean
       }
+      has_pending_connection_request: {
+        Args: { user_a: string; user_b: string }
+        Returns: boolean
+      }
       has_permission: {
         Args: { permission_key_param: string; user_id_param: string }
         Returns: boolean
