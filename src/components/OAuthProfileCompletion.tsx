@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { User, Calendar, MapPin, Phone, Globe } from 'lucide-react';
+import { User, Calendar, MapPin, Phone, Globe, Lock } from 'lucide-react';
 
 const countriesWithCodes = [
   { name: 'United States', code: '+1' },
@@ -87,6 +87,7 @@ const accountTypes = [
 export default function OAuthProfileCompletion() {
   const { user, profileComplete, setProfileComplete } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [accountTypeLocked, setAccountTypeLocked] = useState(false);
   const [formData, setFormData] = useState({
     full_name: '',
     birth_date: '',
@@ -109,6 +110,58 @@ export default function OAuthProfileCompletion() {
         ...prev,
         full_name: metadata.full_name || metadata.name || '',
       }));
+
+      // Fetch existing profile to check if account_type is already set
+      const fetchExistingProfile = async () => {
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('account_type, full_name, birth_date, gender, country, city, phone')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (profile) {
+          // Lock account type if already set
+          if (profile.account_type) {
+            setAccountTypeLocked(true);
+            setFormData(prev => ({
+              ...prev,
+              account_type: profile.account_type,
+            }));
+          }
+          // Pre-fill other existing data
+          if (profile.full_name) {
+            setFormData(prev => ({ ...prev, full_name: profile.full_name }));
+          }
+          if (profile.gender) {
+            setFormData(prev => ({ ...prev, gender: profile.gender }));
+          }
+          if (profile.country) {
+            const countryData = countriesWithCodes.find(c => c.name === profile.country);
+            setFormData(prev => ({ 
+              ...prev, 
+              country: profile.country,
+              phone_country_code: countryData?.code || ''
+            }));
+          }
+          if (profile.city) {
+            setFormData(prev => ({ ...prev, city: profile.city }));
+          }
+          if (profile.birth_date) {
+            setFormData(prev => ({ ...prev, birth_date: profile.birth_date }));
+          }
+          if (profile.phone) {
+            // Extract phone number without country code
+            const phoneMatch = profile.phone?.match(/^\+\d+\s*(.*)$/);
+            if (phoneMatch) {
+              setFormData(prev => ({ ...prev, phone: phoneMatch[1] }));
+            } else {
+              setFormData(prev => ({ ...prev, phone: profile.phone || '' }));
+            }
+          }
+        }
+      };
+
+      fetchExistingProfile();
     }
   }, [user, isOpen]);
 
@@ -169,21 +222,23 @@ export default function OAuthProfileCompletion() {
 
     setLoading(true);
     try {
+      const profileData = {
+        id: user.id,
+        email: user.email,
+        full_name: formData.full_name.trim(),
+        birth_date: formData.birth_date,
+        age: calculateAge(formData.birth_date),
+        gender: formData.gender,
+        country: formData.country,
+        city: formData.city.trim(),
+        phone: `${formData.phone_country_code} ${formData.phone.trim()}`,
+        account_type: formData.account_type,
+        updated_at: new Date().toISOString(),
+      };
+
       const { error } = await supabase
         .from('user_profiles')
-        .upsert({
-          id: user.id,
-          email: user.email,
-          full_name: formData.full_name.trim(),
-          birth_date: formData.birth_date,
-          age: calculateAge(formData.birth_date),
-          gender: formData.gender,
-          country: formData.country,
-          city: formData.city.trim(),
-          phone: `${formData.phone_country_code} ${formData.phone.trim()}`,
-          account_type: formData.account_type,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'id' });
+        .upsert(profileData, { onConflict: 'id' });
 
       if (error) throw error;
 
@@ -201,13 +256,16 @@ export default function OAuthProfileCompletion() {
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto" onInteractOutside={(e) => e.preventDefault()}>
+      <DialogContent 
+        className="sm:max-w-lg max-h-[90vh] overflow-y-auto bg-background border-border" 
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl">
+          <DialogTitle className="flex items-center gap-2 text-xl text-foreground">
             <User className="h-5 w-5 text-primary" />
             Complete Your Profile
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-muted-foreground">
             Please provide some additional information to complete your account setup.
           </DialogDescription>
         </DialogHeader>
@@ -215,19 +273,20 @@ export default function OAuthProfileCompletion() {
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           {/* Full Name */}
           <div className="space-y-2">
-            <Label htmlFor="full_name">Full Name *</Label>
+            <Label htmlFor="full_name" className="text-foreground">Full Name *</Label>
             <Input
               id="full_name"
               value={formData.full_name}
               onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
               placeholder="Enter your full name"
+              className="bg-background border-input text-foreground placeholder:text-muted-foreground"
               required
             />
           </div>
 
           {/* Birth Date */}
           <div className="space-y-2">
-            <Label htmlFor="birth_date" className="flex items-center gap-2">
+            <Label htmlFor="birth_date" className="flex items-center gap-2 text-foreground">
               <Calendar className="h-4 w-4" />
               Birth Date *
             </Label>
@@ -237,20 +296,21 @@ export default function OAuthProfileCompletion() {
               value={formData.birth_date}
               onChange={(e) => setFormData(prev => ({ ...prev, birth_date: e.target.value }))}
               max={new Date().toISOString().split('T')[0]}
+              className="bg-background border-input text-foreground"
               required
             />
           </div>
 
           {/* Gender */}
           <div className="space-y-2">
-            <Label>Gender *</Label>
+            <Label className="text-foreground">Gender *</Label>
             <Select value={formData.gender} onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-background border-input text-foreground">
                 <SelectValue placeholder="Select gender" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover border-border">
                 {genderOptions.map(gender => (
-                  <SelectItem key={gender} value={gender}>{gender}</SelectItem>
+                  <SelectItem key={gender} value={gender} className="text-popover-foreground">{gender}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -258,17 +318,17 @@ export default function OAuthProfileCompletion() {
 
           {/* Country */}
           <div className="space-y-2">
-            <Label className="flex items-center gap-2">
+            <Label className="flex items-center gap-2 text-foreground">
               <Globe className="h-4 w-4" />
               Country *
             </Label>
             <Select value={formData.country} onValueChange={handleCountryChange}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-background border-input text-foreground">
                 <SelectValue placeholder="Select country" />
               </SelectTrigger>
-              <SelectContent className="max-h-60">
+              <SelectContent className="max-h-60 bg-popover border-border">
                 {countriesWithCodes.map(country => (
-                  <SelectItem key={country.name} value={country.name}>{country.name}</SelectItem>
+                  <SelectItem key={country.name} value={country.name} className="text-popover-foreground">{country.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -276,7 +336,7 @@ export default function OAuthProfileCompletion() {
 
           {/* City */}
           <div className="space-y-2">
-            <Label htmlFor="city" className="flex items-center gap-2">
+            <Label htmlFor="city" className="flex items-center gap-2 text-foreground">
               <MapPin className="h-4 w-4" />
               City *
             </Label>
@@ -285,20 +345,21 @@ export default function OAuthProfileCompletion() {
               value={formData.city}
               onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
               placeholder="Enter your city"
+              className="bg-background border-input text-foreground placeholder:text-muted-foreground"
               required
             />
           </div>
 
           {/* Phone */}
           <div className="space-y-2">
-            <Label className="flex items-center gap-2">
+            <Label className="flex items-center gap-2 text-foreground">
               <Phone className="h-4 w-4" />
               Phone Number *
             </Label>
             <div className="flex gap-2">
               <Input
                 value={formData.phone_country_code}
-                className="w-20"
+                className="w-20 bg-muted border-input text-foreground"
                 placeholder="+1"
                 readOnly
               />
@@ -306,7 +367,7 @@ export default function OAuthProfileCompletion() {
                 value={formData.phone}
                 onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                 placeholder="Phone number"
-                className="flex-1"
+                className="flex-1 bg-background border-input text-foreground placeholder:text-muted-foreground"
                 required
               />
             </div>
@@ -314,20 +375,29 @@ export default function OAuthProfileCompletion() {
 
           {/* Account Type */}
           <div className="space-y-2">
-            <Label>Account Type *</Label>
+            <Label className="flex items-center gap-2 text-foreground">
+              Account Type *
+              {accountTypeLocked && (
+                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Lock className="h-3 w-3" />
+                  Locked
+                </span>
+              )}
+            </Label>
             <div className="grid grid-cols-2 gap-3">
               {accountTypes.map(type => (
                 <button
                   key={type.value}
                   type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, account_type: type.value }))}
+                  onClick={() => !accountTypeLocked && setFormData(prev => ({ ...prev, account_type: type.value }))}
+                  disabled={accountTypeLocked}
                   className={`p-4 rounded-lg border text-center transition-all ${
                     formData.account_type === type.value
                       ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
-                      : 'border-border hover:border-primary/50'
-                  }`}
+                      : 'border-border bg-background hover:border-primary/50'
+                  } ${accountTypeLocked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
                 >
-                  <div className="font-medium">{type.label}</div>
+                  <div className="font-medium text-foreground">{type.label}</div>
                   <div className="text-xs text-muted-foreground mt-1">{type.description}</div>
                 </button>
               ))}

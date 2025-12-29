@@ -11,7 +11,7 @@ import PremiumUpgradeModal from '../components/PremiumUpgradeModal';
 import InterestManagement from '../components/InterestManagement';
 import ShareToolModal from '../components/ShareToolModal';
 import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';

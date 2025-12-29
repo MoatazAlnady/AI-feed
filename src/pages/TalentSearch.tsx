@@ -14,7 +14,7 @@ import TalentProfilePreview from '../components/TalentProfilePreview';
 import SaveToProjectModal from '../components/SaveToProjectModal';
 import BulkActionsToolbar from '../components/BulkActionsToolbar';
 import BulkMessageModal from '../components/BulkMessageModal';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Talent {
   id: string;
