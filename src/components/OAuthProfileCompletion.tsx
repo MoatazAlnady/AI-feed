@@ -5,11 +5,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { toast } from 'sonner';
-import { User, Calendar, MapPin, Phone, Globe, Lock, ChevronsUpDown, Check } from 'lucide-react';
+import { User, Calendar, MapPin, Phone, Globe, Lock, ChevronsUpDown, Check, Briefcase, Sparkles, ChevronRight, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const countriesWithCodes = [
@@ -102,6 +103,15 @@ const months = [
   { value: '12', label: 'December' },
 ];
 
+const availableInterests = [
+  'Machine Learning', 'Deep Learning', 'Natural Language Processing', 'Computer Vision',
+  'AI Ethics', 'Robotics', 'Data Science', 'Neural Networks', 'Generative AI',
+  'AI Research', 'AI Startups', 'AI Tools', 'Automation', 'Chatbots',
+  'Image Generation', 'Video AI', 'Audio AI', 'Code Assistant', 'Productivity',
+  'Writing & Content', 'Data Analysis', 'Business Intelligence', 'Healthcare AI',
+  'Finance AI', 'Education AI', 'Gaming AI', 'Art & Creativity', 'Music AI'
+];
+
 // Generate years from 1920 to current year - 13 (minimum age)
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: currentYear - 13 - 1920 + 1 }, (_, i) => (currentYear - 13 - i).toString());
@@ -114,6 +124,7 @@ export default function OAuthProfileCompletion() {
   const [birthYear, setBirthYear] = useState('');
   const [birthMonth, setBirthMonth] = useState('');
   const [birthDay, setBirthDay] = useState('');
+  const [step, setStep] = useState(1); // Multi-step form: 1 = basic info, 2 = profile details & interests
   const [formData, setFormData] = useState({
     full_name: '',
     birth_date: '',
@@ -123,6 +134,11 @@ export default function OAuthProfileCompletion() {
     phone_country_code: '',
     phone: '',
     account_type: 'creator',
+    // Step 2 fields
+    job_title: '',
+    company: '',
+    bio: '',
+    interests: [] as string[],
   });
 
   // Only show for logged-in users with incomplete profiles
@@ -158,7 +174,7 @@ export default function OAuthProfileCompletion() {
       const fetchExistingProfile = async () => {
         const { data: profile } = await supabase
           .from('user_profiles')
-          .select('account_type, full_name, birth_date, gender, country, city, phone')
+          .select('account_type, full_name, birth_date, gender, country, city, phone, job_title, company, bio, interests')
           .eq('id', user.id)
           .maybeSingle();
 
@@ -206,6 +222,19 @@ export default function OAuthProfileCompletion() {
               setFormData(prev => ({ ...prev, phone: profile.phone || '' }));
             }
           }
+          // Step 2 data
+          if (profile.job_title) {
+            setFormData(prev => ({ ...prev, job_title: profile.job_title }));
+          }
+          if (profile.company) {
+            setFormData(prev => ({ ...prev, company: profile.company }));
+          }
+          if (profile.bio) {
+            setFormData(prev => ({ ...prev, bio: profile.bio }));
+          }
+          if (profile.interests && Array.isArray(profile.interests)) {
+            setFormData(prev => ({ ...prev, interests: profile.interests }));
+          }
         }
       };
 
@@ -233,38 +262,62 @@ export default function OAuthProfileCompletion() {
     return age;
   };
 
+  const handleInterestToggle = (interest: string) => {
+    setFormData(prev => ({
+      ...prev,
+      interests: prev.interests.includes(interest)
+        ? prev.interests.filter(i => i !== interest)
+        : [...prev.interests, interest]
+    }));
+  };
+
+  const validateStep1 = () => {
+    if (!formData.full_name.trim()) {
+      toast.error('Please enter your full name');
+      return false;
+    }
+    if (!formData.birth_date) {
+      toast.error('Please enter your birth date');
+      return false;
+    }
+    if (calculateAge(formData.birth_date) < 13) {
+      toast.error('You must be at least 13 years old to use this platform');
+      return false;
+    }
+    if (!formData.gender) {
+      toast.error('Please select your gender');
+      return false;
+    }
+    if (!formData.country) {
+      toast.error('Please select your country');
+      return false;
+    }
+    if (!formData.city.trim()) {
+      toast.error('Please enter your city');
+      return false;
+    }
+    if (!formData.phone.trim()) {
+      toast.error('Please enter your phone number');
+      return false;
+    }
+    return true;
+  };
+
+  const handleNextStep = () => {
+    if (validateStep1()) {
+      setStep(2);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!user) return;
 
-    // Validation
-    if (!formData.full_name.trim()) {
-      toast.error('Please enter your full name');
-      return;
-    }
-    if (!formData.birth_date) {
-      toast.error('Please enter your birth date');
-      return;
-    }
-    if (calculateAge(formData.birth_date) < 13) {
-      toast.error('You must be at least 13 years old to use this platform');
-      return;
-    }
-    if (!formData.gender) {
-      toast.error('Please select your gender');
-      return;
-    }
-    if (!formData.country) {
-      toast.error('Please select your country');
-      return;
-    }
-    if (!formData.city.trim()) {
-      toast.error('Please enter your city');
-      return;
-    }
-    if (!formData.phone.trim()) {
-      toast.error('Please enter your phone number');
+    // Step 2 doesn't require validation - all fields are optional
+    // But we still need to ensure step 1 was completed (in case user navigates back)
+    if (!validateStep1()) {
+      setStep(1);
       return;
     }
 
@@ -280,6 +333,11 @@ export default function OAuthProfileCompletion() {
         city: formData.city.trim(),
         phone: `${formData.phone_country_code} ${formData.phone.trim()}`,
         account_type: formData.account_type,
+        // Step 2 fields
+        job_title: formData.job_title.trim() || null,
+        company: formData.company.trim() || null,
+        bio: formData.bio.trim() || null,
+        interests: formData.interests.length > 0 ? formData.interests : null,
         updated_at: new Date().toISOString(),
       };
 
@@ -313,197 +371,311 @@ export default function OAuthProfileCompletion() {
             Complete Your Profile
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            Please provide some additional information to complete your account setup.
+            {step === 1 
+              ? 'Please provide some basic information to complete your account setup.'
+              : 'Tell us more about yourself and your interests (optional).'}
           </DialogDescription>
         </DialogHeader>
 
+        {/* Progress Indicator */}
+        <div className="flex items-center gap-2 mb-4">
+          <div className={cn(
+            "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors",
+            step >= 1 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+          )}>
+            1
+          </div>
+          <div className={cn(
+            "flex-1 h-1 rounded transition-colors",
+            step >= 2 ? "bg-primary" : "bg-muted"
+          )} />
+          <div className={cn(
+            "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors",
+            step >= 2 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+          )}>
+            2
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          {/* Full Name */}
-          <div className="space-y-2">
-            <Label htmlFor="full_name" className="text-foreground">Full Name *</Label>
-            <Input
-              id="full_name"
-              value={formData.full_name}
-              onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
-              placeholder="Enter your full name"
-              className="bg-background border-input text-foreground placeholder:text-muted-foreground"
-              required
-            />
-          </div>
+          {step === 1 && (
+            <>
+              {/* Full Name */}
+              <div className="space-y-2">
+                <Label htmlFor="full_name" className="text-foreground">Full Name *</Label>
+                <Input
+                  id="full_name"
+                  value={formData.full_name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
+                  placeholder="Enter your full name"
+                  className="bg-background border-input text-foreground placeholder:text-muted-foreground"
+                  required
+                />
+              </div>
 
-          {/* Birth Date - Year/Month/Day dropdowns */}
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2 text-foreground">
-              <Calendar className="h-4 w-4" />
-              Birth Date *
-            </Label>
-            <div className="grid grid-cols-3 gap-2">
-              <Select value={birthYear} onValueChange={setBirthYear}>
-                <SelectTrigger className="bg-background border-input text-foreground">
-                  <SelectValue placeholder="Year" />
-                </SelectTrigger>
-                <SelectContent className="max-h-60 bg-popover border-border">
-                  {years.map(year => (
-                    <SelectItem key={year} value={year} className="text-popover-foreground">{year}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={birthMonth} onValueChange={setBirthMonth}>
-                <SelectTrigger className="bg-background border-input text-foreground">
-                  <SelectValue placeholder="Month" />
-                </SelectTrigger>
-                <SelectContent className="max-h-60 bg-popover border-border">
-                  {months.map(month => (
-                    <SelectItem key={month.value} value={month.value} className="text-popover-foreground">{month.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={birthDay} onValueChange={setBirthDay}>
-                <SelectTrigger className="bg-background border-input text-foreground">
-                  <SelectValue placeholder="Day" />
-                </SelectTrigger>
-                <SelectContent className="max-h-60 bg-popover border-border">
-                  {days.map(day => (
-                    <SelectItem key={day} value={day} className="text-popover-foreground">{day}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Gender */}
-          <div className="space-y-2">
-            <Label className="text-foreground">Gender *</Label>
-            <Select value={formData.gender} onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}>
-              <SelectTrigger className="bg-background border-input text-foreground">
-                <SelectValue placeholder="Select gender" />
-              </SelectTrigger>
-              <SelectContent className="bg-popover border-border">
-                {genderOptions.map(gender => (
-                  <SelectItem key={gender} value={gender} className="text-popover-foreground">{gender}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Country - Searchable */}
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2 text-foreground">
-              <Globe className="h-4 w-4" />
-              Country *
-            </Label>
-            <Popover open={countryOpen} onOpenChange={setCountryOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={countryOpen}
-                  className="w-full justify-between bg-background border-input text-foreground hover:bg-accent"
-                >
-                  {formData.country || "Search and select country..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-0 bg-popover border-border" align="start">
-                <Command className="bg-popover">
-                  <CommandInput placeholder="Search country..." className="text-foreground" />
-                  <CommandList>
-                    <CommandEmpty className="text-muted-foreground py-6 text-center text-sm">No country found.</CommandEmpty>
-                    <CommandGroup>
-                      {countriesWithCodes.map(country => (
-                        <CommandItem
-                          key={country.name}
-                          value={country.name}
-                          onSelect={() => {
-                            handleCountryChange(country.name);
-                            setCountryOpen(false);
-                          }}
-                          className="text-popover-foreground"
-                        >
-                          <Check className={cn("mr-2 h-4 w-4", formData.country === country.name ? "opacity-100" : "opacity-0")} />
-                          {country.name}
-                        </CommandItem>
+              {/* Birth Date - Year/Month/Day dropdowns */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2 text-foreground">
+                  <Calendar className="h-4 w-4" />
+                  Birth Date *
+                </Label>
+                <div className="grid grid-cols-3 gap-2">
+                  <Select value={birthYear} onValueChange={setBirthYear}>
+                    <SelectTrigger className="bg-background border-input text-foreground">
+                      <SelectValue placeholder="Year" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60 bg-popover border-border">
+                      {years.map(year => (
+                        <SelectItem key={year} value={year} className="text-popover-foreground">{year}</SelectItem>
                       ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
+                    </SelectContent>
+                  </Select>
+                  <Select value={birthMonth} onValueChange={setBirthMonth}>
+                    <SelectTrigger className="bg-background border-input text-foreground">
+                      <SelectValue placeholder="Month" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60 bg-popover border-border">
+                      {months.map(month => (
+                        <SelectItem key={month.value} value={month.value} className="text-popover-foreground">{month.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={birthDay} onValueChange={setBirthDay}>
+                    <SelectTrigger className="bg-background border-input text-foreground">
+                      <SelectValue placeholder="Day" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60 bg-popover border-border">
+                      {days.map(day => (
+                        <SelectItem key={day} value={day} className="text-popover-foreground">{day}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
 
-          {/* City */}
-          <div className="space-y-2">
-            <Label htmlFor="city" className="flex items-center gap-2 text-foreground">
-              <MapPin className="h-4 w-4" />
-              City *
-            </Label>
-            <Input
-              id="city"
-              value={formData.city}
-              onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
-              placeholder="Enter your city"
-              className="bg-background border-input text-foreground placeholder:text-muted-foreground"
-              required
-            />
-          </div>
+              {/* Gender */}
+              <div className="space-y-2">
+                <Label className="text-foreground">Gender *</Label>
+                <Select value={formData.gender} onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}>
+                  <SelectTrigger className="bg-background border-input text-foreground">
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover border-border">
+                    {genderOptions.map(gender => (
+                      <SelectItem key={gender} value={gender} className="text-popover-foreground">{gender}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-          {/* Phone */}
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2 text-foreground">
-              <Phone className="h-4 w-4" />
-              Phone Number *
-            </Label>
-            <div className="flex gap-2">
-              <Input
-                value={formData.phone_country_code}
-                className="w-20 bg-muted border-input text-foreground"
-                placeholder="+1"
-                readOnly
-              />
-              <Input
-                value={formData.phone}
-                onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                placeholder="Phone number"
-                className="flex-1 bg-background border-input text-foreground placeholder:text-muted-foreground"
-                required
-              />
-            </div>
-          </div>
+              {/* Country - Searchable */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2 text-foreground">
+                  <Globe className="h-4 w-4" />
+                  Country *
+                </Label>
+                <Popover open={countryOpen} onOpenChange={setCountryOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={countryOpen}
+                      className="w-full justify-between bg-background border-input text-foreground hover:bg-accent"
+                    >
+                      {formData.country || "Search and select country..."}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0 bg-popover border-border" align="start">
+                    <Command className="bg-popover">
+                      <CommandInput placeholder="Search country..." className="text-foreground" />
+                      <CommandList>
+                        <CommandEmpty className="text-muted-foreground py-6 text-center text-sm">No country found.</CommandEmpty>
+                        <CommandGroup>
+                          {countriesWithCodes.map(country => (
+                            <CommandItem
+                              key={country.name}
+                              value={country.name}
+                              onSelect={() => {
+                                handleCountryChange(country.name);
+                                setCountryOpen(false);
+                              }}
+                              className="text-popover-foreground"
+                            >
+                              <Check className={cn("mr-2 h-4 w-4", formData.country === country.name ? "opacity-100" : "opacity-0")} />
+                              {country.name}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
 
-          {/* Account Type */}
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2 text-foreground">
-              Account Type *
-              {accountTypeLocked && (
-                <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Lock className="h-3 w-3" />
-                  Locked
-                </span>
-              )}
-            </Label>
-            <div className="grid grid-cols-2 gap-3">
-              {accountTypes.map(type => (
-                <button
-                  key={type.value}
-                  type="button"
-                  onClick={() => !accountTypeLocked && setFormData(prev => ({ ...prev, account_type: type.value }))}
-                  disabled={accountTypeLocked}
-                  className={`p-4 rounded-lg border text-center transition-all ${
-                    formData.account_type === type.value
-                      ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
-                      : 'border-border bg-background hover:border-primary/50'
-                  } ${accountTypeLocked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
+              {/* City */}
+              <div className="space-y-2">
+                <Label htmlFor="city" className="flex items-center gap-2 text-foreground">
+                  <MapPin className="h-4 w-4" />
+                  City *
+                </Label>
+                <Input
+                  id="city"
+                  value={formData.city}
+                  onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+                  placeholder="Enter your city"
+                  className="bg-background border-input text-foreground placeholder:text-muted-foreground"
+                  required
+                />
+              </div>
+
+              {/* Phone */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2 text-foreground">
+                  <Phone className="h-4 w-4" />
+                  Phone Number *
+                </Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={formData.phone_country_code}
+                    className="w-20 bg-muted border-input text-foreground"
+                    placeholder="+1"
+                    readOnly
+                  />
+                  <Input
+                    value={formData.phone}
+                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                    placeholder="Phone number"
+                    className="flex-1 bg-background border-input text-foreground placeholder:text-muted-foreground"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Account Type */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2 text-foreground">
+                  Account Type *
+                  {accountTypeLocked && (
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Lock className="h-3 w-3" />
+                      Locked
+                    </span>
+                  )}
+                </Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {accountTypes.map(type => (
+                    <button
+                      key={type.value}
+                      type="button"
+                      onClick={() => !accountTypeLocked && setFormData(prev => ({ ...prev, account_type: type.value }))}
+                      disabled={accountTypeLocked}
+                      className={`p-4 rounded-lg border text-center transition-all ${
+                        formData.account_type === type.value
+                          ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+                          : 'border-border bg-background hover:border-primary/50'
+                      } ${accountTypeLocked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
+                    >
+                      <div className="font-medium text-foreground">{type.label}</div>
+                      <div className="text-xs text-muted-foreground mt-1">{type.description}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <Button type="button" className="w-full" onClick={handleNextStep}>
+                Continue
+                <ChevronRight className="ml-2 h-4 w-4" />
+              </Button>
+            </>
+          )}
+
+          {step === 2 && (
+            <>
+              {/* Job Title */}
+              <div className="space-y-2">
+                <Label htmlFor="job_title" className="flex items-center gap-2 text-foreground">
+                  <Briefcase className="h-4 w-4" />
+                  Job Title
+                </Label>
+                <Input
+                  id="job_title"
+                  value={formData.job_title}
+                  onChange={(e) => setFormData(prev => ({ ...prev, job_title: e.target.value }))}
+                  placeholder="e.g., Software Engineer, Product Manager"
+                  className="bg-background border-input text-foreground placeholder:text-muted-foreground"
+                />
+              </div>
+
+              {/* Company */}
+              <div className="space-y-2">
+                <Label htmlFor="company" className="text-foreground">Company / Organization</Label>
+                <Input
+                  id="company"
+                  value={formData.company}
+                  onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
+                  placeholder="Where do you work?"
+                  className="bg-background border-input text-foreground placeholder:text-muted-foreground"
+                />
+              </div>
+
+              {/* Bio */}
+              <div className="space-y-2">
+                <Label htmlFor="bio" className="text-foreground">Bio</Label>
+                <Textarea
+                  id="bio"
+                  value={formData.bio}
+                  onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+                  placeholder="Tell us a bit about yourself..."
+                  className="bg-background border-input text-foreground placeholder:text-muted-foreground resize-none"
+                  rows={3}
+                />
+              </div>
+
+              {/* Interests */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2 text-foreground">
+                  <Sparkles className="h-4 w-4" />
+                  Interests
+                  <span className="text-xs text-muted-foreground ml-1">
+                    ({formData.interests.length} selected)
+                  </span>
+                </Label>
+                <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-2 border border-border rounded-lg bg-muted/30">
+                  {availableInterests.map(interest => (
+                    <button
+                      key={interest}
+                      type="button"
+                      onClick={() => handleInterestToggle(interest)}
+                      className={cn(
+                        "px-3 py-1.5 rounded-full text-sm font-medium transition-all",
+                        formData.interests.includes(interest)
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-background border border-border text-foreground hover:border-primary/50"
+                      )}
+                    >
+                      {interest}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => setStep(1)}
                 >
-                  <div className="font-medium text-foreground">{type.label}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{type.description}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Completing...' : 'Complete Profile'}
-          </Button>
+                  <ChevronLeft className="mr-2 h-4 w-4" />
+                  Back
+                </Button>
+                <Button type="submit" className="flex-1" disabled={loading}>
+                  {loading ? 'Completing...' : 'Complete Profile'}
+                </Button>
+              </div>
+            </>
+          )}
         </form>
       </DialogContent>
     </Dialog>
