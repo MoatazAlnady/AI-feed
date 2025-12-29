@@ -171,13 +171,10 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
             requests.slice(0, 3).map((request) => (
               <div key={request.id} className="flex items-start space-x-3 p-3 rounded-lg border border-border">
                 <Avatar className="h-10 w-10">
-                  {request.requester.profile_photo ? (
-                    <AvatarImage src={request.requester.profile_photo} />
-                  ) : (
-                    <AvatarFallback>
-                      <User className="h-5 w-5" />
-                    </AvatarFallback>
-                  )}
+                  <AvatarImage src={request.requester.profile_photo} />
+                  <AvatarFallback className="bg-primary/20 text-primary font-medium">
+                    {request.requester.full_name?.charAt(0)?.toUpperCase() || <User className="h-5 w-5" />}
+                  </AvatarFallback>
                 </Avatar>
                 
                 <div className="flex-1 min-w-0">
@@ -260,13 +257,10 @@ const ConnectionRequestsModal: React.FC<ConnectionRequestsModalProps> = ({
             requests.map((request) => (
               <div key={request.id} className="flex items-start space-x-3 p-3 rounded-lg border border-border">
                 <Avatar className="h-10 w-10">
-                  {request.requester.profile_photo ? (
-                    <AvatarImage src={request.requester.profile_photo} />
-                  ) : (
-                    <AvatarFallback>
-                      <User className="h-5 w-5" />
-                    </AvatarFallback>
-                  )}
+                  <AvatarImage src={request.requester.profile_photo} />
+                  <AvatarFallback className="bg-primary/20 text-primary font-medium">
+                    {request.requester.full_name?.charAt(0)?.toUpperCase() || <User className="h-5 w-5" />}
+                  </AvatarFallback>
                 </Avatar>
                 
                 <div className="flex-1 min-w-0">
