@@ -112,7 +112,6 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onPo
       const { data: newPostData, error } = await supabase
         .from('posts')
         .insert({
-          user_id: user.id,
           content,
           image_url: image ? URL.createObjectURL(image) : null,
           video_url: videoUrl || null,
@@ -120,7 +119,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onPo
           link_metadata: linkMetadata,
           visibility,
           visible_to_groups: visibility === 'groups' ? selectedGroups : []
-        })
+        } as any)
         .select()
         .single();
 

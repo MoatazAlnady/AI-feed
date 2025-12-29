@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -6,8 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { toast } from 'sonner';
-import { User, Calendar, MapPin, Phone, Globe, Lock } from 'lucide-react';
+import { User, Calendar, MapPin, Phone, Globe, Lock, ChevronsUpDown, Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const countriesWithCodes = [
   { name: 'United States', code: '+1' },
@@ -84,10 +87,33 @@ const accountTypes = [
   { value: 'employer', label: 'Employer', description: 'For companies' },
 ];
 
+const months = [
+  { value: '01', label: 'January' },
+  { value: '02', label: 'February' },
+  { value: '03', label: 'March' },
+  { value: '04', label: 'April' },
+  { value: '05', label: 'May' },
+  { value: '06', label: 'June' },
+  { value: '07', label: 'July' },
+  { value: '08', label: 'August' },
+  { value: '09', label: 'September' },
+  { value: '10', label: 'October' },
+  { value: '11', label: 'November' },
+  { value: '12', label: 'December' },
+];
+
+// Generate years from 1920 to current year - 13 (minimum age)
+const currentYear = new Date().getFullYear();
+const years = Array.from({ length: currentYear - 13 - 1920 + 1 }, (_, i) => (currentYear - 13 - i).toString());
+
 export default function OAuthProfileCompletion() {
   const { user, profileComplete, setProfileComplete } = useAuth();
   const [loading, setLoading] = useState(false);
   const [accountTypeLocked, setAccountTypeLocked] = useState(false);
+  const [countryOpen, setCountryOpen] = useState(false);
+  const [birthYear, setBirthYear] = useState('');
+  const [birthMonth, setBirthMonth] = useState('');
+  const [birthDay, setBirthDay] = useState('');
   const [formData, setFormData] = useState({
     full_name: '',
     birth_date: '',
@@ -101,6 +127,23 @@ export default function OAuthProfileCompletion() {
 
   // Only show for logged-in users with incomplete profiles
   const isOpen = !!user && !profileComplete;
+
+  // Generate days based on selected year and month
+  const days = useMemo(() => {
+    if (!birthYear || !birthMonth) return Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0'));
+    const daysInMonth = new Date(parseInt(birthYear), parseInt(birthMonth), 0).getDate();
+    return Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString().padStart(2, '0'));
+  }, [birthYear, birthMonth]);
+
+  // Update birth_date when year, month, day change
+  useEffect(() => {
+    if (birthYear && birthMonth && birthDay) {
+      setFormData(prev => ({
+        ...prev,
+        birth_date: `${birthYear}-${birthMonth}-${birthDay}`,
+      }));
+    }
+  }, [birthYear, birthMonth, birthDay]);
 
   useEffect(() => {
     if (user && isOpen) {
@@ -148,6 +191,11 @@ export default function OAuthProfileCompletion() {
           }
           if (profile.birth_date) {
             setFormData(prev => ({ ...prev, birth_date: profile.birth_date }));
+            // Parse existing birth date to set dropdowns
+            const [year, month, day] = profile.birth_date.split('-');
+            setBirthYear(year || '');
+            setBirthMonth(month || '');
+            setBirthDay(day || '');
           }
           if (profile.phone) {
             // Extract phone number without country code
@@ -224,7 +272,6 @@ export default function OAuthProfileCompletion() {
     try {
       const profileData = {
         id: user.id,
-        email: user.email,
         full_name: formData.full_name.trim(),
         birth_date: formData.birth_date,
         age: calculateAge(formData.birth_date),
@@ -284,21 +331,44 @@ export default function OAuthProfileCompletion() {
             />
           </div>
 
-          {/* Birth Date */}
+          {/* Birth Date - Year/Month/Day dropdowns */}
           <div className="space-y-2">
-            <Label htmlFor="birth_date" className="flex items-center gap-2 text-foreground">
+            <Label className="flex items-center gap-2 text-foreground">
               <Calendar className="h-4 w-4" />
               Birth Date *
             </Label>
-            <Input
-              id="birth_date"
-              type="date"
-              value={formData.birth_date}
-              onChange={(e) => setFormData(prev => ({ ...prev, birth_date: e.target.value }))}
-              max={new Date().toISOString().split('T')[0]}
-              className="bg-background border-input text-foreground"
-              required
-            />
+            <div className="grid grid-cols-3 gap-2">
+              <Select value={birthYear} onValueChange={setBirthYear}>
+                <SelectTrigger className="bg-background border-input text-foreground">
+                  <SelectValue placeholder="Year" />
+                </SelectTrigger>
+                <SelectContent className="max-h-60 bg-popover border-border">
+                  {years.map(year => (
+                    <SelectItem key={year} value={year} className="text-popover-foreground">{year}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={birthMonth} onValueChange={setBirthMonth}>
+                <SelectTrigger className="bg-background border-input text-foreground">
+                  <SelectValue placeholder="Month" />
+                </SelectTrigger>
+                <SelectContent className="max-h-60 bg-popover border-border">
+                  {months.map(month => (
+                    <SelectItem key={month.value} value={month.value} className="text-popover-foreground">{month.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={birthDay} onValueChange={setBirthDay}>
+                <SelectTrigger className="bg-background border-input text-foreground">
+                  <SelectValue placeholder="Day" />
+                </SelectTrigger>
+                <SelectContent className="max-h-60 bg-popover border-border">
+                  {days.map(day => (
+                    <SelectItem key={day} value={day} className="text-popover-foreground">{day}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Gender */}
@@ -316,22 +386,49 @@ export default function OAuthProfileCompletion() {
             </Select>
           </div>
 
-          {/* Country */}
+          {/* Country - Searchable */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2 text-foreground">
               <Globe className="h-4 w-4" />
               Country *
             </Label>
-            <Select value={formData.country} onValueChange={handleCountryChange}>
-              <SelectTrigger className="bg-background border-input text-foreground">
-                <SelectValue placeholder="Select country" />
-              </SelectTrigger>
-              <SelectContent className="max-h-60 bg-popover border-border">
-                {countriesWithCodes.map(country => (
-                  <SelectItem key={country.name} value={country.name} className="text-popover-foreground">{country.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Popover open={countryOpen} onOpenChange={setCountryOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={countryOpen}
+                  className="w-full justify-between bg-background border-input text-foreground hover:bg-accent"
+                >
+                  {formData.country || "Search and select country..."}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0 bg-popover border-border" align="start">
+                <Command className="bg-popover">
+                  <CommandInput placeholder="Search country..." className="text-foreground" />
+                  <CommandList>
+                    <CommandEmpty className="text-muted-foreground py-6 text-center text-sm">No country found.</CommandEmpty>
+                    <CommandGroup>
+                      {countriesWithCodes.map(country => (
+                        <CommandItem
+                          key={country.name}
+                          value={country.name}
+                          onSelect={() => {
+                            handleCountryChange(country.name);
+                            setCountryOpen(false);
+                          }}
+                          className="text-popover-foreground"
+                        >
+                          <Check className={cn("mr-2 h-4 w-4", formData.country === country.name ? "opacity-100" : "opacity-0")} />
+                          {country.name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* City */}
