@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, Mail, Lock, User, Eye, EyeOff, Upload, Camera, MapPin, Calendar, Users, Building, UserCheck, Sparkles, AlertCircle, CheckCircle, Chrome } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { X, Mail, Lock, User, Eye, EyeOff, Upload, Camera, MapPin, Calendar, Users, Building, UserCheck, Sparkles, AlertCircle, CheckCircle, Chrome, ChevronsUpDown, Check } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { InputBase, TextareaBase, SelectBase } from '@/components/ui/InputBase';
 import OnboardingFlow from './OnboardingFlow';
@@ -7,6 +7,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { getAuthRedirectUrl } from '@/utils/authRedirect';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -38,15 +42,49 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
 
   // New required fields
   const [birthDate, setBirthDate] = useState('');
+  const [birthYear, setBirthYear] = useState('');
+  const [birthMonth, setBirthMonth] = useState('');
+  const [birthDay, setBirthDay] = useState('');
   const [gender, setGender] = useState('');
   const [country, setCountry] = useState('');
+  const [countryOpen, setCountryOpen] = useState(false);
   const [city, setCity] = useState('');
   const [accountType, setAccountType] = useState('creator'); // creator, employer
   const [phoneCountryCode, setPhoneCountryCode] = useState('+1');
   const [phoneNumber, setPhoneNumber] = useState('');
   
   // Languages and skills
-  const [languages, setLanguages] = useState<Array<{language: string, level: number}>>([]);
+  const [languages, setLanguages] = useState<Array<{language: string, level: number}>>([]); 
+
+  // Date dropdown data
+  const months = [
+    { value: '01', label: 'January' },
+    { value: '02', label: 'February' },
+    { value: '03', label: 'March' },
+    { value: '04', label: 'April' },
+    { value: '05', label: 'May' },
+    { value: '06', label: 'June' },
+    { value: '07', label: 'July' },
+    { value: '08', label: 'August' },
+    { value: '09', label: 'September' },
+    { value: '10', label: 'October' },
+    { value: '11', label: 'November' },
+    { value: '12', label: 'December' },
+  ];
+  const currentYear = new Date().getFullYear();
+  const years = useMemo(() => Array.from({ length: currentYear - 13 - 1920 + 1 }, (_, i) => (currentYear - 13 - i).toString()), []);
+  const days = useMemo(() => {
+    if (!birthYear || !birthMonth) return Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0'));
+    const daysInMonth = new Date(parseInt(birthYear), parseInt(birthMonth), 0).getDate();
+    return Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString().padStart(2, '0'));
+  }, [birthYear, birthMonth]);
+
+  // Update birthDate when year, month, day change
+  useEffect(() => {
+    if (birthYear && birthMonth && birthDay) {
+      setBirthDate(`${birthYear}-${birthMonth}-${birthDay}`);
+    }
+  }, [birthYear, birthMonth, birthDay]);
 
   // Invitation handling
   const [inviteToken, setInviteToken] = useState<string | null>(null);
@@ -795,22 +833,45 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       </div>
                     </div>
 
-                    {/* Birth Date */}
+                    {/* Birth Date - Year/Month/Day dropdowns */}
                     <div className="animate-slide-up">
-                      <label htmlFor="birthDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Date of Birth *
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <span className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4" />
+                          Date of Birth *
+                        </span>
                       </label>
-                      <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <input
-                          type="date"
-                          id="birthDate"
-                          value={birthDate}
-                          onChange={(e) => setBirthDate(e.target.value)}
-                          className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                          required
-                          max={new Date(new Date().setFullYear(new Date().getFullYear() - 13)).toISOString().split('T')[0]}
-                        />
+                      <div className="grid grid-cols-3 gap-2">
+                        <Select value={birthYear} onValueChange={setBirthYear}>
+                          <SelectTrigger className="bg-background border-input text-foreground rounded-xl">
+                            <SelectValue placeholder="Year" />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-60 bg-popover border-border">
+                            {years.map(year => (
+                              <SelectItem key={year} value={year} className="text-popover-foreground">{year}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Select value={birthMonth} onValueChange={setBirthMonth}>
+                          <SelectTrigger className="bg-background border-input text-foreground rounded-xl">
+                            <SelectValue placeholder="Month" />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-60 bg-popover border-border">
+                            {months.map(month => (
+                              <SelectItem key={month.value} value={month.value} className="text-popover-foreground">{month.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Select value={birthDay} onValueChange={setBirthDay}>
+                          <SelectTrigger className="bg-background border-input text-foreground rounded-xl">
+                            <SelectValue placeholder="Day" />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-60 bg-popover border-border">
+                            {days.map(day => (
+                              <SelectItem key={day} value={day} className="text-popover-foreground">{day}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       <p className="text-xs text-gray-500 mt-1">You must be at least 13 years old</p>
                     </div>
@@ -839,29 +900,52 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       </div>
                     </div>
 
-                    {/* Location - Fixed city selection */}
+                    {/* Location - Searchable country and city selection */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-slide-up">
                       <div>
-                        <label htmlFor="country" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Country *
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <span className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4" />
+                            Country *
+                          </span>
                         </label>
-                        <div className="relative">
-                          <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                          <select
-                            id="country"
-                            value={country}
-                            onChange={(e) => handleCountryChange(e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                            required
-                          >
-                            <option value="">Select country</option>
-                            {countries.map((countryOption) => (
-                              <option key={countryOption} value={countryOption}>
-                                {countryOption}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
+                        <Popover open={countryOpen} onOpenChange={setCountryOpen}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={countryOpen}
+                              className="w-full justify-between bg-background border-input text-foreground hover:bg-accent rounded-xl h-12"
+                            >
+                              {country || "Search and select country..."}
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0 bg-popover border-border z-50" align="start">
+                            <Command className="bg-popover">
+                              <CommandInput placeholder="Search country..." className="text-foreground" />
+                              <CommandList>
+                                <CommandEmpty className="text-muted-foreground py-6 text-center text-sm">No country found.</CommandEmpty>
+                                <CommandGroup>
+                                  {countriesWithCodes.map(countryItem => (
+                                    <CommandItem
+                                      key={countryItem.name}
+                                      value={countryItem.name}
+                                      onSelect={() => {
+                                        handleCountryChange(countryItem.name);
+                                        setCountryOpen(false);
+                                      }}
+                                      className="text-popover-foreground"
+                                    >
+                                      <Check className={cn("mr-2 h-4 w-4", country === countryItem.name ? "opacity-100" : "opacity-0")} />
+                                      {countryItem.name}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
                       </div>
                       <div>
                         <label htmlFor="city" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
