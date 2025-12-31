@@ -6,7 +6,7 @@ import OnboardingFlow from './OnboardingFlow';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { getAuthRedirectUrl } from '@/utils/authRedirect';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -583,7 +583,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: 'google',
                         options: {
-                          redirectTo: getAuthRedirectUrl('/')
+                          redirectTo: window.location.origin
                         }
                       });
                       if (error) throw error;
@@ -617,7 +617,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: 'linkedin_oidc',
                         options: {
-                          redirectTo: getAuthRedirectUrl('/')
+                          redirectTo: window.location.origin
                         }
                       });
                       if (error) throw error;
@@ -651,7 +651,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: 'discord',
                         options: {
-                          redirectTo: getAuthRedirectUrl('/')
+                          redirectTo: window.location.origin
                         }
                       });
                       if (error) throw error;
@@ -682,7 +682,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: 'github',
                         options: {
-                          redirectTo: getAuthRedirectUrl('/')
+                          redirectTo: window.location.origin
                         }
                       });
                       if (error) throw error;
