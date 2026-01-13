@@ -1161,12 +1161,21 @@
     "tabs": {
       "tools": "Tools",
       "articles": "Articles",
-      "activity": "Activity"
+      "activity": "Activity",
+      "groups": "Groups"
     },
     "empty": {
       "noTools": "No tools submitted yet",
+      "toolsAppear": "Tools submitted by this user will appear here.",
+      "toolsAppearOwn": "Tools you submit will appear here.",
       "noArticles": "No articles written yet",
-      "noActivity": "No recent activity"
+      "articlesAppear": "Articles written by this user will appear here.",
+      "articlesAppearOwn": "Articles you write will appear here.",
+      "noActivity": "No recent activity",
+      "activityAppear": "Recent activity will appear here.",
+      "noGroups": "Not a member of any groups",
+      "groupsAppear": "Groups this user belongs to will appear here.",
+      "groupsAppearOwn": "Groups you join will appear here."
     },
     "toast": {
       "loginToFollow": "Please log in to follow users",

@@ -774,6 +774,25 @@
     }
   },
   "creatorProfile": {
+    "tabs": {
+      "tools": "工具",
+      "articles": "文章",
+      "activity": "动态",
+      "groups": "群组"
+    },
+    "empty": {
+      "noTools": "尚未提交任何工具",
+      "toolsAppear": "此用户提交的工具将显示在这里。",
+      "toolsAppearOwn": "您提交的工具将显示在这里。",
+      "noArticles": "尚未撰写任何文章",
+      "articlesAppear": "此用户撰写的文章将显示在这里。",
+      "articlesAppearOwn": "您撰写的文章将显示在这里。",
+      "noActivity": "暂无最近动态",
+      "activityAppear": "最近的动态将显示在这里。",
+      "noGroups": "未加入任何群组",
+      "groupsAppear": "此用户所属的群组将显示在这里。",
+      "groupsAppearOwn": "您加入的群组将显示在这里。"
+    },
     "title": "创作者资料",
     "backToCreators": "返回创作者列表",
     "notFound": "未找到创作者",
