@@ -843,32 +843,32 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       </label>
                       <div className="grid grid-cols-3 gap-2">
                         <Select value={birthYear} onValueChange={setBirthYear}>
-                          <SelectTrigger className="bg-background border-input text-foreground rounded-xl">
+                          <SelectTrigger className="bg-white dark:bg-gray-800 border-input text-foreground dark:text-gray-100 rounded-xl">
                             <SelectValue placeholder="Year" />
                           </SelectTrigger>
-                          <SelectContent className="max-h-60 bg-popover border-border">
+                          <SelectContent className="max-h-60 bg-white dark:bg-gray-800 border-border">
                             {years.map(year => (
-                              <SelectItem key={year} value={year} className="text-popover-foreground">{year}</SelectItem>
+                              <SelectItem key={year} value={year} className="text-gray-900 dark:text-gray-100">{year}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                         <Select value={birthMonth} onValueChange={setBirthMonth}>
-                          <SelectTrigger className="bg-background border-input text-foreground rounded-xl">
+                          <SelectTrigger className="bg-white dark:bg-gray-800 border-input text-foreground dark:text-gray-100 rounded-xl">
                             <SelectValue placeholder="Month" />
                           </SelectTrigger>
-                          <SelectContent className="max-h-60 bg-popover border-border">
+                          <SelectContent className="max-h-60 bg-white dark:bg-gray-800 border-border">
                             {months.map(month => (
-                              <SelectItem key={month.value} value={month.value} className="text-popover-foreground">{month.label}</SelectItem>
+                              <SelectItem key={month.value} value={month.value} className="text-gray-900 dark:text-gray-100">{month.label}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                         <Select value={birthDay} onValueChange={setBirthDay}>
-                          <SelectTrigger className="bg-background border-input text-foreground rounded-xl">
+                          <SelectTrigger className="bg-white dark:bg-gray-800 border-input text-foreground dark:text-gray-100 rounded-xl">
                             <SelectValue placeholder="Day" />
                           </SelectTrigger>
-                          <SelectContent className="max-h-60 bg-popover border-border">
+                          <SelectContent className="max-h-60 bg-white dark:bg-gray-800 border-border">
                             {days.map(day => (
-                              <SelectItem key={day} value={day} className="text-popover-foreground">{day}</SelectItem>
+                              <SelectItem key={day} value={day} className="text-gray-900 dark:text-gray-100">{day}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -882,21 +882,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                         Gender *
                       </label>
                       <div className="relative">
-                        <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <select
-                          id="gender"
-                          value={gender}
-                          onChange={(e) => setGender(e.target.value)}
-                          className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                          required
-                        >
-                          <option value="">Select gender</option>
-                          {genderOptions.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
+                        <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10 pointer-events-none" />
+                        <Select value={gender} onValueChange={setGender}>
+                          <SelectTrigger className="w-full pl-10 bg-white dark:bg-gray-800 border-input text-foreground dark:text-gray-100 rounded-xl h-12">
+                            <SelectValue placeholder="Select gender" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white dark:bg-gray-800 border-border">
+                            {genderOptions.map((option) => (
+                              <SelectItem key={option} value={option} className="text-gray-900 dark:text-gray-100">
+                                {option}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
 

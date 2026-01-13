@@ -10,6 +10,27 @@
     "offlineDesc": "Her zaman çevrimdışı görün",
     "quickChange": "Durumu değiştir"
   },
+  "creatorProfile": {
+    "tabs": {
+      "tools": "Araçlar",
+      "articles": "Makaleler",
+      "activity": "Aktivite",
+      "groups": "Gruplar"
+    },
+    "empty": {
+      "noTools": "Henüz araç gönderilmedi",
+      "toolsAppear": "Bu kullanıcının gönderdiği araçlar burada görünecek.",
+      "toolsAppearOwn": "Gönderdiğiniz araçlar burada görünecek.",
+      "noArticles": "Henüz makale yazılmadı",
+      "articlesAppear": "Bu kullanıcının yazdığı makaleler burada görünecek.",
+      "articlesAppearOwn": "Yazdığınız makaleler burada görünecek.",
+      "noActivity": "Son aktivite yok",
+      "activityAppear": "Son aktiviteler burada görünecek.",
+      "noGroups": "Herhangi bir gruba üye değil",
+      "groupsAppear": "Bu kullanıcının üye olduğu gruplar burada görünecek.",
+      "groupsAppearOwn": "Katıldığınız gruplar burada görünecek."
+    }
+  },
   "nav": {
     "home": "Ana Sayfa",
     "tools": "Araçlar",
