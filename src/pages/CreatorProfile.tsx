@@ -69,7 +69,7 @@ interface CreatorTool {
 }
 
 const CreatorProfile: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
   const { handleOrId, id, handle, userId } = useParams<{ handleOrId?: string; id?: string; handle?: string; userId?: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
