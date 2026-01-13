@@ -121,6 +121,7 @@ export default function OAuthProfileCompletion() {
   const [loading, setLoading] = useState(false);
   const [accountTypeLocked, setAccountTypeLocked] = useState(false);
   const [countryOpen, setCountryOpen] = useState(false);
+  const [phoneCodeOpen, setPhoneCodeOpen] = useState(false);
   const [birthYear, setBirthYear] = useState('');
   const [birthMonth, setBirthMonth] = useState('');
   const [birthDay, setBirthDay] = useState('');
@@ -131,7 +132,7 @@ export default function OAuthProfileCompletion() {
     gender: '',
     country: '',
     city: '',
-    phone_country_code: '',
+    phone_country_code: '+1',
     phone: '',
     account_type: 'creator',
     // Step 2 fields
@@ -536,12 +537,48 @@ export default function OAuthProfileCompletion() {
                   Phone Number *
                 </Label>
                 <div className="flex gap-2">
-                  <Input
-                    value={formData.phone_country_code}
-                    className="w-20 bg-muted border-input text-foreground"
-                    placeholder="+1"
-                    readOnly
-                  />
+                  <Popover open={phoneCodeOpen} onOpenChange={setPhoneCodeOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={phoneCodeOpen}
+                        className="w-24 justify-between bg-background border-input text-foreground"
+                      >
+                        {formData.phone_country_code || "+1"}
+                        <ChevronsUpDown className="ml-1 h-3 w-3 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 p-0 bg-popover border-border z-50">
+                      <Command className="bg-popover">
+                        <CommandInput placeholder="Search country code..." className="text-foreground" />
+                        <CommandList>
+                          <CommandEmpty>No country found.</CommandEmpty>
+                          <CommandGroup>
+                            {countriesWithCodes.map((country) => (
+                              <CommandItem
+                                key={`${country.name}-${country.code}`}
+                                value={`${country.name} ${country.code}`}
+                                onSelect={() => {
+                                  setFormData(prev => ({ ...prev, phone_country_code: country.code }));
+                                  setPhoneCodeOpen(false);
+                                }}
+                                className="text-foreground"
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    formData.phone_country_code === country.code ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                {country.code} ({country.name})
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                   <Input
                     value={formData.phone}
                     onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
