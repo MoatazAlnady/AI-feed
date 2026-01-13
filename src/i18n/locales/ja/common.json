@@ -725,6 +725,25 @@
     }
   },
   "creatorProfile": {
+    "tabs": {
+      "tools": "ツール",
+      "articles": "記事",
+      "activity": "アクティビティ",
+      "groups": "グループ"
+    },
+    "empty": {
+      "noTools": "まだツールが提出されていません",
+      "toolsAppear": "このユーザーが提出したツールがここに表示されます。",
+      "toolsAppearOwn": "あなたが提出したツールがここに表示されます。",
+      "noArticles": "まだ記事が書かれていません",
+      "articlesAppear": "このユーザーが書いた記事がここに表示されます。",
+      "articlesAppearOwn": "あなたが書いた記事がここに表示されます。",
+      "noActivity": "最近のアクティビティはありません",
+      "activityAppear": "最近のアクティビティがここに表示されます。",
+      "noGroups": "どのグループにも参加していません",
+      "groupsAppear": "このユーザーが所属するグループがここに表示されます。",
+      "groupsAppearOwn": "あなたが参加したグループがここに表示されます。"
+    },
     "title": "クリエイタープロフィール",
     "backToCreators": "クリエイター一覧に戻る",
     "notFound": "クリエイターが見つかりません",

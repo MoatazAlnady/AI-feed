@@ -692,12 +692,21 @@
     "tabs": {
       "tools": "Outils",
       "articles": "Articles",
-      "activity": "Activité"
+      "activity": "Activité",
+      "groups": "Groupes"
     },
     "empty": {
       "noTools": "Aucun outil soumis pour le moment",
+      "toolsAppear": "Les outils soumis par cet utilisateur apparaîtront ici.",
+      "toolsAppearOwn": "Les outils que vous soumettez apparaîtront ici.",
       "noArticles": "Aucun article écrit pour le moment",
-      "noActivity": "Aucune activité récente"
+      "articlesAppear": "Les articles écrits par cet utilisateur apparaîtront ici.",
+      "articlesAppearOwn": "Les articles que vous écrivez apparaîtront ici.",
+      "noActivity": "Aucune activité récente",
+      "activityAppear": "L'activité récente apparaîtra ici.",
+      "noGroups": "N'est membre d'aucun groupe",
+      "groupsAppear": "Les groupes auxquels cet utilisateur appartient apparaîtront ici.",
+      "groupsAppearOwn": "Les groupes que vous rejoignez apparaîtront ici."
     },
     "toast": {
       "loginToFollow": "Veuillez vous connecter pour suivre les utilisateurs",
