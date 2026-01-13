@@ -268,7 +268,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onPo
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="What's on your mind about AI?"
-                  className={`w-full p-4 border rounded-xl resize-none focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                  className={`w-full p-4 border rounded-xl resize-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 ${
                     content.length > MAX_POST_LENGTH 
                       ? 'border-destructive' 
                       : content.length > MAX_POST_LENGTH - 300 
