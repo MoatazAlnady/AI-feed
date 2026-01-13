@@ -51,6 +51,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
   const [city, setCity] = useState('');
   const [accountType, setAccountType] = useState('creator'); // creator, employer
   const [phoneCountryCode, setPhoneCountryCode] = useState('+1');
+  const [phoneCodeOpen, setPhoneCodeOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   
   // Languages and skills
@@ -157,7 +158,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
     { name: 'Chile', code: '+56' },
     { name: 'South Africa', code: '+27' },
     { name: 'Palestine', code: '+970' },
-    { name: 'UAE', code: '+971' },
+    { name: 'United Arab Emirates', code: '+971' },
     { name: 'Switzerland', code: '+41' },
     { name: 'Austria', code: '+43' },
     { name: 'Belgium', code: '+32' },
@@ -242,7 +243,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
     'Algeria': ['Algiers', 'Oran', 'Constantine', 'Annaba', 'Blida', 'Batna', 'Djelfa', 'Sétif', 'Sidi Bel Abbès', 'Biskra', 'Tébessa', 'El Oued', 'Skikda', 'Tiaret', 'Béjaïa', 'Tlemcen', 'Ouargla', 'Béchar', 'Mostaganem', 'Bordj Bou Arréridj'],
     'Morocco': ['Casablanca', 'Rabat', 'Fez', 'Marrakech', 'Agadir', 'Tangier', 'Meknes', 'Oujda', 'Kenitra', 'Tetouan', 'Safi', 'Mohammedia', 'Khouribga', 'El Jadida', 'Beni Mellal', 'Nador', 'Taza', 'Settat', 'Berrechid', 'Khemisset'],
     'Sudan': ['Khartoum', 'Omdurman', 'Khartoum North', 'Nyala', 'Port Sudan', 'Kassala', 'Al-Ubayyid', 'Kosti', 'Wad Madani', 'El Fasher', 'Atbara', 'Dongola', 'Malakal', 'El Geneina', 'Rabak', 'Geneina', 'Kadugli', 'El Daein', 'Sennar', 'Zalingei'],
-    'UAE': ['Dubai', 'Abu Dhabi', 'Sharjah', 'Al Ain', 'Ajman', 'Ras Al Khaimah', 'Fujairah', 'Umm Al Quwain', 'Khor Fakkan', 'Kalba', 'Dibba Al-Fujairah', 'Dibba Al-Hisn', 'Madinat Zayed', 'Liwa Oasis', 'Ghayathi', 'Ruwais', 'Jebel Ali', 'Al Dhafra', 'Hatta', 'Masafi'],
+    'United Arab Emirates': ['Dubai', 'Abu Dhabi', 'Sharjah', 'Al Ain', 'Ajman', 'Ras Al Khaimah', 'Fujairah', 'Umm Al Quwain', 'Khor Fakkan', 'Kalba', 'Dibba Al-Fujairah', 'Dibba Al-Hisn', 'Madinat Zayed', 'Liwa Oasis', 'Ghayathi', 'Ruwais', 'Jebel Ali', 'Al Dhafra', 'Hatta', 'Masafi'],
     'Somalia': ['Mogadishu', 'Hargeisa', 'Bosaso', 'Kismayo', 'Merca', 'Galcaio', 'Baidoa', 'Garowe', 'Berbera', 'Burao', 'Las Anod', 'Erigavo', 'Galkayo', 'Beledweyne', 'Jowhar', 'Luuq', 'Hudur', 'Qardho', 'Borama', 'Zeila'],
     'Djibouti': ['Djibouti City', 'Ali Sabieh', 'Dikhil', 'Tadjourah', 'Obock', 'Arta', 'Holhol', 'Yoboki', 'As Eyla', 'Balho', 'Galafi', 'Loyada', 'Randa', 'Sagallou', 'Khor Angar', 'Dorale', 'Damerjog', 'Airolaf', 'Assamo', 'Gobaad'],
     'Comoros': ['Moroni', 'Mutsamudu', 'Fomboni', 'Domoni', 'Sima', 'Mitsoudje', 'Ouani', 'Adda-Douéni', 'Tsémbéhou', 'Koni-Djodjo', 'Mirontsy', 'Nioumachoua', 'Mbéni', 'Iconi', 'Mitsamiouli', 'Foumbouni', 'Salamani', 'Chindini', 'Vouvouni', 'Bandamadji'],
@@ -700,6 +701,99 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                 </Button>
               </div>
 
+              {/* Row 3: Apple, Twitter, and Facebook */}
+              <div className="grid grid-cols-3 gap-2">
+                {/* Apple */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full flex items-center justify-center gap-2 py-5"
+                  onClick={async () => {
+                    try {
+                      setLoading(true);
+                      setError('');
+                      await supabase.auth.signOut({ scope: 'local' });
+                      const { error } = await supabase.auth.signInWithOAuth({
+                        provider: 'apple',
+                        options: {
+                          redirectTo: window.location.origin
+                        }
+                      });
+                      if (error) throw error;
+                    } catch (err: any) {
+                      setError(err.message || 'Failed to sign in with Apple');
+                      setLoading(false);
+                    }
+                  }}
+                  disabled={loading}
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                  </svg>
+                  <span className="hidden sm:inline">Apple</span>
+                </Button>
+
+                {/* Twitter/X */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full flex items-center justify-center gap-2 py-5"
+                  onClick={async () => {
+                    try {
+                      setLoading(true);
+                      setError('');
+                      await supabase.auth.signOut({ scope: 'local' });
+                      const { error } = await supabase.auth.signInWithOAuth({
+                        provider: 'twitter',
+                        options: {
+                          redirectTo: window.location.origin
+                        }
+                      });
+                      if (error) throw error;
+                    } catch (err: any) {
+                      setError(err.message || 'Failed to sign in with Twitter');
+                      setLoading(false);
+                    }
+                  }}
+                  disabled={loading}
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                  <span className="hidden sm:inline">X</span>
+                </Button>
+
+                {/* Facebook */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full flex items-center justify-center gap-2 py-5"
+                  onClick={async () => {
+                    try {
+                      setLoading(true);
+                      setError('');
+                      await supabase.auth.signOut({ scope: 'local' });
+                      const { error } = await supabase.auth.signInWithOAuth({
+                        provider: 'facebook',
+                        options: {
+                          redirectTo: window.location.origin
+                        }
+                      });
+                      if (error) throw error;
+                    } catch (err: any) {
+                      setError(err.message || 'Failed to sign in with Facebook');
+                      setLoading(false);
+                    }
+                  }}
+                  disabled={loading}
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#1877F2">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                  <span className="hidden sm:inline">Facebook</span>
+                </Button>
+              </div>
+
               <div className="relative my-4">
                 <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t border-border" />
@@ -976,17 +1070,45 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                     </label>
                     <div className="grid grid-cols-5 gap-2">
                       <div className="col-span-2">
-                        <select
-                          value={phoneCountryCode}
-                          onChange={(e) => setPhoneCountryCode(e.target.value)}
-                          className="w-full px-3 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                        >
-                          {countriesWithCodes.map((country) => (
-                            <option key={country.code} value={country.code}>
-                              {country.code} ({country.name})
-                            </option>
-                          ))}
-                        </select>
+                        <Popover open={phoneCodeOpen} onOpenChange={setPhoneCodeOpen}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={phoneCodeOpen}
+                              className="w-full justify-between px-3 py-3 h-auto border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-foreground dark:text-gray-100 rounded-xl"
+                            >
+                              <span className="truncate text-sm">
+                                {phoneCountryCode}
+                              </span>
+                              <ChevronsUpDown className="ml-1 h-3 w-3 shrink-0 opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-64 p-0 bg-popover dark:bg-gray-800 border-border z-50">
+                            <Command className="bg-popover dark:bg-gray-800">
+                              <CommandInput placeholder="Search country code..." className="text-foreground dark:text-gray-100" />
+                              <CommandList>
+                                <CommandEmpty>No country found.</CommandEmpty>
+                                <CommandGroup>
+                                  {countriesWithCodes.map((countryItem) => (
+                                    <CommandItem
+                                      key={`${countryItem.name}-${countryItem.code}`}
+                                      value={`${countryItem.name} ${countryItem.code}`}
+                                      onSelect={() => {
+                                        setPhoneCountryCode(countryItem.code);
+                                        setPhoneCodeOpen(false);
+                                      }}
+                                      className="text-popover-foreground dark:text-gray-100"
+                                    >
+                                      <Check className={cn("mr-2 h-4 w-4", phoneCountryCode === countryItem.code ? "opacity-100" : "opacity-0")} />
+                                      {countryItem.code} ({countryItem.name})
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
                       </div>
                       <div className="col-span-3">
                         <input
