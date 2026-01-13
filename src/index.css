@@ -347,17 +347,17 @@ button {
   @apply border-secondary;
 }
 
-/* Dark mode input fields fix - grey styling */
-.dark input,
-.dark textarea,
-.dark select {
-  @apply bg-gray-700 text-white border-gray-600;
+/* Dark mode input fields fix - only for inputs without explicit background classes */
+.dark input:not([class*="bg-"]),
+.dark textarea:not([class*="bg-"]),
+.dark select:not([class*="bg-"]) {
+  @apply bg-input text-foreground border-border;
 }
 
 .dark input:focus,
 .dark textarea:focus,
 .dark select:focus {
-  @apply bg-gray-700 text-white border-gray-500 ring-gray-500 ring-opacity-50;
+  @apply border-ring ring-1 ring-ring;
 }
 
 .dark input::placeholder,
