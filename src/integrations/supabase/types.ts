@@ -2683,6 +2683,69 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          account_type: string | null
+          admin_access_level: string | null
+          bio: string | null
+          birth_date: string | null
+          city: string | null
+          company: string | null
+          country: string | null
+          created_at: string | null
+          full_name: string | null
+          gender: string | null
+          headline: string | null
+          id: string
+          interests: string | null
+          job_title: string | null
+          languages: string | null
+          phone: string | null
+          phone_country_code: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          account_type?: string | null
+          admin_access_level?: string | null
+          bio?: string | null
+          birth_date?: string | null
+          city?: string | null
+          company?: string | null
+          country?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          gender?: string | null
+          headline?: string | null
+          id: string
+          interests?: string | null
+          job_title?: string | null
+          languages?: string | null
+          phone?: string | null
+          phone_country_code?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          account_type?: string | null
+          admin_access_level?: string | null
+          bio?: string | null
+          birth_date?: string | null
+          city?: string | null
+          company?: string | null
+          country?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          gender?: string | null
+          headline?: string | null
+          id?: string
+          interests?: string | null
+          job_title?: string | null
+          languages?: string | null
+          phone?: string | null
+          phone_country_code?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       project_candidates: {
         Row: {
           candidate_id: string
