@@ -51,7 +51,7 @@
   }
 
   .dark {
-    --background: 220 13% 9%; /* Dark page background */
+    --background: 220 15% 13%; /* Dark page background - slightly lighter gray */
     --foreground: 0 0% 98%;
     --card: 217 28% 17%; /* #1f2937 - exact panel color */
     --card-foreground: 0 0% 98%;
