@@ -459,7 +459,7 @@ const CreatorProfile: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       {/* Cover & Profile Header */}
       <div className="relative">
         <div className="h-48 md:h-64 bg-gradient-to-r from-primary-600 to-primary-800 relative">
