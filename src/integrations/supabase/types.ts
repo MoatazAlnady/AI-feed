@@ -4104,22 +4104,40 @@ export type Database = {
         Args: { post_id_param: string }
         Returns: number
       }
-      create_tool_edit_request: {
-        Args: {
-          category_id_param: string
-          cons_param: string[]
-          description_param: string
-          features_param: string[]
-          name_param: string
-          pricing_param: string
-          pros_param: string[]
-          subcategory_param: string
-          tags_param: string[]
-          tool_id_param: string
-          website_param: string
-        }
-        Returns: string
-      }
+      create_tool_edit_request:
+        | {
+            Args: {
+              category_id_param: string
+              cons_param: string[]
+              description_param: string
+              features_param: string[]
+              name_param: string
+              pricing_param: string
+              pros_param: string[]
+              subcategory_param: string
+              tags_param: string[]
+              tool_id_param: string
+              website_param: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              category_id_param: string
+              cons_param: string[]
+              description_param: string
+              features_param: string[]
+              name_param: string
+              pricing_param: string
+              pros_param: string[]
+              sub_category_ids_param?: string[]
+              subcategory_param: string
+              tags_param: string[]
+              tool_id_param: string
+              website_param: string
+            }
+            Returns: string
+          }
       find_or_create_dm: { Args: { other_user_id: string }; Returns: string }
       generate_unique_handle: {
         Args: { base_name: string; user_id: string }
@@ -4151,6 +4169,7 @@ export type Database = {
           name: string
           pricing: string
           pros: string[]
+          sub_category_ids: string[]
           subcategory: string
           tags: string[]
           tool_id: string
