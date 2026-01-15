@@ -3509,6 +3509,42 @@ export type Database = {
         }
         Relationships: []
       }
+      tool_sub_categories: {
+        Row: {
+          created_at: string | null
+          id: string
+          sub_category_id: string
+          tool_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          sub_category_id: string
+          tool_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          sub_category_id?: string
+          tool_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tool_sub_categories_sub_category_id_fkey"
+            columns: ["sub_category_id"]
+            isOneToOne: false
+            referencedRelation: "sub_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tool_sub_categories_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "tools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tool_views: {
         Row: {
           created_at: string

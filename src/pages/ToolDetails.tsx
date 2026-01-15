@@ -16,6 +16,13 @@ import EditToolModal from '@/components/EditToolModal';
 import SEOHead from '@/components/SEOHead';
 import { getDeviceFingerprint } from '@/utils/deviceFingerprint';
 
+interface SubCategoryInfo {
+  id: string;
+  name: string;
+  slug: string;
+  color: string;
+}
+
 interface Tool {
   id: string;
   name: string;
@@ -23,6 +30,7 @@ interface Tool {
   category_id: string;
   category_name?: string;
   subcategory?: string;
+  sub_categories?: SubCategoryInfo[];
   pricing: string;
   free_plan?: string;
   website: string;
@@ -113,9 +121,26 @@ const ToolDetails: React.FC = () => {
         }
       }
 
+      // Fetch sub-categories from junction table
+      let subCategories: SubCategoryInfo[] = [];
+      const { data: junctionData } = await supabase
+        .from('tool_sub_categories')
+        .select(`
+          sub_category_id,
+          sub_categories(id, name, slug, color)
+        `)
+        .eq('tool_id', id);
+      
+      if (junctionData) {
+        subCategories = junctionData
+          .map(item => (item as any).sub_categories)
+          .filter(Boolean);
+      }
+
       setTool({
         ...data,
-        category_name: categoryName
+        category_name: categoryName,
+        sub_categories: subCategories
       });
     } catch (error) {
       console.error('Error fetching tool:', error);
@@ -279,7 +304,17 @@ const ToolDetails: React.FC = () => {
                   </div>
                   <div className="flex flex-wrap items-center gap-3">
                     <Badge variant="secondary">{tool.category_name}</Badge>
-                    {tool.subcategory && (
+                    {tool.sub_categories && tool.sub_categories.length > 0 ? (
+                      tool.sub_categories.map((subCat) => (
+                        <Badge 
+                          key={subCat.id} 
+                          variant="outline"
+                          style={{ borderColor: subCat.color, color: subCat.color }}
+                        >
+                          {subCat.name}
+                        </Badge>
+                      ))
+                    ) : tool.subcategory && (
                       <Badge variant="outline">{tool.subcategory}</Badge>
                     )}
                     <Badge variant={tool.pricing === 'free' ? 'default' : 'destructive'}>

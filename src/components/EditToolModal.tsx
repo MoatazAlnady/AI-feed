@@ -82,17 +82,29 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
       const { data, error } = await supabase
         .from('tools')
         .select('*')
-          .eq('id', String(toolId))
+        .eq('id', String(toolId))
         .single();
 
       if (error) throw error;
+      
+      // Fetch sub-categories from junction table
+      let subCategoryIds: string[] = [];
+      const { data: junctionData } = await supabase
+        .from('tool_sub_categories')
+        .select('sub_category_id')
+        .eq('tool_id', String(toolId));
+      
+      if (junctionData) {
+        subCategoryIds = junctionData.map(item => item.sub_category_id);
+      }
+      
       if (data) {
         setTool(data);
         setFormData({
           name: data.name || '',
           description: data.description || '',
           category_id: data.category_id || '',
-          sub_category_ids: data.sub_category_ids || [],
+          sub_category_ids: subCategoryIds,
           website: data.website || '',
           pricing: data.pricing || 'free',
           features: data.features?.length ? data.features : [''],
@@ -185,7 +197,6 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
         name: formData.name,
         description: formData.description,
         category_id: formData.category_id,
-        sub_category_ids: formData.sub_category_ids,
         website: formData.website,
         pricing: formData.pricing,
         features: filteredFeatures,
@@ -202,6 +213,26 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
           .eq('id', String(toolId));
 
         if (error) throw error;
+        
+        // Update sub-categories in junction table
+        // First delete existing relationships
+        await supabase
+          .from('tool_sub_categories')
+          .delete()
+          .eq('tool_id', String(toolId));
+        
+        // Then insert new relationships
+        if (formData.sub_category_ids.length > 0) {
+          await supabase
+            .from('tool_sub_categories')
+            .insert(
+              formData.sub_category_ids.map(subCatId => ({
+                tool_id: String(toolId),
+                sub_category_id: subCatId
+              }))
+            );
+        }
+        
         setSuccess('Tool updated successfully!');
         if (onToolUpdated) onToolUpdated();
         
