@@ -1,7 +1,7 @@
 export const generateCSVTemplate = () => {
   const headers = [
     'Category',
-    'Subcategory', 
+    'Subcategory Name (must match existing)', 
     'Tool Name',
     'Tool Type',
     'Free Plan/Credits (Yes/No)',

@@ -31,7 +31,6 @@ interface Tool {
   description: string;
   category_id: string;
   category_name?: string;
-  subcategory?: string;
   sub_categories?: SubCategoryInfo[];
   pricing: string;
   website: string;

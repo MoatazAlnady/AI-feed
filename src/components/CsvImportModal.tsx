@@ -276,7 +276,7 @@ const CsvImportModal: React.FC<CsvImportModalProps> = ({
                   <h5 className="font-medium text-foreground mb-2">{t('submitTool.requiredColumns', 'Required Columns:')}</h5>
                   <ul className="space-y-1 text-muted-foreground">
                     <li>• Category</li>
-                    <li>• Subcategory</li>
+                    <li>• Subcategory Name (must match existing subcategory)</li>
                     <li>• Tool Name</li>
                     <li>• Link</li>
                     <li>• Tool Description</li>

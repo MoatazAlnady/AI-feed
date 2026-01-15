@@ -17,6 +17,12 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
+interface SubCategoryInfo {
+  id: string;
+  name: string;
+  color?: string;
+}
+
 interface EditRequest {
   id: string;
   tool_id: string;
@@ -27,7 +33,8 @@ interface EditRequest {
   description: string | null;
   category_id: string | null;
   category_name: string | null;
-  subcategory: string | null;
+  sub_category_id: string[] | null;
+  sub_categories?: SubCategoryInfo[];
   website: string | null;
   pricing: string | null;
   features: string[] | null;
@@ -71,7 +78,20 @@ const AdminToolRequests: React.FC = () => {
 
       if (error) throw error;
       
-      setEditRequests(data || []);
+      // Enrich with subcategory details
+      const enrichedData = await Promise.all((data || []).map(async (request: any) => {
+        let sub_categories: SubCategoryInfo[] = [];
+        if (request.sub_category_id && request.sub_category_id.length > 0) {
+          const { data: subCatData } = await supabase
+            .from('sub_categories')
+            .select('id, name, color')
+            .in('id', request.sub_category_id);
+          sub_categories = subCatData || [];
+        }
+        return { ...request, sub_categories };
+      }));
+      
+      setEditRequests(enrichedData);
     } catch (error: any) {
       console.error('Error fetching edit requests:', error);
     } finally {
@@ -324,12 +344,25 @@ const AdminToolRequests: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Subcategory */}
-                  {selectedRequest.subcategory && (
+                  {/* Subcategories */}
+                  {selectedRequest.sub_categories && selectedRequest.sub_categories.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subcategory</h3>
+                      <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subcategories</h3>
                       <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <p className="text-gray-900 dark:text-white">{selectedRequest.subcategory}</p>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedRequest.sub_categories.map((subCat) => (
+                            <span 
+                              key={subCat.id}
+                              className="px-2 py-1 rounded-full text-xs font-medium"
+                              style={{ 
+                                backgroundColor: subCat.color ? `${subCat.color}20` : '#e5e7eb',
+                                color: subCat.color || '#374151'
+                              }}
+                            >
+                              {subCat.name}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
