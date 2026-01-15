@@ -21,7 +21,6 @@ interface Tool {
   tags: string[];
   created_at: string;
   category_id: string;
-  subcategory: string;
   category_name?: string;
   sub_categories?: SubCategoryInfo[];
 }

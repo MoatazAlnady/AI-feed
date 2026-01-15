@@ -23,7 +23,6 @@ interface ToolCardProps {
     pricing: string;
     free_plan?: string;
     category_id?: string;
-    subcategory?: string;
     sub_categories?: SubCategoryInfo[];
     is_light_logo?: boolean;
     is_dark_logo?: boolean;
@@ -76,7 +75,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '', onDelete }) =
         {/* Header with Logo, Title, Category, and Bookmark */}
         <div className="relative">
           {/* Category chip in top-left corner */}
-          {tool.sub_categories && tool.sub_categories.length > 0 ? (
+          {tool.sub_categories && tool.sub_categories.length > 0 && (
             <div className="absolute -top-2 -left-2 z-10 flex flex-wrap gap-1">
               {tool.sub_categories.slice(0, 2).map((subCat) => (
                 <span 
@@ -90,12 +89,6 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '', onDelete }) =
                   {subCat.name}
                 </span>
               ))}
-            </div>
-          ) : tool.subcategory && (
-            <div className="absolute -top-2 -left-2 z-10">
-              <span className="px-2 py-1 text-xs font-medium rounded-full border bg-card border-border text-foreground">
-                {tool.subcategory}
-              </span>
             </div>
           )}
           
