@@ -209,7 +209,6 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
         website: formData.website.trim(),
         pricing: formData.pricing,
         category_id: formData.category_id,
-        sub_category_ids: formData.sub_category_ids,
         features,
         pros,
         cons,
@@ -218,11 +217,29 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
         user_id: user?.id
       };
 
-      const { error } = await supabase
+      const { data: newTool, error } = await supabase
         .from('tools')
-        .insert(toolData);
+        .insert(toolData)
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Insert sub-category relationships into junction table
+      if (newTool && formData.sub_category_ids.length > 0) {
+        const { error: junctionError } = await supabase
+          .from('tool_sub_categories')
+          .insert(
+            formData.sub_category_ids.map(subCatId => ({
+              tool_id: newTool.id,
+              sub_category_id: subCatId
+            }))
+          );
+        
+        if (junctionError) {
+          console.error('Error inserting sub-categories:', junctionError);
+        }
+      }
 
       toast({
         title: "Success",
