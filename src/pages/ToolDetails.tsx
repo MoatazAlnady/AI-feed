@@ -29,7 +29,6 @@ interface Tool {
   description: string;
   category_id: string;
   category_name?: string;
-  subcategory?: string;
   sub_categories?: SubCategoryInfo[];
   pricing: string;
   free_plan?: string;
@@ -304,7 +303,7 @@ const ToolDetails: React.FC = () => {
                   </div>
                   <div className="flex flex-wrap items-center gap-3">
                     <Badge variant="secondary">{tool.category_name}</Badge>
-                    {tool.sub_categories && tool.sub_categories.length > 0 ? (
+                    {tool.sub_categories && tool.sub_categories.length > 0 && (
                       tool.sub_categories.map((subCat) => (
                         <Badge 
                           key={subCat.id} 
@@ -314,8 +313,6 @@ const ToolDetails: React.FC = () => {
                           {subCat.name}
                         </Badge>
                       ))
-                    ) : tool.subcategory && (
-                      <Badge variant="outline">{tool.subcategory}</Badge>
                     )}
                     <Badge variant={tool.pricing === 'free' ? 'default' : 'destructive'}>
                       {tool.pricing}

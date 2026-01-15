@@ -3599,7 +3599,6 @@ export type Database = {
           share_count: number | null
           status: string | null
           sub_category_ids: string[] | null
-          subcategory: string | null
           tags: string[] | null
           updated_at: string | null
           user_id: string | null
@@ -3627,7 +3626,6 @@ export type Database = {
           share_count?: number | null
           status?: string | null
           sub_category_ids?: string[] | null
-          subcategory?: string | null
           tags?: string[] | null
           updated_at?: string | null
           user_id?: string | null
@@ -3655,7 +3653,6 @@ export type Database = {
           share_count?: number | null
           status?: string | null
           sub_category_ids?: string[] | null
-          subcategory?: string | null
           tags?: string[] | null
           updated_at?: string | null
           user_id?: string | null
@@ -4093,7 +4090,7 @@ export type Database = {
       }
       approve_tool_edit_request: {
         Args: { admin_notes_param?: string; request_id_param: string }
-        Returns: undefined
+        Returns: boolean
       }
       are_users_connected: {
         Args: { user_a: string; user_b: string }
@@ -4105,6 +4102,22 @@ export type Database = {
         Returns: number
       }
       create_tool_edit_request:
+        | {
+            Args: {
+              category_id_param: string
+              cons_param: string[]
+              description_param: string
+              features_param: string[]
+              name_param: string
+              pricing_param: string
+              pros_param: string[]
+              sub_category_ids_param: string[]
+              tags_param: string[]
+              tool_id_param: string
+              website_param: string
+            }
+            Returns: string
+          }
         | {
             Args: {
               category_id_param: string

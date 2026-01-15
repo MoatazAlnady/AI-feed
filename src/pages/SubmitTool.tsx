@@ -28,7 +28,7 @@ const SubmitTool: React.FC = () => {
     name: '',
     description: '',
     category: '',
-    subcategory: '',
+    subcategoryId: '', // Now stores the ID instead of name
     toolType: [],
     freePlan: 'No',
     website: '',
@@ -126,12 +126,24 @@ const SubmitTool: React.FC = () => {
 
       if (error) throw error;
 
+      // Fetch subcategory from junction table
+      let subcategoryId = '';
+      const { data: junctionData } = await supabase
+        .from('tool_sub_categories')
+        .select('sub_category_id')
+        .eq('tool_id', toolId)
+        .limit(1);
+      
+      if (junctionData && junctionData.length > 0) {
+        subcategoryId = junctionData[0].sub_category_id;
+      }
+
       if (tool) {
         setFormData({
           name: tool.name || '',
           description: tool.description || '',
           category: categories.find(cat => cat.id === tool.category_id)?.name || '',
-          subcategory: tool.subcategory || '',
+          subcategoryId: subcategoryId,
           toolType: [],
           freePlan: tool.free_plan || 'No',
           website: tool.website || '',
@@ -168,7 +180,7 @@ const SubmitTool: React.FC = () => {
     
     // Clear subcategory when category changes
     if (name === 'category') {
-      setFormData(prev => ({ ...prev, subcategory: '' }));
+      setFormData(prev => ({ ...prev, subcategoryId: '' }));
     }
     
     // Handle multiple tool types
@@ -316,7 +328,7 @@ const SubmitTool: React.FC = () => {
       const selectedCategory = categories.find(cat => cat.name === formData.category);
       
       // Validation
-      if (!formData.subcategory.trim()) {
+      if (!formData.subcategoryId) {
         toast({
           title: t('common.error'),
           description: t('submitTool.validation.subcategoryRequired'),
@@ -365,7 +377,6 @@ const SubmitTool: React.FC = () => {
         pricing: formData.pricing,
         free_plan: formData.freePlan,
         category_id: selectedCategory?.id || null,
-        subcategory: formData.subcategory,
         pros: filteredPros,
         cons: filteredCons,
         tags: tagsArray,
@@ -380,6 +391,8 @@ const SubmitTool: React.FC = () => {
       console.log('Submitting tool data:', submissionData);
       
       let result;
+      let insertedToolId: string | null = null;
+      
       if (isEditMode && id) {
         // Update existing tool
         const { data: updateResult, error } = await supabase
@@ -388,6 +401,7 @@ const SubmitTool: React.FC = () => {
           .eq('id', id)
           .select('*');
         result = { insertResult: updateResult, error };
+        insertedToolId = id;
       } else {
         // Create new tool
         const { data: insertResult, error } = await supabase
@@ -395,6 +409,28 @@ const SubmitTool: React.FC = () => {
           .insert(submissionData)
           .select('*');
         result = { insertResult, error };
+        if (insertResult && insertResult.length > 0) {
+          insertedToolId = insertResult[0].id;
+        }
+      }
+      
+      // Insert subcategory relationship
+      if (!result.error && insertedToolId && formData.subcategoryId) {
+        // Delete existing relationships first (for edit mode)
+        if (isEditMode) {
+          await supabase
+            .from('tool_sub_categories')
+            .delete()
+            .eq('tool_id', insertedToolId);
+        }
+        
+        // Insert new relationship
+        await supabase
+          .from('tool_sub_categories')
+          .insert({
+            tool_id: insertedToolId,
+            sub_category_id: formData.subcategoryId
+          });
       }
 
       console.log('Result:', result);
@@ -462,7 +498,7 @@ const SubmitTool: React.FC = () => {
         name: '',
         description: '',
         category: '',
-        subcategory: '',
+        subcategoryId: '',
         toolType: [],
         freePlan: 'No',
         website: '',
@@ -657,13 +693,13 @@ const SubmitTool: React.FC = () => {
               </div>
             </div>
             <div>
-              <label htmlFor="subcategory" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="subcategoryId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Subcategory *
               </label>
               <select
-                id="subcategory"
-                name="subcategory"
-                value={formData.subcategory}
+                id="subcategoryId"
+                name="subcategoryId"
+                value={formData.subcategoryId}
                 onChange={handleInputChange}
                 required
                 className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
@@ -672,7 +708,7 @@ const SubmitTool: React.FC = () => {
                 <option value="">Select subcategory</option>
                 {formData.category && categories.find(c => c.name === formData.category) && 
                   getSubCategoriesForCategory(categories.find(c => c.name === formData.category)?.id).map((sub: any) => (
-                    <option key={sub.id} value={sub.name}>
+                    <option key={sub.id} value={sub.id}>
                       {sub.name}
                     </option>
                   ))

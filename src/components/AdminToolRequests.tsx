@@ -8,6 +8,12 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Check, X, Clock, Eye, User } from 'lucide-react';
 
+interface SubCategoryInfo {
+  id: string;
+  name: string;
+  color?: string;
+}
+
 interface ToolEditRequest {
   id: string;
   tool_id: string;
@@ -18,7 +24,8 @@ interface ToolEditRequest {
   description: string;
   category_id: string;
   category_name: string;
-  subcategory: string;
+  sub_category_ids?: string[];
+  sub_categories?: SubCategoryInfo[];
   website: string;
   pricing: string;
   features: string[];
@@ -52,7 +59,22 @@ const AdminToolRequests: React.FC<AdminToolRequestsProps> = ({ onRefresh }) => {
       });
 
       if (error) throw error;
-      setRequests(data || []);
+      
+      // Fetch subcategory names for each request that has sub_category_ids
+      const requestsWithSubCategories = await Promise.all(
+        (data || []).map(async (request: any) => {
+          if (request.sub_category_ids && request.sub_category_ids.length > 0) {
+            const { data: subCats } = await supabase
+              .from('sub_categories')
+              .select('id, name, color')
+              .in('id', request.sub_category_ids);
+            return { ...request, sub_categories: subCats || [] };
+          }
+          return { ...request, sub_categories: [] };
+        })
+      );
+      
+      setRequests(requestsWithSubCategories);
     } catch (error) {
       console.error('Error fetching tool edit requests:', error);
       toast({
@@ -290,8 +312,22 @@ const AdminToolRequests: React.FC<AdminToolRequestsProps> = ({ onRefresh }) => {
                       <p className="text-sm mt-1">{selectedRequest.category_name}</p>
                     </div>
                     <div>
-                      <Label>Subcategory</Label>
-                      <p className="text-sm mt-1">{selectedRequest.subcategory}</p>
+                      <Label>Subcategories</Label>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {selectedRequest.sub_categories && selectedRequest.sub_categories.length > 0 ? (
+                          selectedRequest.sub_categories.map((subCat) => (
+                            <span 
+                              key={subCat.id}
+                              className="px-2 py-1 text-xs rounded-full border"
+                              style={{ borderColor: subCat.color || 'hsl(var(--border))', color: subCat.color }}
+                            >
+                              {subCat.name}
+                            </span>
+                          ))
+                        ) : (
+                          <p className="text-sm text-muted-foreground">None</p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
