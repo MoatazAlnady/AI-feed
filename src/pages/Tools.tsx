@@ -18,6 +18,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+interface SubCategoryInfo {
+  id: string;
+  name: string;
+  slug?: string;
+  color?: string;
+}
+
 interface Tool {
   id: string;
   name: string;
@@ -25,6 +32,7 @@ interface Tool {
   category_id: string;
   category_name?: string;
   subcategory?: string;
+  sub_categories?: SubCategoryInfo[];
   pricing: string;
   website: string;
   features: string[];
@@ -147,11 +155,34 @@ const Tools: React.FC = () => {
 
       if (categoriesError) throw categoriesError;
 
+      // Fetch subcategories from junction table for all tools
+      const toolIds = (toolsData || []).map(t => t.id);
+      let toolSubCategoriesMap = new Map<string, SubCategoryInfo[]>();
+      
+      if (toolIds.length > 0) {
+        const { data: junctionData } = await supabase
+          .from('tool_sub_categories')
+          .select('tool_id, sub_categories(id, name, slug, color)')
+          .in('tool_id', toolIds);
+        
+        if (junctionData) {
+          junctionData.forEach((item: any) => {
+            const subCat = item.sub_categories;
+            if (subCat) {
+              const existing = toolSubCategoriesMap.get(item.tool_id) || [];
+              existing.push(subCat);
+              toolSubCategoriesMap.set(item.tool_id, existing);
+            }
+          });
+        }
+      }
+
       const categoryMap = new Map(categoriesData?.map(cat => [cat.id, cat.name]) || []);
 
       const transformedTools = (toolsData || []).map(tool => ({
         ...tool,
         category_name: categoryMap.get(tool.category_id) || 'Uncategorized',
+        sub_categories: toolSubCategoriesMap.get(tool.id) || [],
         average_rating: tool.average_rating || 0,
         review_count: tool.review_count || 0
       }));

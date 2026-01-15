@@ -7,6 +7,13 @@ import ToolActionButtons from './ToolActionButtons';
 import ReportContentModal from './ReportContentModal';
 import ShareToolModal from './ShareToolModal';
 
+interface SubCategoryInfo {
+  id: string;
+  name: string;
+  slug?: string;
+  color?: string;
+}
+
 interface ToolCardProps {
   tool: {
     id: string;
@@ -17,6 +24,7 @@ interface ToolCardProps {
     free_plan?: string;
     category_id?: string;
     subcategory?: string;
+    sub_categories?: SubCategoryInfo[];
     is_light_logo?: boolean;
     is_dark_logo?: boolean;
     logo_url?: string;
@@ -68,7 +76,22 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '', onDelete }) =
         {/* Header with Logo, Title, Category, and Bookmark */}
         <div className="relative">
           {/* Category chip in top-left corner */}
-          {tool.subcategory && (
+          {tool.sub_categories && tool.sub_categories.length > 0 ? (
+            <div className="absolute -top-2 -left-2 z-10 flex flex-wrap gap-1">
+              {tool.sub_categories.slice(0, 2).map((subCat) => (
+                <span 
+                  key={subCat.id}
+                  className="px-2 py-1 text-xs font-medium rounded-full border bg-card"
+                  style={{ 
+                    borderColor: subCat.color || 'hsl(var(--border))', 
+                    color: subCat.color || 'hsl(var(--foreground))' 
+                  }}
+                >
+                  {subCat.name}
+                </span>
+              ))}
+            </div>
+          ) : tool.subcategory && (
             <div className="absolute -top-2 -left-2 z-10">
               <span className="px-2 py-1 text-xs font-medium rounded-full border bg-card border-border text-foreground">
                 {tool.subcategory}

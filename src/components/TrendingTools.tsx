@@ -2,6 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 
+interface SubCategoryInfo {
+  id: string;
+  name: string;
+  slug?: string;
+  color?: string;
+}
+
 interface Tool {
   id: string;
   name: string;
@@ -16,6 +23,7 @@ interface Tool {
   category_id: string;
   subcategory: string;
   category_name?: string;
+  sub_categories?: SubCategoryInfo[];
 }
 
 export default function TrendingTools() {
@@ -46,13 +54,36 @@ export default function TrendingTools() {
           .from('categories')
           .select('id, name, color, icon');
 
+        // Fetch subcategories from junction table
+        const toolIds = (toolsData || []).map(t => t.id);
+        let toolSubCategoriesMap = new Map<string, SubCategoryInfo[]>();
+        
+        if (toolIds.length > 0) {
+          const { data: junctionData } = await supabase
+            .from('tool_sub_categories')
+            .select('tool_id, sub_categories(id, name, slug, color)')
+            .in('tool_id', toolIds);
+          
+          if (junctionData) {
+            junctionData.forEach((item: any) => {
+              const subCat = item.sub_categories;
+              if (subCat) {
+                const existing = toolSubCategoriesMap.get(item.tool_id) || [];
+                existing.push(subCat);
+                toolSubCategoriesMap.set(item.tool_id, existing);
+              }
+            });
+          }
+        }
+
         // Create category lookup map
         const categoryMap = new Map(categoriesData?.map(cat => [cat.id, cat]) || []);
 
-        // Add category info to tools
+        // Add category and subcategory info to tools
         const toolsWithCategories = (toolsData || []).map(tool => ({
           ...tool,
-          category_name: categoryMap.get(tool.category_id)?.name || 'Uncategorized'
+          category_name: categoryMap.get(tool.category_id)?.name || 'Uncategorized',
+          sub_categories: toolSubCategoriesMap.get(tool.id) || []
         }));
 
         console.log('Trending tools with categories:', toolsWithCategories);
@@ -87,11 +118,23 @@ export default function TrendingTools() {
                   <div className="space-y-4">
                     <div className="flex items-start justify-between">
                       <h4 className="font-semibold text-lg text-foreground">{tool.name}</h4>
-                      {tool.category_name && tool.category_name !== 'Uncategorized' && (
-                        <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
-                          {tool.category_name}
-                        </span>
-                      )}
+                      <div className="flex flex-wrap gap-1">
+                        {tool.sub_categories && tool.sub_categories.length > 0 ? (
+                          tool.sub_categories.slice(0, 1).map((subCat) => (
+                            <span 
+                              key={subCat.id}
+                              className="text-xs px-2 py-1 rounded-full bg-primary/10"
+                              style={{ color: subCat.color || 'hsl(var(--primary))' }}
+                            >
+                              {subCat.name}
+                            </span>
+                          ))
+                        ) : tool.category_name && tool.category_name !== 'Uncategorized' && (
+                          <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
+                            {tool.category_name}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <p className="text-muted-foreground text-sm line-clamp-3">{tool.description}</p>
                     <div className="flex items-center justify-between">

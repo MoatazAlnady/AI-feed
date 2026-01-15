@@ -25,6 +25,13 @@ import {
   Trash2
 } from 'lucide-react';
 
+interface SubCategoryInfo {
+  id: string;
+  name: string;
+  slug?: string;
+  color?: string;
+}
+
 interface PendingTool {
   id: string;
   name: string;
@@ -32,6 +39,7 @@ interface PendingTool {
   category_id: string;
   category_name: string;
   subcategory: string;
+  sub_categories?: SubCategoryInfo[];
   website: string;
   logo_url: string;
   pricing: string;
@@ -96,6 +104,28 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
 
       if (usersError) throw usersError;
 
+      // Fetch subcategories from junction table
+      const toolIds = (toolsData || []).map(t => t.id);
+      let toolSubCategoriesMap = new Map<string, SubCategoryInfo[]>();
+      
+      if (toolIds.length > 0) {
+        const { data: junctionData } = await supabase
+          .from('tool_sub_categories')
+          .select('tool_id, sub_categories(id, name, slug, color)')
+          .in('tool_id', toolIds);
+        
+        if (junctionData) {
+          junctionData.forEach((item: any) => {
+            const subCat = item.sub_categories;
+            if (subCat) {
+              const existing = toolSubCategoriesMap.get(item.tool_id) || [];
+              existing.push(subCat);
+              toolSubCategoriesMap.set(item.tool_id, existing);
+            }
+          });
+        }
+      }
+
       // Create lookup maps
       const categoryMap = new Map(categoriesData?.map(cat => [cat.id, cat.name]) || []);
       const userMap = new Map(usersData?.map(user => [user.id, user.full_name]) || []);
@@ -111,6 +141,7 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
         pricing: t?.pricing ?? '',
         category_name: categoryMap.get(t.category_id) || 'Uncategorized',
         user_name: userMap.get(t.user_id) || 'Deleted User',
+        sub_categories: toolSubCategoriesMap.get(t.id) || [],
       }));
 
       console.log('Normalized pending tools data:', normalized);
