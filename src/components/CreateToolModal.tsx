@@ -54,7 +54,7 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
     website: '',
     pricing: 'free',
     category_id: '',
-    sub_category_ids: [] as string[],
+    sub_category_id: [] as string[],
     features: [''],
     pros: [''],
     cons: [''],
@@ -108,7 +108,7 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
       website: '',
       pricing: 'free',
       category_id: '',
-      sub_category_ids: [],
+      sub_category_id: [],
       features: [''],
       pros: [''],
       cons: [''],
@@ -144,9 +144,9 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
   const handleSubCategoryToggle = (subCategoryId: string) => {
     setFormData(prev => ({
       ...prev,
-      sub_category_ids: prev.sub_category_ids.includes(subCategoryId)
-        ? prev.sub_category_ids.filter(id => id !== subCategoryId)
-        : [...prev.sub_category_ids, subCategoryId]
+      sub_category_id: prev.sub_category_id.includes(subCategoryId)
+        ? prev.sub_category_id.filter(id => id !== subCategoryId)
+        : [...prev.sub_category_id, subCategoryId]
     }));
   };
 
@@ -226,11 +226,11 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
       if (error) throw error;
 
       // Insert sub-category relationships into junction table
-      if (newTool && formData.sub_category_ids.length > 0) {
+      if (newTool && formData.sub_category_id.length > 0) {
         const { error: junctionError } = await supabase
           .from('tool_sub_categories')
           .insert(
-            formData.sub_category_ids.map(subCatId => ({
+            formData.sub_category_id.map(subCatId => ({
               tool_id: newTool.id,
               sub_category_id: subCatId
             }))
@@ -379,7 +379,7 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
               <Label htmlFor="category">Category * (Single Choice)</Label>
               <Select value={formData.category_id} onValueChange={(value) => {
                 handleInputChange('category_id', value);
-                setFormData(prev => ({ ...prev, sub_category_ids: [] })); // Reset sub-categories when category changes
+                setFormData(prev => ({ ...prev, sub_category_id: [] })); // Reset sub-categories when category changes
               }}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a category" />
@@ -408,7 +408,7 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
                     <div key={subCategory.id} className="flex items-center space-x-2">
                       <Checkbox
                         id={`sub-${subCategory.id}`}
-                        checked={formData.sub_category_ids.includes(subCategory.id)}
+                        checked={formData.sub_category_id.includes(subCategory.id)}
                         onCheckedChange={() => handleSubCategoryToggle(subCategory.id)}
                       />
                       <label htmlFor={`sub-${subCategory.id}`} className="flex items-center gap-2 text-sm cursor-pointer">

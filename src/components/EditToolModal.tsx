@@ -15,7 +15,7 @@ interface Tool {
   name: string;
   description: string;
   category_id: string;
-  sub_category_ids: string[];
+  sub_category_id: string[];
   website: string;
   pricing: string;
   features: string[];
@@ -52,7 +52,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
     name: '',
     description: '',
     category_id: '',
-    sub_category_ids: [] as string[],
+    sub_category_id: [] as string[],
     website: '',
     pricing: 'free',
     features: [''],
@@ -104,7 +104,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
           name: data.name || '',
           description: data.description || '',
           category_id: data.category_id || '',
-          sub_category_ids: subCategoryIds,
+          sub_category_id: subCategoryIds,
           website: data.website || '',
           pricing: data.pricing || 'free',
           features: data.features?.length ? data.features : [''],
@@ -222,11 +222,11 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
           .eq('tool_id', String(toolId));
         
         // Then insert new relationships
-        if (formData.sub_category_ids.length > 0) {
+        if (formData.sub_category_id.length > 0) {
           await supabase
             .from('tool_sub_categories')
             .insert(
-              formData.sub_category_ids.map(subCatId => ({
+              formData.sub_category_id.map(subCatId => ({
                 tool_id: String(toolId),
                 sub_category_id: subCatId
               }))
@@ -247,7 +247,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
           name_param: formData.name,
           description_param: formData.description,
           category_id_param: formData.category_id,
-          subcategory_param: formData.sub_category_ids.join(','),
+          sub_category_id_param: formData.sub_category_id,
           website_param: formData.website,
           pricing_param: formData.pricing,
           features_param: filteredFeatures,
@@ -387,12 +387,12 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
                           <input
                             type="checkbox"
                             id={`sub-${subCategory.id}`}
-                            checked={formData.sub_category_ids.includes(subCategory.id)}
+                            checked={formData.sub_category_id.includes(subCategory.id)}
                             onChange={() => {
-                              const newIds = formData.sub_category_ids.includes(subCategory.id)
-                                ? formData.sub_category_ids.filter(id => id !== subCategory.id)
-                                : [...formData.sub_category_ids, subCategory.id];
-                              setFormData(prev => ({ ...prev, sub_category_ids: newIds }));
+                              const newIds = formData.sub_category_id.includes(subCategory.id)
+                                ? formData.sub_category_id.filter(id => id !== subCategory.id)
+                                : [...formData.sub_category_id, subCategory.id];
+                              setFormData(prev => ({ ...prev, sub_category_id: newIds }));
                             }}
                           />
                           <label htmlFor={`sub-${subCategory.id}`} className="text-sm cursor-pointer">

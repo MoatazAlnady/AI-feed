@@ -24,7 +24,7 @@ interface ToolEditRequest {
   description: string;
   category_id: string;
   category_name: string;
-  sub_category_ids?: string[];
+  sub_category_id?: string[];
   sub_categories?: SubCategoryInfo[];
   website: string;
   pricing: string;
@@ -60,14 +60,14 @@ const AdminToolRequests: React.FC<AdminToolRequestsProps> = ({ onRefresh }) => {
 
       if (error) throw error;
       
-      // Fetch subcategory names for each request that has sub_category_ids
+      // Fetch subcategory names for each request that has sub_category_id
       const requestsWithSubCategories = await Promise.all(
         (data || []).map(async (request: any) => {
-          if (request.sub_category_ids && request.sub_category_ids.length > 0) {
+          if (request.sub_category_id && request.sub_category_id.length > 0) {
             const { data: subCats } = await supabase
               .from('sub_categories')
               .select('id, name, color')
-              .in('id', request.sub_category_ids);
+              .in('id', request.sub_category_id);
             return { ...request, sub_categories: subCats || [] };
           }
           return { ...request, sub_categories: [] };
