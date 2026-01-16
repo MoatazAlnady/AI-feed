@@ -20,6 +20,18 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
+    // Parse request body for feedback data
+    let reason: string | null = null;
+    let comments: string | null = null;
+    try {
+      const body = await req.json();
+      reason = body.reason || null;
+      comments = body.comments || null;
+      logStep("Parsed request body", { reason, hasComments: !!comments });
+    } catch {
+      logStep("No body or invalid JSON, proceeding without feedback");
+    }
+
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
     logStep("Stripe key verified");
@@ -92,6 +104,24 @@ serve(async (req) => {
       subscriptionId: canceledSubscription.id,
       cancelAt: cancelDate 
     });
+
+    // Save cancellation feedback to database
+    if (reason) {
+      const { error: feedbackError } = await supabaseClient
+        .from('subscription_cancellation_feedback')
+        .insert({
+          user_id: user.id,
+          reason: reason,
+          comments: comments || null,
+          accepted_retention_offer: false,
+        });
+
+      if (feedbackError) {
+        logStep("Warning: Failed to save feedback", { error: feedbackError.message });
+      } else {
+        logStep("Cancellation feedback saved successfully");
+      }
+    }
 
     return new Response(JSON.stringify({ 
       success: true, 
