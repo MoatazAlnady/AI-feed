@@ -3130,6 +3130,30 @@ export type Database = {
         }
         Relationships: []
       }
+      signup_reasons: {
+        Row: {
+          created_at: string | null
+          display_order: number | null
+          id: number
+          is_other: boolean | null
+          reason_text: string
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number | null
+          id?: number
+          is_other?: boolean | null
+          reason_text: string
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number | null
+          id?: number
+          is_other?: boolean | null
+          reason_text?: string
+        }
+        Relationships: []
+      }
       site_content: {
         Row: {
           content_key: string
@@ -3703,6 +3727,42 @@ export type Database = {
           },
         ]
       }
+      user_cvs: {
+        Row: {
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          is_primary: boolean | null
+          mime_type: string | null
+          parsed_data: Json | null
+          uploaded_at: string | null
+          user_id: string
+        }
+        Insert: {
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          is_primary?: boolean | null
+          mime_type?: string | null
+          parsed_data?: Json | null
+          uploaded_at?: string | null
+          user_id: string
+        }
+        Update: {
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          is_primary?: boolean | null
+          mime_type?: string | null
+          parsed_data?: Json | null
+          uploaded_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_profiles: {
         Row: {
           account_type: string | null
@@ -3895,6 +3955,38 @@ export type Database = {
             columns: ["role_id"]
             isOneToOne: false
             referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_signup_reasons: {
+        Row: {
+          created_at: string | null
+          id: string
+          other_text: string | null
+          reason_id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          other_text?: string | null
+          reason_id: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          other_text?: string | null
+          reason_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_signup_reasons_reason_id_fkey"
+            columns: ["reason_id"]
+            isOneToOne: false
+            referencedRelation: "signup_reasons"
             referencedColumns: ["id"]
           },
         ]

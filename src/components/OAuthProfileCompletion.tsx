@@ -10,8 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
-import { User, Calendar, MapPin, Phone, Globe, Lock, ChevronsUpDown, Check, Briefcase, Sparkles, ChevronRight, ChevronLeft, X } from 'lucide-react';
+import { User, Calendar, MapPin, Phone, Globe, Lock, ChevronsUpDown, Check, Briefcase, Sparkles, ChevronRight, ChevronLeft, X, FileText, Upload, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const countriesWithCodes = [
@@ -162,6 +163,15 @@ export default function OAuthProfileCompletion() {
     skills: [] as string[],
   });
 
+  // Signup reasons state
+  const [signupReasons, setSignupReasons] = useState<number[]>([]);
+  const [otherReasonText, setOtherReasonText] = useState('');
+  const [availableReasons, setAvailableReasons] = useState<Array<{id: number, reason_text: string, is_other: boolean}>>([]);
+
+  // CV upload state
+  const [cvFile, setCVFile] = useState<File | null>(null);
+  const [cvUploading, setCVUploading] = useState(false);
+
   // Only show for logged-in users with incomplete profiles
   const isOpen = !!user && !profileComplete;
 
@@ -181,6 +191,18 @@ export default function OAuthProfileCompletion() {
       }));
     }
   }, [birthYear, birthMonth, birthDay]);
+
+  // Fetch signup reasons on mount
+  useEffect(() => {
+    const fetchReasons = async () => {
+      const { data } = await supabase
+        .from('signup_reasons')
+        .select('id, reason_text, is_other')
+        .order('display_order');
+      if (data) setAvailableReasons(data);
+    };
+    fetchReasons();
+  }, []);
 
   useEffect(() => {
     if (user && isOpen) {
@@ -375,15 +397,55 @@ export default function OAuthProfileCompletion() {
       toast.error('Please add at least one language');
       return false;
     }
-    if (formData.skills.length === 0) {
-      toast.error('Please select at least one skill');
+    if (formData.skills.length < 3) {
+      toast.error('Please select at least 3 skills');
       return false;
     }
     if (formData.interests.length < 3) {
       toast.error('Please select at least 3 interests');
       return false;
     }
+    if (signupReasons.length === 0) {
+      toast.error('Please select at least one reason for joining AI Feed');
+      return false;
+    }
+    // Check if "Other" is selected and text is provided
+    const otherReason = availableReasons.find(r => r.is_other);
+    if (otherReason && signupReasons.includes(otherReason.id) && !otherReasonText.trim()) {
+      toast.error('Please specify your other reason for joining');
+      return false;
+    }
     return true;
+  };
+
+  const handleReasonToggle = (reasonId: number) => {
+    setSignupReasons(prev => 
+      prev.includes(reasonId)
+        ? prev.filter(id => id !== reasonId)
+        : [...prev, reasonId]
+    );
+  };
+
+  const handleCVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'application/msword', 
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please upload a PDF or Word document');
+      return;
+    }
+    
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('File size must be less than 10MB');
+      return;
+    }
+    
+    setCVFile(file);
+    toast.success('CV selected. It will be uploaded when you complete your profile.');
   };
 
   const handleNextStep = () => {
@@ -435,6 +497,38 @@ export default function OAuthProfileCompletion() {
         .upsert(profileData, { onConflict: 'id' });
 
       if (error) throw error;
+
+      // Save signup reasons
+      for (const reasonId of signupReasons) {
+        const isOther = availableReasons.find(r => r.id === reasonId)?.is_other;
+        await supabase.from('user_signup_reasons').insert({
+          user_id: user.id,
+          reason_id: reasonId,
+          other_text: isOther ? otherReasonText : null
+        });
+      }
+
+      // Upload CV if provided
+      if (cvFile) {
+        setCVUploading(true);
+        const filePath = `${user.id}/${Date.now()}_${cvFile.name}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('user-cvs')
+          .upload(filePath, cvFile);
+        
+        if (!uploadError) {
+          await supabase.from('user_cvs').insert({
+            user_id: user.id,
+            file_name: cvFile.name,
+            file_path: filePath,
+            file_size: cvFile.size,
+            mime_type: cvFile.type,
+            is_primary: true
+          });
+        }
+        setCVUploading(false);
+      }
 
       toast.success('Profile completed successfully!');
       setProfileComplete(true);
@@ -796,7 +890,7 @@ export default function OAuthProfileCompletion() {
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                   <Briefcase className="h-4 w-4" />
-                  Skills * <span className="text-xs text-muted-foreground">({formData.skills.length} selected)</span>
+                  Skills * (minimum 3) <span className="text-xs text-muted-foreground">({formData.skills.length} selected)</span>
                 </Label>
                 <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-800/50">
                   {skillOptions.map(skill => (
@@ -855,6 +949,80 @@ export default function OAuthProfileCompletion() {
                       {interest}
                     </button>
                   ))}
+                </div>
+              </div>
+
+              {/* Why are you joining AI Feed */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                  <HelpCircle className="h-4 w-4" />
+                  Why are you joining AI Feed? * (select all that apply)
+                </Label>
+                <div className="space-y-2 max-h-48 overflow-y-auto p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                  {availableReasons.map(reason => (
+                    <label key={reason.id} className="flex items-start gap-2 cursor-pointer">
+                      <Checkbox
+                        checked={signupReasons.includes(reason.id)}
+                        onCheckedChange={() => handleReasonToggle(reason.id)}
+                        className="mt-0.5"
+                      />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">{reason.reason_text}</span>
+                    </label>
+                  ))}
+                  
+                  {/* Show text input when "Other" is selected */}
+                  {availableReasons.find(r => r.is_other && signupReasons.includes(r.id)) && (
+                    <Input
+                      placeholder="Please specify your reason..."
+                      value={otherReasonText}
+                      onChange={(e) => setOtherReasonText(e.target.value)}
+                      className="mt-2 border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl"
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* CV Upload */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                  <FileText className="h-4 w-4" />
+                  Upload Your CV
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Upload your CV to help complete your profile
+                </p>
+                
+                <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 text-center">
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleCVUpload}
+                    className="hidden"
+                    id="cv-upload"
+                  />
+                  <label htmlFor="cv-upload" className="cursor-pointer">
+                    {cvFile ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <FileText className="h-8 w-8 text-primary" />
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{cvFile.name}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => { e.preventDefault(); setCVFile(null); }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                        <span className="text-sm text-muted-foreground">
+                          Click to upload PDF, DOC, or DOCX (max 10MB)
+                        </span>
+                      </>
+                    )}
+                  </label>
                 </div>
               </div>
 

@@ -7,10 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Bell, User, Globe, Shield, Briefcase, MapPin, Phone, Link2, Calendar, Users, Circle, Building2, Flag } from 'lucide-react';
+import { Bell, User, Globe, Shield, Briefcase, MapPin, Phone, Link2, Calendar, Users, Circle, Building2, Flag, FileText, Trash2 } from 'lucide-react';
 import NotificationSettings from '@/components/NotificationSettings';
 import SecuritySettings from '@/components/SecuritySettings';
 import InterestTagSelector from '@/components/InterestTagSelector';
@@ -26,6 +27,13 @@ const Settings = () => {
   const [loading, setLoading] = useState(false);
   const [countryCodes, setCountryCodes] = useState<Array<{ id: string; country_name: string; country_code: string; phone_code: string }>>([]);
   const [onlineStatusMode, setOnlineStatusMode] = useState<'auto' | 'online' | 'offline'>('auto');
+  const [userCVs, setUserCVs] = useState<Array<{
+    id: string;
+    file_name: string;
+    file_path: string;
+    uploaded_at: string;
+    is_primary: boolean;
+  }>>([]);
   const [profile, setProfile] = useState({
     full_name: '',
     display_name: '',
@@ -56,8 +64,77 @@ const Settings = () => {
       fetchProfile();
       fetchCountryCodes();
       fetchOnlineStatusMode();
+      fetchUserCVs();
     }
   }, [user]);
+
+  const fetchUserCVs = async () => {
+    if (!user) return;
+    try {
+      const { data } = await supabase
+        .from('user_cvs')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('uploaded_at', { ascending: false });
+      if (data) setUserCVs(data);
+    } catch (error) {
+      console.error('Error fetching user CVs:', error);
+    }
+  };
+
+  const handleSetPrimaryCV = async (cvId: string) => {
+    if (!user) return;
+    try {
+      // First, unset all as non-primary
+      await supabase
+        .from('user_cvs')
+        .update({ is_primary: false })
+        .eq('user_id', user.id);
+      
+      // Set selected as primary
+      await supabase
+        .from('user_cvs')
+        .update({ is_primary: true })
+        .eq('id', cvId);
+      
+      fetchUserCVs();
+      toast({
+        title: t('common.success'),
+        description: 'Primary CV updated successfully',
+      });
+    } catch (error) {
+      console.error('Error setting primary CV:', error);
+      toast({
+        title: t('common.error'),
+        description: 'Failed to update primary CV',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const handleDeleteCV = async (cvId: string, filePath: string) => {
+    if (!user) return;
+    try {
+      // Delete from storage
+      await supabase.storage.from('user-cvs').remove([filePath]);
+      
+      // Delete from database
+      await supabase.from('user_cvs').delete().eq('id', cvId);
+      
+      fetchUserCVs();
+      toast({
+        title: t('common.success'),
+        description: 'CV deleted successfully',
+      });
+    } catch (error) {
+      console.error('Error deleting CV:', error);
+      toast({
+        title: t('common.error'),
+        description: 'Failed to delete CV',
+        variant: 'destructive'
+      });
+    }
+  };
 
   const fetchOnlineStatusMode = async () => {
     if (!user) return;
@@ -774,6 +851,66 @@ const Settings = () => {
                   onCheckedChange={(checked) => setProfile(prev => ({ ...prev, contact_visible: checked }))}
                 />
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Manage Your CVs Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                {t('settings.manageCVs', 'Manage Your CVs')}
+              </CardTitle>
+              <CardDescription>
+                {t('settings.manageCVsDesc', 'View and manage your uploaded CVs. You can delete CVs or set one as your primary CV.')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {userCVs.length === 0 ? (
+                <div className="text-center py-6 text-muted-foreground">
+                  <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                  <p>{t('settings.noCVs', 'No CVs uploaded yet')}</p>
+                  <p className="text-sm">{t('settings.uploadCVHint', 'Upload a CV when completing your profile')}</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {userCVs.map(cv => (
+                    <div key={cv.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <FileText className="h-8 w-8 text-primary" />
+                        <div>
+                          <p className="font-medium text-sm">{cv.file_name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Uploaded {format(new Date(cv.uploaded_at), 'MMM d, yyyy')}
+                          </p>
+                        </div>
+                        {cv.is_primary && (
+                          <Badge variant="secondary" className="ml-2">Primary</Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {!cv.is_primary && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleSetPrimaryCV(cv.id)}
+                          >
+                            Set Primary
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteCV(cv.id, cv.file_path)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
