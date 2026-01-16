@@ -304,30 +304,31 @@ const Upgrade: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <ul className="space-y-3">
-                <li className="flex items-center gap-3">
+                <li className="flex items-center gap-3 pb-2 border-b border-border">
                   <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span className="text-foreground font-medium">Everything in Silver</span>
+                  <span className="text-foreground font-medium">All Silver features included</span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                  <Check className="h-5 w-5 text-yellow-500 flex-shrink-0" />
                   <span className="text-foreground flex items-center gap-1">
                     <PremiumBadge tier="gold" size="sm" />
-                    Gold badge
+                    Gold creator badge
                   </span>
                 </li>
-                {goldExclusiveFeatures.map((feature, index) => (
-                  <li key={index} className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-yellow-500 flex-shrink-0" />
-                    <span className="text-foreground font-medium">{feature.title}</span>
-                  </li>
-                ))}
-                <li className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-yellow-500 flex-shrink-0" />
-                  <span className="text-foreground font-medium">Professional Dashboard</span>
+                <li className="text-sm font-semibold text-yellow-600 dark:text-yellow-400 pt-1">
+                  Gold Exclusive:
                 </li>
                 <li className="flex items-center gap-3">
                   <Check className="h-5 w-5 text-yellow-500 flex-shrink-0" />
-                  <span className="text-foreground font-medium">Accept creator subscriptions</span>
+                  <span className="text-foreground">Accept paid subscriptions from fans</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Check className="h-5 w-5 text-yellow-500 flex-shrink-0" />
+                  <span className="text-foreground">Full Professional Dashboard</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Check className="h-5 w-5 text-yellow-500 flex-shrink-0" />
+                  <span className="text-foreground">Create private exclusive groups</span>
                 </li>
               </ul>
               <Button 
