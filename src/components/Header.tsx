@@ -14,6 +14,7 @@ import NotificationDropdown from './NotificationDropdown';
 import ContactSupportModal from './ContactSupportModal';
 import ReportProblemModal from './ReportProblemModal';
 import ManageSubscriptionModal from './ManageSubscriptionModal';
+import PremiumBadge from './PremiumBadge';
 import { supabase } from '../integrations/supabase/client';
 
 const Header: React.FC = () => {

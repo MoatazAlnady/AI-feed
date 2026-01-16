@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { User, UserPlus, MessageCircle, MapPin, Briefcase, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getCreatorProfileLink } from '@/utils/profileUtils';
+import PremiumBadge, { type PremiumTier } from '@/components/PremiumBadge';
 
 interface ProfileHoverCardProps {
   userId: string;
@@ -24,6 +25,7 @@ interface UserProfile {
   company?: string;
   location?: string;
   bio?: string;
+  premium_tier?: PremiumTier;
 }
 
 const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
@@ -69,12 +71,15 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
     try {
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('id, full_name, handle, profile_photo, job_title, company, location, bio')
+        .select('id, full_name, handle, profile_photo, job_title, company, location, bio, premium_tier')
         .eq('id', userId)
         .single();
 
       if (error) throw error;
-      setProfile(data);
+      setProfile({
+        ...data,
+        premium_tier: data.premium_tier as PremiumTier
+      });
     } catch (error) {
       console.error('Error fetching profile:', error);
     } finally {
@@ -257,7 +262,10 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
               </Avatar>
               
               <div className="flex-1 min-w-0">
-                <h4 className="font-semibold truncate">{profile.full_name}</h4>
+                <h4 className="font-semibold truncate flex items-center gap-1">
+                  {profile.full_name}
+                  <PremiumBadge tier={profile.premium_tier} size="sm" />
+                </h4>
                 {profile.job_title && (
                   <div className="flex items-center text-sm text-muted-foreground mt-1">
                     <Briefcase className="h-3 w-3 mr-1" />

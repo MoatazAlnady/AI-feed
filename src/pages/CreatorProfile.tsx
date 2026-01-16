@@ -33,6 +33,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import PremiumBadge, { type PremiumTier } from '@/components/PremiumBadge';
 
 interface CreatorProfile {
   id: string;
@@ -57,6 +58,7 @@ interface CreatorProfile {
   twitter: string;
   interests: string[];
   contact_visible: boolean;
+  premium_tier?: PremiumTier;
 }
 
 interface CreatorTool {
@@ -498,6 +500,7 @@ const CreatorProfile: React.FC = () => {
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
                       {profile.full_name || t('community.networking.aiEnthusiast')}
                     </h1>
+                    <PremiumBadge tier={profile.premium_tier} size="lg" />
                     {profile.verified && (
                       <Shield className="h-6 w-6 text-blue-500" />
                     )}

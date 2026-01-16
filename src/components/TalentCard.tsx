@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import VerificationBadge from '@/components/VerificationBadge';
 import ProfileHoverCard from '@/components/ProfileHoverCard';
+import PremiumBadge, { type PremiumTier } from '@/components/PremiumBadge';
 import {
   MapPin,
   Building2,
@@ -34,6 +35,7 @@ interface TalentProfile {
   interests: string[] | null;
   languages: { language: string; proficiency: number }[] | null;
   contact_visible: boolean;
+  premium_tier?: PremiumTier;
 }
 
 type ConnectionStatus = 'none' | 'pending' | 'connected';
@@ -139,6 +141,7 @@ const TalentCard = ({
                   {talent.full_name || 'Unknown'}
                 </h3>
               </ProfileHoverCard>
+              <PremiumBadge tier={talent.premium_tier} size="sm" />
               {talent.verified && <VerificationBadge size="sm" />}
             </div>
 

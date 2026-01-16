@@ -3,6 +3,7 @@ import { Search, Bot, User, Users, Calendar, Briefcase, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import PremiumBadge, { type PremiumTier } from '@/components/PremiumBadge';
 
 interface SearchResult {
   id: string;
@@ -10,6 +11,7 @@ interface SearchResult {
   subtitle?: string;
   type: 'tool' | 'creator' | 'group' | 'event' | 'job';
   image?: string;
+  premium_tier?: PremiumTier;
 }
 
 interface GlobalSearchProps {
@@ -61,7 +63,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
           // Search creators (users)
           supabase
             .from('user_profiles')
-            .select('id, full_name, job_title, profile_photo')
+            .select('id, full_name, job_title, profile_photo, premium_tier')
             .eq('visibility', 'public')
             .or(`full_name.ilike.%${search}%,job_title.ilike.%${search}%`)
             .limit(3),
@@ -99,7 +101,8 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
             title: creator.full_name || 'Unknown',
             subtitle: creator.job_title,
             type: 'creator',
-            image: creator.profile_photo
+            image: creator.profile_photo,
+            premium_tier: creator.premium_tier as PremiumTier
           });
         });
 
@@ -234,7 +237,10 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-foreground truncate">{result.title}</div>
+                    <div className="font-medium text-foreground truncate flex items-center gap-1">
+                      {result.title}
+                      {result.type === 'creator' && <PremiumBadge tier={result.premium_tier} size="sm" />}
+                    </div>
                     {result.subtitle && (
                       <div className="text-sm text-muted-foreground truncate">{result.subtitle}</div>
                     )}

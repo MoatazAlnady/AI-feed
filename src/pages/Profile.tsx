@@ -17,6 +17,7 @@ import PostsTab from '../components/PostsTab';
 import TodoSystem from '../components/TodoSystem';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import PremiumBadge from '@/components/PremiumBadge';
 
 interface DashboardStats {
   toolsSubmitted: number;
@@ -270,8 +271,9 @@ const Profile: React.FC = () => {
                 <div className="flex-1 pt-16">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                         {profileData.fullName}
+                        <PremiumBadge tier={userProfile?.premium_tier} size="md" />
                       </h1>
                       <div className="flex items-center space-x-4 text-gray-600 dark:text-gray-300 mb-3">
                         <div className="flex items-center space-x-1">
