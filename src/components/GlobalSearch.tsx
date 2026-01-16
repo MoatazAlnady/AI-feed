@@ -267,11 +267,15 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
   const renderResultGroup = (type: keyof GroupedResults, results: SearchResult[]) => {
     if (results.length === 0) return null;
 
+    // Map plural keys to singular type for getTypeLabel
+    const singularType = type.endsWith('s') ? type.slice(0, -1) : type;
+    const typeLabel = getTypeLabel(singularType as SearchResult['type']) || type;
+
     return (
       <div key={type} className="border-b border-border last:border-b-0">
         <div className="px-3 py-2 bg-muted/50">
           <span className="text-xs font-medium text-muted-foreground uppercase">
-            {getTypeLabel(type as SearchResult['type'])}s ({results.length})
+            {typeLabel}s ({results.length})
           </span>
         </div>
         {results.map((result) => (
@@ -306,7 +310,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
           onClick={() => handleSeeAll(type)}
           className="w-full flex items-center justify-center gap-1 px-3 py-2 text-sm text-primary hover:bg-muted transition-colors"
         >
-          {t('search.seeAll', 'See all')} {getTypeLabel(type as SearchResult['type']).toLowerCase()}s
+          {t('search.seeAll', 'See all')} {typeLabel.toLowerCase()}s
           <ArrowRight className="h-3 w-3" />
         </button>
       </div>
