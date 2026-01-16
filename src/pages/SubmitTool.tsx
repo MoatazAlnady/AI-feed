@@ -640,7 +640,7 @@ const SubmitTool: React.FC = () => {
               value={formData.name}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+              className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
               placeholder={t('submitTool.form.namePlaceholder')}
             />
           </div>
@@ -657,7 +657,7 @@ const SubmitTool: React.FC = () => {
               onChange={handleInputChange}
               required
               rows={4}
-              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none bg-background"
+              className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none bg-white dark:bg-slate-800"
               placeholder={t('submitTool.form.descriptionPlaceholder')}
             />
           </div>
@@ -675,7 +675,7 @@ const SubmitTool: React.FC = () => {
                   value={formData.category}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background appearance-none"
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800 appearance-none"
                   style={{ 
                     backgroundImage: `url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'><path fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /></svg>")`,
                     backgroundRepeat: 'no-repeat',
@@ -702,7 +702,7 @@ const SubmitTool: React.FC = () => {
                 value={formData.subcategoryId}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
                 disabled={!formData.category}
               >
                 <option value="">Select subcategory</option>
@@ -722,7 +722,7 @@ const SubmitTool: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, showToolTypeDropdown: !prev.showToolTypeDropdown }))}
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background text-left flex justify-between items-center"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800 text-left flex justify-between items-center"
               >
                 <span className="truncate">
                   {formData.toolType.length > 0 ? formData.toolType.join(', ') : 'Select tool types'}
@@ -732,7 +732,7 @@ const SubmitTool: React.FC = () => {
                 </svg>
               </button>
               {formData.showToolTypeDropdown && (
-                <div className="absolute z-10 mt-1 w-full bg-background border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                <div className="absolute z-10 mt-1 w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl shadow-lg max-h-60 overflow-y-auto">
                   {['Web App', 'Desktop App', 'Mobile App', 'Chrome Extension', 'VS Code Extension', 'API', 'CLI Tool', 'Plugin'].map((type) => (
                     <label key={type} className="flex items-center px-4 py-2 hover:bg-muted cursor-pointer">
                       <input
@@ -766,7 +766,7 @@ const SubmitTool: React.FC = () => {
                 name="pricing"
                 value={formData.pricing}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
               >
                 <option value="free">Free</option>
                 <option value="freemium">Freemium</option>
@@ -783,7 +783,7 @@ const SubmitTool: React.FC = () => {
                 name="freePlan"
                 value={formData.freePlan}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
               >
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
@@ -805,7 +805,7 @@ const SubmitTool: React.FC = () => {
                 value={formData.website}
                 onChange={handleInputChange}
                 required
-                className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
                 placeholder="https://example.com"
               />
             </div>
@@ -827,7 +827,7 @@ const SubmitTool: React.FC = () => {
                 />
                 <label
                   htmlFor="logo-upload"
-                  className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer hover:border-primary-500 transition-colors bg-background"
+                  className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-slate-600 rounded-xl cursor-pointer hover:border-primary-500 transition-colors bg-white dark:bg-slate-800"
                 >
                   <Upload className="h-5 w-5 text-gray-400 mr-2" />
                   <span className="text-gray-600 dark:text-gray-400">
@@ -859,7 +859,7 @@ const SubmitTool: React.FC = () => {
                   value={pro}
                   onChange={(e) => handleProsChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, addPro)}
-                  className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+                  className="flex-1 px-4 py-2 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
                   placeholder={`Pro ${index + 1}`}
                 />
                 {formData.pros.length > 1 && (
@@ -895,7 +895,7 @@ const SubmitTool: React.FC = () => {
                   value={con}
                   onChange={(e) => handleConsChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, addCon)}
-                  className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+                  className="flex-1 px-4 py-2 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
                   placeholder={`Con ${index + 1}`}
                 />
                 {formData.cons.length > 1 && (
@@ -932,7 +932,7 @@ const SubmitTool: React.FC = () => {
                 name="tags"
                 value={formData.tags}
                 onChange={handleInputChange}
-                className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
                 placeholder={t('submitTool.form.tagsPlaceholder')}
               />
             </div>
@@ -953,7 +953,7 @@ const SubmitTool: React.FC = () => {
                   value={feature}
                   onChange={(e) => handleFeaturesChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, addFeature)}
-                  className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-background"
+                  className="flex-1 px-4 py-2 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
                   placeholder={`Feature ${index + 1}`}
                 />
                 {formData.features.length > 1 && (
