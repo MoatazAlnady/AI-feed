@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate, Link } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Search, Bot, User, Users, Briefcase, FileText, MessageSquare, X, Grid, List, Filter } from 'lucide-react';
+import { Search, Bot, User, Users, Briefcase, FileText, MessageSquare, X, Grid, List } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -228,9 +228,9 @@ const SearchResults: React.FC = () => {
           {result.description && (
             <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{result.description}</p>
           )}
-          {result.extra?.pricing && (
-            <Badge variant="outline" className="mt-2">{result.extra.pricing as string}</Badge>
-          )}
+                {typeof result.extra?.pricing === 'string' && (
+                  <Badge variant="outline" className="mt-2">{result.extra.pricing}</Badge>
+                )}
         </div>
       </div>
     </Card>
@@ -288,7 +288,7 @@ const SearchResults: React.FC = () => {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <h3 className="font-semibold text-foreground truncate">{result.title}</h3>
-            {result.extra?.is_private && <Badge variant="secondary">Private</Badge>}
+            {result.extra?.is_private === true && <Badge variant="secondary">Private</Badge>}
           </div>
           <p className="text-sm text-muted-foreground">{result.subtitle}</p>
           {result.description && (
@@ -315,9 +315,9 @@ const SearchResults: React.FC = () => {
           {result.description && (
             <p className="text-sm text-muted-foreground mt-1">{result.description}</p>
           )}
-          {result.extra?.salary && (
-            <Badge variant="outline" className="mt-2">{result.extra.salary as string}</Badge>
-          )}
+                {typeof result.extra?.salary === 'string' && (
+                  <Badge variant="outline" className="mt-2">{result.extra.salary}</Badge>
+                )}
         </div>
       </div>
     </Card>
