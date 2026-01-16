@@ -22,9 +22,9 @@ const Upgrade: React.FC = () => {
     { icon: MessageSquare, title: 'AI Chat', free: '1 prompt/day', premium: '10 prompts/day' },
     { icon: Users, title: 'Create Groups', free: 'Not available', premium: 'Unlimited groups' },
     { icon: Calendar, title: 'Create Events', free: 'Not available', premium: 'Unlimited events' },
-    { icon: Wrench, title: 'Submit Tools', free: '1 tool/month', premium: 'Unlimited tools' },
+    { icon: Wrench, title: 'Tools Comparison', free: '1 comparison/month', premium: 'Unlimited' },
     { icon: TrendingUp, title: 'Content Promotion', free: 'Not available', premium: 'AI-powered targeting' },
-    { icon: BarChart3, title: 'Advanced Analytics', free: 'Basic stats', premium: 'Full analytics' },
+    { icon: BarChart3, title: 'Advanced Analytics', free: 'Not available', premium: 'Full analytics' },
     { icon: Video, title: 'Video Upload & Recording', free: 'Not available', premium: 'Upload, record & share videos' },
     { icon: Radio, title: 'Live Video', free: 'Not available', premium: 'Go live with your audience' },
     { icon: Lock, title: 'Post Privacy Controls', free: 'Public only', premium: 'Connections & groups visibility' },
@@ -134,7 +134,7 @@ const Upgrade: React.FC = () => {
         {/* Pricing Cards - 3 columns */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
           {/* Free Plan */}
-          <Card className="relative">
+          <Card className="relative border-2 border-muted">
             <CardHeader className="text-center pb-6">
               <CardTitle className="text-2xl">{t('upgrade.plans.free.title', 'Free')}</CardTitle>
               <div className="text-4xl font-bold text-foreground mt-4">
@@ -153,15 +153,15 @@ const Upgrade: React.FC = () => {
                 </li>
                 <li className="flex items-center gap-3">
                   <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span className="text-foreground">1 tool/month</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span className="text-foreground">Basic analytics</span>
+                  <span className="text-foreground">1 Tool Comparison/month</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <X className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                   <span className="text-muted-foreground">Create groups</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <X className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground">Advanced analytics</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <X className="h-5 w-5 text-muted-foreground flex-shrink-0" />
@@ -184,7 +184,7 @@ const Upgrade: React.FC = () => {
           </Card>
 
           {/* Silver Plan */}
-          <Card className={`relative ${isCurrentPlan('silver') ? 'border-2 border-gray-400' : ''}`}>
+          <Card className={`relative border-2 ${isCurrentPlan('silver') ? 'border-gray-400' : 'border-gray-300 dark:border-gray-600'}`}>
             {isCurrentPlan('silver') && (
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <div className="bg-gradient-to-r from-gray-300 to-gray-400 text-white px-4 py-1 rounded-full text-sm font-medium">
@@ -197,6 +197,13 @@ const Upgrade: React.FC = () => {
                 <PremiumBadge tier="silver" size="md" />
                 {t('upgrade.plans.silver.title', 'Silver')}
               </CardTitle>
+              {/* 7-Day Free Trial Badge */}
+              <div className="flex items-center justify-center gap-2 mt-2 py-1.5 px-3 bg-green-100 dark:bg-green-900/30 rounded-full w-fit mx-auto">
+                <Gift className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <span className="text-xs font-semibold text-green-700 dark:text-green-300">
+                  {t('upgrade.freeTrial', '7-Day Free Trial')}
+                </span>
+              </div>
               <div className="text-4xl font-bold text-foreground mt-4">
                 ${billingPeriod === 'monthly' ? pricing.silver.monthly : pricing.silver.yearly}
                 <span className="text-lg text-muted-foreground font-normal">
@@ -220,7 +227,11 @@ const Upgrade: React.FC = () => {
                 </li>
                 <li className="flex items-center gap-3">
                   <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span className="text-foreground">Unlimited tools & groups</span>
+                  <span className="text-foreground">Unlimited tool comparisons</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                  <span className="text-foreground">Unlimited groups & events</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
@@ -228,11 +239,11 @@ const Upgrade: React.FC = () => {
                 </li>
                 <li className="flex items-center gap-3">
                   <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span className="text-foreground">Creator newsletter</span>
+                  <span className="text-foreground">Advanced analytics</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                  <span className="text-foreground">Advanced analytics</span>
+                  <span className="text-foreground">Creator newsletter</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
@@ -269,24 +280,19 @@ const Upgrade: React.FC = () => {
           </Card>
 
           {/* Gold Plan */}
-          <Card className={`relative border-2 ${isCurrentPlan('gold') ? 'border-yellow-400' : 'border-yellow-400'} bg-gradient-to-br from-yellow-50/50 to-orange-50/50 dark:from-yellow-900/10 dark:to-orange-900/10`}>
-            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-medium">
-                {isCurrentPlan('gold') ? t('upgrade.yourPlan', 'Your Plan') : t('upgrade.mostPopular', 'Most Popular')}
+          <Card className={`relative border-2 border-yellow-400 bg-gradient-to-br from-yellow-50/50 to-orange-50/50 dark:from-yellow-900/10 dark:to-orange-900/10`}>
+            {isCurrentPlan('gold') && (
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-medium">
+                  {t('upgrade.yourPlan', 'Your Plan')}
+                </div>
               </div>
-            </div>
-            <CardHeader className="text-center pb-6 pt-8">
+            )}
+            <CardHeader className="text-center pb-6 pt-6">
               <CardTitle className="text-2xl flex items-center justify-center gap-2">
                 <PremiumBadge tier="gold" size="md" />
                 {t('upgrade.plans.gold.title', 'Gold')}
               </CardTitle>
-              {/* 7-Day Free Trial Badge */}
-              <div className="flex items-center justify-center gap-2 mt-2 py-1.5 px-3 bg-green-100 dark:bg-green-900/30 rounded-full">
-                <Gift className="h-4 w-4 text-green-600 dark:text-green-400" />
-                <span className="text-xs font-semibold text-green-700 dark:text-green-300">
-                  {t('upgrade.freeTrial', '7-Day Free Trial')}
-                </span>
-              </div>
               <div className="text-4xl font-bold text-foreground mt-4">
                 ${billingPeriod === 'monthly' ? pricing.gold.monthly : pricing.gold.yearly}
                 <span className="text-lg text-muted-foreground font-normal">
