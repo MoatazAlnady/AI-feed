@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Bot, User, Users, Calendar, Briefcase, X } from 'lucide-react';
+import { Search, Bot, User, Users, Briefcase, X, FileText, MessageSquare, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,9 +9,20 @@ interface SearchResult {
   id: string;
   title: string;
   subtitle?: string;
-  type: 'tool' | 'creator' | 'group' | 'event' | 'job';
+  type: 'tool' | 'creator' | 'group' | 'job' | 'article' | 'post';
   image?: string;
   premium_tier?: PremiumTier;
+  role_id?: number;
+  account_type?: string;
+}
+
+interface GroupedResults {
+  tools: SearchResult[];
+  creators: SearchResult[];
+  groups: SearchResult[];
+  jobs: SearchResult[];
+  articles: SearchResult[];
+  posts: SearchResult[];
 }
 
 interface GlobalSearchProps {
@@ -23,11 +34,20 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [groupedResults, setGroupedResults] = useState<GroupedResults>({
+    tools: [],
+    creators: [],
+    groups: [],
+    jobs: [],
+    articles: [],
+    posts: []
+  });
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const totalResults = Object.values(groupedResults).reduce((sum, arr) => sum + arr.length, 0);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -43,7 +63,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
   useEffect(() => {
     const searchAll = async () => {
       if (searchTerm.trim().length < 2) {
-        setResults([]);
+        setGroupedResults({ tools: [], creators: [], groups: [], jobs: [], articles: [], posts: [] });
         setIsOpen(false);
         return;
       }
@@ -52,7 +72,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
       const search = searchTerm.trim().toLowerCase();
 
       try {
-        const [toolsRes, creatorsRes, groupsRes, jobsRes] = await Promise.all([
+        const [toolsRes, creatorsRes, groupsRes, jobsRes, articlesRes, postsRes] = await Promise.all([
           // Search tools
           supabase
             .from('tools')
@@ -60,10 +80,10 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
             .eq('status', 'published')
             .or(`name.ilike.%${search}%,description.ilike.%${search}%`)
             .limit(3),
-          // Search creators (users)
+          // Search creators (using user_profiles_safe view for public profiles)
           supabase
-            .from('user_profiles')
-            .select('id, full_name, job_title, profile_photo, premium_tier')
+            .from('user_profiles_safe')
+            .select('id, full_name, job_title, profile_photo, premium_tier, role_id, account_type, handle')
             .eq('visibility', 'public')
             .or(`full_name.ilike.%${search}%,job_title.ilike.%${search}%`)
             .limit(3),
@@ -79,13 +99,34 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
             .select('id, title, company, location')
             .or(`title.ilike.%${search}%,company.ilike.%${search}%`)
             .limit(3),
+          // Search articles
+          supabase
+            .from('articles')
+            .select('id, title, excerpt, featured_image_url')
+            .eq('status', 'published')
+            .or(`title.ilike.%${search}%,excerpt.ilike.%${search}%`)
+            .limit(3),
+          // Search posts (no status column - filter by visibility)
+          supabase
+            .from('posts')
+            .select('id, content, user_id')
+            .eq('visibility', 'public')
+            .ilike('content', `%${search}%`)
+            .limit(3),
         ]);
 
-        const allResults: SearchResult[] = [];
+        const newGroupedResults: GroupedResults = {
+          tools: [],
+          creators: [],
+          groups: [],
+          jobs: [],
+          articles: [],
+          posts: []
+        };
 
         // Add tools
         (toolsRes.data || []).forEach(tool => {
-          allResults.push({
+          newGroupedResults.tools.push({
             id: tool.id,
             title: tool.name,
             subtitle: tool.description?.substring(0, 50) + '...',
@@ -94,21 +135,24 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
           });
         });
 
-        // Add creators
+        // Add creators with admin override logic
         (creatorsRes.data || []).forEach(creator => {
-          allResults.push({
+          const isAdmin = creator.role_id === 1 || creator.account_type === 'admin';
+          newGroupedResults.creators.push({
             id: creator.id,
             title: creator.full_name || 'Unknown',
             subtitle: creator.job_title,
             type: 'creator',
             image: creator.profile_photo,
-            premium_tier: creator.premium_tier as PremiumTier
+            premium_tier: isAdmin ? 'gold' : (creator.premium_tier as PremiumTier),
+            role_id: creator.role_id,
+            account_type: creator.account_type
           });
         });
 
         // Add groups
         (groupsRes.data || []).forEach(group => {
-          allResults.push({
+          newGroupedResults.groups.push({
             id: group.id,
             title: group.name,
             subtitle: group.description?.substring(0, 50),
@@ -119,7 +163,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
 
         // Add jobs
         (jobsRes.data || []).forEach(job => {
-          allResults.push({
+          newGroupedResults.jobs.push({
             id: job.id,
             title: job.title,
             subtitle: `${job.company} • ${job.location}`,
@@ -127,8 +171,29 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
           });
         });
 
-        setResults(allResults);
-        setIsOpen(allResults.length > 0);
+        // Add articles
+        (articlesRes.data || []).forEach(article => {
+          newGroupedResults.articles.push({
+            id: article.id,
+            title: article.title,
+            subtitle: article.excerpt?.substring(0, 50),
+            type: 'article',
+            image: article.featured_image_url
+          });
+        });
+
+        // Add posts
+        (postsRes.data || []).forEach(post => {
+          newGroupedResults.posts.push({
+            id: post.id,
+            title: post.content?.substring(0, 60) + '...',
+            type: 'post'
+          });
+        });
+
+        setGroupedResults(newGroupedResults);
+        const hasResults = Object.values(newGroupedResults).some(arr => arr.length > 0);
+        setIsOpen(hasResults);
       } catch (error) {
         console.error('Search error:', error);
       } finally {
@@ -145,8 +210,9 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
       case 'tool': return <Bot className="h-4 w-4 text-primary" />;
       case 'creator': return <User className="h-4 w-4 text-blue-500" />;
       case 'group': return <Users className="h-4 w-4 text-green-500" />;
-      case 'event': return <Calendar className="h-4 w-4 text-orange-500" />;
       case 'job': return <Briefcase className="h-4 w-4 text-purple-500" />;
+      case 'article': return <FileText className="h-4 w-4 text-orange-500" />;
+      case 'post': return <MessageSquare className="h-4 w-4 text-pink-500" />;
     }
   };
 
@@ -155,8 +221,9 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
       case 'tool': return t('search.categories.tools', 'Tool');
       case 'creator': return t('search.categories.creators', 'Creator');
       case 'group': return t('search.categories.groups', 'Group');
-      case 'event': return t('search.categories.events', 'Event');
       case 'job': return t('search.categories.jobs', 'Job');
+      case 'article': return t('search.categories.articles', 'Article');
+      case 'post': return t('search.categories.posts', 'Post');
     }
   };
 
@@ -169,7 +236,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
         navigate(`/tools/${result.id}`);
         break;
       case 'creator':
-        navigate(`/profile/${result.id}`);
+        navigate(`/creator/${result.id}`);
         break;
       case 'group':
         navigate(`/community?group=${result.id}`);
@@ -177,7 +244,73 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
       case 'job':
         navigate(`/jobs?id=${result.id}`);
         break;
+      case 'article':
+        navigate(`/articles/${result.id}`);
+        break;
+      case 'post':
+        navigate(`/posts/${result.id}`);
+        break;
     }
+  };
+
+  const handleSeeAll = (type?: string) => {
+    setIsOpen(false);
+    const query = encodeURIComponent(searchTerm);
+    if (type) {
+      navigate(`/search?q=${query}&type=${type}`);
+    } else {
+      navigate(`/search?q=${query}`);
+    }
+    setSearchTerm('');
+  };
+
+  const renderResultGroup = (type: keyof GroupedResults, results: SearchResult[]) => {
+    if (results.length === 0) return null;
+
+    return (
+      <div key={type} className="border-b border-border last:border-b-0">
+        <div className="px-3 py-2 bg-muted/50">
+          <span className="text-xs font-medium text-muted-foreground uppercase">
+            {getTypeLabel(type as SearchResult['type'])}s ({results.length})
+          </span>
+        </div>
+        {results.map((result) => (
+          <button
+            key={`${result.type}-${result.id}`}
+            onClick={() => handleResultClick(result)}
+            className="w-full flex items-center gap-3 p-3 hover:bg-muted transition-colors text-left"
+          >
+            {result.image ? (
+              <img
+                src={result.image}
+                alt=""
+                className="w-10 h-10 rounded-lg object-cover bg-muted"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                {getTypeIcon(result.type)}
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="font-medium text-foreground truncate flex items-center gap-1.5">
+                {result.title}
+                {result.type === 'creator' && <PremiumBadge tier={result.premium_tier} size="sm" />}
+              </div>
+              {result.subtitle && (
+                <div className="text-sm text-muted-foreground truncate">{result.subtitle}</div>
+              )}
+            </div>
+          </button>
+        ))}
+        <button
+          onClick={() => handleSeeAll(type)}
+          className="w-full flex items-center justify-center gap-1 px-3 py-2 text-sm text-primary hover:bg-muted transition-colors"
+        >
+          {t('search.seeAll', 'See all')} {getTypeLabel(type as SearchResult['type']).toLowerCase()}s
+          <ArrowRight className="h-3 w-3" />
+        </button>
+      </div>
+    );
   };
 
   return (
@@ -189,7 +322,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          onFocus={() => results.length > 0 && setIsOpen(true)}
+          onFocus={() => totalResults > 0 && setIsOpen(true)}
           placeholder={placeholder || t('search.placeholder', 'Search tools, creators, groups, jobs...')}
           className="pl-10 pr-8 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent w-full transition-all duration-200 bg-card text-foreground"
         />
@@ -197,7 +330,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
           <button
             onClick={() => {
               setSearchTerm('');
-              setResults([]);
+              setGroupedResults({ tools: [], creators: [], groups: [], jobs: [], articles: [], posts: [] });
               setIsOpen(false);
             }}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
@@ -213,44 +346,31 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ placeholder, className }) =
             <div className="p-4 text-center text-muted-foreground">
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary mx-auto"></div>
             </div>
-          ) : results.length === 0 ? (
+          ) : totalResults === 0 ? (
             <div className="p-4 text-center text-muted-foreground">
               {t('search.noResults', 'No results found')}
             </div>
           ) : (
-            <div className="max-h-80 overflow-y-auto">
-              {results.map((result) => (
+            <>
+              <div className="max-h-96 overflow-y-auto">
+                {renderResultGroup('tools', groupedResults.tools)}
+                {renderResultGroup('creators', groupedResults.creators)}
+                {renderResultGroup('articles', groupedResults.articles)}
+                {renderResultGroup('groups', groupedResults.groups)}
+                {renderResultGroup('jobs', groupedResults.jobs)}
+                {renderResultGroup('posts', groupedResults.posts)}
+              </div>
+              {/* See All Results Button */}
+              <div className="border-t border-border">
                 <button
-                  key={`${result.type}-${result.id}`}
-                  onClick={() => handleResultClick(result)}
-                  className="w-full flex items-center gap-3 p-3 hover:bg-muted transition-colors text-left"
+                  onClick={() => handleSeeAll()}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-primary hover:bg-muted transition-colors"
                 >
-                  {result.image ? (
-                    <img
-                      src={result.image}
-                      alt=""
-                      className="w-10 h-10 rounded-lg object-cover bg-muted"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                      {getTypeIcon(result.type)}
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-foreground truncate flex items-center gap-1">
-                      {result.title}
-                      {result.type === 'creator' && <PremiumBadge tier={result.premium_tier} size="sm" />}
-                    </div>
-                    {result.subtitle && (
-                      <div className="text-sm text-muted-foreground truncate">{result.subtitle}</div>
-                    )}
-                  </div>
-                  <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">
-                    {getTypeLabel(result.type)}
-                  </span>
+                  {t('search.seeAllResults', 'See All Results')} ({totalResults})
+                  <ArrowRight className="h-4 w-4" />
                 </button>
-              ))}
-            </div>
+              </div>
+            </>
           )}
         </div>
       )}
