@@ -363,15 +363,15 @@ export default function OAuthProfileCompletion() {
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent 
-        className="sm:max-w-lg max-h-[90vh] overflow-y-auto bg-background border-border" 
+        className="sm:max-w-lg max-h-[90vh] overflow-y-auto bg-white dark:bg-[#091527] border border-gray-200 dark:border-gray-700 rounded-2xl" 
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl text-foreground">
+          <DialogTitle className="flex items-center gap-2 text-xl text-gray-900 dark:text-gray-100">
             <User className="h-5 w-5 text-primary" />
             Complete Your Profile
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground">
+          <DialogDescription className="text-gray-600 dark:text-gray-400">
             {step === 1 
               ? 'Please provide some basic information to complete your account setup.'
               : 'Tell us more about yourself and your interests (optional).'}
@@ -382,17 +382,17 @@ export default function OAuthProfileCompletion() {
         <div className="flex items-center gap-2 mb-4">
           <div className={cn(
             "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors",
-            step >= 1 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+            step >= 1 ? "bg-primary text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
           )}>
             1
           </div>
           <div className={cn(
             "flex-1 h-1 rounded transition-colors",
-            step >= 2 ? "bg-primary" : "bg-muted"
+            step >= 2 ? "bg-primary" : "bg-gray-200 dark:bg-gray-700"
           )} />
           <div className={cn(
             "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors",
-            step >= 2 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+            step >= 2 ? "bg-primary text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
           )}>
             2
           </div>
@@ -403,51 +403,51 @@ export default function OAuthProfileCompletion() {
             <>
               {/* Full Name */}
               <div className="space-y-2">
-                <Label htmlFor="full_name" className="text-foreground">Full Name *</Label>
+                <Label htmlFor="full_name" className="text-gray-700 dark:text-gray-300">Full Name *</Label>
                 <Input
                   id="full_name"
                   value={formData.full_name}
                   onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
                   placeholder="Enter your full name"
-                  className="bg-background border-input text-foreground placeholder:text-muted-foreground"
+                  className="border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
                   required
                 />
               </div>
 
               {/* Birth Date - Year/Month/Day dropdowns */}
               <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-foreground">
+                <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                   <Calendar className="h-4 w-4" />
                   Birth Date *
                 </Label>
                 <div className="grid grid-cols-3 gap-2">
                   <Select value={birthYear} onValueChange={setBirthYear}>
-                    <SelectTrigger className="bg-background border-input text-foreground">
+                    <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-foreground dark:text-gray-100 rounded-xl">
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-60 bg-popover border-border">
+                    <SelectContent className="max-h-60 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       {years.map(year => (
-                        <SelectItem key={year} value={year} className="text-popover-foreground">{year}</SelectItem>
+                        <SelectItem key={year} value={year} className="text-gray-900 dark:text-gray-100">{year}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                   <Select value={birthMonth} onValueChange={setBirthMonth}>
-                    <SelectTrigger className="bg-background border-input text-foreground">
+                    <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-foreground dark:text-gray-100 rounded-xl">
                       <SelectValue placeholder="Month" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-60 bg-popover border-border">
+                    <SelectContent className="max-h-60 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       {months.map(month => (
-                        <SelectItem key={month.value} value={month.value} className="text-popover-foreground">{month.label}</SelectItem>
+                        <SelectItem key={month.value} value={month.value} className="text-gray-900 dark:text-gray-100">{month.label}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                   <Select value={birthDay} onValueChange={setBirthDay}>
-                    <SelectTrigger className="bg-background border-input text-foreground">
+                    <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-foreground dark:text-gray-100 rounded-xl">
                       <SelectValue placeholder="Day" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-60 bg-popover border-border">
+                    <SelectContent className="max-h-60 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                       {days.map(day => (
-                        <SelectItem key={day} value={day} className="text-popover-foreground">{day}</SelectItem>
+                        <SelectItem key={day} value={day} className="text-gray-900 dark:text-gray-100">{day}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -456,14 +456,14 @@ export default function OAuthProfileCompletion() {
 
               {/* Gender */}
               <div className="space-y-2">
-                <Label className="text-foreground">Gender *</Label>
+                <Label className="text-gray-700 dark:text-gray-300">Gender *</Label>
                 <Select value={formData.gender} onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}>
-                  <SelectTrigger className="bg-background border-input text-foreground">
+                  <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-foreground dark:text-gray-100 rounded-xl">
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
-                  <SelectContent className="bg-popover border-border">
+                  <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600">
                     {genderOptions.map(gender => (
-                      <SelectItem key={gender} value={gender} className="text-popover-foreground">{gender}</SelectItem>
+                      <SelectItem key={gender} value={gender} className="text-gray-900 dark:text-gray-100">{gender}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -471,7 +471,7 @@ export default function OAuthProfileCompletion() {
 
               {/* Country - Searchable */}
               <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-foreground">
+                <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                   <Globe className="h-4 w-4" />
                   Country *
                 </Label>
@@ -481,17 +481,17 @@ export default function OAuthProfileCompletion() {
                       variant="outline"
                       role="combobox"
                       aria-expanded={countryOpen}
-                      className="w-full justify-between bg-background border-input text-foreground hover:bg-accent"
+                      className="w-full justify-between bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-foreground dark:text-gray-100 hover:bg-accent rounded-xl h-10"
                     >
                       {formData.country || "Search and select country..."}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-full p-0 bg-popover border-border" align="start">
-                    <Command className="bg-popover">
-                      <CommandInput placeholder="Search country..." className="text-foreground" />
+                  <PopoverContent className="w-full p-0 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 z-50" align="start">
+                    <Command className="bg-white dark:bg-gray-800">
+                      <CommandInput placeholder="Search country..." className="text-gray-900 dark:text-gray-100" />
                       <CommandList>
-                        <CommandEmpty className="text-muted-foreground py-6 text-center text-sm">No country found.</CommandEmpty>
+                        <CommandEmpty className="text-gray-500 dark:text-gray-400 py-6 text-center text-sm">No country found.</CommandEmpty>
                         <CommandGroup>
                           {countriesWithCodes.map(country => (
                             <CommandItem
@@ -501,7 +501,7 @@ export default function OAuthProfileCompletion() {
                                 handleCountryChange(country.name);
                                 setCountryOpen(false);
                               }}
-                              className="text-popover-foreground"
+                              className="text-gray-900 dark:text-gray-100"
                             >
                               <Check className={cn("mr-2 h-4 w-4", formData.country === country.name ? "opacity-100" : "opacity-0")} />
                               {country.name}
@@ -516,7 +516,7 @@ export default function OAuthProfileCompletion() {
 
               {/* City */}
               <div className="space-y-2">
-                <Label htmlFor="city" className="flex items-center gap-2 text-foreground">
+                <Label htmlFor="city" className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                   <MapPin className="h-4 w-4" />
                   City *
                 </Label>
@@ -525,14 +525,14 @@ export default function OAuthProfileCompletion() {
                   value={formData.city}
                   onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
                   placeholder="Enter your city"
-                  className="bg-background border-input text-foreground placeholder:text-muted-foreground"
+                  className="border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
                   required
                 />
               </div>
 
               {/* Phone */}
               <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-foreground">
+                <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                   <Phone className="h-4 w-4" />
                   Phone Number *
                 </Label>
@@ -543,17 +543,17 @@ export default function OAuthProfileCompletion() {
                         variant="outline"
                         role="combobox"
                         aria-expanded={phoneCodeOpen}
-                        className="w-24 justify-between bg-background border-input text-foreground"
+                        className="w-24 justify-between bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-foreground dark:text-gray-100 rounded-xl"
                       >
                         {formData.phone_country_code || "+1"}
                         <ChevronsUpDown className="ml-1 h-3 w-3 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-64 p-0 bg-popover border-border z-50">
-                      <Command className="bg-popover">
-                        <CommandInput placeholder="Search country code..." className="text-foreground" />
+                    <PopoverContent className="w-64 p-0 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 z-50">
+                      <Command className="bg-white dark:bg-gray-800">
+                        <CommandInput placeholder="Search country code..." className="text-gray-900 dark:text-gray-100" />
                         <CommandList>
-                          <CommandEmpty>No country found.</CommandEmpty>
+                          <CommandEmpty className="text-gray-500 dark:text-gray-400 py-6 text-center text-sm">No country found.</CommandEmpty>
                           <CommandGroup>
                             {countriesWithCodes.map((country) => (
                               <CommandItem
@@ -563,7 +563,7 @@ export default function OAuthProfileCompletion() {
                                   setFormData(prev => ({ ...prev, phone_country_code: country.code }));
                                   setPhoneCodeOpen(false);
                                 }}
-                                className="text-foreground"
+                                className="text-gray-900 dark:text-gray-100"
                               >
                                 <Check
                                   className={cn(
@@ -583,7 +583,7 @@ export default function OAuthProfileCompletion() {
                     value={formData.phone}
                     onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                     placeholder="Phone number"
-                    className="flex-1 bg-background border-input text-foreground placeholder:text-muted-foreground"
+                    className="flex-1 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
                     required
                   />
                 </div>
@@ -591,10 +591,10 @@ export default function OAuthProfileCompletion() {
 
               {/* Account Type */}
               <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-foreground">
+                <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                   Account Type *
                   {accountTypeLocked && (
-                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                       <Lock className="h-3 w-3" />
                       Locked
                     </span>
@@ -607,14 +607,18 @@ export default function OAuthProfileCompletion() {
                       type="button"
                       onClick={() => !accountTypeLocked && setFormData(prev => ({ ...prev, account_type: type.value }))}
                       disabled={accountTypeLocked}
-                      className={`p-4 rounded-lg border text-center transition-all ${
+                      className={cn(
+                        "p-4 rounded-xl border text-center transition-all",
                         formData.account_type === type.value
-                          ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
-                          : 'border-border bg-background hover:border-primary/50'
-                      } ${accountTypeLocked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
+                          ? type.value === 'creator'
+                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-400 shadow-lg'
+                            : 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 dark:border-purple-400 shadow-lg'
+                          : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-primary/50',
+                        accountTypeLocked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
+                      )}
                     >
-                      <div className="font-medium text-foreground">{type.label}</div>
-                      <div className="text-xs text-muted-foreground mt-1">{type.description}</div>
+                      <div className="font-medium text-gray-900 dark:text-gray-100">{type.label}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{type.description}</div>
                     </button>
                   ))}
                 </div>
@@ -631,7 +635,7 @@ export default function OAuthProfileCompletion() {
             <>
               {/* Job Title */}
               <div className="space-y-2">
-                <Label htmlFor="job_title" className="flex items-center gap-2 text-foreground">
+                <Label htmlFor="job_title" className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                   <Briefcase className="h-4 w-4" />
                   Job Title
                 </Label>
@@ -640,45 +644,45 @@ export default function OAuthProfileCompletion() {
                   value={formData.job_title}
                   onChange={(e) => setFormData(prev => ({ ...prev, job_title: e.target.value }))}
                   placeholder="e.g., Software Engineer, Product Manager"
-                  className="bg-background border-input text-foreground placeholder:text-muted-foreground"
+                  className="border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
 
               {/* Company */}
               <div className="space-y-2">
-                <Label htmlFor="company" className="text-foreground">Company / Organization</Label>
+                <Label htmlFor="company" className="text-gray-700 dark:text-gray-300">Company / Organization</Label>
                 <Input
                   id="company"
                   value={formData.company}
                   onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
                   placeholder="Where do you work?"
-                  className="bg-background border-input text-foreground placeholder:text-muted-foreground"
+                  className="border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
 
               {/* Bio */}
               <div className="space-y-2">
-                <Label htmlFor="bio" className="text-foreground">Bio</Label>
+                <Label htmlFor="bio" className="text-gray-700 dark:text-gray-300">Bio</Label>
                 <Textarea
                   id="bio"
                   value={formData.bio}
                   onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
                   placeholder="Tell us a bit about yourself..."
-                  className="bg-background border-input text-foreground placeholder:text-muted-foreground resize-none"
+                  className="border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
                   rows={3}
                 />
               </div>
 
               {/* Interests */}
               <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-foreground">
+                <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                   <Sparkles className="h-4 w-4" />
                   Interests
-                  <span className="text-xs text-muted-foreground ml-1">
+                  <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
                     ({formData.interests.length} selected)
                   </span>
                 </Label>
-                <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-2 border border-border rounded-lg bg-muted/30">
+                <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-2 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-800/50">
                   {availableInterests.map(interest => (
                     <button
                       key={interest}
@@ -687,8 +691,8 @@ export default function OAuthProfileCompletion() {
                       className={cn(
                         "px-3 py-1.5 rounded-full text-sm font-medium transition-all",
                         formData.interests.includes(interest)
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-background border border-border text-foreground hover:border-primary/50"
+                          ? "bg-primary text-white"
+                          : "bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-primary/50"
                       )}
                     >
                       {interest}
