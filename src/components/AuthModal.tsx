@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { X, Mail, Lock, User, Eye, EyeOff, Upload, Camera, MapPin, Calendar, Users, Building, UserCheck, Sparkles, AlertCircle, CheckCircle, Chrome, ChevronsUpDown, Check } from 'lucide-react';
+import { X, Mail, Lock, User, Eye, EyeOff, Upload, Camera, MapPin, Calendar, Users, Building, UserCheck, Sparkles, AlertCircle, CheckCircle, Chrome, ChevronsUpDown, Check, Briefcase, Globe } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { InputBase, TextareaBase, SelectBase } from '@/components/ui/InputBase';
 import OnboardingFlow from './OnboardingFlow';
@@ -32,6 +32,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
   const [company, setCompany] = useState('');
   const [bio, setBio] = useState('');
   const [interests, setInterests] = useState<string[]>([]);
+  const [skills, setSkills] = useState<string[]>([]);
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -54,7 +55,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
   const [phoneCodeOpen, setPhoneCodeOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   
-  // Languages and skills
+  // Languages
   const [languages, setLanguages] = useState<Array<{language: string, level: number}>>([]); 
 
   // Date dropdown data
@@ -130,6 +131,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
     'Image Generation', 'Video AI', 'Audio AI', 'Code Assistant', 'Productivity',
     'Writing & Content', 'Data Analysis', 'Business Intelligence', 'Healthcare AI',
     'Finance AI', 'Education AI', 'Gaming AI', 'Art & Creativity', 'Music AI'
+  ];
+
+  const skillOptions = [
+    'Python', 'JavaScript', 'TypeScript', 'React', 'Node.js', 'Machine Learning',
+    'Deep Learning', 'Data Science', 'AI', 'Cloud Computing', 'AWS', 'Azure',
+    'Docker', 'Kubernetes', 'SQL', 'MongoDB', 'Product Management', 'UX Design',
+    'Project Management', 'Data Analysis', 'Marketing', 'Sales', 'Business Development',
+    'Content Writing', 'Graphic Design', 'Video Editing', 'SEO', 'Social Media'
   ];
 
   const countriesWithCodes = [
@@ -277,6 +286,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
     );
   };
 
+  const handleSkillToggle = (skill: string) => {
+    setSkills(prev => 
+      prev.includes(skill) 
+        ? prev.filter(s => s !== skill)
+        : [...prev, skill]
+    );
+  };
+
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -377,8 +394,26 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
           setLoading(false);
           return;
         } else if (step === 2) {
-          // Languages validation
+          // Step 2 validation - all mandatory fields
+          if (!jobTitle.trim()) {
+            throw new Error('Please enter your job title');
+          }
+          if (!company.trim()) {
+            throw new Error('Please enter your company');
+          }
+          
           const validLanguages = languages.filter(lang => lang.language && lang.level);
+          if (validLanguages.length === 0) {
+            throw new Error('Please add at least one language');
+          }
+          
+          if (skills.length === 0) {
+            throw new Error('Please select at least one skill');
+          }
+          
+          if (interests.length < 3) {
+            throw new Error('Please select at least 3 interests');
+          }
           
           // Complete signup with profile data
           const { error } = await signUp(email, password, {
@@ -387,6 +422,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
             company: company,
             bio: bio,
             interests: interests,
+            skills: skills,
             profile_photo: profilePhoto ? URL.createObjectURL(profilePhoto) : null,
             birth_date: birthDate,
             age: calculateAge(birthDate),
@@ -446,6 +482,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
     setCompany('');
     setBio('');
     setInterests([]);
+    setSkills([]);
     setProfilePhoto(null);
     setBirthDate('');
     setGender('');
@@ -695,7 +732,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                   disabled={loading}
                 >
                   <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
                   </svg>
                   <span>GitHub</span>
                 </Button>
@@ -719,99 +756,34 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
               <>
                 {mode === 'signup' && (
                   <>
-                    {/* Account Type - PROMINENTLY DISPLAYED */}
-                    <div className="animate-slide-up bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 p-6 rounded-xl border-2 border-blue-200 dark:border-gray-600">
-                      <label className="block text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">
-                        🚀 Choose Your Account Type
+                    {/* Account Type - Simple Radio Buttons */}
+                    <div className="animate-slide-up bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 p-4 rounded-xl border-2 border-blue-200 dark:border-gray-600">
+                      <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+                        Account Type *
                       </label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <label className={`group flex flex-col items-center p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-                          accountType === 'creator' 
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-400 shadow-lg' 
-                            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-blue-300 dark:hover:border-blue-400 hover:shadow-md'
-                        }`}>
+                      <div className="flex gap-6">
+                        <label className="flex items-center gap-2 cursor-pointer">
                           <input
                             type="radio"
                             name="accountType"
                             value="creator"
                             checked={accountType === 'creator'}
                             onChange={(e) => setAccountType(e.target.value)}
-                            className="sr-only"
+                            className="w-4 h-4 text-primary"
                           />
-                          <div className={`p-4 rounded-full mb-4 transition-all duration-300 ${
-                            accountType === 'creator' ? 'bg-blue-500' : 'bg-gray-300 group-hover:bg-blue-400'
-                          }`}>
-                            <Sparkles className="h-8 w-8 text-white" />
-                          </div>
-                          <div className="text-center">
-                            <div className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-2">Creator</div>
-                            <div className="text-sm text-gray-600 dark:text-gray-300">
-                              • Access all AI tools
-                              <br />
-                              • Join community discussions
-                              <br />
-                              • Submit tools & articles
-                              <br />
-                              • Save favorites & analytics
-                            </div>
-                          </div>
+                          <span className="font-medium text-gray-900 dark:text-gray-100">Creator</span>
                         </label>
-                        
-                        <label className={`group flex flex-col items-center p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-                          accountType === 'employer' 
-                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 dark:border-purple-400 shadow-lg' 
-                            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-purple-300 dark:hover:border-purple-400 hover:shadow-md'
-                        }`}>
+                        <label className="flex items-center gap-2 cursor-pointer">
                           <input
                             type="radio"
                             name="accountType"
                             value="employer"
                             checked={accountType === 'employer'}
                             onChange={(e) => setAccountType(e.target.value)}
-                            className="sr-only"
+                            className="w-4 h-4 text-primary"
                           />
-                          <div className={`p-4 rounded-full mb-4 transition-all duration-300 ${
-                            accountType === 'employer' ? 'bg-purple-500' : 'bg-gray-300 group-hover:bg-purple-400'
-                          }`}>
-                            <Building className="h-8 w-8 text-white" />
-                          </div>
-                          <div className="text-center">
-                            <div className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-2">Employer</div>
-                            <div className="text-sm text-gray-600 dark:text-gray-300">
-                              • Post job opportunities
-                              <br />
-                              • Search talent database
-                              <br />
-                              • Advanced filtering
-                              <br />
-                              • Employer dashboard
-                            </div>
-                          </div>
+                          <span className="font-medium text-gray-900 dark:text-gray-100">Employer</span>
                         </label>
-                      </div>
-                      
-                      {/* Visual indicator of selection */}
-                      <div className="mt-4 text-center">
-                        <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                          accountType === 'creator' 
-                            ? 'bg-blue-100 text-blue-800' 
-                            : accountType === 'employer'
-                            ? 'bg-purple-100 text-purple-800'
-                            : 'bg-gray-100 text-gray-600'
-                        }`}>
-                          {accountType === 'creator' && (
-                            <>
-                              <Sparkles className="h-4 w-4 mr-2" />
-                              Creator Account Selected
-                            </>
-                          )}
-                          {accountType === 'employer' && (
-                            <>
-                              <Building className="h-4 w-4 mr-2" />
-                              Employer Account Selected
-                            </>
-                          )}
-                        </div>
                       </div>
                     </div>
 
@@ -1006,7 +978,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                                       }}
                                       className="text-popover-foreground dark:text-gray-100"
                                     >
-                                      <Check className={cn("mr-2 h-4 w-4", phoneCountryCode === countryItem.code ? "opacity-100" : "opacity-0")} />
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          phoneCountryCode === countryItem.code ? "opacity-100" : "opacity-0"
+                                        )}
+                                      />
                                       {countryItem.code} ({countryItem.name})
                                     </CommandItem>
                                   ))}
@@ -1045,6 +1022,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                       placeholder="Enter your email"
                       required
+                      disabled={!!inviteToken}
                     />
                   </div>
                 </div>
@@ -1063,21 +1041,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       className="w-full pl-10 pr-12 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                       placeholder="Enter your password"
                       required
-                      minLength={6}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
                       {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
                   </div>
-                  {mode === 'signup' && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      Password must be at least 6 characters long
-                    </p>
-                  )}
                 </div>
 
                 {mode === 'signup' && (
@@ -1092,10 +1064,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                         id="confirmPassword"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                        className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 dark:bg-gray-800 dark:text-gray-100 ${
+                          password && confirmPassword && password !== confirmPassword 
+                            ? 'border-red-500 dark:border-red-500' 
+                            : 'border-gray-200 dark:border-gray-600'
+                        }`}
                         placeholder="Confirm your password"
                         required
-                        minLength={6}
                       />
                     </div>
                     {password && confirmPassword && password !== confirmPassword && (
@@ -1145,38 +1120,38 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                 {/* Professional Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-slide-up">
                   <div>
-                    <label htmlFor="jobTitle" className="block text-sm font-medium text-gray-700 mb-1">
-                      Job Title {accountType === 'employer' && '*'}
+                    <label htmlFor="jobTitle" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Job Title *
                     </label>
                     <input
                       type="text"
                       id="jobTitle"
                       value={jobTitle}
                       onChange={(e) => setJobTitle(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                      placeholder={accountType === 'employer' ? 'e.g., HR Manager, Recruiter' : 'e.g., AI Engineer'}
-                      required={accountType === 'employer'}
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                      placeholder="e.g., AI Engineer, HR Manager"
+                      required
                     />
                   </div>
                   <div>
-                    <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
-                      Company {accountType === 'employer' && '*'}
+                    <label htmlFor="company" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Company *
                     </label>
                     <input
                       type="text"
                       id="company"
                       value={company}
                       onChange={(e) => setCompany(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                       placeholder="e.g., OpenAI, Google, Microsoft"
-                      required={accountType === 'employer'}
+                      required
                     />
                   </div>
                 </div>
 
                 {/* Bio */}
                 <div className="animate-slide-up">
-                  <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="bio" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Bio
                   </label>
                   <textarea
@@ -1184,7 +1159,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     rows={3}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none transition-all duration-200"
+                    className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none transition-all duration-200"
                     placeholder={
                       accountType === 'employer' 
                         ? 'Tell us about your company and what kind of talent you\'re looking for...'
@@ -1196,8 +1171,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                 {/* Languages */}
                 <div className="animate-slide-up">
                   <div className="flex items-center justify-between mb-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Languages
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Languages * <span className="text-xs text-muted-foreground">({languages.filter(l => l.language).length} added)</span>
                     </label>
                     <button
                       type="button"
@@ -1215,7 +1190,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                           <select
                             value={lang.language}
                             onChange={(e) => updateLanguage(index, 'language', e.target.value)}
-                            className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            className="flex-1 px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           >
                             <option value="">Select Language</option>
                             {languageOptions.map(option => (
@@ -1226,7 +1201,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                           <select
                             value={lang.level}
                             onChange={(e) => updateLanguage(index, 'level', parseInt(e.target.value))}
-                            className="w-40 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            className="w-40 px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           >
                             {proficiencyLevels.map(level => (
                               <option key={level.value} value={level.value}>{level.label}</option>
@@ -1244,16 +1219,39 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-3 border border-dashed border-gray-300 rounded-lg">
-                      <p className="text-sm text-gray-500">No languages added yet</p>
+                    <div className="text-center py-3 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
+                      <p className="text-sm text-gray-500">Click "+ Add Language" to add your languages</p>
                     </div>
                   )}
                 </div>
 
+                {/* Skills */}
+                <div className="animate-slide-up">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    Skills * <span className="text-xs text-muted-foreground">({skills.length} selected)</span>
+                  </label>
+                  <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                    {skillOptions.map((skill) => (
+                      <button
+                        key={skill}
+                        type="button"
+                        onClick={() => handleSkillToggle(skill)}
+                        className={`px-3 py-1.5 text-sm rounded-lg border transition-all duration-200 ${
+                          skills.includes(skill)
+                            ? 'bg-primary-500 text-white border-primary-500 transform scale-105'
+                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-primary-300 hover:bg-primary-50'
+                        }`}
+                      >
+                        {skill}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Interests */}
                 <div className="animate-slide-up">
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Select Your Interests (Choose at least 3)
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    Interests * (minimum 3) <span className="text-xs text-muted-foreground">({interests.length} selected)</span>
                   </label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto">
                     {availableInterests.map((interest) => (
@@ -1264,16 +1262,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                         className={`p-2 text-sm rounded-lg border transition-all duration-200 ${
                           interests.includes(interest)
                             ? 'bg-primary-500 text-white border-primary-500 transform scale-105'
-                            : 'bg-white text-gray-700 border-gray-200 hover:border-primary-300 hover:bg-primary-50'
+                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-primary-300 hover:bg-primary-50'
                         }`}
                       >
                         {interest}
                       </button>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Selected: {interests.length} interests
-                  </p>
                 </div>
               </>
             )}
@@ -1292,7 +1287,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
               
               <button
                 type="submit"
-                disabled={loading || (mode === 'signup' && step === 2 && interests.length < 3)}
+                disabled={loading}
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white dark:text-white py-3 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 shadow-lg border-0"
               >
                 {loading ? (
