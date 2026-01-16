@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { X, Mail, Lock, User, Eye, EyeOff, Upload, Camera, MapPin, Calendar, Users, Building, UserCheck, Sparkles, AlertCircle, CheckCircle, Chrome, ChevronsUpDown, Check, Briefcase, Globe } from 'lucide-react';
+import { X, Mail, Lock, User, Eye, EyeOff, Upload, Camera, MapPin, Calendar, Users, Building, UserCheck, Sparkles, AlertCircle, CheckCircle, Chrome, ChevronsUpDown, Check, Briefcase, Globe, HelpCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { InputBase, TextareaBase, SelectBase } from '@/components/ui/InputBase';
 import OnboardingFlow from './OnboardingFlow';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -58,6 +60,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
   // Languages
   const [languages, setLanguages] = useState<Array<{language: string, level: number}>>([]); 
 
+  // Signup reasons state
+  const [signupReasons, setSignupReasons] = useState<number[]>([]);
+  const [otherReasonText, setOtherReasonText] = useState('');
+  const [availableReasons, setAvailableReasons] = useState<Array<{id: number, reason_text: string, is_other: boolean}>>([]);
+
   // Date dropdown data
   const months = [
     { value: '01', label: 'January' },
@@ -93,6 +100,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
   const [inviteCompanyName, setInviteCompanyName] = useState<string | null>(null);
 
   const { signIn, signUp, resendConfirmation } = useAuth();
+
+  // Fetch signup reasons on mount
+  useEffect(() => {
+    const fetchReasons = async () => {
+      const { data } = await supabase
+        .from('signup_reasons')
+        .select('id, reason_text, is_other')
+        .order('display_order');
+      if (data) setAvailableReasons(data);
+    };
+    fetchReasons();
+  }, []);
 
   // Check for invitation token in URL
   useEffect(() => {
@@ -294,6 +313,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
     );
   };
 
+  const handleReasonToggle = (reasonId: number) => {
+    setSignupReasons(prev => 
+      prev.includes(reasonId)
+        ? prev.filter(id => id !== reasonId)
+        : [...prev, reasonId]
+    );
+  };
+
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -407,12 +434,22 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
             throw new Error('Please add at least one language');
           }
           
-          if (skills.length === 0) {
-            throw new Error('Please select at least one skill');
+          if (skills.length < 3) {
+            throw new Error('Please select at least 3 skills');
           }
           
           if (interests.length < 3) {
             throw new Error('Please select at least 3 interests');
+          }
+
+          if (signupReasons.length === 0) {
+            throw new Error('Please select at least one reason for joining AI Feed');
+          }
+
+          // Check if "Other" is selected and text is provided
+          const otherReason = availableReasons.find(r => r.is_other);
+          if (otherReason && signupReasons.includes(otherReason.id) && !otherReasonText.trim()) {
+            throw new Error('Please specify your other reason for joining');
           }
           
           // Complete signup with profile data
@@ -442,6 +479,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
             phone_country_code: phoneCountryCode
           });
           if (error) throw error;
+
+          // Save signup reasons after successful signup
+          const { data: { user: newUser } } = await supabase.auth.getUser();
+          if (newUser) {
+            for (const reasonId of signupReasons) {
+              const isOther = availableReasons.find(r => r.id === reasonId)?.is_other;
+              await supabase.from('user_signup_reasons').insert({
+                user_id: newUser.id,
+                reason_id: reasonId,
+                other_text: isOther ? otherReasonText : null
+              });
+            }
+          }
           
           // If employer account, redirect to employer onboarding after a short delay
           if (accountType === 'employer') {
@@ -492,6 +542,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
     setLanguages([]);
     setPhoneCountryCode('+1');
     setPhoneNumber('');
+    setSignupReasons([]);
+    setOtherReasonText('');
     setError('');
     setSuccess('');
     setShowPassword(false);
@@ -1228,7 +1280,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                 {/* Skills */}
                 <div className="animate-slide-up">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                    Skills * <span className="text-xs text-muted-foreground">({skills.length} selected)</span>
+                    Skills * (minimum 3) <span className="text-xs text-muted-foreground">({skills.length} selected)</span>
                   </label>
                   <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-800/50">
                     {skillOptions.map((skill) => (
@@ -1268,6 +1320,38 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                         {interest}
                       </button>
                     ))}
+                  </div>
+                </div>
+
+                {/* Why are you joining AI Feed */}
+                <div className="animate-slide-up">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    <span className="flex items-center gap-2">
+                      <HelpCircle className="h-4 w-4" />
+                      Why are you joining AI Feed? * (select all that apply)
+                    </span>
+                  </label>
+                  <div className="space-y-2 max-h-48 overflow-y-auto p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                    {availableReasons.map(reason => (
+                      <label key={reason.id} className="flex items-start gap-2 cursor-pointer">
+                        <Checkbox
+                          checked={signupReasons.includes(reason.id)}
+                          onCheckedChange={() => handleReasonToggle(reason.id)}
+                          className="mt-0.5"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{reason.reason_text}</span>
+                      </label>
+                    ))}
+                    
+                    {/* Show text input when "Other" is selected */}
+                    {availableReasons.find(r => r.is_other && signupReasons.includes(r.id)) && (
+                      <Input
+                        placeholder="Please specify your reason..."
+                        value={otherReasonText}
+                        onChange={(e) => setOtherReasonText(e.target.value)}
+                        className="mt-2 border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl"
+                      />
+                    )}
                   </div>
                 </div>
               </>
