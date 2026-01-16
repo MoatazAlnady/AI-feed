@@ -59,6 +59,8 @@ interface CreatorProfile {
   interests: string[];
   contact_visible: boolean;
   premium_tier?: PremiumTier;
+  role_id?: number;
+  account_type?: string;
 }
 
 interface CreatorTool {
@@ -205,7 +207,7 @@ const CreatorProfile: React.FC = () => {
           }
           
           const publicProfile = fallbackData[0];
-          const fullProfile = {
+          const fullProfile: CreatorProfile = {
             ...publicProfile,
             handle: `user-${publicProfile.id.slice(0, 8)}`,
             visibility: 'public',
@@ -222,7 +224,12 @@ const CreatorProfile: React.FC = () => {
             github: '',
             linkedin: '',
             twitter: '',
-            contact_visible: false
+            contact_visible: false,
+            premium_tier: (publicProfile.premium_tier === 'silver' || publicProfile.premium_tier === 'gold') 
+              ? publicProfile.premium_tier as PremiumTier 
+              : undefined,
+            role_id: publicProfile.role_id,
+            account_type: publicProfile.account_type
           };
           
           setProfile(fullProfile);
@@ -500,7 +507,14 @@ const CreatorProfile: React.FC = () => {
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
                       {profile.full_name || t('community.networking.aiEnthusiast')}
                     </h1>
-                    <PremiumBadge tier={profile.premium_tier} size="lg" />
+                    <PremiumBadge 
+                      tier={
+                        (profile.role_id === 1 || profile.account_type === 'admin') 
+                          ? 'gold' 
+                          : profile.premium_tier
+                      } 
+                      size="lg" 
+                    />
                     {profile.verified && (
                       <Shield className="h-6 w-6 text-blue-500" />
                     )}

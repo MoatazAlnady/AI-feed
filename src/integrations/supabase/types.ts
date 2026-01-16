@@ -4238,13 +4238,16 @@ export type Database = {
       get_public_profiles_by_ids: {
         Args: { ids: string[] }
         Returns: {
+          account_type: string
           ai_feed_top_voice: boolean
           full_name: string
           handle: string
           id: string
           interests: string[]
           job_title: string
+          premium_tier: string
           profile_photo: string
+          role_id: number
           verified: boolean
         }[]
       }

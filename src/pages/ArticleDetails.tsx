@@ -15,6 +15,7 @@ import SharePostModal from '@/components/SharePostModal';
 import PromoteContentModal from '@/components/PromoteContentModal';
 import SEOHead from '@/components/SEOHead';
 import { InArticleAd } from '@/components/GoogleAd';
+import PremiumBadge from '@/components/PremiumBadge';
 
 interface Article {
   id: string;
@@ -37,6 +38,9 @@ interface AuthorProfile {
   full_name: string | null;
   avatar_url: string | null;
   headline: string | null;
+  premium_tier?: string | null;
+  role_id?: number;
+  account_type?: string;
 }
 
 const ArticleDetails = () => {
@@ -76,11 +80,19 @@ const ArticleDetails = () => {
 
       // Fetch author profile if user_id exists
       if (data.user_id) {
-        const { data: profile } = await supabase
-          .from('user_profiles_safe')
-          .select('id, full_name, avatar_url, headline')
-          .eq('id', data.user_id)
-          .single();
+        const { data: profiles } = await supabase.rpc('get_public_profiles_by_ids', {
+          ids: [data.user_id]
+        });
+        
+        const profile = Array.isArray(profiles) && profiles.length > 0 ? {
+          id: profiles[0].id,
+          full_name: profiles[0].full_name,
+          avatar_url: profiles[0].profile_photo,
+          headline: profiles[0].job_title,
+          premium_tier: profiles[0].premium_tier,
+          role_id: profiles[0].role_id,
+          account_type: profiles[0].account_type
+        } : null;
         
         if (profile) {
           setAuthorProfile(profile);
@@ -168,11 +180,21 @@ const ArticleDetails = () => {
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4" />
                 {authorProfile ? (
-                  <ProfileHoverCard userId={authorProfile.id}>
-                    <span className="font-medium text-foreground hover:underline cursor-pointer">
-                      {authorProfile.full_name || article.author}
-                    </span>
-                  </ProfileHoverCard>
+                  <>
+                    <ProfileHoverCard userId={authorProfile.id}>
+                      <span className="font-medium text-foreground hover:underline cursor-pointer">
+                        {authorProfile.full_name || article.author}
+                      </span>
+                    </ProfileHoverCard>
+                    <PremiumBadge 
+                      tier={
+                        (authorProfile.role_id === 1 || authorProfile.account_type === 'admin') 
+                          ? 'gold' 
+                          : (authorProfile.premium_tier as 'silver' | 'gold' | null)
+                      } 
+                      size="sm" 
+                    />
+                  </>
                 ) : (
                   <span className="font-medium text-foreground">{article.author}</span>
                 )}

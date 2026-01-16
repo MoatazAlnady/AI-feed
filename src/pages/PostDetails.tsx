@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { getCreatorProfileLink } from '@/utils/profileUtils';
+import PremiumBadge from '@/components/PremiumBadge';
 
 interface Author {
   name: string;
@@ -21,6 +22,9 @@ interface Author {
   verified: boolean;
   topVoice: boolean;
   handle: string;
+  premium_tier?: string | null;
+  role_id?: number;
+  account_type?: string;
 }
 
 interface Comment {
@@ -138,7 +142,10 @@ const PostDetails: React.FC = () => {
           title: userProfile?.job_title || 'AI Enthusiast',
           verified: userProfile?.verified || false,
           topVoice: userProfile?.ai_feed_top_voice || false,
-          handle: userProfile?.handle || `user-${data.user_id.slice(0, 8)}`
+          handle: userProfile?.handle || `user-${data.user_id.slice(0, 8)}`,
+          premium_tier: userProfile?.premium_tier || null,
+          role_id: userProfile?.role_id,
+          account_type: userProfile?.account_type
         },
         liked: userLiked,
         canEdit: user?.id === data.user_id
@@ -482,11 +489,21 @@ const PostDetails: React.FC = () => {
                 </Link>
               </ProfileHoverCard>
               <div>
-                <ProfileHoverCard userId={post.user_id}>
-                  <Link to={getCreatorProfileLink({ id: post.user_id, handle: post.author.handle })} className="font-semibold text-foreground hover:underline">
-                    {post.author.name}
-                  </Link>
-                </ProfileHoverCard>
+                <div className="flex items-center gap-1.5">
+                  <ProfileHoverCard userId={post.user_id}>
+                    <Link to={getCreatorProfileLink({ id: post.user_id, handle: post.author.handle })} className="font-semibold text-foreground hover:underline">
+                      {post.author.name}
+                    </Link>
+                  </ProfileHoverCard>
+                  <PremiumBadge 
+                    tier={
+                      (post.author.role_id === 1 || post.author.account_type === 'admin') 
+                        ? 'gold' 
+                        : (post.author.premium_tier as 'silver' | 'gold' | null)
+                    } 
+                    size="sm" 
+                  />
+                </div>
                 <p className="text-sm text-muted-foreground">
                   {post.author.title} • {formatDate(post.created_at)}
                 </p>

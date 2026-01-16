@@ -11,6 +11,7 @@ import { Input } from '../components/ui/input';
 import { Check, X, Clock, Search, SortAsc, SortDesc, Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import PremiumBadge from '@/components/PremiumBadge';
 
 interface ConnectionRequest {
   id: string;
@@ -27,6 +28,9 @@ interface ConnectionRequest {
     job_title?: string;
     company?: string;
     handle?: string;
+    premium_tier?: string | null;
+    role_id?: number;
+    account_type?: string;
   };
 }
 
@@ -81,7 +85,7 @@ const ConnectionRequests: React.FC = () => {
       
       const { data: profiles, error: profilesError } = await supabase
         .from('user_profiles')
-        .select('id, full_name, profile_photo, job_title, company, handle')
+        .select('id, full_name, profile_photo, job_title, company, handle, premium_tier, role_id, account_type')
         .in('id', requesterIds);
 
       if (profilesError) {
@@ -377,18 +381,28 @@ const ConnectionRequests: React.FC = () => {
                           </Avatar>
                           
                           <div className="flex-1">
-                            <h3 
-                              className="font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-primary"
-                              onClick={() => {
-                                if (request.requester?.handle) {
-                                  navigate(`/creator/${request.requester.handle}`);
-                                } else {
-                                  navigate(`/creator/${request.requester_id}`);
-                                }
-                              }}
-                            >
-                              {request.requester?.full_name || 'Deleted User'}
-                            </h3>
+                            <div className="flex items-center gap-1.5">
+                              <h3 
+                                className="font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-primary"
+                                onClick={() => {
+                                  if (request.requester?.handle) {
+                                    navigate(`/creator/${request.requester.handle}`);
+                                  } else {
+                                    navigate(`/creator/${request.requester_id}`);
+                                  }
+                                }}
+                              >
+                                {request.requester?.full_name || 'Deleted User'}
+                              </h3>
+                              <PremiumBadge 
+                                tier={
+                                  (request.requester?.role_id === 1 || request.requester?.account_type === 'admin') 
+                                    ? 'gold' 
+                                    : (request.requester?.premium_tier as 'silver' | 'gold' | null)
+                                } 
+                                size="sm" 
+                              />
+                            </div>
                             
                             {request.requester?.job_title && (
                               <p className="text-sm text-gray-600 dark:text-gray-400">

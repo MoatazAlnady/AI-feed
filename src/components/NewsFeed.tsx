@@ -31,6 +31,7 @@ import SharePostModal from './SharePostModal';
 import LinkPreview from './LinkPreview';
 import ProfileHoverCard from './ProfileHoverCard';
 import MentionInput from './MentionInput';
+import PremiumBadge from './PremiumBadge';
 
 interface Post {
   id: string;
@@ -42,6 +43,9 @@ interface Post {
     verified: boolean;
     topVoice: boolean;
     handle?: string;
+    premium_tier?: string | null;
+    role_id?: number;
+    account_type?: string;
   };
   content: string;
   timestamp: string;
@@ -71,6 +75,9 @@ interface Comment {
     name: string;
     avatar: string;
     handle?: string;
+    premium_tier?: string | null;
+    role_id?: number;
+    account_type?: string;
   };
   content: string;
   timestamp: string;
@@ -336,7 +343,10 @@ const NewsFeed: React.FC = () => {
             title: authorTitle,
             verified: profile?.verified || false,
             topVoice: profile?.ai_feed_top_voice || false,
-            handle: profile?.handle // Add handle for profile linking
+            handle: profile?.handle,
+            premium_tier: profile?.premium_tier || null,
+            role_id: profile?.role_id,
+            account_type: profile?.account_type
           },
           content: post.content,
           timestamp: new Date(post.created_at).toLocaleDateString(),
@@ -1101,6 +1111,14 @@ const NewsFeed: React.FC = () => {
                     <h3 className="font-semibold text-foreground">{post.author.name}</h3>
                   </Link>
                 </ProfileHoverCard>
+                <PremiumBadge 
+                  tier={
+                    (post.author.role_id === 1 || post.author.account_type === 'admin') 
+                      ? 'gold' 
+                      : (post.author.premium_tier as 'silver' | 'gold' | null)
+                  } 
+                  size="sm" 
+                />
                 {post.author.verified && (
                   <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
                     <div className="w-2 h-2 bg-white rounded-full"></div>
