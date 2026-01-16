@@ -293,6 +293,12 @@ const Upgrade: React.FC = () => {
                 <PremiumBadge tier="gold" size="md" />
                 {t('upgrade.plans.gold.title', 'Gold')}
               </CardTitle>
+              <div className="flex items-center justify-center gap-2 mt-2 py-1.5 px-3 bg-green-100 dark:bg-green-900/30 rounded-full w-fit mx-auto">
+                <Gift className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <span className="text-xs font-semibold text-green-700 dark:text-green-300">
+                  {t('upgrade.freeTrial', '7-Day Free Trial')}
+                </span>
+              </div>
               <div className="text-4xl font-bold text-foreground mt-4">
                 ${billingPeriod === 'monthly' ? pricing.gold.monthly : pricing.gold.yearly}
                 <span className="text-lg text-muted-foreground font-normal">
