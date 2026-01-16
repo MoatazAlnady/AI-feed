@@ -18,6 +18,7 @@ import TodoSystem from '../components/TodoSystem';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import PremiumBadge from '@/components/PremiumBadge';
+import ExperienceSection from '@/components/ExperienceSection';
 
 interface DashboardStats {
   toolsSubmitted: number;
@@ -34,7 +35,7 @@ const Profile: React.FC = () => {
   const { user } = useAuth();
   const [userProfile, setUserProfile] = useState<any>({});
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'overview' | 'posts' | 'content' | 'saved' | 'network'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'overview' | 'experience' | 'posts' | 'content' | 'saved' | 'network'>('dashboard');
   const [showPromoteModal, setShowPromoteModal] = useState(false);
   const [selectedContent, setSelectedContent] = useState<any>(null);
   const [savedItems, setSavedItems] = useState<any[]>([]);
@@ -430,6 +431,7 @@ const Profile: React.FC = () => {
               {[
                 { key: 'dashboard', label: 'Dashboard' },
                 { key: 'overview', label: t('profile.tabs.overview') },
+                { key: 'experience', label: 'Experience' },
                 { key: 'posts', label: t('profile.tabs.posts') },
                 { key: 'content', label: t('profile.tabs.content') },
                 { key: 'saved', label: t('profile.tabs.saved') },
@@ -637,6 +639,10 @@ const Profile: React.FC = () => {
                     </div>
                   )}
                 </div>
+              )}
+
+              {activeTab === 'experience' && (
+                <ExperienceSection />
               )}
 
               {activeTab === 'posts' && (

@@ -3763,6 +3763,69 @@ export type Database = {
         }
         Relationships: []
       }
+      user_experience: {
+        Row: {
+          company: string
+          company_logo_url: string | null
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          employment_type: string | null
+          end_month: number | null
+          end_year: number | null
+          id: string
+          is_current: boolean | null
+          job_title: string
+          location: string | null
+          skills_used: string[] | null
+          source: string | null
+          start_month: number | null
+          start_year: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          company: string
+          company_logo_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          employment_type?: string | null
+          end_month?: number | null
+          end_year?: number | null
+          id?: string
+          is_current?: boolean | null
+          job_title: string
+          location?: string | null
+          skills_used?: string[] | null
+          source?: string | null
+          start_month?: number | null
+          start_year: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          company?: string
+          company_logo_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          employment_type?: string | null
+          end_month?: number | null
+          end_year?: number | null
+          id?: string
+          is_current?: boolean | null
+          job_title?: string
+          location?: string | null
+          skills_used?: string[] | null
+          source?: string | null
+          start_month?: number | null
+          start_year?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_profiles: {
         Row: {
           account_type: string | null
