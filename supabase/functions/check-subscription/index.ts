@@ -64,14 +64,9 @@ serve(async (req) => {
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     
     if (customers.data.length === 0) {
-      logStep("No Stripe customer found, updating user as not subscribed");
+      logStep("No Stripe customer found, skipping database update to preserve existing premium status");
       
-      // Update user profile to not premium
-      await supabaseClient
-        .from('user_profiles')
-        .update({ is_premium: false, premium_until: null, premium_tier: null })
-        .eq('id', user.id);
-      
+      // Don't update database - preserve any existing premium status set by admin/promo codes
       return new Response(JSON.stringify({ 
         subscribed: false,
         subscription_tier: null,
@@ -156,13 +151,8 @@ serve(async (req) => {
       
       logStep("Updated user profile to premium", { premiumTier });
     } else {
-      logStep("No active subscription found");
-      
-      // Update user profile to not premium
-      await supabaseClient
-        .from('user_profiles')
-        .update({ is_premium: false, premium_until: null, premium_tier: null })
-        .eq('id', user.id);
+      logStep("No active subscription found, skipping database update to preserve existing premium status");
+      // Don't update database - preserve any existing premium status set by admin/promo codes
     }
 
     return new Response(JSON.stringify({
