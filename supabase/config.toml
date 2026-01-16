@@ -47,3 +47,9 @@ verify_jwt = false
 
 [functions.redeem-promo-code]
 verify_jwt = true
+
+[functions.apply-retention-offer]
+verify_jwt = false
+
+[functions.cancel-subscription]
+verify_jwt = false
