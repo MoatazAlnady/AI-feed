@@ -31,6 +31,7 @@ const Header: React.FC = () => {
   const [connectionRequestsCount, setConnectionRequestsCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [isPremium, setIsPremium] = useState(false);
+  const [premiumTier, setPremiumTier] = useState<'silver' | 'gold' | null>(null);
   const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
@@ -153,7 +154,7 @@ const Header: React.FC = () => {
         try {
           const { data, error } = await supabase
             .from('user_profiles')
-            .select('profile_photo, is_premium, premium_until, role_id, account_type')
+            .select('profile_photo, is_premium, premium_until, premium_tier, role_id, account_type')
             .eq('id', user.id)
             .single();
           
@@ -161,10 +162,11 @@ const Header: React.FC = () => {
             if (data.profile_photo) {
               setUserProfilePhoto(data.profile_photo);
             }
-            // Check premium status - admins automatically get premium access
+            // Check premium status - admins automatically get gold premium access
             const isAdminUser = data.role_id === 1 || data.account_type === 'admin';
             const isActive = isAdminUser || (data.is_premium && (!data.premium_until || new Date(data.premium_until) > new Date()));
             setIsPremium(isActive);
+            setPremiumTier(isAdminUser ? 'gold' : (data.premium_tier as 'silver' | 'gold' | null));
             setPremiumUntil(data.premium_until || null);
           }
         } catch (error) {

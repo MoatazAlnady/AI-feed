@@ -9,8 +9,14 @@ const corsHeaders = {
 
 // Stripe price IDs for premium subscriptions
 const PRICE_IDS = {
-  monthly: "price_1Sg9TEHdycB2B7zvMXuIhd2P",
-  yearly: "price_1Sg9TRHdycB2B7zvgMaPc1x0",
+  silver: {
+    monthly: "price_1Sg9TEHdycB2B7zvMXuIhd2P", // $20/month
+    yearly: "price_1Sg9TRHdycB2B7zvgMaPc1x0",   // $200/year
+  },
+  gold: {
+    monthly: "price_1Sq1qpHdycB2B7zvsq09zgcf", // $30/month
+    yearly: "price_1Sq1qrHdycB2B7zvC41Lpu4h",   // $300/year
+  }
 };
 
 const logStep = (step: string, details?: any) => {
@@ -46,9 +52,16 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
-    const { billingPeriod } = await req.json();
-    const priceId = billingPeriod === 'yearly' ? PRICE_IDS.yearly : PRICE_IDS.monthly;
-    logStep("Selected plan", { billingPeriod, priceId });
+    const { billingPeriod, tier = 'silver' } = await req.json();
+    
+    // Validate tier
+    if (!['silver', 'gold'].includes(tier)) {
+      throw new Error("Invalid tier. Must be 'silver' or 'gold'");
+    }
+    
+    const tierPrices = PRICE_IDS[tier as 'silver' | 'gold'];
+    const priceId = billingPeriod === 'yearly' ? tierPrices.yearly : tierPrices.monthly;
+    logStep("Selected plan", { tier, billingPeriod, priceId });
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
 
@@ -65,12 +78,32 @@ serve(async (req) => {
         status: "active",
         limit: 1,
       });
-      if (subscriptions.data.length > 0) {
-        logStep("User already has active subscription");
-        return new Response(
-          JSON.stringify({ error: "You already have an active subscription" }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
-        );
+      
+      // Also check for trialing subscriptions
+      const trialingSubscriptions = await stripe.subscriptions.list({
+        customer: customerId,
+        status: "trialing",
+        limit: 1,
+      });
+      
+      const allActive = [...subscriptions.data, ...trialingSubscriptions.data];
+      
+      if (allActive.length > 0) {
+        // Check if trying to upgrade from silver to gold
+        const currentSub = allActive[0];
+        const currentPriceId = currentSub.items.data[0].price.id;
+        const isSilverPrice = Object.values(PRICE_IDS.silver).includes(currentPriceId);
+        const isUpgradingToGold = tier === 'gold' && isSilverPrice;
+        
+        if (!isUpgradingToGold) {
+          logStep("User already has active subscription");
+          return new Response(
+            JSON.stringify({ error: "You already have an active subscription. Use the customer portal to manage your subscription." }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
+          );
+        }
+        
+        logStep("Upgrading from Silver to Gold");
       }
     }
 
@@ -92,6 +125,7 @@ serve(async (req) => {
       metadata: {
         user_id: user.id,
         billing_period: billingPeriod,
+        tier: tier,
       },
     };
 
@@ -99,8 +133,17 @@ serve(async (req) => {
     if (billingPeriod === 'yearly') {
       sessionConfig.subscription_data = {
         trial_period_days: 7,
+        metadata: {
+          tier: tier,
+        },
       };
       logStep("Added 7-day trial for yearly plan");
+    } else {
+      sessionConfig.subscription_data = {
+        metadata: {
+          tier: tier,
+        },
+      };
     }
 
     const session = await stripe.checkout.sessions.create(sessionConfig);
