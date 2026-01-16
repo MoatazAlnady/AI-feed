@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Download, Upload, FileSpreadsheet, Send, CheckCircle2 } from 'lucide-react';
+import { Download, Upload, FileSpreadsheet, Send, CheckCircle2, Info } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -9,6 +9,14 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import {
   Accordion,
   AccordionContent,
@@ -94,6 +102,21 @@ const CsvImportModal: React.FC<CsvImportModalProps> = ({
     setDragOver(false);
   };
 
+  const exampleTools = [
+    {
+      name: 'ChatGPT',
+      category: 'Conversational AI',
+      description: 'Advanced conversational AI for various tasks including writing, coding, and analysis.',
+      pricing: 'Freemium',
+    },
+    {
+      name: 'Midjourney',
+      category: 'Image Generation',
+      description: 'Create stunning AI-generated artwork and images from text descriptions.',
+      pricing: 'Paid',
+    },
+  ];
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -170,8 +193,8 @@ const CsvImportModal: React.FC<CsvImportModalProps> = ({
               </>
             ) : (
               <>
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Upload className="h-6 w-6 text-primary" />
+                <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Upload className="h-6 w-6 text-muted-foreground" />
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">
                   {t('submitTool.uploadCSV', 'Upload CSV File')}
@@ -198,6 +221,48 @@ const CsvImportModal: React.FC<CsvImportModalProps> = ({
             {csvError}
           </div>
         )}
+
+        {/* Example Preview Table */}
+        <div className="mt-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Info className="h-4 w-4 text-muted-foreground" />
+            <h4 className="text-sm font-medium text-foreground">
+              {t('submitTool.exampleToolsPreview', 'Example Tools in Template:')}
+            </h4>
+          </div>
+          <div className="border border-border rounded-lg overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50">
+                  <TableHead className="font-semibold">{t('common.name', 'Tool Name')}</TableHead>
+                  <TableHead className="font-semibold">{t('common.category', 'Category')}</TableHead>
+                  <TableHead className="font-semibold hidden sm:table-cell">{t('common.description', 'Description')}</TableHead>
+                  <TableHead className="font-semibold">{t('common.pricing', 'Pricing')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {exampleTools.map((tool, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="font-medium">{tool.name}</TableCell>
+                    <TableCell>{tool.category}</TableCell>
+                    <TableCell className="text-muted-foreground text-sm hidden sm:table-cell max-w-[200px] truncate">
+                      {tool.description}
+                    </TableCell>
+                    <TableCell>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        tool.pricing === 'Freemium' 
+                          ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' 
+                          : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                      }`}>
+                        {tool.pricing}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
 
         {/* CSV Format Guide Accordion */}
         <Accordion type="single" collapsible className="mt-4">
