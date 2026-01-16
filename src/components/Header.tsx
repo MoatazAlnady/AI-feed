@@ -13,6 +13,7 @@ import ConnectionRequestsPopover from './ConnectionRequestsPopover';
 import NotificationDropdown from './NotificationDropdown';
 import ContactSupportModal from './ContactSupportModal';
 import ReportProblemModal from './ReportProblemModal';
+import ManageSubscriptionModal from './ManageSubscriptionModal';
 import { supabase } from '../integrations/supabase/client';
 
 const Header: React.FC = () => {
@@ -23,12 +24,14 @@ const Header: React.FC = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showContactSupportModal, setShowContactSupportModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showManageSubscriptionModal, setShowManageSubscriptionModal] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [notificationCount, setNotificationCount] = useState(0);
   const [messageCount, setMessageCount] = useState(0);
   const [connectionRequestsCount, setConnectionRequestsCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [isPremium, setIsPremium] = useState(false);
+  const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut, isAdmin, isEmployer, loading } = useAuth();
@@ -162,6 +165,7 @@ const Header: React.FC = () => {
             const isAdminUser = data.role_id === 1 || data.account_type === 'admin';
             const isActive = isAdminUser || (data.is_premium && (!data.premium_until || new Date(data.premium_until) > new Date()));
             setIsPremium(isActive);
+            setPremiumUntil(data.premium_until || null);
           }
         } catch (error) {
           console.error('Error fetching user profile:', error);
@@ -650,17 +654,9 @@ const Header: React.FC = () => {
                           {/* Manage Subscription - Premium Only */}
                           {isPremium && (
                             <button
-                              onClick={async () => {
+                              onClick={() => {
                                 setShowUserMenu(false);
-                                try {
-                                  const { data, error } = await supabase.functions.invoke('customer-portal');
-                                  if (error) throw error;
-                                  if (data?.url) {
-                                    window.open(data.url, '_blank');
-                                  }
-                                } catch (err) {
-                                  console.error('Error opening customer portal:', err);
-                                }
+                                setShowManageSubscriptionModal(true);
                               }}
                               className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                             >
@@ -1043,6 +1039,13 @@ const Header: React.FC = () => {
       <ReportProblemModal
         isOpen={showReportModal}
         onClose={() => setShowReportModal(false)}
+      />
+
+      {/* Manage Subscription Modal */}
+      <ManageSubscriptionModal
+        isOpen={showManageSubscriptionModal}
+        onClose={() => setShowManageSubscriptionModal(false)}
+        premiumUntil={premiumUntil}
       />
     </>
   );
