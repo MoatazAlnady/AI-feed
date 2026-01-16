@@ -3980,6 +3980,7 @@ export type Database = {
           organization_id: string | null
           phone: string | null
           phone_country_code: string | null
+          premium_tier: string | null
           premium_until: string | null
           profile_photo: string | null
           role_id: number | null
@@ -4035,9 +4036,10 @@ export type Database = {
           organization_id?: never
           phone?: never
           phone_country_code?: never
+          premium_tier?: string | null
           premium_until?: string | null
           profile_photo?: string | null
-          role_id?: never
+          role_id?: number | null
           tools_submitted?: number | null
           total_engagement?: number | null
           total_reach?: number | null
@@ -4090,9 +4092,10 @@ export type Database = {
           organization_id?: never
           phone?: never
           phone_country_code?: never
+          premium_tier?: string | null
           premium_until?: string | null
           profile_photo?: string | null
-          role_id?: never
+          role_id?: number | null
           tools_submitted?: number | null
           total_engagement?: number | null
           total_reach?: number | null
@@ -4108,6 +4111,13 @@ export type Database = {
             columns: ["company_page_id"]
             isOneToOne: false
             referencedRelation: "company_pages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_profiles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
             referencedColumns: ["id"]
           },
         ]
