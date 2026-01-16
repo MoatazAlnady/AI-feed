@@ -310,7 +310,14 @@ const Profile: React.FC = () => {
                     <div>
                       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                         {profileData.fullName}
-                        <PremiumBadge tier={userProfile?.premium_tier} size="md" />
+                        <PremiumBadge 
+                          tier={
+                            (userProfile?.role_id === 1 || userProfile?.account_type === 'admin') 
+                              ? 'gold' 
+                              : userProfile?.premium_tier
+                          } 
+                          size="md" 
+                        />
                       </h1>
                       <div className="flex items-center space-x-4 text-gray-600 dark:text-gray-300 mb-3">
                         <div className="flex items-center space-x-1">
