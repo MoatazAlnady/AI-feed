@@ -7,6 +7,7 @@ import VerificationBadge from '@/components/VerificationBadge';
 import ProfileHoverCard from '@/components/ProfileHoverCard';
 import { Link } from 'react-router-dom';
 import { getCreatorProfileLink } from '@/utils/profileUtils';
+import PremiumBadge from '@/components/PremiumBadge';
 
 export default function TopCreators() {
   const { data: creators, isLoading } = useQuery({
@@ -52,9 +53,12 @@ export default function TopCreators() {
                     </div>
                   )}
                 </div>
-                <p className="text-center text-sm leading-tight font-bold text-foreground break-words">
-                  {creator.full_name}
-                </p>
+                <div className="flex items-center justify-center gap-1">
+                  <p className="text-center text-sm leading-tight font-bold text-foreground break-words">
+                    {creator.full_name}
+                  </p>
+                  <PremiumBadge tier={creator.premium_tier as 'silver' | 'gold' | null} size="sm" />
+                </div>
               </Link>
             </ProfileHoverCard>
           ))}

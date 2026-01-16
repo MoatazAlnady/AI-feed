@@ -4281,6 +4281,7 @@ export type Database = {
           handle: string
           id: string
           job_title: string
+          premium_tier: string
           profile_photo: string
           total_engagement: number
           verified: boolean
