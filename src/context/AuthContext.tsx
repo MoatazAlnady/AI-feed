@@ -3,9 +3,12 @@ import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 import { getAuthRedirectUrl } from '@/utils/authRedirect';
 
+import type { PremiumTier } from '@/components/PremiumBadge';
+
 interface SubscriptionStatus {
   subscribed: boolean;
   subscriptionTier: 'monthly' | 'yearly' | null;
+  premiumTier: PremiumTier;
   subscriptionEnd: string | null;
   isTrialing: boolean;
 }
@@ -175,6 +178,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [subscription, setSubscription] = useState<SubscriptionStatus>({
     subscribed: false,
     subscriptionTier: null,
+    premiumTier: null,
     subscriptionEnd: null,
     isTrialing: false,
   });
@@ -185,6 +189,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSubscription({
         subscribed: false,
         subscriptionTier: null,
+        premiumTier: null,
         subscriptionEnd: null,
         isTrialing: false,
       });
@@ -203,6 +208,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSubscription({
           subscribed: data.subscribed || false,
           subscriptionTier: data.subscription_tier || null,
+          premiumTier: data.premium_tier || null,
           subscriptionEnd: data.subscription_end || null,
           isTrialing: data.is_trialing || false,
         });
@@ -262,6 +268,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSubscription({
           subscribed: false,
           subscriptionTier: null,
+          premiumTier: null,
           subscriptionEnd: null,
           isTrialing: false,
         });

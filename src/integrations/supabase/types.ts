@@ -3747,6 +3747,7 @@ export type Database = {
           organization_id: string | null
           phone: string | null
           phone_country_code: string | null
+          premium_tier: string | null
           premium_until: string | null
           profile_photo: string | null
           role_id: number
@@ -3802,6 +3803,7 @@ export type Database = {
           organization_id?: string | null
           phone?: string | null
           phone_country_code?: string | null
+          premium_tier?: string | null
           premium_until?: string | null
           profile_photo?: string | null
           role_id?: number
@@ -3857,6 +3859,7 @@ export type Database = {
           organization_id?: string | null
           phone?: string | null
           phone_country_code?: string | null
+          premium_tier?: string | null
           premium_until?: string | null
           profile_photo?: string | null
           role_id?: number
