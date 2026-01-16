@@ -4,9 +4,8 @@ import ChatDock from '@/components/ChatDock';
 import { 
   User, Mail, Calendar, Heart, Bookmark, MessageSquare, Upload, 
   Briefcase, MapPin, Edit, Target, TrendingUp, ExternalLink,
-  Plus, Code, FileText, Users, Star, Zap, Wrench, Eye, ArrowRight, RefreshCw
+  Plus, Code, FileText, Users, Star, Zap, Wrench, Eye, ArrowRight
 } from 'lucide-react';
-import { toast } from 'sonner';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../integrations/supabase/client';
 import PromoteContentModal from '../components/PromoteContentModal';
@@ -46,47 +45,43 @@ const Profile: React.FC = () => {
   const [dashboardLoading, setDashboardLoading] = useState(true);
   const [recentTools, setRecentTools] = useState<any[]>([]);
   const [recentPosts, setRecentPosts] = useState<any[]>([]);
-  const [syncingSubscription, setSyncingSubscription] = useState(false);
 
-  // Sync subscription status from Stripe
-  const syncSubscriptionStatus = async () => {
-    setSyncingSubscription(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast.error('Please log in to sync subscription');
-        return;
-      }
-      
-      const response = await supabase.functions.invoke('check-subscription', {
-        headers: { Authorization: `Bearer ${session.access_token}` }
-      });
-      
-      if (response.error) {
-        throw response.error;
-      }
-      
-      if (response.data?.subscribed) {
-        toast.success(`Subscription synced! Tier: ${response.data.premium_tier || 'Active'}`);
-        // Refetch profile to get updated premium_tier
-        const { data: updatedProfile } = await supabase
-          .from('user_profiles')
-          .select('*')
-          .eq('id', user?.id)
-          .single();
-        if (updatedProfile) {
-          setUserProfile(updatedProfile);
+  // Auto-sync subscription status from Stripe on page load
+  useEffect(() => {
+    const syncSubscriptionStatus = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        
+        const response = await supabase.functions.invoke('check-subscription', {
+          headers: { Authorization: `Bearer ${session.access_token}` }
+        });
+        
+        if (response.error) {
+          console.error('Error syncing subscription:', response.error);
+          return;
         }
-      } else {
-        toast.info('No active subscription found');
+        
+        // Refetch profile to get updated premium_tier
+        if (response.data) {
+          const { data: updatedProfile } = await supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('id', user?.id)
+            .single();
+          if (updatedProfile) {
+            setUserProfile(updatedProfile);
+          }
+        }
+      } catch (error) {
+        console.error('Error syncing subscription:', error);
       }
-    } catch (error) {
-      console.error('Error syncing subscription:', error);
-      toast.error('Failed to sync subscription status');
-    } finally {
-      setSyncingSubscription(false);
+    };
+
+    if (user) {
+      syncSubscriptionStatus();
     }
-  };
+  }, [user]);
 
   // Fetch dashboard data
   useEffect(() => {
@@ -400,14 +395,6 @@ const Profile: React.FC = () => {
                           <Edit className="h-4 w-4" />
                           <span>{t('profile.editProfile')}</span>
                         </Link>
-                        <button
-                          onClick={syncSubscriptionStatus}
-                          disabled={syncingSubscription}
-                          className="flex items-center space-x-2 px-6 py-3 border border-border rounded-lg hover:bg-muted transition-colors text-foreground font-medium disabled:opacity-50"
-                        >
-                          <RefreshCw className={`h-4 w-4 ${syncingSubscription ? 'animate-spin' : ''}`} />
-                          <span>{syncingSubscription ? 'Syncing...' : 'Sync Subscription'}</span>
-                        </button>
                       </div>
                     </div>
                   </div>
