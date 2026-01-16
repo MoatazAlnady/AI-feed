@@ -3751,6 +3751,7 @@ export type Database = {
           premium_until: string | null
           profile_photo: string | null
           role_id: number
+          skills: string[] | null
           tools_submitted: number | null
           total_engagement: number | null
           total_reach: number | null
@@ -3807,6 +3808,7 @@ export type Database = {
           premium_until?: string | null
           profile_photo?: string | null
           role_id?: number
+          skills?: string[] | null
           tools_submitted?: number | null
           total_engagement?: number | null
           total_reach?: number | null
@@ -3863,6 +3865,7 @@ export type Database = {
           premium_until?: string | null
           profile_photo?: string | null
           role_id?: number
+          skills?: string[] | null
           tools_submitted?: number | null
           total_engagement?: number | null
           total_reach?: number | null

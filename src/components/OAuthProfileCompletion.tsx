@@ -9,8 +9,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
-import { User, Calendar, MapPin, Phone, Globe, Lock, ChevronsUpDown, Check, Briefcase, Sparkles, ChevronRight, ChevronLeft } from 'lucide-react';
+import { User, Calendar, MapPin, Phone, Globe, Lock, ChevronsUpDown, Check, Briefcase, Sparkles, ChevronRight, ChevronLeft, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const countriesWithCodes = [
@@ -83,11 +84,6 @@ const countriesWithCodes = [
 
 const genderOptions = ['Male', 'Female'];
 
-const accountTypes = [
-  { value: 'creator', label: 'Creator', description: 'For content creators' },
-  { value: 'employer', label: 'Employer', description: 'For companies' },
-];
-
 const months = [
   { value: '01', label: 'January' },
   { value: '02', label: 'February' },
@@ -112,6 +108,28 @@ const availableInterests = [
   'Finance AI', 'Education AI', 'Gaming AI', 'Art & Creativity', 'Music AI'
 ];
 
+const languageOptions = [
+  'English', 'Arabic', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Russian',
+  'Chinese (Mandarin)', 'Japanese', 'Korean', 'Hindi', 'Bengali', 'Urdu', 'Turkish',
+  'Dutch', 'Swedish', 'Norwegian', 'Danish', 'Finnish', 'Polish', 'Czech', 'Hungarian'
+];
+
+const proficiencyLevels = [
+  { value: 1, label: 'Beginner' },
+  { value: 2, label: 'Elementary' },
+  { value: 3, label: 'Intermediate' },
+  { value: 4, label: 'Advanced' },
+  { value: 5, label: 'Native/Fluent' }
+];
+
+const skillOptions = [
+  'Python', 'JavaScript', 'TypeScript', 'React', 'Node.js', 'Machine Learning',
+  'Deep Learning', 'Data Science', 'AI', 'Cloud Computing', 'AWS', 'Azure',
+  'Docker', 'Kubernetes', 'SQL', 'MongoDB', 'Product Management', 'UX Design',
+  'Project Management', 'Data Analysis', 'Marketing', 'Sales', 'Business Development',
+  'Content Writing', 'Graphic Design', 'Video Editing', 'SEO', 'Social Media'
+];
+
 // Generate years from 1920 to current year - 13 (minimum age)
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: currentYear - 13 - 1920 + 1 }, (_, i) => (currentYear - 13 - i).toString());
@@ -125,7 +143,7 @@ export default function OAuthProfileCompletion() {
   const [birthYear, setBirthYear] = useState('');
   const [birthMonth, setBirthMonth] = useState('');
   const [birthDay, setBirthDay] = useState('');
-  const [step, setStep] = useState(1); // Multi-step form: 1 = basic info, 2 = profile details & interests
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     full_name: '',
     birth_date: '',
@@ -140,6 +158,8 @@ export default function OAuthProfileCompletion() {
     company: '',
     bio: '',
     interests: [] as string[],
+    languages: [] as Array<{language: string, level: number}>,
+    skills: [] as string[],
   });
 
   // Only show for logged-in users with incomplete profiles
@@ -175,7 +195,7 @@ export default function OAuthProfileCompletion() {
       const fetchExistingProfile = async () => {
         const { data: profile } = await supabase
           .from('user_profiles')
-          .select('account_type, full_name, birth_date, gender, country, city, phone, job_title, company, bio, interests')
+          .select('account_type, full_name, birth_date, gender, country, city, phone, job_title, company, bio, interests, languages, skills')
           .eq('id', user.id)
           .maybeSingle();
 
@@ -236,6 +256,12 @@ export default function OAuthProfileCompletion() {
           if (profile.interests && Array.isArray(profile.interests)) {
             setFormData(prev => ({ ...prev, interests: profile.interests }));
           }
+          if (profile.languages && Array.isArray(profile.languages)) {
+            setFormData(prev => ({ ...prev, languages: profile.languages as Array<{language: string, level: number}> }));
+          }
+          if (profile.skills && Array.isArray(profile.skills)) {
+            setFormData(prev => ({ ...prev, skills: profile.skills }));
+          }
         }
       };
 
@@ -272,6 +298,37 @@ export default function OAuthProfileCompletion() {
     }));
   };
 
+  const handleSkillToggle = (skill: string) => {
+    setFormData(prev => ({
+      ...prev,
+      skills: prev.skills.includes(skill)
+        ? prev.skills.filter(s => s !== skill)
+        : [...prev.skills, skill]
+    }));
+  };
+
+  const addLanguage = () => {
+    setFormData(prev => ({
+      ...prev,
+      languages: [...prev.languages, { language: '', level: 3 }]
+    }));
+  };
+
+  const updateLanguage = (index: number, field: 'language' | 'level', value: string | number) => {
+    setFormData(prev => {
+      const updatedLanguages = [...prev.languages];
+      (updatedLanguages[index] as any)[field] = value;
+      return { ...prev, languages: updatedLanguages };
+    });
+  };
+
+  const removeLanguage = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      languages: prev.languages.filter((_, i) => i !== index)
+    }));
+  };
+
   const validateStep1 = () => {
     if (!formData.full_name.trim()) {
       toast.error('Please enter your full name');
@@ -304,6 +361,31 @@ export default function OAuthProfileCompletion() {
     return true;
   };
 
+  const validateStep2 = () => {
+    if (!formData.job_title.trim()) {
+      toast.error('Please enter your job title');
+      return false;
+    }
+    if (!formData.company.trim()) {
+      toast.error('Please enter your company');
+      return false;
+    }
+    const validLanguages = formData.languages.filter(lang => lang.language && lang.level);
+    if (validLanguages.length === 0) {
+      toast.error('Please add at least one language');
+      return false;
+    }
+    if (formData.skills.length === 0) {
+      toast.error('Please select at least one skill');
+      return false;
+    }
+    if (formData.interests.length < 3) {
+      toast.error('Please select at least 3 interests');
+      return false;
+    }
+    return true;
+  };
+
   const handleNextStep = () => {
     if (validateStep1()) {
       setStep(2);
@@ -315,15 +397,19 @@ export default function OAuthProfileCompletion() {
     
     if (!user) return;
 
-    // Step 2 doesn't require validation - all fields are optional
-    // But we still need to ensure step 1 was completed (in case user navigates back)
     if (!validateStep1()) {
       setStep(1);
       return;
     }
 
+    if (!validateStep2()) {
+      return;
+    }
+
     setLoading(true);
     try {
+      const validLanguages = formData.languages.filter(lang => lang.language && lang.level);
+      
       const profileData = {
         id: user.id,
         full_name: formData.full_name.trim(),
@@ -335,10 +421,12 @@ export default function OAuthProfileCompletion() {
         phone: `${formData.phone_country_code} ${formData.phone.trim()}`,
         account_type: formData.account_type,
         // Step 2 fields
-        job_title: formData.job_title.trim() || null,
-        company: formData.company.trim() || null,
+        job_title: formData.job_title.trim(),
+        company: formData.company.trim(),
         bio: formData.bio.trim() || null,
-        interests: formData.interests.length > 0 ? formData.interests : null,
+        interests: formData.interests,
+        languages: validLanguages.length > 0 ? validLanguages : null,
+        skills: formData.skills.length > 0 ? formData.skills : null,
         updated_at: new Date().toISOString(),
       };
 
@@ -374,7 +462,7 @@ export default function OAuthProfileCompletion() {
           <DialogDescription className="text-gray-600 dark:text-gray-400">
             {step === 1 
               ? 'Please provide some basic information to complete your account setup.'
-              : 'Tell us more about yourself and your interests (optional).'}
+              : 'Tell us more about yourself, your skills, and interests.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -589,7 +677,7 @@ export default function OAuthProfileCompletion() {
                 </div>
               </div>
 
-              {/* Account Type */}
+              {/* Account Type - Radio Buttons */}
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                   Account Type *
@@ -600,28 +688,21 @@ export default function OAuthProfileCompletion() {
                     </span>
                   )}
                 </Label>
-                <div className="grid grid-cols-2 gap-3">
-                  {accountTypes.map(type => (
-                    <button
-                      key={type.value}
-                      type="button"
-                      onClick={() => !accountTypeLocked && setFormData(prev => ({ ...prev, account_type: type.value }))}
-                      disabled={accountTypeLocked}
-                      className={cn(
-                        "p-4 rounded-xl border text-center transition-all",
-                        formData.account_type === type.value
-                          ? type.value === 'creator'
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-400 shadow-lg'
-                            : 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 dark:border-purple-400 shadow-lg'
-                          : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-primary/50',
-                        accountTypeLocked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
-                      )}
-                    >
-                      <div className="font-medium text-gray-900 dark:text-gray-100">{type.label}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{type.description}</div>
-                    </button>
-                  ))}
-                </div>
+                <RadioGroup 
+                  value={formData.account_type}
+                  onValueChange={(value) => !accountTypeLocked && setFormData(prev => ({ ...prev, account_type: value }))}
+                  disabled={accountTypeLocked}
+                  className="flex gap-6"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="creator" id="oauth-creator" disabled={accountTypeLocked} />
+                    <Label htmlFor="oauth-creator" className={cn("cursor-pointer", accountTypeLocked && "opacity-60 cursor-not-allowed")}>Creator</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="employer" id="oauth-employer" disabled={accountTypeLocked} />
+                    <Label htmlFor="oauth-employer" className={cn("cursor-pointer", accountTypeLocked && "opacity-60 cursor-not-allowed")}>Employer</Label>
+                  </div>
+                </RadioGroup>
               </div>
 
               <Button type="button" className="w-full" onClick={handleNextStep}>
@@ -637,7 +718,7 @@ export default function OAuthProfileCompletion() {
               <div className="space-y-2">
                 <Label htmlFor="job_title" className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                   <Briefcase className="h-4 w-4" />
-                  Job Title
+                  Job Title *
                 </Label>
                 <Input
                   id="job_title"
@@ -645,19 +726,95 @@ export default function OAuthProfileCompletion() {
                   onChange={(e) => setFormData(prev => ({ ...prev, job_title: e.target.value }))}
                   placeholder="e.g., Software Engineer, Product Manager"
                   className="border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
+                  required
                 />
               </div>
 
               {/* Company */}
               <div className="space-y-2">
-                <Label htmlFor="company" className="text-gray-700 dark:text-gray-300">Company / Organization</Label>
+                <Label htmlFor="company" className="text-gray-700 dark:text-gray-300">Company *</Label>
                 <Input
                   id="company"
                   value={formData.company}
                   onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
                   placeholder="Where do you work?"
                   className="border border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
+                  required
                 />
+              </div>
+
+              {/* Languages */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                    <Globe className="h-4 w-4" />
+                    Languages * <span className="text-xs text-muted-foreground">({formData.languages.filter(l => l.language).length} added)</span>
+                  </Label>
+                  <Button type="button" variant="ghost" size="sm" onClick={addLanguage} className="text-primary">
+                    + Add Language
+                  </Button>
+                </div>
+                
+                {formData.languages.length > 0 ? (
+                  <div className="space-y-2">
+                    {formData.languages.map((lang, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <Select value={lang.language} onValueChange={(v) => updateLanguage(index, 'language', v)}>
+                          <SelectTrigger className="flex-1 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 rounded-xl">
+                            <SelectValue placeholder="Select Language" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                            {languageOptions.map(opt => (
+                              <SelectItem key={opt} value={opt} className="text-gray-900 dark:text-gray-100">{opt}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Select value={lang.level.toString()} onValueChange={(v) => updateLanguage(index, 'level', parseInt(v))}>
+                          <SelectTrigger className="w-32 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 rounded-xl">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                            {proficiencyLevels.map(lvl => (
+                              <SelectItem key={lvl.value} value={lvl.value.toString()} className="text-gray-900 dark:text-gray-100">{lvl.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button type="button" variant="ghost" size="sm" onClick={() => removeLanguage(index)} className="text-destructive">
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-3 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-sm text-muted-foreground">
+                    Click "+ Add Language" to add your languages
+                  </div>
+                )}
+              </div>
+
+              {/* Skills */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                  <Briefcase className="h-4 w-4" />
+                  Skills * <span className="text-xs text-muted-foreground">({formData.skills.length} selected)</span>
+                </Label>
+                <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                  {skillOptions.map(skill => (
+                    <button
+                      key={skill}
+                      type="button"
+                      onClick={() => handleSkillToggle(skill)}
+                      className={cn(
+                        "px-3 py-1.5 rounded-full text-sm font-medium transition-all",
+                        formData.skills.includes(skill)
+                          ? "bg-primary text-white"
+                          : "bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-primary/50"
+                      )}
+                    >
+                      {skill}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Bio */}
@@ -677,8 +834,8 @@ export default function OAuthProfileCompletion() {
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                   <Sparkles className="h-4 w-4" />
-                  Interests
-                  <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+                  Interests * (minimum 3)
+                  <span className="text-xs text-muted-foreground ml-1">
                     ({formData.interests.length} selected)
                   </span>
                 </Label>
