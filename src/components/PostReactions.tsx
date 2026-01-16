@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Heart, ThumbsUp, Laugh, Lightbulb, Trophy, Handshake, ThumbsDown, Smile, Brain } from 'lucide-react';
 
 interface PostReactionsProps {
@@ -20,6 +20,30 @@ const PostReactions: React.FC<PostReactionsProps> = ({
   onReact
 }) => {
   const [showReactionPicker, setShowReactionPicker] = useState(false);
+  const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const showReactions = () => {
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+    setShowReactionPicker(true);
+  };
+
+  const hideReactions = () => {
+    hideTimeoutRef.current = setTimeout(() => {
+      setShowReactionPicker(false);
+    }, 300);
+  };
 
   const reactionTypes = [
     { type: 'like', icon: ThumbsUp, label: 'Like', color: 'text-blue-500', emoji: '👍' },
@@ -61,8 +85,8 @@ const PostReactions: React.FC<PostReactionsProps> = ({
         {/* Main reaction button */}
         <button
           onClick={() => handleReactionClick(userReaction || 'like')}
-          onMouseEnter={() => setShowReactionPicker(true)}
-          onMouseLeave={() => setShowReactionPicker(false)}
+          onMouseEnter={showReactions}
+          onMouseLeave={hideReactions}
           className={`flex items-center space-x-1 px-2 py-1 rounded-lg transition-colors ${
             userReaction 
               ? 'bg-primary/10' 
@@ -78,8 +102,8 @@ const PostReactions: React.FC<PostReactionsProps> = ({
         {showReactionPicker && (
           <div 
             className="absolute bottom-full left-0 mb-2 bg-card rounded-lg shadow-lg border border-border p-2 flex space-x-1 z-[9999]"
-            onMouseEnter={() => setShowReactionPicker(true)}
-            onMouseLeave={() => setShowReactionPicker(false)}
+            onMouseEnter={showReactions}
+            onMouseLeave={hideReactions}
           >
             {reactionTypes.map((reaction) => (
               <button
