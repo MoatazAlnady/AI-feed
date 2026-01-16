@@ -3201,6 +3201,33 @@ export type Database = {
           },
         ]
       }
+      subscription_cancellation_feedback: {
+        Row: {
+          accepted_retention_offer: boolean
+          comments: string | null
+          created_at: string
+          id: string
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          accepted_retention_offer?: boolean
+          comments?: string | null
+          created_at?: string
+          id?: string
+          reason: string
+          user_id: string
+        }
+        Update: {
+          accepted_retention_offer?: boolean
+          comments?: string | null
+          created_at?: string
+          id?: string
+          reason?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       support_tickets: {
         Row: {
           admin_notes: string | null

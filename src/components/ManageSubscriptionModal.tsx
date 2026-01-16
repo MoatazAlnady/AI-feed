@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Crown, AlertTriangle, Gift, Check, X, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -12,7 +15,16 @@ interface ManageSubscriptionModalProps {
   premiumUntil: string | null;
 }
 
-type ModalView = 'details' | 'cancel-confirm' | 'offer-accepted' | 'cancelled';
+type ModalView = 'details' | 'cancel-feedback' | 'cancel-confirm' | 'offer-accepted' | 'cancelled';
+
+const cancellationReasons = [
+  { value: 'too_expensive', label: 'Too expensive' },
+  { value: 'not_using', label: 'Not using it enough' },
+  { value: 'missing_features', label: 'Missing features I need' },
+  { value: 'found_alternative', label: 'Found a better alternative' },
+  { value: 'technical_issues', label: 'Technical issues' },
+  { value: 'other', label: 'Other' },
+];
 
 const ManageSubscriptionModal: React.FC<ManageSubscriptionModalProps> = ({
   isOpen,
@@ -22,12 +34,26 @@ const ManageSubscriptionModal: React.FC<ManageSubscriptionModalProps> = ({
   const [view, setView] = useState<ModalView>('details');
   const [isLoading, setIsLoading] = useState(false);
   const [accessUntilDate, setAccessUntilDate] = useState<string | null>(null);
+  const [cancelReason, setCancelReason] = useState<string>('');
+  const [cancelComments, setCancelComments] = useState<string>('');
 
   const formattedRenewalDate = premiumUntil 
     ? format(new Date(premiumUntil), 'MMMM d, yyyy')
     : 'Unknown';
 
   const handleCancelClick = () => {
+    setView('cancel-feedback');
+  };
+
+  const handleFeedbackSubmit = () => {
+    if (!cancelReason) {
+      toast({
+        title: "Please select a reason",
+        description: "Let us know why you're cancelling.",
+        variant: "destructive",
+      });
+      return;
+    }
     setView('cancel-confirm');
   };
 
@@ -44,6 +70,9 @@ const ManageSubscriptionModal: React.FC<ManageSubscriptionModalProps> = ({
           title: "Offer Applied!",
           description: "You'll get 50% off for the next 2 months.",
         });
+        // Reset feedback state since they didn't cancel
+        setCancelReason('');
+        setCancelComments('');
       } else if (data?.error === 'coupon_already_applied') {
         toast({
           title: "Offer Already Used",
@@ -69,7 +98,12 @@ const ManageSubscriptionModal: React.FC<ManageSubscriptionModalProps> = ({
   const handleCancelAnyway = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('cancel-subscription');
+      const { data, error } = await supabase.functions.invoke('cancel-subscription', {
+        body: {
+          reason: cancelReason,
+          comments: cancelComments || null,
+        },
+      });
       
       if (error) throw error;
 
@@ -97,7 +131,17 @@ const ManageSubscriptionModal: React.FC<ManageSubscriptionModalProps> = ({
 
   const handleClose = () => {
     setView('details');
+    setCancelReason('');
+    setCancelComments('');
     onClose();
+  };
+
+  const handleBack = () => {
+    if (view === 'cancel-feedback') {
+      setView('details');
+    } else if (view === 'cancel-confirm') {
+      setView('cancel-feedback');
+    }
   };
 
   return (
@@ -137,6 +181,70 @@ const ManageSubscriptionModal: React.FC<ManageSubscriptionModalProps> = ({
               >
                 Cancel Subscription
               </Button>
+            </div>
+          </>
+        )}
+
+        {view === 'cancel-feedback' && (
+          <>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-orange-500" />
+                Why are you cancelling?
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <p className="text-sm text-muted-foreground">
+                We'd love to understand why you're leaving so we can improve.
+              </p>
+
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Select a reason *</Label>
+                <RadioGroup value={cancelReason} onValueChange={setCancelReason}>
+                  {cancellationReasons.map((reason) => (
+                    <div key={reason.value} className="flex items-center space-x-2">
+                      <RadioGroupItem value={reason.value} id={reason.value} />
+                      <Label 
+                        htmlFor={reason.value} 
+                        className="text-sm font-normal cursor-pointer"
+                      >
+                        {reason.label}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="comments" className="text-sm font-medium">
+                  Additional comments (optional)
+                </Label>
+                <Textarea
+                  id="comments"
+                  placeholder="Tell us more about your experience..."
+                  value={cancelComments}
+                  onChange={(e) => setCancelComments(e.target.value)}
+                  rows={3}
+                  className="resize-none"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2 pt-2">
+                <Button 
+                  onClick={handleFeedbackSubmit}
+                  disabled={!cancelReason}
+                  className="w-full"
+                >
+                  Continue
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  onClick={handleBack}
+                  className="w-full"
+                >
+                  Go Back
+                </Button>
+              </div>
             </div>
           </>
         )}
@@ -206,6 +314,14 @@ const ManageSubscriptionModal: React.FC<ManageSubscriptionModalProps> = ({
                     <X className="h-4 w-4 mr-2" />
                   )}
                   No Thanks, Cancel Anyway
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  onClick={handleBack}
+                  disabled={isLoading}
+                  className="w-full text-muted-foreground"
+                >
+                  Go Back
                 </Button>
               </div>
             </div>
