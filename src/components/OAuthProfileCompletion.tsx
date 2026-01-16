@@ -500,6 +500,9 @@ export default function OAuthProfileCompletion() {
       if (data?.success && data?.data) {
         const parsed = data.data;
         
+        // Store the full parsed data for caching later (including experiences)
+        (window as any).__parsedCVData = parsed;
+        
         // Pre-fill form data with parsed values
         setFormData(prev => ({
           ...prev,
@@ -528,8 +531,15 @@ export default function OAuthProfileCompletion() {
           }
         }
         
+        // Show info about cached experience data
+        const expCount = parsed.experiences?.length || 0;
+        if (expCount > 0) {
+          toast.success(`CV parsed! Found ${expCount} work experience(s) - you can import them later from your Profile.`);
+        } else {
+          toast.success('CV parsed successfully! Please review and complete your profile.');
+        }
+        
         setParsedFromCV(true);
-        toast.success('CV parsed successfully! Please review and complete your profile.');
         setStep(1);
       } else {
         throw new Error('Failed to parse CV');
@@ -604,7 +614,7 @@ export default function OAuthProfileCompletion() {
         });
       }
 
-      // Upload CV if provided
+      // Upload CV if provided and cache parsed data
       if (cvFile) {
         setCVUploading(true);
         const filePath = `${user.id}/${Date.now()}_${cvFile.name}`;
@@ -614,14 +624,21 @@ export default function OAuthProfileCompletion() {
           .upload(filePath, cvFile);
         
         if (!uploadError) {
+          // Get cached parsed data
+          const parsedData = (window as any).__parsedCVData || null;
+          
           await supabase.from('user_cvs').insert({
             user_id: user.id,
             file_name: cvFile.name,
             file_path: filePath,
             file_size: cvFile.size,
             mime_type: cvFile.type,
-            is_primary: true
+            is_primary: true,
+            parsed_data: parsedData // Cache full parsed data including experiences
           });
+          
+          // Clean up
+          delete (window as any).__parsedCVData;
         }
         setCVUploading(false);
       }
