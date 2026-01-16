@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { AlertTriangle, Gift, Check, X, Loader2 } from 'lucide-react';
+import { AlertTriangle, Gift, Check, X, Loader2, ArrowUpCircle, ArrowDownCircle, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
@@ -17,7 +17,25 @@ interface ManageSubscriptionModalProps {
   premiumTier: PremiumTier;
 }
 
-type ModalView = 'details' | 'cancel-feedback' | 'cancel-confirm' | 'offer-accepted' | 'cancelled';
+type ModalView = 
+  | 'details' 
+  | 'change-plan' 
+  | 'change-confirm' 
+  | 'change-success' 
+  | 'cancel-feedback' 
+  | 'cancel-confirm' 
+  | 'offer-accepted' 
+  | 'cancelled';
+
+interface ProrationPreview {
+  isUpgrade: boolean;
+  credit: number;
+  charge: number;
+  amountDue: number;
+  billingPeriod: string;
+  currentPeriodEnd: string;
+  estimated?: boolean;
+}
 
 const cancellationReasons = [
   { value: 'too_expensive', label: 'Too expensive' },
@@ -39,17 +57,23 @@ const ManageSubscriptionModal: React.FC<ManageSubscriptionModalProps> = ({
   const [accessUntilDate, setAccessUntilDate] = useState<string | null>(null);
   const [cancelReason, setCancelReason] = useState<string>('');
   const [cancelComments, setCancelComments] = useState<string>('');
+  
+  // Plan change state
+  const [targetTier, setTargetTier] = useState<'silver' | 'gold' | null>(null);
+  const [prorationPreview, setProrationPreview] = useState<ProrationPreview | null>(null);
 
   // Tier-specific display info
   const tierInfo = {
     silver: {
       name: 'Silver Membership',
       monthlyPrice: 20,
+      yearlyPrice: 200,
       features: ['10 AI prompts/day', 'Silver badge', 'Promote content'],
     },
     gold: {
       name: 'Gold Membership',
       monthlyPrice: 30,
+      yearlyPrice: 300,
       features: ['Unlimited AI prompts', 'Gold badge', 'Accept paid subscriptions'],
     },
   };
@@ -63,6 +87,81 @@ const ManageSubscriptionModal: React.FC<ManageSubscriptionModalProps> = ({
 
   const handleCancelClick = () => {
     setView('cancel-feedback');
+  };
+
+  const handleChangePlanClick = () => {
+    // Set target to the opposite tier
+    setTargetTier(premiumTier === 'silver' ? 'gold' : 'silver');
+    setView('change-plan');
+  };
+
+  const handlePreviewChanges = async () => {
+    if (!targetTier) return;
+    
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('update-subscription', {
+        body: { targetTier, preview: true },
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        setProrationPreview({
+          isUpgrade: data.isUpgrade,
+          credit: data.credit,
+          charge: data.charge,
+          amountDue: data.amountDue,
+          billingPeriod: data.billingPeriod,
+          currentPeriodEnd: data.currentPeriodEnd,
+          estimated: data.estimated,
+        });
+        setView('change-confirm');
+      } else {
+        throw new Error(data?.error || 'Failed to preview changes');
+      }
+    } catch (err) {
+      console.error('Error previewing plan change:', err);
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to preview plan change. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleConfirmPlanChange = async () => {
+    if (!targetTier) return;
+    
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('update-subscription', {
+        body: { targetTier, preview: false },
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        setView('change-success');
+        toast({
+          title: data.isUpgrade ? "Upgraded Successfully!" : "Downgraded Successfully!",
+          description: data.message,
+        });
+      } else {
+        throw new Error(data?.error || 'Failed to change plan');
+      }
+    } catch (err) {
+      console.error('Error changing plan:', err);
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to change plan. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleFeedbackSubmit = () => {
@@ -153,6 +252,8 @@ const ManageSubscriptionModal: React.FC<ManageSubscriptionModalProps> = ({
     setView('details');
     setCancelReason('');
     setCancelComments('');
+    setTargetTier(null);
+    setProrationPreview(null);
     onClose();
   };
 
@@ -161,8 +262,16 @@ const ManageSubscriptionModal: React.FC<ManageSubscriptionModalProps> = ({
       setView('details');
     } else if (view === 'cancel-confirm') {
       setView('cancel-feedback');
+    } else if (view === 'change-plan') {
+      setView('details');
+      setTargetTier(null);
+    } else if (view === 'change-confirm') {
+      setView('change-plan');
+      setProrationPreview(null);
     }
   };
+
+  const targetTierInfo = targetTier ? tierInfo[targetTier] : null;
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -202,11 +311,230 @@ const ManageSubscriptionModal: React.FC<ManageSubscriptionModalProps> = ({
               </div>
 
               <Button 
+                onClick={handleChangePlanClick}
+                className="w-full"
+              >
+                {premiumTier === 'silver' ? (
+                  <>
+                    <ArrowUpCircle className="h-4 w-4 mr-2" />
+                    Upgrade to Gold
+                  </>
+                ) : (
+                  <>
+                    <ArrowDownCircle className="h-4 w-4 mr-2" />
+                    Switch to Silver
+                  </>
+                )}
+              </Button>
+
+              <Button 
                 variant="outline" 
                 className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
                 onClick={handleCancelClick}
               >
                 Cancel Subscription
+              </Button>
+            </div>
+          </>
+        )}
+
+        {view === 'change-plan' && targetTierInfo && (
+          <>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleBack}>
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                Change Your Plan
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="text-sm text-muted-foreground">
+                Current: <span className="font-medium text-foreground">{currentTierInfo?.name}</span>
+              </div>
+
+              <div className={`rounded-lg p-4 border-2 ${
+                targetTier === 'gold'
+                  ? 'bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border-yellow-400 dark:border-yellow-600'
+                  : 'bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-900/20 dark:to-slate-900/20 border-gray-400 dark:border-gray-500'
+              }`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <PremiumBadge tier={targetTier!} size="sm" />
+                  <span className="font-semibold">Switch to {targetTierInfo.name}</span>
+                </div>
+                <div className="text-2xl font-bold text-foreground mb-2">
+                  ${targetTierInfo.monthlyPrice}/month
+                  <span className="text-sm font-normal text-muted-foreground ml-2">
+                    or ${targetTierInfo.yearlyPrice}/year
+                  </span>
+                </div>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  {targetTierInfo.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-center gap-2">
+                      <Check className="h-3 w-3 text-green-500" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                {targetTier === 'gold' && (
+                  <div className="mt-3 p-2 bg-green-100 dark:bg-green-900/30 rounded text-sm text-green-700 dark:text-green-300">
+                    <ArrowUpCircle className="h-4 w-4 inline mr-1" />
+                    Upgrade: Pay the difference today
+                  </div>
+                )}
+                {targetTier === 'silver' && (
+                  <div className="mt-3 p-2 bg-blue-100 dark:bg-blue-900/30 rounded text-sm text-blue-700 dark:text-blue-300">
+                    <ArrowDownCircle className="h-4 w-4 inline mr-1" />
+                    Downgrade: Credit applied to next invoice
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Button 
+                  onClick={handlePreviewChanges}
+                  disabled={isLoading}
+                  className="w-full"
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : null}
+                  Preview Changes
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  onClick={handleBack}
+                  className="w-full"
+                >
+                  Go Back
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {view === 'change-confirm' && prorationPreview && targetTierInfo && (
+          <>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleBack}>
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                Confirm Plan Change
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="flex items-center gap-2 text-sm">
+                {prorationPreview.isUpgrade ? (
+                  <ArrowUpCircle className="h-5 w-5 text-green-600" />
+                ) : (
+                  <ArrowDownCircle className="h-5 w-5 text-blue-600" />
+                )}
+                <span>
+                  {prorationPreview.isUpgrade ? 'Upgrading' : 'Downgrading'} from{' '}
+                  <span className="font-medium">{currentTierInfo?.name}</span> to{' '}
+                  <span className="font-medium">{targetTierInfo.name}</span>
+                </span>
+              </div>
+
+              <div className="rounded-lg p-4 border bg-muted/50">
+                <div className="text-sm font-medium mb-3">Payment Summary</div>
+                
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">
+                      New plan: {targetTierInfo.name} ({prorationPreview.billingPeriod})
+                    </span>
+                  </div>
+                  
+                  {prorationPreview.credit > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Credit for unused {currentTierInfo?.name?.split(' ')[0]}</span>
+                      <span>-${prorationPreview.credit.toFixed(2)}</span>
+                    </div>
+                  )}
+                  
+                  {prorationPreview.charge > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Prorated {targetTierInfo.name?.split(' ')[0]} cost</span>
+                      <span>+${prorationPreview.charge.toFixed(2)}</span>
+                    </div>
+                  )}
+                  
+                  <div className="border-t pt-2 mt-2">
+                    <div className="flex justify-between font-semibold">
+                      <span>{prorationPreview.isUpgrade ? 'Due today' : 'Credit for next invoice'}</span>
+                      <span className={prorationPreview.isUpgrade ? '' : 'text-green-600'}>
+                        {prorationPreview.isUpgrade ? '' : '-'}${Math.abs(prorationPreview.amountDue).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {prorationPreview.estimated && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    * This is an estimated amount. Actual charge may vary slightly.
+                  </p>
+                )}
+              </div>
+
+              {!prorationPreview.isUpgrade && (
+                <p className="text-sm text-muted-foreground">
+                  Your new {targetTierInfo.name} plan will be active immediately. The credit will be applied to your next billing cycle.
+                </p>
+              )}
+
+              <div className="flex flex-col gap-2">
+                <Button 
+                  onClick={handleConfirmPlanChange}
+                  disabled={isLoading}
+                  className={`w-full ${prorationPreview.isUpgrade ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : null}
+                  {prorationPreview.isUpgrade 
+                    ? `Confirm & Pay $${prorationPreview.amountDue.toFixed(2)}`
+                    : 'Confirm Change'
+                  }
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  onClick={handleBack}
+                  disabled={isLoading}
+                  className="w-full"
+                >
+                  Go Back
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {view === 'change-success' && (
+          <>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-green-600">
+                <Check className="h-5 w-5" />
+                Plan Changed Successfully!
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800 text-center">
+                <PremiumBadge tier={targetTier!} size="lg" />
+                <p className="text-lg font-semibold text-green-700 dark:text-green-400 mt-3">
+                  You're now on {targetTierInfo?.name}!
+                </p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  {prorationPreview?.isUpgrade 
+                    ? "Your upgrade is now active. Enjoy your new features!"
+                    : "Your plan has been changed. Any credit will be applied to your next invoice."
+                  }
+                </p>
+              </div>
+              <Button onClick={handleClose} className="w-full">
+                Done
               </Button>
             </div>
           </>
