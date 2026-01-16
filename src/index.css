@@ -51,24 +51,24 @@
   }
 
   .dark {
-    --background: 220 15% 13%; /* Dark page background - slightly lighter gray */
+    --background: 222 47% 11%; /* Dark blue page background */
     --foreground: 0 0% 98%;
-    --card: 217 28% 17%; /* #1f2937 - exact panel color */
+    --card: 217 33% 17%; /* Blue-tinted panel color */
     --card-foreground: 0 0% 98%;
-    --popover: 217 28% 17%; /* #1f2937 */
+    --popover: 217 33% 17%; /* Blue-tinted popover */
     --popover-foreground: 0 0% 98%;
     --primary: var(--c-cyan);
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 20%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 207 41% 20%; /* #1f3347 - darker blue-grey for tabs */
+    --muted: 217 33% 17%; /* Blue-tinted muted */
     --muted-foreground: 240 5% 64.9%;
-    --accent: 217 28% 24%; /* Lighter for active tabs */
+    --accent: 217 33% 24%; /* Lighter blue for active tabs */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
-    --border: 217 19% 27%;
-    --input: 217 28% 20%; /* Slightly lighter than panels */
+    --border: 217 33% 27%; /* Blue-tinted border */
+    --input: 217 33% 17%; /* Blue-tinted input background */
     --ring: 220 14% 91%;
     
     /* Surface tokens for dark mode */
