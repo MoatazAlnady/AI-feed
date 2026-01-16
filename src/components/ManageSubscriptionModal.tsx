@@ -4,15 +4,17 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Crown, AlertTriangle, Gift, Check, X, Loader2 } from 'lucide-react';
+import { AlertTriangle, Gift, Check, X, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
+import PremiumBadge, { PremiumTier } from '@/components/PremiumBadge';
 
 interface ManageSubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
   premiumUntil: string | null;
+  premiumTier: PremiumTier;
 }
 
 type ModalView = 'details' | 'cancel-feedback' | 'cancel-confirm' | 'offer-accepted' | 'cancelled';
@@ -30,12 +32,30 @@ const ManageSubscriptionModal: React.FC<ManageSubscriptionModalProps> = ({
   isOpen,
   onClose,
   premiumUntil,
+  premiumTier,
 }) => {
   const [view, setView] = useState<ModalView>('details');
   const [isLoading, setIsLoading] = useState(false);
   const [accessUntilDate, setAccessUntilDate] = useState<string | null>(null);
   const [cancelReason, setCancelReason] = useState<string>('');
   const [cancelComments, setCancelComments] = useState<string>('');
+
+  // Tier-specific display info
+  const tierInfo = {
+    silver: {
+      name: 'Silver Membership',
+      monthlyPrice: 20,
+      features: ['10 AI prompts/day', 'Silver badge', 'Promote content'],
+    },
+    gold: {
+      name: 'Gold Membership',
+      monthlyPrice: 30,
+      features: ['Unlimited AI prompts', 'Gold badge', 'Accept paid subscriptions'],
+    },
+  };
+
+  const currentTierInfo = premiumTier ? tierInfo[premiumTier] : null;
+  const monthlySavings = currentTierInfo ? Math.round(currentTierInfo.monthlyPrice * 0.5) : 0;
 
   const formattedRenewalDate = premiumUntil 
     ? format(new Date(premiumUntil), 'MMMM d, yyyy')
@@ -151,22 +171,29 @@ const ManageSubscriptionModal: React.FC<ManageSubscriptionModalProps> = ({
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Crown className="h-5 w-5 text-yellow-500" />
-                Your Premium Subscription
+                <PremiumBadge tier={premiumTier} size="md" />
+                Your {currentTierInfo?.name || 'Subscription'}
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
+              <div className={`rounded-lg p-4 border ${
+                premiumTier === 'gold' 
+                  ? 'bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border-yellow-300 dark:border-yellow-700'
+                  : 'bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-900/20 dark:to-slate-900/20 border-gray-300 dark:border-gray-600'
+              }`}>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-muted-foreground">Current Plan</span>
-                  <span className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 text-xs font-semibold px-2.5 py-0.5 rounded">
-                    Premium
-                  </span>
+                  <PremiumBadge tier={premiumTier} size="sm" showLabel />
                 </div>
-                <div className="text-2xl font-bold text-foreground">Premium Plan</div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Unlimited AI prompts & premium features
-                </p>
+                <div className="text-2xl font-bold text-foreground">{currentTierInfo?.name || 'Premium'}</div>
+                <ul className="text-sm text-muted-foreground mt-2 space-y-1">
+                  {currentTierInfo?.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-center gap-2">
+                      <Check className="h-3 w-3 text-green-500" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               <div className="flex justify-between items-center py-2 border-b border-border">
@@ -271,17 +298,19 @@ const ManageSubscriptionModal: React.FC<ManageSubscriptionModalProps> = ({
                   50% OFF
                 </div>
                 <p className="text-sm text-green-600 dark:text-green-500">
-                  for your next 2 months
+                  for your next 2 months — Save ${monthlySavings}/month on {currentTierInfo?.name || 'your plan'}
                 </p>
                 <ul className="mt-3 space-y-1">
                   <li className="text-sm flex items-center gap-2 text-muted-foreground">
                     <Check className="h-4 w-4 text-green-500" />
-                    Keep all premium features
+                    Keep all {premiumTier === 'gold' ? 'Gold' : 'Silver'} features
                   </li>
-                  <li className="text-sm flex items-center gap-2 text-muted-foreground">
-                    <Check className="h-4 w-4 text-green-500" />
-                    Unlimited AI prompts
-                  </li>
+                  {currentTierInfo?.features.slice(0, 2).map((feature, idx) => (
+                    <li key={idx} className="text-sm flex items-center gap-2 text-muted-foreground">
+                      <Check className="h-4 w-4 text-green-500" />
+                      {feature}
+                    </li>
+                  ))}
                   <li className="text-sm flex items-center gap-2 text-muted-foreground">
                     <Check className="h-4 w-4 text-green-500" />
                     Cancel anytime

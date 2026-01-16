@@ -1048,6 +1048,7 @@ const Header: React.FC = () => {
         isOpen={showManageSubscriptionModal}
         onClose={() => setShowManageSubscriptionModal(false)}
         premiumUntil={premiumUntil}
+        premiumTier={premiumTier}
       />
     </>
   );
