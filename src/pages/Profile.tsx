@@ -4,8 +4,9 @@ import ChatDock from '@/components/ChatDock';
 import { 
   User, Mail, Calendar, Heart, Bookmark, MessageSquare, Upload, 
   Briefcase, MapPin, Edit, Target, TrendingUp, ExternalLink,
-  Plus, Code, FileText, Users, Star, Zap, Wrench, Eye, ArrowRight
+  Plus, Code, FileText, Users, Star, Zap, Wrench, Eye, ArrowRight, RefreshCw
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../integrations/supabase/client';
 import PromoteContentModal from '../components/PromoteContentModal';
@@ -45,6 +46,47 @@ const Profile: React.FC = () => {
   const [dashboardLoading, setDashboardLoading] = useState(true);
   const [recentTools, setRecentTools] = useState<any[]>([]);
   const [recentPosts, setRecentPosts] = useState<any[]>([]);
+  const [syncingSubscription, setSyncingSubscription] = useState(false);
+
+  // Sync subscription status from Stripe
+  const syncSubscriptionStatus = async () => {
+    setSyncingSubscription(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Please log in to sync subscription');
+        return;
+      }
+      
+      const response = await supabase.functions.invoke('check-subscription', {
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+      
+      if (response.error) {
+        throw response.error;
+      }
+      
+      if (response.data?.subscribed) {
+        toast.success(`Subscription synced! Tier: ${response.data.premium_tier || 'Active'}`);
+        // Refetch profile to get updated premium_tier
+        const { data: updatedProfile } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', user?.id)
+          .single();
+        if (updatedProfile) {
+          setUserProfile(updatedProfile);
+        }
+      } else {
+        toast.info('No active subscription found');
+      }
+    } catch (error) {
+      console.error('Error syncing subscription:', error);
+      toast.error('Failed to sync subscription status');
+    } finally {
+      setSyncingSubscription(false);
+    }
+  };
 
   // Fetch dashboard data
   useEffect(() => {
@@ -348,15 +390,26 @@ const Profile: React.FC = () => {
                           </a>
                         )}
                       </div>
+
+                      {/* Action Buttons - Below user details */}
+                      <div className="flex items-center gap-3 mt-6">
+                        <Link
+                          to="/settings"
+                          className="flex items-center space-x-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                        >
+                          <Edit className="h-4 w-4" />
+                          <span>{t('profile.editProfile')}</span>
+                        </Link>
+                        <button
+                          onClick={syncSubscriptionStatus}
+                          disabled={syncingSubscription}
+                          className="flex items-center space-x-2 px-6 py-3 border border-border rounded-lg hover:bg-muted transition-colors text-foreground font-medium disabled:opacity-50"
+                        >
+                          <RefreshCw className={`h-4 w-4 ${syncingSubscription ? 'animate-spin' : ''}`} />
+                          <span>{syncingSubscription ? 'Syncing...' : 'Sync Subscription'}</span>
+                        </button>
+                      </div>
                     </div>
-                    
-                    <Link
-                      to="/settings"
-                      className="flex items-center space-x-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300"
-                    >
-                      <Edit className="h-4 w-4" />
-                      <span>{t('profile.editProfile')}</span>
-                    </Link>
                   </div>
                 </div>
               </div>
