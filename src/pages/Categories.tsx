@@ -106,7 +106,7 @@ const Categories: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="py-8 bg-muted/50 min-h-screen">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -125,7 +125,7 @@ const Categories: React.FC = () => {
         url="https://aifeed.app/categories"
         type="website"
       />
-    <div className="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div className="py-8 bg-muted/50 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">

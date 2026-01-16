@@ -726,7 +726,7 @@ const PromoteContentModal: React.FC<PromoteContentModalProps> = ({
                       min="1"
                       max="10000"
                       step="1"
-                      className="w-full pl-8 pr-4 py-3 border border-gray-200 dark:border-slate-600 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 dark:text-white"
+                      className="w-full pl-8 pr-4 h-12 border border-gray-200 dark:border-slate-600 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 dark:text-white"
                       placeholder="Enter any amount"
                     />
                   </div>
