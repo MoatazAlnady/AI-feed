@@ -12,7 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
-import { User, Calendar, MapPin, Phone, Globe, Lock, ChevronsUpDown, Check, Briefcase, Sparkles, ChevronRight, ChevronLeft, X, FileText, Upload, HelpCircle } from 'lucide-react';
+import { User, Calendar, MapPin, Phone, Globe, Lock, ChevronsUpDown, Check, Briefcase, Sparkles, ChevronRight, ChevronLeft, X, FileText, Upload, HelpCircle, Loader2, PenLine } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const countriesWithCodes = [
@@ -144,7 +144,13 @@ export default function OAuthProfileCompletion() {
   const [birthYear, setBirthYear] = useState('');
   const [birthMonth, setBirthMonth] = useState('');
   const [birthDay, setBirthDay] = useState('');
-  const [step, setStep] = useState(1);
+  
+  // Step 0: choose method, Step 1: basic info, Step 2: professional info
+  const [step, setStep] = useState(0);
+  const [fillMethod, setFillMethod] = useState<'choose' | 'cv' | 'manual'>('choose');
+  const [cvParsing, setCVParsing] = useState(false);
+  const [parsedFromCV, setParsedFromCV] = useState(false);
+  
   const [formData, setFormData] = useState({
     full_name: '',
     birth_date: '',
@@ -426,7 +432,33 @@ export default function OAuthProfileCompletion() {
     );
   };
 
-  const handleCVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Extract text from file for CV parsing
+  const extractTextFromFile = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result;
+        if (typeof content === 'string') {
+          resolve(content);
+        } else if (content instanceof ArrayBuffer) {
+          const decoder = new TextDecoder('utf-8', { fatal: false });
+          resolve(decoder.decode(content));
+        } else {
+          reject(new Error('Unable to read file'));
+        }
+      };
+      reader.onerror = reject;
+      
+      if (file.type === 'application/pdf') {
+        reader.readAsArrayBuffer(file);
+      } else {
+        reader.readAsText(file);
+      }
+    });
+  };
+
+  // Handle CV upload and parsing
+  const handleCVUploadAndParse = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     
@@ -445,7 +477,71 @@ export default function OAuthProfileCompletion() {
     }
     
     setCVFile(file);
-    toast.success('CV selected. It will be uploaded when you complete your profile.');
+    setCVParsing(true);
+    
+    try {
+      const text = await extractTextFromFile(file);
+      
+      if (!text || text.trim().length < 50) {
+        toast.error('Could not extract enough text from the CV. Please try a different file or fill manually.');
+        setFillMethod('manual');
+        setStep(1);
+        setCVParsing(false);
+        return;
+      }
+      
+      // Call parse-cv edge function
+      const { data, error } = await supabase.functions.invoke('parse-cv', {
+        body: { cvText: text, fileName: file.name }
+      });
+      
+      if (error) throw error;
+      
+      if (data?.success && data?.data) {
+        const parsed = data.data;
+        
+        // Pre-fill form data with parsed values
+        setFormData(prev => ({
+          ...prev,
+          full_name: parsed.full_name || prev.full_name,
+          job_title: parsed.job_title || prev.job_title,
+          company: parsed.company || prev.company,
+          city: parsed.city || prev.city,
+          country: parsed.country || prev.country,
+          bio: parsed.bio || prev.bio,
+          skills: parsed.skills?.length > 0 ? parsed.skills.filter((s: string) => skillOptions.includes(s) || s) : prev.skills,
+          languages: parsed.languages?.length > 0 ? parsed.languages : prev.languages,
+        }));
+        
+        // If country was parsed, try to set the phone code
+        if (parsed.country) {
+          const countryData = countriesWithCodes.find(c => 
+            c.name.toLowerCase() === parsed.country.toLowerCase() ||
+            c.name.toLowerCase().includes(parsed.country.toLowerCase())
+          );
+          if (countryData) {
+            setFormData(prev => ({ 
+              ...prev, 
+              country: countryData.name,
+              phone_country_code: countryData.code 
+            }));
+          }
+        }
+        
+        setParsedFromCV(true);
+        toast.success('CV parsed successfully! Please review and complete your profile.');
+        setStep(1);
+      } else {
+        throw new Error('Failed to parse CV');
+      }
+    } catch (error: any) {
+      console.error('CV parsing error:', error);
+      toast.error('Failed to parse CV. Please try again or fill manually.');
+      setFillMethod('manual');
+      setStep(1);
+    } finally {
+      setCVParsing(false);
+    }
   };
 
   const handleNextStep = () => {
@@ -542,6 +638,21 @@ export default function OAuthProfileCompletion() {
 
   if (!isOpen) return null;
 
+  const getDialogDescription = () => {
+    if (step === 0 && fillMethod === 'choose') {
+      return 'Choose how you would like to complete your profile.';
+    }
+    if (step === 0 && fillMethod === 'cv') {
+      return 'Upload your CV to automatically fill in your information.';
+    }
+    if (step === 1) {
+      return parsedFromCV 
+        ? 'Some fields have been pre-filled from your CV. Please review and complete any missing information.'
+        : 'Please provide some basic information to complete your account setup.';
+    }
+    return 'Tell us more about yourself, your skills, and interests.';
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent 
@@ -554,33 +665,154 @@ export default function OAuthProfileCompletion() {
             Complete Your Profile
           </DialogTitle>
           <DialogDescription className="text-gray-600 dark:text-gray-400">
-            {step === 1 
-              ? 'Please provide some basic information to complete your account setup.'
-              : 'Tell us more about yourself, your skills, and interests.'}
+            {getDialogDescription()}
           </DialogDescription>
         </DialogHeader>
 
-        {/* Progress Indicator */}
-        <div className="flex items-center gap-2 mb-4">
-          <div className={cn(
-            "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors",
-            step >= 1 ? "bg-primary text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
-          )}>
-            1
+        {/* Progress Indicator - only show after method selection */}
+        {step > 0 && (
+          <div className="flex items-center gap-2 mb-4">
+            <div className={cn(
+              "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors",
+              step >= 1 ? "bg-primary text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+            )}>
+              1
+            </div>
+            <div className={cn(
+              "flex-1 h-1 rounded transition-colors",
+              step >= 2 ? "bg-primary" : "bg-gray-200 dark:bg-gray-700"
+            )} />
+            <div className={cn(
+              "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors",
+              step >= 2 ? "bg-primary text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+            )}>
+              2
+            </div>
           </div>
-          <div className={cn(
-            "flex-1 h-1 rounded transition-colors",
-            step >= 2 ? "bg-primary" : "bg-gray-200 dark:bg-gray-700"
-          )} />
-          <div className={cn(
-            "flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors",
-            step >= 2 ? "bg-primary text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
-          )}>
-            2
+        )}
+
+        {/* Pre-filled from CV notice */}
+        {step === 1 && parsedFromCV && (
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 mb-4">
+            <p className="text-sm text-green-700 dark:text-green-300 flex items-center gap-2">
+              <Check className="h-4 w-4" />
+              Some fields have been pre-filled from your CV. Please review and complete any missing information.
+            </p>
           </div>
-        </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+          {/* Step 0: Choose Method */}
+          {step === 0 && fillMethod === 'choose' && (
+            <div className="space-y-6">
+              <div className="text-center space-y-2">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">How would you like to complete your profile?</h3>
+                <p className="text-sm text-muted-foreground">
+                  You can upload your CV to automatically fill in your information, or enter it manually.
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 gap-4">
+                {/* Upload CV Option */}
+                <button
+                  type="button"
+                  onClick={() => setFillMethod('cv')}
+                  className="p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl hover:border-primary transition-all text-center group"
+                >
+                  <Upload className="h-10 w-10 mx-auto text-primary mb-3 group-hover:scale-110 transition-transform" />
+                  <h4 className="font-medium mb-1 text-gray-900 dark:text-gray-100">Upload Your CV</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Auto-fill your profile by uploading your resume
+                  </p>
+                </button>
+                
+                {/* Manual Entry Option */}
+                <button
+                  type="button"
+                  onClick={() => { setFillMethod('manual'); setStep(1); }}
+                  className="p-6 border-2 border-gray-200 dark:border-gray-600 rounded-xl hover:border-primary transition-all text-center group"
+                >
+                  <PenLine className="h-10 w-10 mx-auto text-muted-foreground mb-3 group-hover:scale-110 transition-transform" />
+                  <h4 className="font-medium mb-1 text-gray-900 dark:text-gray-100">Fill Manually</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Enter your information step by step
+                  </p>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 0: CV Upload */}
+          {step === 0 && fillMethod === 'cv' && (
+            <div className="space-y-6">
+              <Button 
+                type="button"
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setFillMethod('choose')}
+                className="mb-2"
+              >
+                <ChevronLeft className="mr-2 h-4 w-4" /> Back
+              </Button>
+              
+              <div className="text-center space-y-2">
+                <FileText className="h-12 w-12 mx-auto text-primary" />
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Upload Your CV</h3>
+                <p className="text-sm text-muted-foreground">
+                  We'll extract your information automatically. You can review and edit before submitting.
+                </p>
+              </div>
+              
+              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8 text-center">
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={handleCVUploadAndParse}
+                  className="hidden"
+                  id="cv-upload-parse"
+                  disabled={cvParsing}
+                />
+                <label htmlFor="cv-upload-parse" className={cn("cursor-pointer", cvParsing && "cursor-wait")}>
+                  {cvParsing ? (
+                    <div className="space-y-2">
+                      <Loader2 className="h-10 w-10 mx-auto animate-spin text-primary" />
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Analyzing your CV...</p>
+                      <p className="text-xs text-muted-foreground">This may take a few seconds</p>
+                    </div>
+                  ) : cvFile ? (
+                    <div className="space-y-2">
+                      <FileText className="h-10 w-10 mx-auto text-primary" />
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{cvFile.name}</p>
+                      <Button 
+                        type="button"
+                        variant="outline" 
+                        size="sm" 
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCVFile(null); }}
+                      >
+                        Choose Different File
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                      <p className="font-medium text-gray-900 dark:text-gray-100">Click to upload</p>
+                      <p className="text-sm text-muted-foreground">PDF, DOC, or DOCX (max 10MB)</p>
+                    </>
+                  )}
+                </label>
+              </div>
+              
+              <Button 
+                type="button"
+                onClick={() => { setFillMethod('manual'); setStep(1); }} 
+                variant="ghost" 
+                className="w-full"
+              >
+                Or fill in manually instead
+              </Button>
+            </div>
+          )}
+
           {step === 1 && (
             <>
               {/* Full Name */}
@@ -982,50 +1214,6 @@ export default function OAuthProfileCompletion() {
                 </div>
               </div>
 
-              {/* CV Upload */}
-              <div className="space-y-2">
-                <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <FileText className="h-4 w-4" />
-                  Upload Your CV
-                </Label>
-                <p className="text-xs text-muted-foreground">
-                  Upload your CV to help complete your profile
-                </p>
-                
-                <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 text-center">
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleCVUpload}
-                    className="hidden"
-                    id="cv-upload"
-                  />
-                  <label htmlFor="cv-upload" className="cursor-pointer">
-                    {cvFile ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <FileText className="h-8 w-8 text-primary" />
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{cvFile.name}</span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => { e.preventDefault(); setCVFile(null); }}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <>
-                        <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                        <span className="text-sm text-muted-foreground">
-                          Click to upload PDF, DOC, or DOCX (max 10MB)
-                        </span>
-                      </>
-                    )}
-                  </label>
-                </div>
-              </div>
-
               <div className="flex gap-3 pt-2">
                 <Button 
                   type="button" 
@@ -1036,8 +1224,8 @@ export default function OAuthProfileCompletion() {
                   <ChevronLeft className="mr-2 h-4 w-4" />
                   Back
                 </Button>
-                <Button type="submit" className="flex-1" disabled={loading}>
-                  {loading ? 'Completing...' : 'Complete Profile'}
+                <Button type="submit" className="flex-1" disabled={loading || cvUploading}>
+                  {loading || cvUploading ? 'Completing...' : 'Complete Profile'}
                 </Button>
               </div>
             </>
