@@ -308,7 +308,7 @@ const Profile: React.FC = () => {
                 <div className="flex-1 pt-16">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-1.5">
                         {profileData.fullName}
                         <PremiumBadge 
                           tier={
@@ -316,7 +316,8 @@ const Profile: React.FC = () => {
                               ? 'gold' 
                               : userProfile?.premium_tier
                           } 
-                          size="md" 
+                          size="md"
+                          className="translate-y-[1px]"
                         />
                       </h1>
                       <div className="flex items-center space-x-4 text-gray-600 dark:text-gray-300 mb-3">
