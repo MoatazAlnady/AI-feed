@@ -9,7 +9,8 @@ import {
   Plus, 
   Users,
   Check,
-  ChevronRight
+  ChevronRight,
+  UserPlus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +21,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
@@ -28,6 +36,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import InviteToEventModal from './InviteToEventModal';
 
 interface GroupEvent {
   id: string;
@@ -79,6 +88,12 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [inviteModal, setInviteModal] = useState<{
+    isOpen: boolean;
+    eventId: string;
+    isPublic: boolean;
+    title: string;
+  } | null>(null);
 
   // Create event form
   const [formData, setFormData] = useState({
@@ -189,7 +204,7 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
     }
   };
 
-  const handleRSVP = async (eventId: string) => {
+  const handleRSVP = async (eventId: string, newStatus?: string) => {
     if (!user) {
       toast.error('Please log in to RSVP');
       return;
@@ -197,8 +212,9 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
 
     try {
       const currentStatus = userAttendance[eventId];
+      const targetStatus = newStatus || (currentStatus === 'attending' ? 'not_attending' : 'attending');
       
-      if (currentStatus === 'attending') {
+      if (targetStatus === 'not_attending' || targetStatus === 'undecided') {
         // Remove RSVP
         await supabase
           .from('group_event_attendees')
@@ -211,13 +227,13 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
           delete newState[eventId];
           return newState;
         });
-        toast.success('RSVP cancelled');
+        toast.success('RSVP updated');
       } else {
-        // Add RSVP
+        // Add/Update RSVP
         if (currentStatus) {
           await supabase
             .from('group_event_attendees')
-            .update({ status: 'attending' })
+            .update({ status: targetStatus })
             .eq('event_id', eventId)
             .eq('user_id', user.id);
         } else {
@@ -226,12 +242,12 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
             .insert({
               event_id: eventId,
               user_id: user.id,
-              status: 'attending'
+              status: targetStatus
             });
         }
         
-        setUserAttendance(prev => ({ ...prev, [eventId]: 'attending' }));
-        toast.success("You're attending!");
+        setUserAttendance(prev => ({ ...prev, [eventId]: targetStatus }));
+        toast.success(targetStatus === 'attending' ? "You're attending!" : 'RSVP updated');
       }
       
       fetchEvents();
@@ -578,19 +594,44 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <Button
-                    variant={userAttendance[event.id] === 'attending' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRSVP(event.id);
+                <div className="flex items-center justify-between gap-2">
+                  <Select
+                    value={userAttendance[event.id] || 'undecided'}
+                    onValueChange={(value) => {
+                      handleRSVP(event.id, value);
                     }}
-                    className="gap-1"
                   >
-                    <Check className="h-3 w-3" />
-                    {userAttendance[event.id] === 'attending' ? 'Going' : 'RSVP'}
-                  </Button>
+                    <SelectTrigger 
+                      className="w-[140px] h-8 text-xs"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <SelectValue placeholder="RSVP" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="undecided">Not Decided</SelectItem>
+                      <SelectItem value="attending">Will Attend</SelectItem>
+                      <SelectItem value="maybe">Maybe</SelectItem>
+                      <SelectItem value="not_attending">Not Attending</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  {(event.is_public || isMember) && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setInviteModal({
+                          isOpen: true,
+                          eventId: event.id,
+                          isPublic: event.is_public,
+                          title: event.title
+                        });
+                      }}
+                    >
+                      <UserPlus className="h-4 w-4" />
+                    </Button>
+                  )}
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </div>
               </div>
@@ -610,6 +651,19 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
             {loadingMore ? t('common.loading', 'Loading...') : t('common.loadMore', 'Load More')}
           </Button>
         </div>
+      )}
+
+      {/* Invite Modal */}
+      {inviteModal && (
+        <InviteToEventModal
+          isOpen={inviteModal.isOpen}
+          onClose={() => setInviteModal(null)}
+          eventId={inviteModal.eventId}
+          eventType="group_event"
+          groupId={groupId}
+          isPublic={inviteModal.isPublic}
+          eventTitle={inviteModal.title}
+        />
       )}
     </div>
   );
