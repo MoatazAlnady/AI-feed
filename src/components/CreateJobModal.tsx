@@ -93,20 +93,32 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
     setIsSubmitting(true);
 
     try {
-      const newJob = {
-        id: Date.now(),
-        ...formData,
-        location: `${formData.city}, ${formData.country}`,
-        postedBy: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Anonymous',
-        postedAt: new Date().toISOString(),
-        applicants: 0
-      };
+      const { data: newJobData, error } = await supabase
+        .from('jobs')
+        .insert({
+          title: formData.title,
+          company: formData.company,
+          country: formData.country,
+          city: formData.city,
+          location: `${formData.city}, ${formData.country}`,
+          type: formData.type,
+          work_mode: formData.workMode,
+          experience: formData.experience,
+          salary: formData.salary || null,
+          description: formData.description,
+          requirements: formData.requirements,
+          application_url: formData.applicationUrl,
+          slots: formData.slots,
+          applicants: 0,
+          user_id: user?.id
+        })
+        .select()
+        .single();
 
-      // Simulate brief delay for UX
-      await new Promise(resolve => setTimeout(resolve, 500));
+      if (error) throw error;
 
-      setCreatedJob(newJob);
-      onJobCreated(newJob);
+      setCreatedJob(newJobData);
+      onJobCreated(newJobData);
       toast.success('Job posted successfully!');
       
       // Show conversion modal with options

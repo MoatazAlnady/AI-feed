@@ -49,11 +49,44 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        // For now, return empty array since tool_comments table may not exist
-        // The component will still work with local state for new comments
-        setComments([]);
+        const { data, error } = await supabase
+          .from('tool_comments')
+          .select('id, content, created_at, parent_id, likes_count, user_id')
+          .eq('tool_id', String(toolId))
+          .is('parent_id', null)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error fetching comments:', error);
+          setComments([]);
+        } else {
+          const formattedComments: Comment[] = await Promise.all(
+            (data || []).map(async (c: any) => {
+              const { data: profile } = await supabase
+                .from('user_profiles')
+                .select('id, full_name, profile_photo, verified, ai_feed_top_voice')
+                .eq('id', c.user_id)
+                .single();
+
+              return {
+                id: c.id,
+                userId: c.user_id,
+                userName: profile?.full_name || 'Anonymous',
+                userPhoto: profile?.profile_photo,
+                userVerified: profile?.verified || false,
+                userTopVoice: profile?.ai_feed_top_voice || false,
+                content: c.content,
+                timestamp: formatDistanceToNow(new Date(c.created_at), { addSuffix: true }),
+                likes: c.likes_count || 0,
+                replies: []
+              };
+            })
+          );
+          setComments(formattedComments);
+        }
       } catch (error) {
         console.error('Error fetching comments:', error);
+        setComments([]);
       } finally {
         setLoading(false);
       }
