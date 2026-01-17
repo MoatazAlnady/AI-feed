@@ -145,7 +145,7 @@ const ShareToolModal: React.FC<ShareToolModalProps> = ({
     setIsSharing(true);
 
     try {
-      // Record the share
+      // Record the share in shares table
       const { error: sharesError } = await supabase
         .from('shares')
         .insert({
@@ -160,6 +160,19 @@ const ShareToolModal: React.FC<ShareToolModalProps> = ({
         throw sharesError;
       }
 
+      // Insert into shared_posts for feed visibility
+      const { error: sharePostError } = await supabase
+        .from('shared_posts')
+        .insert({
+          user_id: user.id,
+          original_tool_id: tool.id,
+          share_text: shareText.trim() || null,
+          visibility: visibility,
+          content_type: 'tool'
+        });
+
+      if (sharePostError) throw sharePostError;
+
       // Update share count on tool
       await supabase
         .from('tools')
@@ -168,7 +181,7 @@ const ShareToolModal: React.FC<ShareToolModalProps> = ({
 
       toast({
         title: "Tool shared!",
-        description: "The tool has been shared successfully.",
+        description: "Tool shared to your feed. Your followers will see it!",
       });
 
       onShare?.();
