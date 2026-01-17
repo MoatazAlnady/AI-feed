@@ -361,6 +361,8 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onPo
               <InterestTagSelector 
                 selectedTags={tags}
                 onTagsChange={setTags}
+                maxTags={5}
+                label="Tags & Interests (max 5)"
               />
 
               {/* Image Preview */}

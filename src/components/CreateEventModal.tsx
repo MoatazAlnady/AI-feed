@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import PremiumUpgradeModal from './PremiumUpgradeModal';
+import InterestTagSelector from './InterestTagSelector';
 
 interface CreateEventModalProps {
   isOpen: boolean;
@@ -37,7 +38,9 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
     category: '',
     isLiveVideo: false,
     liveVideoRoomId: '',
-    liveVideoUrl: ''
+    liveVideoUrl: '',
+    interests: [] as string[],
+    tags: [] as string[]
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -110,7 +113,9 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
       createdAt: 'Just now',
       isLiveVideo: formData.isLiveVideo,
       liveVideoRoomId: formData.liveVideoRoomId,
-      liveVideoUrl: formData.liveVideoUrl
+      liveVideoUrl: formData.liveVideoUrl,
+      interests: formData.interests,
+      tags: formData.tags
     };
 
     // Simulate API call
@@ -127,7 +132,9 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
       category: '',
       isLiveVideo: false,
       liveVideoRoomId: '',
-      liveVideoUrl: ''
+      liveVideoUrl: '',
+      interests: [],
+      tags: []
     });
     setIsSubmitting(false);
     onClose();
@@ -194,6 +201,22 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                 rows={4}
                 className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent resize-none bg-background text-foreground"
                 placeholder={t('community.events.form.descriptionPlaceholder', 'Describe your event')}
+              />
+            </div>
+
+            {/* Interests & Tags */}
+            <div className="mb-6">
+              <InterestTagSelector
+                selectedTags={[...formData.interests, ...formData.tags]}
+                onTagsChange={(allTags) => {
+                  setFormData(prev => ({ 
+                    ...prev, 
+                    interests: allTags,
+                    tags: allTags 
+                  }));
+                }}
+                maxTags={5}
+                label="Event Interests & Tags (max 5)"
               />
             </div>
 

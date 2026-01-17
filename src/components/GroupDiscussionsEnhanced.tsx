@@ -37,6 +37,7 @@ import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import ShareDiscussionModal from '@/components/ShareDiscussionModal';
+import InterestTagSelector from '@/components/InterestTagSelector';
 
 interface DiscussionTag {
   id: string;
@@ -119,7 +120,8 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
     selectedTags: [] as string[],
     hasPoll: false,
     pollOptions: ['', ''],
-    isPublic: false
+    isPublic: false,
+    interests: [] as string[]
   });
 
   useEffect(() => {
@@ -283,6 +285,7 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
           content: formData.content.trim() || null,
           author_id: user.id,
           is_public: allowPublicDiscussions ? formData.isPublic : false,
+          interests: formData.interests,
           poll_options: formData.hasPoll 
             ? formData.pollOptions.filter(o => o.trim()).map((option, idx) => ({
                 id: idx,
@@ -317,7 +320,8 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
         selectedTags: [],
         hasPoll: false,
         pollOptions: ['', ''],
-        isPublic: false
+        isPublic: false,
+        interests: []
       });
       fetchDiscussions();
     } catch (error) {
@@ -583,6 +587,14 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
                     ))}
                   </div>
                 </div>
+
+                {/* Interests Selector */}
+                <InterestTagSelector
+                  selectedTags={formData.interests}
+                  onTagsChange={(tags) => setFormData(prev => ({ ...prev, interests: tags }))}
+                  maxTags={5}
+                  label="Discussion Interests (max 5)"
+                />
 
                 <div className="flex items-center gap-2">
                   <input

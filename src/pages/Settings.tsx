@@ -666,6 +666,8 @@ const Settings = () => {
               <InterestTagSelector
                 selectedTags={profile.interests}
                 onTagsChange={(tags) => setProfile(prev => ({ ...prev, interests: tags }))}
+                maxTags={10}
+                label="Your Interests (max 10)"
               />
             </CardContent>
           </Card>

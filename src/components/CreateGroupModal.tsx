@@ -20,6 +20,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import PremiumUpgradeModal from './PremiumUpgradeModal';
+import InterestTagSelector from './InterestTagSelector';
 
 interface CreateGroupModalProps {
   isOpen: boolean;
@@ -38,7 +39,9 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
     name: '',
     description: '',
     category: '',
-    privacy: 'public'
+    privacy: 'public',
+    interests: [] as string[],
+    tags: [] as string[]
   });
   const [image, setImage] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -151,6 +154,8 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
           member_count: 1,
           auto_approve_members: formData.privacy === 'public',
           auto_approve_posts: !advancedSettings.posts_need_approval,
+          interests: formData.interests,
+          tags: formData.tags,
           // Advanced settings
           rules: advancedSettings.rules || null,
           welcome_message: advancedSettings.welcome_message || null,
@@ -215,7 +220,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
       });
 
       // Reset form
-      setFormData({ name: '', description: '', category: '', privacy: 'public' });
+      setFormData({ name: '', description: '', category: '', privacy: 'public', interests: [], tags: [] });
       setAdvancedSettings({
         rules: '',
         welcome_message: '',
@@ -371,6 +376,22 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                   </div>
                 </label>
               </div>
+            </div>
+
+            {/* Interests & Tags */}
+            <div className="mb-6">
+              <InterestTagSelector
+                selectedTags={[...formData.interests, ...formData.tags]}
+                onTagsChange={(allTags) => {
+                  setFormData(prev => ({ 
+                    ...prev, 
+                    interests: allTags,
+                    tags: allTags 
+                  }));
+                }}
+                maxTags={5}
+                label="Group Interests & Tags (max 5)"
+              />
             </div>
 
             {/* Group Image */}

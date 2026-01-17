@@ -18,6 +18,7 @@ import { useAuth } from '@/context/AuthContext';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 import { toast } from 'sonner';
 import PremiumUpgradeModal from './PremiumUpgradeModal';
+import InterestTagSelector from './InterestTagSelector';
 
 interface CreateStandaloneEventModalProps {
   isOpen: boolean;
@@ -65,7 +66,9 @@ const CreateStandaloneEventModal: React.FC<CreateStandaloneEventModalProps> = ({
     is_online: false,
     online_link: '',
     is_public: true,
-    max_attendees: ''
+    max_attendees: '',
+    interests: [] as string[],
+    tags: [] as string[]
   });
   const [uploadingCover, setUploadingCover] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -121,7 +124,9 @@ const CreateStandaloneEventModal: React.FC<CreateStandaloneEventModalProps> = ({
           is_online: formData.is_online,
           online_link: formData.is_online ? formData.online_link || null : null,
           is_public: formData.is_public,
-          max_attendees: formData.max_attendees ? parseInt(formData.max_attendees) : null
+          max_attendees: formData.max_attendees ? parseInt(formData.max_attendees) : null,
+          interests: formData.interests,
+          tags: formData.tags
         });
 
       if (error) throw error;
@@ -144,7 +149,9 @@ const CreateStandaloneEventModal: React.FC<CreateStandaloneEventModalProps> = ({
         is_online: false,
         online_link: '',
         is_public: true,
-        max_attendees: ''
+        max_attendees: '',
+        interests: [],
+        tags: []
       });
     } catch (error) {
       console.error('Error creating event:', error);
@@ -270,6 +277,22 @@ const CreateStandaloneEventModal: React.FC<CreateStandaloneEventModalProps> = ({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Interests & Tags */}
+          <div>
+            <InterestTagSelector
+              selectedTags={[...formData.interests, ...formData.tags]}
+              onTagsChange={(allTags) => {
+                setFormData(prev => ({ 
+                  ...prev, 
+                  interests: allTags,
+                  tags: allTags 
+                }));
+              }}
+              maxTags={5}
+              label="Event Interests & Tags (max 5)"
+            />
           </div>
 
           {/* Dates */}
