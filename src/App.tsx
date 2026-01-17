@@ -31,7 +31,7 @@ import Blog from "./pages/Blog";
 import ArticleDetails from "./pages/ArticleDetails";
 import ToolDetails from "./pages/ToolDetails";
 import Profile from "./pages/Profile";
-import UserView from "./pages/UserView";
+
 import CreatorProfile from "./pages/CreatorProfile";
 import CreatorUnsubscribe from "./pages/CreatorUnsubscribe";
 import Settings from "./pages/Settings";

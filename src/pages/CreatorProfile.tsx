@@ -20,24 +20,20 @@ import {
   UserPlus,
   MessageCircle,
   UserCheck,
-  UserMinus,
   Users,
   Check,
   Settings,
   Crown,
-  Upload,
-  Heart,
   Bookmark,
   Eye,
   TrendingUp,
   MessageSquare,
   Target,
   Briefcase,
-  ExternalLink,
-  Code,
   ArrowRight,
   Zap,
-  Camera
+  Share2,
+  Building2
 } from 'lucide-react';
 import UnsubscribeFromCreatorModal from '@/components/UnsubscribeFromCreatorModal';
 import SubscribeToCreatorModal from '@/components/SubscribeToCreatorModal';
@@ -46,6 +42,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import PremiumBadge, { type PremiumTier } from '@/components/PremiumBadge';
 import ProfilePhotoUploader from '@/components/ProfilePhotoUploader';
@@ -54,6 +52,10 @@ import NetworkTab from '@/components/NetworkTab';
 import PostsTab from '@/components/PostsTab';
 import TodoSystem from '@/components/TodoSystem';
 import PromoteContentModal from '@/components/PromoteContentModal';
+import ShareToolModal from '@/components/ShareToolModal';
+import PremiumUpgradeModal from '@/components/PremiumUpgradeModal';
+import InterestManagement from '@/components/InterestManagement';
+import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 
 interface CreatorProfile {
   id: string;
@@ -132,6 +134,23 @@ const CreatorProfile: React.FC = () => {
   const [showPromoteModal, setShowPromoteModal] = useState(false);
   const [selectedContent, setSelectedContent] = useState<any>(null);
   const [activeOwnerTab, setActiveOwnerTab] = useState<string>('dashboard');
+  
+  // Share tool modal state
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [selectedToolForShare, setSelectedToolForShare] = useState<any>(null);
+  
+  // Premium upgrade modal state
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
+  
+  // Workplace state
+  const [companies, setCompanies] = useState<{id: string; name: string; logo_url: string | null}[]>([]);
+  const [workplaceMode, setWorkplaceMode] = useState<'select' | 'manual'>('select');
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string>('');
+  const [manualCompanyName, setManualCompanyName] = useState<string>('');
+  const [savingWorkplace, setSavingWorkplace] = useState(false);
+  
+  // Premium status
+  const { isPremium } = usePremiumStatus();
 
   const identifier = handleOrId || id || handle || userId;
   const isOwnProfile = user?.id === profile?.id;
@@ -296,6 +315,44 @@ const CreatorProfile: React.FC = () => {
 
     if (isOwnProfile) {
       fetchUserData();
+    }
+  }, [isOwnProfile, user]);
+
+  // Fetch workplace data for own profile
+  useEffect(() => {
+    const fetchWorkplaceData = async () => {
+      if (!isOwnProfile || !user) return;
+
+      try {
+        // Fetch companies for dropdown
+        const { data: companiesData } = await supabase
+          .from('company_pages')
+          .select('id, name, logo_url')
+          .order('name');
+        
+        setCompanies(companiesData || []);
+
+        // Fetch user's current workplace
+        const { data: profileData } = await supabase
+          .from('user_profiles')
+          .select('company_page_id, company')
+          .eq('id', user.id)
+          .single();
+
+        if (profileData?.company_page_id) {
+          setWorkplaceMode('select');
+          setSelectedCompanyId(profileData.company_page_id);
+        } else if (profileData?.company) {
+          setWorkplaceMode('manual');
+          setManualCompanyName(profileData.company);
+        }
+      } catch (error) {
+        console.error('Error fetching workplace data:', error);
+      }
+    };
+
+    if (isOwnProfile) {
+      fetchWorkplaceData();
     }
   }, [isOwnProfile, user]);
 
@@ -610,8 +667,44 @@ const CreatorProfile: React.FC = () => {
   };
 
   const handlePromoteContent = (content: any) => {
+    if (!isPremium) {
+      setShowPremiumModal(true);
+      return;
+    }
     setSelectedContent(content);
     setShowPromoteModal(true);
+  };
+
+  const handleSaveWorkplace = async () => {
+    if (!user) return;
+    
+    setSavingWorkplace(true);
+    try {
+      const updateData: any = {};
+      
+      if (workplaceMode === 'select' && selectedCompanyId) {
+        updateData.company_page_id = selectedCompanyId;
+        const selectedCompany = companies.find(c => c.id === selectedCompanyId);
+        updateData.company = selectedCompany?.name || '';
+      } else if (workplaceMode === 'manual' && manualCompanyName) {
+        updateData.company_page_id = null;
+        updateData.company = manualCompanyName;
+      }
+      
+      const { error } = await supabase
+        .from('user_profiles')
+        .update(updateData)
+        .eq('id', user.id);
+      
+      if (error) throw error;
+      
+      toast.success('Workplace updated successfully!');
+    } catch (error) {
+      console.error('Error saving workplace:', error);
+      toast.error('Failed to save workplace');
+    } finally {
+      setSavingWorkplace(false);
+    }
   };
 
   if (loading) {
@@ -684,7 +777,9 @@ const CreatorProfile: React.FC = () => {
     { key: 'tools', label: 'Tools' },
     { key: 'content', label: 'My Content' },
     { key: 'saved', label: 'Saved' },
-    { key: 'network', label: 'Network' }
+    { key: 'network', label: 'Network' },
+    { key: 'interests', label: 'Interests' },
+    { key: 'workplace', label: 'Workplace' }
   ];
 
   return (
@@ -862,12 +957,30 @@ const CreatorProfile: React.FC = () => {
                     </>
                   )}
                   {isOwnProfile && (
-                    <Button asChild variant="outline">
-                      <Link to="/settings">
-                        <Settings className="h-4 w-4 mr-2" />
-                        {t('profile.editProfile')}
-                      </Link>
-                    </Button>
+                    <>
+                      <Button asChild variant="outline">
+                        <Link to="/settings">
+                          <Settings className="h-4 w-4 mr-2" />
+                          {t('profile.editProfile')}
+                        </Link>
+                      </Button>
+                      {isPremium && (
+                        <Button 
+                          onClick={() => {
+                            setSelectedContent({ 
+                              id: user?.id, 
+                              title: profile?.full_name || 'My Profile',
+                              type: 'profile'
+                            });
+                            setShowPromoteModal(true);
+                          }}
+                          className="bg-gradient-to-r from-primary to-secondary text-primary-foreground"
+                        >
+                          <Target className="h-4 w-4 mr-2" />
+                          Promote Profile
+                        </Button>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -1259,6 +1372,18 @@ const CreatorProfile: React.FC = () => {
                                   </div>
                                 </div>
                                 <div className="flex space-x-2 ml-4">
+                                  {content.type === 'tool' && (
+                                    <button
+                                      onClick={() => {
+                                        setSelectedToolForShare(content);
+                                        setShowShareModal(true);
+                                      }}
+                                      className="flex items-center space-x-1 px-3 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors"
+                                    >
+                                      <Share2 className="h-4 w-4" />
+                                      <span>Share</span>
+                                    </button>
+                                  )}
                                   <button
                                     onClick={() => handlePromoteContent(content)}
                                     className="flex items-center space-x-1 px-3 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors"
@@ -1360,6 +1485,83 @@ const CreatorProfile: React.FC = () => {
 
                   {activeOwnerTab === 'network' && (
                     <NetworkTab />
+                  )}
+
+                  {activeOwnerTab === 'interests' && (
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4">{t('profile.interests.title') || 'My Interests'}</h3>
+                      <InterestManagement 
+                        mode="user"
+                        userInterests={profile?.interests || []}
+                        onUserInterestsChange={(interests) => {
+                          console.log('Updated interests:', interests);
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {activeOwnerTab === 'workplace' && (
+                    <div className="space-y-6">
+                      <h3 className="text-lg font-semibold mb-4">{t('profile.workplace.title') || 'Workplace'}</h3>
+                      
+                      <div className="space-y-4">
+                        <div className="flex gap-4">
+                          <Button
+                            variant={workplaceMode === 'select' ? 'default' : 'outline'}
+                            onClick={() => setWorkplaceMode('select')}
+                          >
+                            <Building2 className="h-4 w-4 mr-2" />
+                            Select Company
+                          </Button>
+                          <Button
+                            variant={workplaceMode === 'manual' ? 'default' : 'outline'}
+                            onClick={() => setWorkplaceMode('manual')}
+                          >
+                            <Briefcase className="h-4 w-4 mr-2" />
+                            Enter Manually
+                          </Button>
+                        </div>
+
+                        {workplaceMode === 'select' ? (
+                          <div className="space-y-3">
+                            <label className="text-sm font-medium">Select your company</label>
+                            <Select value={selectedCompanyId} onValueChange={setSelectedCompanyId}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Choose a company..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {companies.map((company) => (
+                                  <SelectItem key={company.id} value={company.id}>
+                                    <div className="flex items-center gap-2">
+                                      {company.logo_url && (
+                                        <img src={company.logo_url} alt="" className="w-5 h-5 rounded object-cover" />
+                                      )}
+                                      {company.name}
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            <label className="text-sm font-medium">Company name</label>
+                            <Input
+                              value={manualCompanyName}
+                              onChange={(e) => setManualCompanyName(e.target.value)}
+                              placeholder="Enter your company name..."
+                            />
+                          </div>
+                        )}
+
+                        <Button 
+                          onClick={handleSaveWorkplace} 
+                          disabled={savingWorkplace || (workplaceMode === 'select' ? !selectedCompanyId : !manualCompanyName)}
+                        >
+                          {savingWorkplace ? 'Saving...' : 'Save Workplace'}
+                        </Button>
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
@@ -1497,6 +1699,26 @@ const CreatorProfile: React.FC = () => {
           contentTitle={selectedContent.title}
         />
       )}
+
+      {/* Share Tool Modal */}
+      {showShareModal && selectedToolForShare && (
+        <ShareToolModal
+          isOpen={showShareModal}
+          onClose={() => {
+            setShowShareModal(false);
+            setSelectedToolForShare(null);
+          }}
+          tool={selectedToolForShare}
+        />
+      )}
+
+      {/* Premium Upgrade Modal */}
+      <PremiumUpgradeModal
+        isOpen={showPremiumModal}
+        onClose={() => setShowPremiumModal(false)}
+        featureName="Content Promotion"
+        trigger="premium_feature"
+      />
     </div>
   );
 };
