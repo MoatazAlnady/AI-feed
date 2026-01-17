@@ -5,6 +5,7 @@ import { usePremiumStatus } from '../hooks/usePremiumStatus';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { supabase } from '../integrations/supabase/client';
 import PremiumUpgradeModal from './PremiumUpgradeModal';
 import InterestTagSelector from './InterestTagSelector';
 
@@ -12,6 +13,7 @@ interface CreateEventModalProps {
   isOpen: boolean;
   onClose: () => void;
   onEventCreated: (event: any) => void;
+  groupId?: string;
 }
 
 const generateRoomId = () => {
@@ -23,7 +25,7 @@ const generateRoomId = () => {
   return `event-live-${Date.now()}-${result}`;
 };
 
-const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, onEventCreated }) => {
+const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, onEventCreated, groupId }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { isPremium, isLoading: isPremiumLoading } = usePremiumStatus();
@@ -33,6 +35,8 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
     description: '',
     date: '',
     time: '',
+    endDate: '',
+    endTime: '',
     location: '',
     type: 'online',
     category: '',
@@ -40,7 +44,9 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
     liveVideoRoomId: '',
     liveVideoUrl: '',
     interests: [] as string[],
-    tags: [] as string[]
+    tags: [] as string[],
+    isPublic: true,
+    maxAttendees: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -63,7 +69,6 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
       const checked = (e.target as HTMLInputElement).checked;
       setFormData(prev => ({ ...prev, [name]: checked }));
       
-      // Auto-generate live video link when checkbox is enabled
       if (name === 'isLiveVideo' && checked) {
         const roomId = generateRoomId();
         const liveUrl = `${window.location.origin}/live/${roomId}`;
@@ -97,52 +102,107 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      toast.error('Please sign in to create an event');
+      return;
+    }
+
     setIsSubmitting(true);
 
-    const newEvent = {
-      id: Date.now(),
-      title: formData.title,
-      description: formData.description,
-      date: formData.date,
-      time: formData.time,
-      location: formData.isLiveVideo ? formData.liveVideoUrl : formData.location,
-      type: formData.type,
-      category: formData.category,
-      organizer: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Anonymous',
-      attendees: 0,
-      createdAt: 'Just now',
-      isLiveVideo: formData.isLiveVideo,
-      liveVideoRoomId: formData.liveVideoRoomId,
-      liveVideoUrl: formData.liveVideoUrl,
-      interests: formData.interests,
-      tags: formData.tags
-    };
+    try {
+      const startDateTime = `${formData.date}T${formData.time}:00`;
+      const endDateTime = formData.endDate && formData.endTime 
+        ? `${formData.endDate}T${formData.endTime}:00` 
+        : null;
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+      let newEventData;
 
-    onEventCreated(newEvent);
-    setFormData({
-      title: '',
-      description: '',
-      date: '',
-      time: '',
-      location: '',
-      type: 'online',
-      category: '',
-      isLiveVideo: false,
-      liveVideoRoomId: '',
-      liveVideoUrl: '',
-      interests: [],
-      tags: []
-    });
-    setIsSubmitting(false);
-    onClose();
+      if (groupId) {
+        // Create group event
+        const { data, error } = await supabase
+          .from('group_events')
+          .insert({
+            group_id: groupId,
+            title: formData.title,
+            description: formData.description,
+            start_date: formData.date,
+            start_time: formData.time,
+            end_date: formData.endDate || null,
+            end_time: formData.endTime || null,
+            location: formData.isLiveVideo ? formData.liveVideoUrl : formData.location,
+            is_online: formData.type === 'online' || formData.type === 'hybrid',
+            online_link: formData.type === 'online' || formData.type === 'hybrid' ? formData.location : null,
+            is_public: formData.isPublic,
+            max_attendees: formData.maxAttendees ? parseInt(formData.maxAttendees) : null,
+            created_by: user.id,
+            interests: formData.interests,
+            tags: formData.tags
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+        newEventData = data;
+      } else {
+        // Create standalone event using events table
+        const { data, error } = await supabase
+          .from('events')
+          .insert({
+            title: formData.title,
+            description: formData.description,
+            event_date: startDateTime,
+            event_end_date: endDateTime,
+            location: formData.isLiveVideo ? formData.liveVideoUrl : formData.location,
+            event_type: formData.type,
+            category: formData.category,
+            is_public: formData.isPublic,
+            max_attendees: formData.maxAttendees ? parseInt(formData.maxAttendees) : null,
+            organizer_id: user.id,
+            is_live_video: formData.isLiveVideo,
+            live_video_room_id: formData.liveVideoRoomId || null,
+            live_video_url: formData.liveVideoUrl || null
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+        newEventData = data;
+      }
+
+      toast.success('Event created successfully!');
+      onEventCreated(newEventData);
+      
+      // Reset form
+      setFormData({
+        title: '',
+        description: '',
+        date: '',
+        time: '',
+        endDate: '',
+        endTime: '',
+        location: '',
+        type: 'online',
+        category: '',
+        isLiveVideo: false,
+        liveVideoRoomId: '',
+        liveVideoUrl: '',
+        interests: [],
+        tags: [],
+        isPublic: true,
+        maxAttendees: ''
+      });
+      
+      onClose();
+    } catch (error) {
+      console.error('Error creating event:', error);
+      toast.error('Failed to create event. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
 
-  // Show premium upgrade modal for non-premium users
   if (!isPremiumLoading && !isPremium) {
     return (
       <PremiumUpgradeModal
@@ -223,7 +283,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label htmlFor="date" className="block text-sm font-medium text-foreground mb-2">
-                  {t('community.events.form.date', 'Date')} *
+                  {t('community.events.form.date', 'Start Date')} *
                 </label>
                 <div className="relative">
                   <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -240,7 +300,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
               </div>
               <div>
                 <label htmlFor="time" className="block text-sm font-medium text-foreground mb-2">
-                  {t('community.events.form.time', 'Time')} *
+                  {t('community.events.form.time', 'Start Time')} *
                 </label>
                 <div className="relative">
                   <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -251,6 +311,42 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                     value={formData.time}
                     onChange={handleInputChange}
                     required
+                    className="w-full pl-12 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* End Date and Time */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <label htmlFor="endDate" className="block text-sm font-medium text-foreground mb-2">
+                  End Date
+                </label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <input
+                    type="date"
+                    id="endDate"
+                    name="endDate"
+                    value={formData.endDate}
+                    onChange={handleInputChange}
+                    className="w-full pl-12 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+                  />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="endTime" className="block text-sm font-medium text-foreground mb-2">
+                  End Time
+                </label>
+                <div className="relative">
+                  <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <input
+                    type="time"
+                    id="endTime"
+                    name="endTime"
+                    value={formData.endTime}
+                    onChange={handleInputChange}
                     className="w-full pl-12 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   />
                 </div>
@@ -373,7 +469,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
             </div>
 
             {/* Category */}
-            <div className="mb-8">
+            <div className="mb-6">
               <label htmlFor="category" className="block text-sm font-medium text-foreground mb-2">
                 {t('community.events.form.category', 'Category')} *
               </label>
@@ -394,11 +490,42 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
               </select>
             </div>
 
+            {/* Visibility */}
+            <div className="mb-6">
+              <label className="flex items-center gap-3 text-foreground">
+                <input
+                  type="checkbox"
+                  name="isPublic"
+                  checked={formData.isPublic}
+                  onChange={handleInputChange}
+                  className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <span>Make this event public</span>
+              </label>
+            </div>
+
+            {/* Max Attendees */}
+            <div className="mb-8">
+              <label htmlFor="maxAttendees" className="block text-sm font-medium text-foreground mb-2">
+                Max Attendees (optional)
+              </label>
+              <input
+                type="number"
+                id="maxAttendees"
+                name="maxAttendees"
+                value={formData.maxAttendees}
+                onChange={handleInputChange}
+                min="1"
+                className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+                placeholder="Leave empty for unlimited"
+              />
+            </div>
+
             {/* Submit Button */}
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              className="w-full bg-gradient-to-r from-primary to-secondary text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
             >
               {isSubmitting ? (
                 <>

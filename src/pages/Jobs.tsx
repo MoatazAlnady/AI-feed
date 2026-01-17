@@ -1,47 +1,114 @@
-import React from 'react';
-import { MapPin, Clock, Briefcase, ExternalLink } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MapPin, Clock, Briefcase, ExternalLink, Loader2 } from 'lucide-react';
 import ChatDock from '@/components/ChatDock';
 import SEOHead from '@/components/SEOHead';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '@/integrations/supabase/client';
+import { formatDistanceToNow } from 'date-fns';
+
+interface Job {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  type: string;
+  experience: string;
+  description: string;
+  created_at: string;
+  salary: string | null;
+  application_url: string | null;
+  company_pages?: {
+    name: string;
+    logo_url: string | null;
+  } | null;
+}
 
 const Jobs: React.FC = () => {
   const { t } = useTranslation();
-  // Mock jobs data - replace with real data from Supabase
-  const jobs = [
-    {
-      id: 1,
-      title: "Senior AI Engineer",
-      company: "TechCorp",
-      location: "San Francisco, CA",
-      type: "Full-time",
-      experience: "5+ years",
-      description: "Join our AI team to build cutting-edge machine learning solutions.",
-      postedAt: "2 days ago",
-      salary: "$150k - $200k"
-    },
-    {
-      id: 2,
-      title: "ML Research Scientist",
-      company: "AI Labs",
-      location: "New York, NY",
-      type: "Full-time",
-      experience: "3+ years",
-      description: "Research and develop new machine learning algorithms.",
-      postedAt: "1 week ago",
-      salary: "$120k - $180k"
-    },
-    {
-      id: 3,
-      title: "Data Scientist",
-      company: "DataFlow",
-      location: "Remote",
-      type: "Contract",
-      experience: "2+ years",
-      description: "Analyze complex datasets and build predictive models.",
-      postedAt: "3 days ago",
-      salary: "$80k - $120k"
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [offset, setOffset] = useState(0);
+  const LIMIT = 10;
+
+  const [filters, setFilters] = useState({
+    location: 'all',
+    type: 'all',
+    experience: 'all'
+  });
+
+  const fetchJobs = async (isLoadMore = false) => {
+    if (isLoadMore) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+      setOffset(0);
     }
-  ];
+
+    try {
+      let query = supabase
+        .from('jobs')
+        .select('id, title, company, location, type, experience, description, created_at, salary, application_url')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .range(isLoadMore ? offset : 0, (isLoadMore ? offset : 0) + LIMIT - 1);
+
+      if (filters.location !== 'all') {
+        if (filters.location === 'remote') {
+          query = query.ilike('location', '%remote%');
+        } else {
+          query = query.ilike('location', `%${filters.location}%`);
+        }
+      }
+      if (filters.type !== 'all') {
+        query = query.eq('type', filters.type);
+      }
+      if (filters.experience !== 'all') {
+        query = query.eq('experience', filters.experience);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching jobs:', error);
+        return;
+      }
+
+      const formattedJobs = (data || []).map(job => ({
+        ...job,
+      }));
+
+      if (isLoadMore) {
+        setJobs(prev => [...prev, ...formattedJobs]);
+        setOffset(prev => prev + LIMIT);
+      } else {
+        setJobs(formattedJobs);
+        setOffset(LIMIT);
+      }
+
+      setHasMore((data?.length || 0) === LIMIT);
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, [filters]);
+
+  const handleFilterChange = (filterName: string, value: string) => {
+    setFilters(prev => ({ ...prev, [filterName]: value }));
+  };
+
+  const handleApply = (job: Job) => {
+    if (job.application_url) {
+      window.open(job.application_url, '_blank');
+    }
+  };
 
   return (
     <>
@@ -65,72 +132,114 @@ const Jobs: React.FC = () => {
           {/* Filters */}
           <div className="bg-card rounded-2xl shadow-sm p-6 mb-8 border border-border">
             <div className="flex flex-wrap gap-4">
-              <select className="border border-border rounded-xl px-4 py-3 text-foreground bg-background focus:ring-2 focus:ring-primary focus:border-transparent">
-                <option>{t('jobs.allLocations')}</option>
-                <option>{t('jobs.remote')}</option>
-                <option>San Francisco</option>
-                <option>New York</option>
+              <select 
+                value={filters.location}
+                onChange={(e) => handleFilterChange('location', e.target.value)}
+                className="border border-border rounded-xl px-4 py-3 text-foreground bg-background focus:ring-2 focus:ring-primary focus:border-transparent"
+              >
+                <option value="all">{t('jobs.allLocations')}</option>
+                <option value="remote">{t('jobs.remote')}</option>
+                <option value="San Francisco">San Francisco</option>
+                <option value="New York">New York</option>
               </select>
-              <select className="border border-border rounded-xl px-4 py-3 text-foreground bg-background focus:ring-2 focus:ring-primary focus:border-transparent">
-                <option>{t('jobs.allTypes')}</option>
-                <option>{t('jobs.fullTime')}</option>
-                <option>{t('jobs.partTime')}</option>
-                <option>{t('jobs.contract')}</option>
+              <select 
+                value={filters.type}
+                onChange={(e) => handleFilterChange('type', e.target.value)}
+                className="border border-border rounded-xl px-4 py-3 text-foreground bg-background focus:ring-2 focus:ring-primary focus:border-transparent"
+              >
+                <option value="all">{t('jobs.allTypes')}</option>
+                <option value="Full-time">{t('jobs.fullTime')}</option>
+                <option value="Part-time">{t('jobs.partTime')}</option>
+                <option value="Contract">{t('jobs.contract')}</option>
               </select>
-              <select className="border border-border rounded-xl px-4 py-3 text-foreground bg-background focus:ring-2 focus:ring-primary focus:border-transparent">
-                <option>{t('jobs.allExperience')}</option>
-                <option>{t('jobs.entryLevel')}</option>
-                <option>{t('jobs.midLevel')}</option>
-                <option>{t('jobs.seniorLevel')}</option>
+              <select 
+                value={filters.experience}
+                onChange={(e) => handleFilterChange('experience', e.target.value)}
+                className="border border-border rounded-xl px-4 py-3 text-foreground bg-background focus:ring-2 focus:ring-primary focus:border-transparent"
+              >
+                <option value="all">{t('jobs.allExperience')}</option>
+                <option value="Entry Level">{t('jobs.entryLevel')}</option>
+                <option value="Mid Level">{t('jobs.midLevel')}</option>
+                <option value="Senior Level">{t('jobs.seniorLevel')}</option>
               </select>
             </div>
           </div>
 
           {/* Jobs List */}
           <div className="space-y-6">
-            {jobs.map((job) => (
-              <div key={job.id} className="bg-card rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 border border-border">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-2 text-foreground">{job.title}</h3>
-                    <p className="text-foreground font-medium mb-2">{job.company}</p>
-                    <p className="text-muted-foreground mb-3">{job.description}</p>
-                    
-                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        {job.location}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Briefcase className="h-4 w-4" />
-                        {job.type}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        {job.experience}
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : jobs.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground text-lg">No jobs found matching your criteria.</p>
+              </div>
+            ) : (
+              jobs.map((job) => (
+                <div key={job.id} className="bg-card rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 border border-border">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold mb-2 text-foreground">{job.title}</h3>
+                      <p className="text-foreground font-medium mb-2">{job.company}</p>
+                      <p className="text-muted-foreground mb-3 line-clamp-2">{job.description}</p>
+                      
+                      <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <MapPin className="h-4 w-4" />
+                          {job.location}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Briefcase className="h-4 w-4" />
+                          {job.type}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          {job.experience}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="text-right ml-6">
-                    <div className="text-lg font-semibold text-green-600 dark:text-green-400 mb-2">{job.salary}</div>
-                    <div className="text-sm text-muted-foreground mb-4">{job.postedAt}</div>
-                    <button className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-xl hover:shadow-lg transition-all duration-200">
-                      {t('jobs.applyNow')}
-                      <ExternalLink className="h-4 w-4" />
-                    </button>
+                    
+                    <div className="text-right ml-6">
+                      {job.salary && (
+                        <div className="text-lg font-semibold text-green-600 dark:text-green-400 mb-2">{job.salary}</div>
+                      )}
+                      <div className="text-sm text-muted-foreground mb-4">
+                        {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}
+                      </div>
+                      <button 
+                        onClick={() => handleApply(job)}
+                        className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-xl hover:shadow-lg transition-all duration-200"
+                      >
+                        {t('jobs.applyNow')}
+                        <ExternalLink className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
 
           {/* Load More */}
-          <div className="text-center mt-8">
-            <button className="bg-card border border-border text-foreground px-6 py-3 rounded-xl hover:bg-muted transition-colors">
-              {t('jobs.loadMore')}
-            </button>
-          </div>
+          {hasMore && jobs.length > 0 && (
+            <div className="text-center mt-8">
+              <button 
+                onClick={() => fetchJobs(true)}
+                disabled={loadingMore}
+                className="bg-card border border-border text-foreground px-6 py-3 rounded-xl hover:bg-muted transition-colors disabled:opacity-50"
+              >
+                {loadingMore ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Loading...
+                  </span>
+                ) : (
+                  t('jobs.loadMore')
+                )}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Chat Dock */}

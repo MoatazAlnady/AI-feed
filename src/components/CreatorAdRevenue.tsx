@@ -6,10 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DollarSign, Eye, MousePointer, TrendingUp, Calendar, Info, BarChart3 } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { DollarSign, Eye, MousePointer, TrendingUp, Calendar, Info, BarChart3, AlertCircle } from 'lucide-react';
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { Tooltip as UITooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip as UITooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 
 // Revenue split constants
 const CREATOR_SHARE = 0.70; // 70% to creator
@@ -89,58 +90,99 @@ export default function CreatorAdRevenue() {
     
     setLoading(true);
     try {
-      // For now, we'll generate sample data since the tables haven't been created yet
-      // Once the migration is run, this will fetch real data
-      
       const { start, end } = getDateRange();
-      const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
       
-      // Generate sample daily earnings
-      const sampleDailyEarnings: DailyEarning[] = [];
-      let runningImpressions = 0;
-      let runningRevenue = 0;
-      
-      for (let i = 0; i < days; i++) {
-        const date = subDays(end, days - i - 1);
-        const impressions = Math.floor(Math.random() * 500) + 100;
-        const avgCpm = (ESTIMATED_CPM.display + ESTIMATED_CPM['in-feed']) / 2;
-        const revenue = (impressions / 1000) * avgCpm;
-        
-        runningImpressions += impressions;
-        runningRevenue += revenue;
-        
-        sampleDailyEarnings.push({
-          date: format(date, 'MMM d'),
-          impressions,
-          revenue: parseFloat(revenue.toFixed(2)),
-        });
+      // Try to fetch real data from content_ad_impressions table
+      const { data: adData, error } = await supabase
+        .from('content_ad_impressions')
+        .select('*')
+        .eq('creator_id', user.id)
+        .gte('date', format(start, 'yyyy-MM-dd'))
+        .lte('date', format(end, 'yyyy-MM-dd'))
+        .order('date', { ascending: true });
+
+      if (error || !adData || adData.length === 0) {
+        // Generate sample data for preview mode
+        generateSampleData(start, end);
+        return;
       }
+
+      // Process real data
+      let runningImpressions = 0;
+      let runningClicks = 0;
+      let runningRevenue = 0;
+
+      const dailyMap = new Map<string, DailyEarning>();
       
-      // Sample content performance
-      const sampleContent: ContentPerformance[] = [
-        { id: '1', title: 'How AI is Changing the World', type: 'article', impressions: 2500, clicks: 125, estimatedRevenue: 10.00 },
-        { id: '2', title: 'Top 10 AI Tools for Productivity', type: 'article', impressions: 1800, clicks: 90, estimatedRevenue: 7.20 },
-        { id: '3', title: 'AI Tutorial: Getting Started', type: 'video', impressions: 3200, clicks: 160, estimatedRevenue: 32.00 },
-        { id: '4', title: 'Weekly Tech Update', type: 'post', impressions: 950, clicks: 48, estimatedRevenue: 2.85 },
-        { id: '5', title: 'New AI Model Announcement', type: 'post', impressions: 1200, clicks: 60, estimatedRevenue: 3.60 },
-      ];
-      
-      const totalRev = runningRevenue;
-      const creatorShare = totalRev * CREATOR_SHARE;
-      
+      adData.forEach(record => {
+        runningImpressions += record.impression_count || 0;
+        runningClicks += record.click_count || 0;
+        runningRevenue += record.estimated_revenue || 0;
+
+        const existing = dailyMap.get(record.date) || { date: format(new Date(record.date), 'MMM d'), impressions: 0, revenue: 0 };
+        existing.impressions += record.impression_count || 0;
+        existing.revenue += record.estimated_revenue || 0;
+        dailyMap.set(record.date, existing);
+      });
+
+      const creatorShare = runningRevenue * CREATOR_SHARE;
+
       setTotalImpressions(runningImpressions);
-      setTotalClicks(Math.floor(runningImpressions * 0.05)); // 5% CTR estimate
-      setGrossRevenue(totalRev);
+      setTotalClicks(runningClicks);
+      setGrossRevenue(runningRevenue);
       setCreatorEarnings(creatorShare);
-      setPendingPayout(creatorShare * 0.8); // 80% pending payout
-      setDailyEarnings(sampleDailyEarnings);
-      setContentPerformance(sampleContent);
+      setPendingPayout(creatorShare * 0.8);
+      setDailyEarnings(Array.from(dailyMap.values()));
       
     } catch (error) {
       console.error('Error fetching ad revenue:', error);
+      generateSampleData(getDateRange().start, getDateRange().end);
     } finally {
       setLoading(false);
     }
+  };
+
+  const generateSampleData = (start: Date, end: Date) => {
+    const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    
+    const sampleDailyEarnings: DailyEarning[] = [];
+    let runningImpressions = 0;
+    let runningRevenue = 0;
+    
+    for (let i = 0; i < days; i++) {
+      const date = subDays(end, days - i - 1);
+      const impressions = Math.floor(Math.random() * 500) + 100;
+      const avgCpm = (ESTIMATED_CPM.display + ESTIMATED_CPM['in-feed']) / 2;
+      const revenue = (impressions / 1000) * avgCpm;
+      
+      runningImpressions += impressions;
+      runningRevenue += revenue;
+      
+      sampleDailyEarnings.push({
+        date: format(date, 'MMM d'),
+        impressions,
+        revenue: parseFloat(revenue.toFixed(2)),
+      });
+    }
+    
+    const sampleContent: ContentPerformance[] = [
+      { id: '1', title: 'How AI is Changing the World', type: 'article', impressions: 2500, clicks: 125, estimatedRevenue: 10.00 },
+      { id: '2', title: 'Top 10 AI Tools for Productivity', type: 'article', impressions: 1800, clicks: 90, estimatedRevenue: 7.20 },
+      { id: '3', title: 'AI Tutorial: Getting Started', type: 'video', impressions: 3200, clicks: 160, estimatedRevenue: 32.00 },
+      { id: '4', title: 'Weekly Tech Update', type: 'post', impressions: 950, clicks: 48, estimatedRevenue: 2.85 },
+      { id: '5', title: 'New AI Model Announcement', type: 'post', impressions: 1200, clicks: 60, estimatedRevenue: 3.60 },
+    ];
+    
+    const totalRev = runningRevenue;
+    const creatorShare = totalRev * CREATOR_SHARE;
+    
+    setTotalImpressions(runningImpressions);
+    setTotalClicks(Math.floor(runningImpressions * 0.05));
+    setGrossRevenue(totalRev);
+    setCreatorEarnings(creatorShare);
+    setPendingPayout(creatorShare * 0.8);
+    setDailyEarnings(sampleDailyEarnings);
+    setContentPerformance(sampleContent);
   };
 
   const formatCurrency = (amount: number) => {
@@ -185,6 +227,15 @@ export default function CreatorAdRevenue() {
           </SelectContent>
         </Select>
       </div>
+
+      {/* Preview Mode Banner */}
+      <Alert className="bg-amber-500/10 border-amber-500/20">
+        <AlertCircle className="h-4 w-4 text-amber-600" />
+        <AlertTitle className="text-amber-800 dark:text-amber-200">Preview Mode</AlertTitle>
+        <AlertDescription className="text-amber-700 dark:text-amber-300">
+          Ad revenue tracking is currently showing estimated data. Full Google AdSense integration will provide real-time metrics once your content reaches the monetization threshold.
+        </AlertDescription>
+      </Alert>
 
       {/* Revenue Info Banner */}
       <Card className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/20">
