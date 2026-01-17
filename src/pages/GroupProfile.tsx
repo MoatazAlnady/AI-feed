@@ -190,10 +190,29 @@ const GroupProfile: React.FC = () => {
     if (!group) return;
 
     try {
-      // Check if paid group
-      if (group.membership_type !== 'free') {
-        // TODO: Redirect to payment
-        toast.info('Paid group membership coming soon');
+      // Check if paid group - redirect to Stripe checkout
+      if (group.membership_type !== 'free' && group.membership_price && group.membership_price > 0) {
+        try {
+          const { data, error } = await supabase.functions.invoke('create-group-membership-checkout', {
+            body: { 
+              groupId: group.id, 
+              groupName: group.name,
+              membershipType: group.membership_type,
+              price: group.membership_price,
+              currency: group.membership_currency || 'USD',
+              frequency: group.membership_frequency
+            }
+          });
+
+          if (error) throw error;
+          
+          if (data?.url) {
+            window.open(data.url, '_blank');
+          }
+        } catch (paymentError) {
+          console.error('Payment error:', paymentError);
+          toast.error('Failed to initiate payment');
+        }
         return;
       }
 

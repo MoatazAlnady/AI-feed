@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Star, ThumbsUp, ThumbsDown, MessageCircle, Flag, User, Send, Filter, ArrowUp, ArrowDown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import VerificationBadge from './VerificationBadge';
+import { supabase } from '@/integrations/supabase/client';
+import { formatDistanceToNow } from 'date-fns';
 
 interface Review {
   id: number;
@@ -62,15 +64,61 @@ const ToolReviewSystem: React.FC<ToolReviewSystemProps> = ({ toolId, toolName, c
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        // In real app, fetch from API
-        // const response = await fetch(`/api/tools/${toolId}/reviews`);
-        // const data = await response.json();
-        // setReviews(data.reviews);
-        // setUserReview(data.userReview);
-        
-        // Mock data
-        setReviews([]);
-        setUserReview(null);
+        // Fetch reviews from database
+        const { data: reviewsData, error } = await supabase
+          .from('tool_reviews')
+          .select(`
+            id,
+            rating,
+            title,
+            content,
+            pros,
+            cons,
+            helpful_count,
+            created_at,
+            user_id,
+            user_profiles (
+              id,
+              full_name,
+              profile_photo,
+              job_title,
+              verified,
+              ai_feed_top_voice
+            )
+          `)
+          .eq('tool_id', String(toolId))
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error fetching reviews:', error);
+          setReviews([]);
+        } else {
+          const formattedReviews: Review[] = (reviewsData || []).map((r: any) => ({
+            id: r.id,
+            userId: r.user_id,
+            userName: r.user_profiles?.full_name || 'Anonymous',
+            userPhoto: r.user_profiles?.profile_photo,
+            userTitle: r.user_profiles?.job_title,
+            userVerified: r.user_profiles?.verified || false,
+            userTopVoice: r.user_profiles?.ai_feed_top_voice || false,
+            rating: r.rating,
+            comment: r.content || '',
+            pros: r.pros || [],
+            cons: r.cons || [],
+            date: formatDistanceToNow(new Date(r.created_at), { addSuffix: true }),
+            likes: r.helpful_count || 0,
+            dislikes: 0,
+            replies: []
+          }));
+          
+          setReviews(formattedReviews);
+          
+          // Check if current user has reviewed
+          if (user) {
+            const userReviewData = formattedReviews.find(r => r.userId === user.id);
+            setUserReview(userReviewData || null);
+          }
+        }
       } catch (error) {
         console.error('Error fetching reviews:', error);
       } finally {
@@ -79,7 +127,7 @@ const ToolReviewSystem: React.FC<ToolReviewSystemProps> = ({ toolId, toolName, c
     };
 
     fetchReviews();
-  }, [toolId]);
+  }, [toolId, user]);
 
   const handleRatingChange = (rating: number) => {
     setFormData(prev => ({ ...prev, rating }));

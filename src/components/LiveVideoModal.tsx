@@ -197,6 +197,14 @@ const LiveVideoModal: React.FC<LiveVideoModalProps> = ({
                 </div>
               )}
             </div>
+            
+            {/* Preview Feature Banner */}
+            {status === 'setup' && (
+              <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-950/30 rounded-lg text-sm text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                <strong>Preview Feature:</strong> Live streaming is currently in preview mode. 
+                Your video will be shown locally but not broadcast to viewers yet.
+              </div>
+            )}
 
             {/* Setup Form */}
             {(status === 'setup' || status === 'preview') && (

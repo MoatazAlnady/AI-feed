@@ -18,6 +18,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useEmployerAccess } from '@/hooks/useEmployerAccess';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/AuthContext';
 
 interface PricingPlan {
   id: string;
@@ -34,6 +36,8 @@ interface PricingPlan {
 const EmployerUpgrade = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const { companyPage, hasActiveSubscription } = useEmployerAccess();
   const [plans, setPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,9 +72,37 @@ const EmployerUpgrade = () => {
 
   const handleSelectPlan = async (planId: string) => {
     setSelectedPlan(planId);
-    // TODO: Integrate with Stripe for payment
-    // For now, show a placeholder
-    console.log('Selected plan:', planId);
+    
+    const plan = plans.find(p => p.id === planId);
+    if (!plan) return;
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('create-employer-checkout', {
+        body: { 
+          planId,
+          planName: plan.name,
+          price: plan.price,
+          billingInterval: plan.billing_interval,
+          companyPageId: companyPage?.id,
+          userId: user?.id
+        }
+      });
+
+      if (error) throw error;
+      
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast({ 
+        title: 'Error', 
+        description: 'Failed to initiate payment', 
+        variant: 'destructive' 
+      });
+    } finally {
+      setSelectedPlan(null);
+    }
   };
 
   const featuresList = [

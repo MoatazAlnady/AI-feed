@@ -86,20 +86,35 @@ const GroupPostsFeed: React.FC<GroupPostsFeedProps> = ({ groupId, isMember, canP
 
     setSubmitting(true);
     try {
+      // Fetch group settings to check approval requirement
+      const { data: groupSettings } = await supabase
+        .from('groups')
+        .select('posts_need_approval, auto_approve_posts')
+        .eq('id', groupId)
+        .single();
+
+      const needsApproval = groupSettings?.posts_need_approval || 
+        (groupSettings?.auto_approve_posts === false);
+
       const { error } = await supabase
         .from('group_posts')
         .insert({
           group_id: groupId,
           author_id: user.id,
           content: newPostContent.trim(),
-          is_approved: true // TODO: Check group settings for approval requirement
+          is_approved: !needsApproval
         });
 
       if (error) throw error;
 
       setNewPostContent('');
       fetchPosts();
-      toast.success('Post created!');
+      
+      if (needsApproval) {
+        toast.info('Your post has been submitted for approval');
+      } else {
+        toast.success('Post created!');
+      }
     } catch (error) {
       console.error('Error creating post:', error);
       toast.error('Failed to create post');
