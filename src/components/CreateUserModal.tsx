@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { X, User, Shield, Building, UserCheck, Eye, EyeOff } from 'lucide-react';
+import { supabase } from '../integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface CreateUserModalProps {
   isOpen: boolean;
@@ -45,36 +47,73 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ isOpen, onClose, onUs
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.email || !formData.password || !formData.fullName) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      toast.error('Password must be at least 6 characters');
       return;
     }
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      // Call edge function to create user (requires service role)
+      const { data, error } = await supabase.functions.invoke('create-admin-user', {
+        body: {
+          email: formData.email,
+          password: formData.password,
+          fullName: formData.fullName,
+          jobTitle: formData.jobTitle,
+          company: formData.company,
+          bio: formData.bio,
+          accountType: formData.accountType,
+          role: formData.role,
+          contactVisible: formData.contactVisible
+        }
+      });
 
-    const newUser = {
-      id: Date.now(),
-      ...formData,
-      createdAt: new Date().toISOString(),
-      verified: false,
-      lastLogin: null
-    };
+      if (error) throw error;
 
-    onUserCreated(newUser);
-    setFormData({
-      email: '',
-      password: '',
-      fullName: '',
-      jobTitle: '',
-      company: '',
-      bio: '',
-      accountType: 'creator',
-      role: 'default',
-      contactVisible: false
-    });
-    setIsSubmitting(false);
-    onClose();
+      const newUser = {
+        id: data.user?.id || Date.now().toString(),
+        email: formData.email,
+        fullName: formData.fullName,
+        jobTitle: formData.jobTitle,
+        company: formData.company,
+        bio: formData.bio,
+        accountType: formData.accountType,
+        role: formData.role,
+        contactVisible: formData.contactVisible,
+        createdAt: new Date().toISOString(),
+        verified: false,
+        lastLogin: null
+      };
+
+      onUserCreated(newUser);
+      toast.success('User created successfully!');
+      
+      // Reset form
+      setFormData({
+        email: '',
+        password: '',
+        fullName: '',
+        jobTitle: '',
+        company: '',
+        bio: '',
+        accountType: 'creator',
+        role: 'default',
+        contactVisible: false
+      });
+      
+      onClose();
+    } catch (error: any) {
+      console.error('Error creating user:', error);
+      toast.error(error.message || 'Failed to create user');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -128,8 +167,9 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ isOpen, onClose, onUs
                       value={formData.password}
                       onChange={handleInputChange}
                       required
+                      minLength={6}
                       className="w-full px-4 py-3 pr-12 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
-                      placeholder="Enter password"
+                      placeholder="Enter password (min 6 chars)"
                     />
                     <button
                       type="button"
@@ -270,7 +310,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ isOpen, onClose, onUs
               <button
                 type="submit"
                 disabled={isSubmitting || !formData.email || !formData.password || !formData.fullName}
-                className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                className="w-full bg-gradient-to-r from-primary to-secondary text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
               >
                 {isSubmitting ? (
                   <>

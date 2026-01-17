@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { X, Check, Crown, Star, Zap, Users, Briefcase, BarChart3, MessageCircle, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface SubscriptionModalProps {
   isOpen: boolean;
@@ -22,6 +24,10 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, 
       monthly: 29,
       yearly: 290,
       popular: false as const,
+      priceId: {
+        monthly: 'price_basic_monthly',
+        yearly: 'price_basic_yearly'
+      },
       features: [
         'Search up to 50 profiles per month',
         'Basic filters (location, experience)',
@@ -43,6 +49,10 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, 
       monthly: 79,
       yearly: 790,
       popular: true as const,
+      priceId: {
+        monthly: 'price_professional_monthly',
+        yearly: 'price_professional_yearly'
+      },
       features: [
         'Search up to 200 profiles per month',
         'Advanced filters (skills, languages, age)',
@@ -66,6 +76,10 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, 
       monthly: 199,
       yearly: 1990,
       popular: false as const,
+      priceId: {
+        monthly: 'price_enterprise_monthly',
+        yearly: 'price_enterprise_yearly'
+      },
       features: [
         'Unlimited profile searches',
         'All advanced filters',
@@ -91,27 +105,34 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, 
   const yearlyDiscount = Math.round((1 - (currentPlan.yearly / (currentPlan.monthly * 12))) * 100);
 
   const handleSubscribe = async () => {
+    if (!user) {
+      toast.error('Please sign in to subscribe');
+      return;
+    }
+
     setIsProcessing(true);
     
     try {
-      // In real app, this would integrate with Stripe or another payment processor
-      console.log('Processing subscription:', {
-        plan: selectedPlan,
-        billingCycle,
-        price,
-        userId: user?.id
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { 
+          planId: selectedPlan,
+          billingCycle,
+          priceId: currentPlan.priceId[billingCycle],
+          successUrl: `${window.location.origin}/payment-success`,
+          cancelUrl: `${window.location.origin}/payment-canceled`
+        }
       });
+
+      if (error) throw error;
       
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Update user subscription status (in real app, this would be done via API)
-      // await updateUserSubscription(user?.id, selectedPlan, billingCycle);
-      
-      onSubscriptionSuccess();
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
     } catch (error) {
       console.error('Subscription error:', error);
-      alert('There was an error processing your subscription. Please try again.');
+      toast.error('There was an error processing your subscription. Please try again.');
     } finally {
       setIsProcessing(false);
     }
@@ -121,31 +142,31 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-2xl shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto border border-border">
         <div className="p-8">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Choose Your Plan</h2>
-              <p className="text-gray-600">Unlock powerful recruitment features to find the best AI talent</p>
+              <h2 className="text-3xl font-bold text-foreground mb-2">Choose Your Plan</h2>
+              <p className="text-muted-foreground">Unlock powerful recruitment features to find the best AI talent</p>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
             >
-              <X className="h-6 w-6 text-gray-500" />
+              <X className="h-6 w-6 text-muted-foreground" />
             </button>
           </div>
 
           {/* Billing Toggle */}
           <div className="flex items-center justify-center mb-8">
-            <div className="bg-gray-100 p-1 rounded-xl">
+            <div className="bg-muted p-1 rounded-xl">
               <button
                 onClick={() => setBillingCycle('monthly')}
                 className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                   billingCycle === 'monthly'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-card text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 Monthly
@@ -154,8 +175,8 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, 
                 onClick={() => setBillingCycle('yearly')}
                 className={`px-6 py-2 rounded-lg font-medium transition-colors relative ${
                   billingCycle === 'yearly'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-card text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 Yearly
@@ -181,13 +202,13 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, 
                   onClick={() => setSelectedPlan(key as any)}
                   className={`relative cursor-pointer rounded-2xl p-8 transition-all duration-300 ${
                     isSelected
-                      ? 'ring-2 ring-primary-500 shadow-xl scale-105'
-                      : 'border border-gray-200 hover:shadow-lg hover:scale-102'
-                  } ${plan.popular ? 'border-primary-200 bg-primary-50' : 'bg-white'}`}
+                      ? 'ring-2 ring-primary shadow-xl scale-105'
+                      : 'border border-border hover:shadow-lg hover:scale-102'
+                  } ${plan.popular ? 'border-primary/50 bg-primary/5' : 'bg-card'}`}
                 >
                   {plan.popular && (
                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-gradient-to-r from-primary-500 to-secondary-500 text-white px-4 py-1 rounded-full text-sm font-medium">
+                      <span className="bg-gradient-to-r from-primary to-secondary text-white px-4 py-1 rounded-full text-sm font-medium">
                         Most Popular
                       </span>
                     </div>
@@ -197,10 +218,10 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, 
                     <div className={`inline-flex p-3 bg-gradient-to-r ${plan.color} rounded-xl mb-4`}>
                       <Icon className="h-8 w-8 text-white" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                    <div className="text-4xl font-bold text-gray-900 mb-1">
+                    <h3 className="text-2xl font-bold text-foreground mb-2">{plan.name}</h3>
+                    <div className="text-4xl font-bold text-foreground mb-1">
                       ${planPrice}
-                      <span className="text-lg text-gray-500 font-normal">
+                      <span className="text-lg text-muted-foreground font-normal">
                         /{billingCycle === 'monthly' ? 'mo' : 'yr'}
                       </span>
                     </div>
@@ -215,13 +236,13 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, 
                     {plan.features.map((feature, index) => (
                       <div key={index} className="flex items-start space-x-3">
                         <Check className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-600">{feature}</span>
+                        <span className="text-muted-foreground">{feature}</span>
                       </div>
                     ))}
                   </div>
                   
-                  <div className="border-t border-gray-200 pt-6">
-                    <div className="text-sm text-gray-600 space-y-2">
+                  <div className="border-t border-border pt-6">
+                    <div className="text-sm text-muted-foreground space-y-2">
                       <div className="flex justify-between">
                         <span>Profile Searches:</span>
                         <span className="font-medium">{plan.limits.profileSearches}/month</span>
@@ -242,31 +263,31 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, 
           </div>
 
           {/* Features Comparison */}
-          <div className="bg-gray-50 rounded-2xl p-6 mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">What's included in {currentPlan.name}?</h3>
+          <div className="bg-muted/50 rounded-2xl p-6 mb-8">
+            <h3 className="text-lg font-semibold text-foreground mb-4">What's included in {currentPlan.name}?</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="flex items-center space-x-3">
-                <Users className="h-5 w-5 text-primary-500" />
-                <span className="text-sm text-gray-600">Talent Search</span>
+                <Users className="h-5 w-5 text-primary" />
+                <span className="text-sm text-muted-foreground">Talent Search</span>
               </div>
               <div className="flex items-center space-x-3">
-                <Briefcase className="h-5 w-5 text-primary-500" />
-                <span className="text-sm text-gray-600">Job Posting</span>
+                <Briefcase className="h-5 w-5 text-primary" />
+                <span className="text-sm text-muted-foreground">Job Posting</span>
               </div>
               <div className="flex items-center space-x-3">
-                <MessageCircle className="h-5 w-5 text-primary-500" />
-                <span className="text-sm text-gray-600">Direct Messaging</span>
+                <MessageCircle className="h-5 w-5 text-primary" />
+                <span className="text-sm text-muted-foreground">Direct Messaging</span>
               </div>
               <div className="flex items-center space-x-3">
-                <BarChart3 className="h-5 w-5 text-primary-500" />
-                <span className="text-sm text-gray-600">Analytics</span>
+                <BarChart3 className="h-5 w-5 text-primary" />
+                <span className="text-sm text-muted-foreground">Analytics</span>
               </div>
             </div>
           </div>
 
           {/* Action Buttons */}
           <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-muted-foreground">
               <Shield className="h-4 w-4 inline mr-1" />
               Secure payment • Cancel anytime • 30-day money-back guarantee
             </div>
@@ -274,14 +295,14 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, 
             <div className="flex space-x-4">
               <button
                 onClick={onClose}
-                className="px-6 py-3 border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+                className="px-6 py-3 border border-border text-foreground rounded-xl font-medium hover:bg-muted transition-colors"
               >
                 Maybe Later
               </button>
               <button
                 onClick={handleSubscribe}
                 disabled={isProcessing}
-                className="px-8 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-xl font-semibold hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                className="px-8 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
               >
                 {isProcessing ? (
                   <>
