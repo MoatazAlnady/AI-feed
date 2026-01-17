@@ -292,11 +292,14 @@ const ArticleDetails = () => {
         <SharePostModal
           isOpen={showShareModal}
           onClose={() => setShowShareModal(false)}
-          post={{
+          article={{
             id: article.id,
-            content: article.excerpt || article.content.substring(0, 300),
+            title: article.title,
+            excerpt: article.excerpt,
+            featured_image_url: article.featured_image_url,
             user_id: article.user_id || '',
-            image_url: article.featured_image_url || undefined,
+            category: article.category,
+            author: article.author
           }}
         />
 
