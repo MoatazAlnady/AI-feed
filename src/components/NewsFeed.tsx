@@ -290,12 +290,34 @@ const NewsFeed: React.FC = () => {
 
       const profilesMap = new Map(userProfiles.map(profile => [profile.id, profile]));
 
+      // Fetch user's followed creators with status for prioritization
+      let followedCreators: { following_id: string; follow_status: string }[] = [];
+      if (user) {
+        const { data: followsData } = await supabase
+          .from('follows')
+          .select('following_id, follow_status')
+          .eq('follower_id', user.id);
+        followedCreators = followsData || [];
+      }
+
+      const favoriteCreators = new Set(
+        followedCreators.filter(f => f.follow_status === 'favorite').map(f => f.following_id)
+      );
+      const normalFollows = new Set(
+        followedCreators.filter(f => f.follow_status === 'normal' || f.follow_status === 'following').map(f => f.following_id)
+      );
+
       // Filter posts based on user interests if user has interests
       let filteredPosts = allPosts;
       if (userInterests.length > 0) {
         filteredPosts = allPosts.filter(post => {
           // Always show user's own posts
           if (user && (post.user_id === user.id || post.shared_by === user.id)) {
+            return true;
+          }
+
+          // Always show posts from followed creators
+          if (favoriteCreators.has(post.user_id) || normalFollows.has(post.user_id)) {
             return true;
           }
 
@@ -315,6 +337,27 @@ const NewsFeed: React.FC = () => {
           return matchesInterests || hasCommonInterests;
         });
       }
+
+      // Sort posts with priority: Favorites first, then normal follows/interests, then others
+      filteredPosts.sort((a, b) => {
+        const aIsFavorite = favoriteCreators.has(a.user_id);
+        const bIsFavorite = favoriteCreators.has(b.user_id);
+        const aIsFollowed = normalFollows.has(a.user_id);
+        const bIsFollowed = normalFollows.has(b.user_id);
+
+        // Favorites come first
+        if (aIsFavorite && !bIsFavorite) return -1;
+        if (!aIsFavorite && bIsFavorite) return 1;
+
+        // Then followed creators
+        if (aIsFollowed && !bIsFollowed) return -1;
+        if (!aIsFollowed && bIsFollowed) return 1;
+
+        // Then sort by date within same priority
+        const dateA = new Date(a.type === 'shared' ? a.shared_at : a.created_at);
+        const dateB = new Date(b.type === 'shared' ? b.shared_at : b.created_at);
+        return dateB.getTime() - dateA.getTime();
+      });
 
       const formattedPosts = filteredPosts.map(post => {
         const profile = profilesMap.get(post.user_id);

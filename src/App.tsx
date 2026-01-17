@@ -54,6 +54,7 @@ import Unsubscribe from "./pages/Unsubscribe";
 import PromotionSuccess from "./pages/PromotionSuccess";
 import ProfessionalDashboard from "./pages/ProfessionalDashboard";
 import SearchResults from "./pages/SearchResults";
+import ManageSubscriptions from "./pages/ManageSubscriptions";
 
 const queryClient = new QueryClient();
 
@@ -134,6 +135,7 @@ const App = () => (
                   <Route path="promotion-success" element={<PromotionSuccess />} />
                   <Route path="professional-dashboard" element={<ProfessionalDashboard />} />
                   <Route path="search" element={<SearchResults />} />
+                  <Route path="manage-subscriptions" element={<ManageSubscriptions />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

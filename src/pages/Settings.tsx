@@ -11,12 +11,13 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Bell, User, Globe, Shield, Briefcase, MapPin, Phone, Link2, Calendar, Users, Circle, Building2, Flag, FileText, Trash2 } from 'lucide-react';
+import { Bell, User, Globe, Shield, Briefcase, MapPin, Phone, Link2, Calendar, Users, Circle, Building2, Flag, FileText, Trash2, Heart } from 'lucide-react';
 import NotificationSettings from '@/components/NotificationSettings';
 import SecuritySettings from '@/components/SecuritySettings';
 import InterestTagSelector from '@/components/InterestTagSelector';
 import CompanySelector from '@/components/CompanySelector';
 import MyReportsTab from '@/components/MyReportsTab';
+import { FollowingManagement } from '@/components/FollowingManagement';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 
@@ -312,10 +313,14 @@ const Settings = () => {
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="h-4 w-4" />
             <span className="hidden sm:inline">{t('settings.profile')}</span>
+          </TabsTrigger>
+          <TabsTrigger value="following" className="flex items-center gap-2">
+            <Heart className="h-4 w-4" />
+            <span className="hidden sm:inline">{t('settings.following', 'Following')}</span>
           </TabsTrigger>
           <TabsTrigger value="notifications" className="flex items-center gap-2">
             <Bell className="h-4 w-4" />
@@ -929,6 +934,24 @@ const Settings = () => {
         {/* My Reports */}
         <TabsContent value="reports">
           <MyReportsTab />
+        </TabsContent>
+
+        {/* Following Management */}
+        <TabsContent value="following">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Heart className="h-5 w-5" />
+                {t('settings.followingTitle', 'Manage Following')}
+              </CardTitle>
+              <CardDescription>
+                {t('settings.followingDesc', 'Manage the creators you follow and their notification settings')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FollowingManagement />
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
       </div>
