@@ -16,6 +16,7 @@ interface FeedToolCardProps {
     pricing?: string;
     free_plan?: string;
     tags?: string[];
+    interests?: string[];
     average_rating?: number;
     review_count?: number;
     views?: number;
@@ -135,7 +136,12 @@ const FeedToolCard: React.FC<FeedToolCardProps> = ({
                   Free Plan
                 </Badge>
               )}
-              {tool.tags?.slice(0, 2).map((tag, i) => (
+              {tool.interests?.slice(0, 4).map((interest, i) => (
+                <Badge key={`int-${i}`} variant="outline" className="text-xs bg-primary/5">
+                  {interest}
+                </Badge>
+              ))}
+              {tool.tags?.slice(0, 4).map((tag, i) => (
                 <Badge key={i} variant="outline" className="text-xs">
                   #{tag}
                 </Badge>

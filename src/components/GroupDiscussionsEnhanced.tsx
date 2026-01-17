@@ -726,7 +726,19 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
                     </div>
                   </div>
                 </div>
-              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShareDiscussion(discussion);
+                    }}
+                  >
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                </div>
               </div>
             </div>
           ))}
@@ -744,6 +756,19 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
             {loadingMore ? t('common.loading', 'Loading...') : t('common.loadMore', 'Load More')}
           </Button>
         </div>
+      )}
+      {/* Share Discussion Modal */}
+      {shareDiscussion && (
+        <ShareDiscussionModal
+          isOpen={!!shareDiscussion}
+          onClose={() => setShareDiscussion(null)}
+          discussion={shareDiscussion}
+          groupName={groupName}
+          onShare={() => {
+            toast.success('Discussion shared!');
+            setShareDiscussion(null);
+          }}
+        />
       )}
     </div>
   );

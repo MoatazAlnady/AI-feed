@@ -130,11 +130,11 @@ const FeedDiscussionCard: React.FC<FeedDiscussionCardProps> = ({
                 {discussion.reply_count || 0} replies
               </span>
               
-              {discussion.interests?.slice(0, 2).map((interest, i) => (
+              {discussion.interests?.slice(0, 4).map((interest, i) => (
                 <Badge key={i} variant="outline" className="text-xs bg-primary/5">{interest}</Badge>
               ))}
               
-              {discussion.tags?.slice(0, 2).map((tag, i) => (
+              {discussion.tags?.slice(0, 4).map((tag, i) => (
                 <Badge key={i} variant="outline" className="text-xs">#{tag}</Badge>
               ))}
             </div>
