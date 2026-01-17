@@ -171,17 +171,23 @@ const Community: React.FC = () => {
         .order('created_at', { ascending: false })
         .limit(20);
 
-      // Fetch author info for public discussions
-      const publicWithAuthors = await Promise.all(
-        (publicData || []).map(async (d) => {
-          const { data: authorData } = await supabase
-            .from('user_profiles')
-            .select('id, full_name, profile_photo')
-            .eq('id', d.author_id)
-            .single();
-          return { ...d, author: authorData };
-        })
-      );
+      // Optimized: Batch fetch author info for public discussions instead of N+1
+      const authorIds = [...new Set((publicData || []).map(d => d.author_id))];
+      let authorMap = new Map();
+      
+      if (authorIds.length > 0) {
+        const { data: authors } = await supabase
+          .from('user_profiles')
+          .select('id, full_name, profile_photo')
+          .in('id', authorIds);
+        
+        authorMap = new Map(authors?.map(a => [a.id, a]) || []);
+      }
+
+      const publicWithAuthors = (publicData || []).map(d => ({
+        ...d,
+        author: authorMap.get(d.author_id) || null
+      }));
 
       setPublicGroupDiscussions(publicWithAuthors);
     } catch (error) {
@@ -312,11 +318,11 @@ const Community: React.FC = () => {
 
       setGroups(visibleGroups);
 
-      // Fetch mutual connections count for each group
+      // Optimized: Fetch mutual connections in batch instead of N+1
       if (user && visibleGroups.length > 0) {
-        const mutuals: Record<string, number> = {};
+        const groupIds = visibleGroups.map(g => g.id);
         
-        // Get user's connections first
+        // Get user's connections first (single query)
         const { data: connections } = await supabase
           .from('connections')
           .select('user_1_id, user_2_id')
@@ -326,21 +332,27 @@ const Community: React.FC = () => {
           c.user_1_id === user.id ? c.user_2_id : c.user_1_id
         );
 
-        // For each group, count how many connections are members
-        for (const group of visibleGroups) {
-          const { data: members } = await supabase
+        if (connectedUserIds.length > 0) {
+          // Single query to get all group members for all groups
+          const { data: allMembers } = await supabase
             .from('group_members')
-            .select('user_id')
-            .eq('group_id', group.id)
+            .select('group_id, user_id')
+            .in('group_id', groupIds)
             .eq('status', 'active')
             .neq('user_id', user.id);
+
+          // Calculate mutuals in memory
+          const mutuals: Record<string, number> = {};
+          groupIds.forEach(gid => { mutuals[gid] = 0; });
           
-          const memberIds = (members || []).map(m => m.user_id);
-          const mutualCount = memberIds.filter(id => connectedUserIds.includes(id)).length;
-          mutuals[group.id] = mutualCount;
+          (allMembers || []).forEach(member => {
+            if (connectedUserIds.includes(member.user_id)) {
+              mutuals[member.group_id] = (mutuals[member.group_id] || 0) + 1;
+            }
+          });
+          
+          setMutualConnections(mutuals);
         }
-        
-        setMutualConnections(mutuals);
       }
     } catch (error) {
       console.error('Error fetching groups:', error);
@@ -732,7 +744,13 @@ const Community: React.FC = () => {
               <div 
                 key={`${event.eventType}-${event.id}`} 
                 className="bg-card rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => event.eventType === 'group' ? navigate(`/event/${event.id}`) : null}
+                onClick={() => {
+                  if (event.eventType === 'group') {
+                    navigate(`/event/${event.id}`);
+                  } else if (event.eventType === 'standalone') {
+                    navigate(`/standalone-event/${event.id}`);
+                  }
+                }}
               >
                 {/* Cover Image */}
                 {(event.cover_image_url || event.cover_image) && (
@@ -818,7 +836,25 @@ const Community: React.FC = () => {
                     <Button 
                       variant="outline" 
                       className="w-full gap-2"
-                      onClick={() => navigate(`/event/${event.id}`)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/event/${event.id}`);
+                      }}
+                    >
+                      View Event
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  )}
+
+                  {/* View button for standalone events */}
+                  {event.eventType === 'standalone' && (
+                    <Button 
+                      variant="outline" 
+                      className="w-full gap-2"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/standalone-event/${event.id}`);
+                      }}
                     >
                       View Event
                       <ChevronRight className="h-4 w-4" />

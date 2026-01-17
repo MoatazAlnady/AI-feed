@@ -46,6 +46,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import SEOHead from '@/components/SEOHead';
 import EventChatWindow from '@/components/EventChatWindow';
+import EditEventModal from '@/components/EditEventModal';
 
 interface GroupEvent {
   id: string;
@@ -126,6 +127,7 @@ const EventProfile: React.FC = () => {
   const [showEditCoverDialog, setShowEditCoverDialog] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [isEventCreator, setIsEventCreator] = useState(false);
+  const [showEditEventModal, setShowEditEventModal] = useState(false);
 
   // Check if user is event creator
   useEffect(() => {
@@ -524,7 +526,7 @@ const EventProfile: React.FC = () => {
                   <Upload className="h-4 w-4 mr-2" />
                   Change Cover Photo
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => toast.info('Edit feature coming soon')}>
+                <DropdownMenuItem onClick={() => setShowEditEventModal(true)}>
                   <Edit className="h-4 w-4 mr-2" />
                   Edit Event
                 </DropdownMenuItem>
@@ -876,6 +878,19 @@ const EventProfile: React.FC = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Edit Event Modal */}
+      {event && (
+        <EditEventModal
+          isOpen={showEditEventModal}
+          onClose={() => setShowEditEventModal(false)}
+          event={event}
+          onEventUpdated={() => {
+            fetchEvent();
+            setShowEditEventModal(false);
+          }}
+        />
+      )}
     </>
   );
 };
