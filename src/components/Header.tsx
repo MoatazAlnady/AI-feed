@@ -34,6 +34,7 @@ const Header: React.FC = () => {
   const [isPremium, setIsPremium] = useState(false);
   const [premiumTier, setPremiumTier] = useState<'silver' | 'gold' | null>(null);
   const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
+  const [userHandle, setUserHandle] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut, isAdmin, isEmployer, loading } = useAuth();
@@ -155,13 +156,16 @@ const Header: React.FC = () => {
         try {
           const { data, error } = await supabase
             .from('user_profiles')
-            .select('profile_photo, is_premium, premium_until, premium_tier, role_id, account_type')
+            .select('profile_photo, handle, is_premium, premium_until, premium_tier, role_id, account_type')
             .eq('id', user.id)
             .single();
           
           if (!error && data) {
             if (data.profile_photo) {
               setUserProfilePhoto(data.profile_photo);
+            }
+            if (data.handle) {
+              setUserHandle(data.handle);
             }
             // Check premium status - admins automatically get gold premium access
             const isAdminUser = data.role_id === 1 || data.account_type === 'admin';
@@ -555,27 +559,24 @@ const Header: React.FC = () => {
                   {showUserMenu && (
                     <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 animate-slide-up">
                       <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
-                        <div className="flex items-center space-x-2">
-                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        <Link
+                          to={`/creator/${userHandle || user?.id}`}
+                          onClick={() => setShowUserMenu(false)}
+                          className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+                        >
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-primary transition-colors">
                             {user?.user_metadata?.full_name || user.email?.split('@')[0]}
                           </p>
+                          {isPremium && (
+                            <PremiumBadge tier={premiumTier} size="sm" />
+                          )}
                           {verificationBadgeType && (
                             <VerificationBadge type={verificationBadgeType} size="sm" />
                           )}
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {isEmployer ? 'Employer Account' : 'Creator Account'}
-                        </p>
+                        </Link>
                       </div>
                       {isEmployerView ? (
                         <>
-                          <Link
-                            to="/employer/profile"
-                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                            onClick={() => setShowUserMenu(false)}
-                          >
-                            {t('nav.profile')}
-                          </Link>
                           <LanguageSelector 
                             variant="menu" 
                             onLocaleChange={() => setShowUserMenu(false)} 
@@ -583,13 +584,6 @@ const Header: React.FC = () => {
                         </>
                       ) : (
                         <>
-                          <Link
-                            to="/profile"
-                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                            onClick={() => setShowUserMenu(false)}
-                          >
-                            {t('nav.profile')}
-                          </Link>
                           <Link
                             to="/settings"
                             className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
