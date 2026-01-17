@@ -139,10 +139,10 @@ const FeedEventCard: React.FC<FeedEventCardProps> = ({
                     {groupName}
                   </Badge>
                 )}
-                {event.interests?.slice(0, 2).map((interest, i) => (
+                {event.interests?.slice(0, 4).map((interest, i) => (
                   <Badge key={i} variant="outline" className="text-xs bg-primary/5">{interest}</Badge>
                 ))}
-                {event.tags?.slice(0, 2).map((tag, i) => (
+                {event.tags?.slice(0, 4).map((tag, i) => (
                   <Badge key={i} variant="outline" className="text-xs">#{tag}</Badge>
                 ))}
               </div>

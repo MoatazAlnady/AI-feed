@@ -17,6 +17,8 @@ interface SharedArticleCardProps {
     published_at: string;
     views?: number;
     user_id?: string;
+    tags?: string[];
+    interests?: string[];
   };
   sharedBy: {
     id: string;
@@ -102,6 +104,16 @@ const SharedArticleCard: React.FC<SharedArticleCardProps> = ({
               <span>•</span>
               <span>{new Date(article.published_at).toLocaleDateString()}</span>
             </div>
+            {(article.tags?.length || article.interests?.length) && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {article.interests?.slice(0, 4).map((interest, i) => (
+                  <Badge key={`int-${i}`} variant="outline" className="text-xs bg-primary/5">{interest}</Badge>
+                ))}
+                {article.tags?.slice(0, 4).map((tag, i) => (
+                  <Badge key={i} variant="outline" className="text-xs">#{tag}</Badge>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

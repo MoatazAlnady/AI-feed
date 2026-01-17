@@ -102,16 +102,20 @@ const SharedEventCard: React.FC<SharedEventCardProps> = ({
                 ) : null}
               </div>
 
+              {event.description && (
+                <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{event.description}</p>
+              )}
+
               <div className="flex flex-wrap items-center gap-2">
                 {groupName && (
                   <Badge variant="secondary" className="text-xs">
                     <Users className="h-3 w-3 mr-1" />{groupName}
                   </Badge>
                 )}
-                {event.interests?.slice(0, 2).map((interest, i) => (
+                {event.interests?.slice(0, 4).map((interest, i) => (
                   <Badge key={i} variant="outline" className="text-xs bg-primary/5">{interest}</Badge>
                 ))}
-                {event.tags?.slice(0, 2).map((tag, i) => (
+                {event.tags?.slice(0, 4).map((tag, i) => (
                   <Badge key={i} variant="outline" className="text-xs">#{tag}</Badge>
                 ))}
               </div>
