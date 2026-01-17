@@ -288,7 +288,7 @@ const CreatePost: React.FC = () => {
                 selectedTags={tags}
                 onTagsChange={setTags}
                 maxTags={5}
-                label="Tags & Interests (max 5)"
+                label="Post Interests (max 5)"
               />
 
               {/* Image Preview */}

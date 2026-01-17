@@ -204,19 +204,18 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
               />
             </div>
 
-            {/* Interests & Tags */}
+            {/* Interests */}
             <div className="mb-6">
               <InterestTagSelector
-                selectedTags={[...formData.interests, ...formData.tags]}
-                onTagsChange={(allTags) => {
+                selectedTags={formData.interests}
+                onTagsChange={(interests) => {
                   setFormData(prev => ({ 
                     ...prev, 
-                    interests: allTags,
-                    tags: allTags 
+                    interests
                   }));
                 }}
                 maxTags={5}
-                label="Event Interests & Tags (max 5)"
+                label="Event Interests (max 5)"
               />
             </div>
 

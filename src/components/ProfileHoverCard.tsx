@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
+import { Badge } from './ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
@@ -26,6 +27,7 @@ interface UserProfile {
   location?: string;
   bio?: string;
   premium_tier?: PremiumTier;
+  interests?: string[];
 }
 
 const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
@@ -71,14 +73,15 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
     try {
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('id, full_name, handle, profile_photo, job_title, company, location, bio, premium_tier')
+        .select('id, full_name, handle, profile_photo, job_title, company, location, bio, premium_tier, interests')
         .eq('id', userId)
         .single();
 
       if (error) throw error;
       setProfile({
         ...data,
-        premium_tier: data.premium_tier as PremiumTier
+        premium_tier: data.premium_tier as PremiumTier,
+        interests: data.interests || []
       });
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -288,6 +291,24 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({
               <p className="text-sm text-muted-foreground line-clamp-2">
                 {profile.bio}
               </p>
+            )}
+
+            {/* Creator Interests */}
+            {profile.interests && profile.interests.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {profile.interests.slice(0, 3).map((interest, index) => (
+                  <Badge 
+                    key={index} 
+                    variant="secondary" 
+                    className="text-xs py-0 bg-primary/10 text-primary"
+                  >
+                    {interest}
+                  </Badge>
+                ))}
+                {profile.interests.length > 3 && (
+                  <span className="text-xs text-muted-foreground">+{profile.interests.length - 3}</span>
+                )}
+              </div>
             )}
 
             <div className="flex space-x-2">

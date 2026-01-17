@@ -24,7 +24,7 @@ const InterestTagSelector: React.FC<InterestTagSelectorProps> = ({
   selectedTags,
   onTagsChange,
   maxTags = 10,
-  label = 'Tags & Interests'
+  label = 'Interests'
 }) => {
   const [interests, setInterests] = useState<Interest[]>([]);
   const [customTag, setCustomTag] = useState('');
