@@ -3328,12 +3328,14 @@ export type Database = {
           created_at: string | null
           id: string
           image_url: string | null
+          interests: string[] | null
           likes: number | null
           link_metadata: Json | null
           link_url: string | null
           reach_score: number | null
           share_count: number | null
           shares: number | null
+          tags: string[] | null
           updated_at: string | null
           user_id: string
           video_url: string | null
@@ -3346,12 +3348,14 @@ export type Database = {
           created_at?: string | null
           id?: string
           image_url?: string | null
+          interests?: string[] | null
           likes?: number | null
           link_metadata?: Json | null
           link_url?: string | null
           reach_score?: number | null
           share_count?: number | null
           shares?: number | null
+          tags?: string[] | null
           updated_at?: string | null
           user_id: string
           video_url?: string | null
@@ -3364,12 +3368,14 @@ export type Database = {
           created_at?: string | null
           id?: string
           image_url?: string | null
+          interests?: string[] | null
           likes?: number | null
           link_metadata?: Json | null
           link_url?: string | null
           reach_score?: number | null
           share_count?: number | null
           shares?: number | null
+          tags?: string[] | null
           updated_at?: string | null
           user_id?: string
           video_url?: string | null

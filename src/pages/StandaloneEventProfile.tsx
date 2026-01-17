@@ -20,6 +20,7 @@ import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import EventChatWindow from '@/components/EventChatWindow';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import ShareEventModal from '@/components/ShareEventModal';
 
 interface StandaloneEvent {
   id: string;
@@ -70,6 +71,7 @@ const StandaloneEventProfile: React.FC = () => {
   const [attendeesPage, setAttendeesPage] = useState(0);
   const [hasMoreAttendees, setHasMoreAttendees] = useState(true);
   const [loadingMoreAttendees, setLoadingMoreAttendees] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   const isCreator = user?.id === event?.creator_id;
 
@@ -470,7 +472,7 @@ const StandaloneEventProfile: React.FC = () => {
                 </Button>
               )}
 
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" onClick={() => setShowShareModal(true)}>
                 <Share2 className="h-4 w-4" />
               </Button>
             </div>
@@ -524,6 +526,16 @@ const StandaloneEventProfile: React.FC = () => {
           />
         </SheetContent>
       </Sheet>
+
+      {/* Share Event Modal */}
+      {event && (
+        <ShareEventModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          event={event}
+          eventType="standalone_event"
+        />
+      )}
     </div>
   );
 };

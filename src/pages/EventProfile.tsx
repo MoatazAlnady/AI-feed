@@ -18,7 +18,8 @@ import {
   Edit,
   Trash2,
   Upload,
-  MessageCircle
+  MessageCircle,
+  Share2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -47,6 +48,7 @@ import { format } from 'date-fns';
 import SEOHead from '@/components/SEOHead';
 import EventChatWindow from '@/components/EventChatWindow';
 import EditEventModal from '@/components/EditEventModal';
+import ShareEventModal from '@/components/ShareEventModal';
 
 interface GroupEvent {
   id: string;
@@ -130,6 +132,7 @@ const EventProfile: React.FC = () => {
   const [uploadingCover, setUploadingCover] = useState(false);
   const [isEventCreator, setIsEventCreator] = useState(false);
   const [showEditEventModal, setShowEditEventModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   // Pagination states
   const [postsPage, setPostsPage] = useState(0);
@@ -730,6 +733,10 @@ const EventProfile: React.FC = () => {
                 <X className="h-4 w-4" />
                 Can't Go
               </Button>
+              <Button variant="outline" onClick={() => setShowShareModal(true)} className="gap-2">
+                <Share2 className="h-4 w-4" />
+                Share
+              </Button>
             </div>
 
             {/* Attendees Preview */}
@@ -1007,6 +1014,16 @@ const EventProfile: React.FC = () => {
             fetchEvent();
             setShowEditEventModal(false);
           }}
+        />
+      )}
+
+      {/* Share Event Modal */}
+      {event && (
+        <ShareEventModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          event={event}
+          eventType="group_event"
         />
       )}
     </>
