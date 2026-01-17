@@ -29,6 +29,7 @@ import Categories from "./pages/Categories";
 import Community from "./pages/Community";
 import GroupProfile from "./pages/GroupProfile";
 import EventProfile from "./pages/EventProfile";
+import StandaloneEventProfile from "./pages/StandaloneEventProfile";
 import Blog from "./pages/Blog";
 import ArticleDetails from "./pages/ArticleDetails";
 import ToolDetails from "./pages/ToolDetails";
@@ -97,6 +98,7 @@ const App = () => (
               <Route path="community" element={<Community />} />
               <Route path="group/:groupId" element={<GroupProfile />} />
               <Route path="event/:eventId" element={<EventProfile />} />
+              <Route path="standalone-event/:eventId" element={<StandaloneEventProfile />} />
                <Route path="talent" element={<Talent />} />
                <Route path="jobs" element={<Jobs />} />
                

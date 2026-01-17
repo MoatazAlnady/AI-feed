@@ -4939,6 +4939,13 @@ export type Database = {
           status: string
         }[]
       }
+      get_mutual_connections_for_groups: {
+        Args: { p_group_ids: string[]; p_user_id: string }
+        Returns: {
+          group_id: string
+          mutual_count: number
+        }[]
+      }
       get_pending_edit_requests: {
         Args: { limit_param?: number; offset_param?: number }
         Returns: {
@@ -5093,6 +5100,10 @@ export type Database = {
       }
       is_company_employee: {
         Args: { company_id: string; user_uuid: string }
+        Returns: boolean
+      }
+      is_event_attendee: {
+        Args: { p_event_id: string; p_event_type: string; p_user_id: string }
         Returns: boolean
       }
       is_following: {
