@@ -1365,6 +1365,62 @@ export type Database = {
           },
         ]
       }
+      event_conversations: {
+        Row: {
+          created_at: string | null
+          event_id: string
+          event_type: string
+          id: string
+          last_message_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_id: string
+          event_type: string
+          id?: string
+          last_message_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string
+          event_type?: string
+          id?: string
+          last_message_at?: string | null
+        }
+        Relationships: []
+      }
+      event_messages: {
+        Row: {
+          body: string
+          conversation_id: string
+          created_at: string | null
+          id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          conversation_id: string
+          created_at?: string | null
+          id?: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          conversation_id?: string
+          created_at?: string | null
+          id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "event_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           category: string | null
@@ -1565,6 +1621,7 @@ export type Database = {
           id: string
           is_approved: boolean | null
           is_pinned: boolean | null
+          is_public: boolean | null
           media_urls: string[] | null
           poll_end_date: string | null
           poll_options: Json | null
@@ -1583,6 +1640,7 @@ export type Database = {
           id?: string
           is_approved?: boolean | null
           is_pinned?: boolean | null
+          is_public?: boolean | null
           media_urls?: string[] | null
           poll_end_date?: string | null
           poll_options?: Json | null
@@ -1601,6 +1659,7 @@ export type Database = {
           id?: string
           is_approved?: boolean | null
           is_pinned?: boolean | null
+          is_public?: boolean | null
           media_urls?: string[] | null
           poll_end_date?: string | null
           poll_options?: Json | null
@@ -2128,6 +2187,7 @@ export type Database = {
       }
       groups: {
         Row: {
+          allow_public_discussions: boolean | null
           auto_approve_members: boolean | null
           auto_approve_posts: boolean | null
           category: string | null
@@ -2157,11 +2217,13 @@ export type Database = {
           welcome_message: string | null
           who_can_chat: string | null
           who_can_comment: string | null
+          who_can_create_events: string | null
           who_can_discuss: string | null
           who_can_invite: string | null
           who_can_post: string | null
         }
         Insert: {
+          allow_public_discussions?: boolean | null
           auto_approve_members?: boolean | null
           auto_approve_posts?: boolean | null
           category?: string | null
@@ -2191,11 +2253,13 @@ export type Database = {
           welcome_message?: string | null
           who_can_chat?: string | null
           who_can_comment?: string | null
+          who_can_create_events?: string | null
           who_can_discuss?: string | null
           who_can_invite?: string | null
           who_can_post?: string | null
         }
         Update: {
+          allow_public_discussions?: boolean | null
           auto_approve_members?: boolean | null
           auto_approve_posts?: boolean | null
           category?: string | null
@@ -2225,6 +2289,7 @@ export type Database = {
           welcome_message?: string | null
           who_can_chat?: string | null
           who_can_comment?: string | null
+          who_can_create_events?: string | null
           who_can_discuss?: string | null
           who_can_invite?: string | null
           who_can_post?: string | null
@@ -3626,6 +3691,104 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      standalone_event_attendees: {
+        Row: {
+          created_at: string | null
+          event_id: string
+          id: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_id: string
+          id?: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string
+          id?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "standalone_event_attendees_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "standalone_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      standalone_events: {
+        Row: {
+          category: string | null
+          cover_image: string | null
+          created_at: string | null
+          creator_id: string
+          description: string | null
+          event_date: string
+          event_end_date: string | null
+          id: string
+          is_online: boolean | null
+          location: string | null
+          max_attendees: number | null
+          online_link: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          cover_image?: string | null
+          created_at?: string | null
+          creator_id: string
+          description?: string | null
+          event_date: string
+          event_end_date?: string | null
+          id?: string
+          is_online?: boolean | null
+          location?: string | null
+          max_attendees?: number | null
+          online_link?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          cover_image?: string | null
+          created_at?: string | null
+          creator_id?: string
+          description?: string | null
+          event_date?: string
+          event_end_date?: string | null
+          id?: string
+          is_online?: boolean | null
+          location?: string | null
+          max_attendees?: number | null
+          online_link?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "standalone_events_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "standalone_events_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sub_categories: {
         Row: {
