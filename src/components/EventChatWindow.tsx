@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Send, ArrowLeft, Users } from 'lucide-react';
+import { Send, ArrowLeft, Users, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -42,9 +42,12 @@ const EventChatWindow: React.FC<EventChatWindowProps> = ({
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [isAttendee, setIsAttendee] = useState(false);
+  const [checkingAttendance, setCheckingAttendance] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    checkAttendance();
     initializeChat();
   }, [eventId, eventType]);
 
@@ -80,6 +83,44 @@ const EventChatWindow: React.FC<EventChatWindowProps> = ({
       };
     }
   }, [conversationId]);
+
+  const checkAttendance = async () => {
+    if (!user) {
+      setIsAttendee(false);
+      setCheckingAttendance(false);
+      return;
+    }
+
+    try {
+      let isAttending = false;
+
+      if (eventType === 'group_event') {
+        const { data } = await supabase
+          .from('group_event_attendees')
+          .select('id')
+          .eq('event_id', eventId)
+          .eq('user_id', user.id)
+          .eq('status', 'attending')
+          .maybeSingle();
+        isAttending = !!data;
+      } else if (eventType === 'standalone_event') {
+        const { data } = await supabase
+          .from('standalone_event_attendees')
+          .select('id')
+          .eq('event_id', eventId)
+          .eq('user_id', user.id)
+          .maybeSingle();
+        isAttending = !!data;
+      }
+
+      setIsAttendee(isAttending);
+    } catch (error) {
+      console.error('Error checking attendance:', error);
+      setIsAttendee(false);
+    } finally {
+      setCheckingAttendance(false);
+    }
+  };
 
   const initializeChat = async () => {
     try {
@@ -125,17 +166,19 @@ const EventChatWindow: React.FC<EventChatWindowProps> = ({
 
       if (error) throw error;
 
-      // Fetch sender info for each message
-      const messagesWithSenders = await Promise.all(
-        (data || []).map(async (msg) => {
-          const { data: senderData } = await supabase
-            .from('user_profiles')
-            .select('full_name, profile_photo')
-            .eq('id', msg.sender_id)
-            .single();
-          return { ...msg, sender: senderData || undefined };
-        })
-      );
+      // Batch fetch sender info
+      const senderIds = [...new Set((data || []).map(m => m.sender_id))];
+      const { data: senders } = await supabase
+        .from('user_profiles')
+        .select('id, full_name, profile_photo')
+        .in('id', senderIds);
+
+      const senderMap = new Map(senders?.map(s => [s.id, s]) || []);
+
+      const messagesWithSenders = (data || []).map(msg => ({
+        ...msg,
+        sender: senderMap.get(msg.sender_id) || undefined
+      }));
 
       setMessages(messagesWithSenders);
       setTimeout(scrollToBottom, 100);
@@ -152,6 +195,12 @@ const EventChatWindow: React.FC<EventChatWindowProps> = ({
 
   const sendMessage = async () => {
     if (!user || !newMessage.trim() || !conversationId) return;
+
+    // Check attendance before sending
+    if (!isAttendee) {
+      toast.error(t('events.mustRSVPToChat', 'You must RSVP to this event to send messages'));
+      return;
+    }
 
     setSending(true);
     try {
@@ -219,6 +268,16 @@ const EventChatWindow: React.FC<EventChatWindowProps> = ({
         </div>
       </div>
 
+      {/* Not Attendee Warning */}
+      {!checkingAttendance && !isAttendee && (
+        <div className="p-4 bg-amber-500/10 border-b border-amber-500/30">
+          <div className="flex items-center gap-2 text-amber-600">
+            <Lock className="h-4 w-4" />
+            <p className="text-sm">{t('events.rsvpToJoinChat', 'RSVP to this event to join the conversation')}</p>
+          </div>
+        </div>
+      )}
+
       {/* Messages */}
       <ScrollArea className="flex-1 p-4" ref={scrollRef}>
         {messages.length === 0 ? (
@@ -266,23 +325,30 @@ const EventChatWindow: React.FC<EventChatWindowProps> = ({
       {/* Input */}
       {user ? (
         <div className="p-4 border-t bg-card">
-          <div className="flex gap-2">
-            <Input
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyDown={handleKeyPress}
-              placeholder={t('events.typeMessage', 'Type a message...')}
-              disabled={sending}
-              className="flex-1"
-            />
-            <Button 
-              onClick={sendMessage} 
-              disabled={!newMessage.trim() || sending}
-              size="icon"
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          </div>
+          {isAttendee ? (
+            <div className="flex gap-2">
+              <Input
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyDown={handleKeyPress}
+                placeholder={t('events.typeMessage', 'Type a message...')}
+                disabled={sending}
+                className="flex-1"
+              />
+              <Button 
+                onClick={sendMessage} 
+                disabled={!newMessage.trim() || sending}
+                size="icon"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <div className="text-center py-2 text-sm text-muted-foreground">
+              <Lock className="h-4 w-4 inline mr-1" />
+              {t('events.rsvpRequired', 'RSVP to send messages')}
+            </div>
+          )}
         </div>
       ) : (
         <div className="p-4 border-t bg-muted/50 text-center">
