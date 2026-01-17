@@ -57,6 +57,8 @@ interface GroupEventsTabProps {
   userRole?: string;
 }
 
+const ITEMS_PER_PAGE = 10;
+
 const GroupEventsTab: React.FC<GroupEventsTabProps> = ({ 
   groupId, 
   groupName, 
@@ -74,6 +76,9 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [userAttendance, setUserAttendance] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   // Create event form
   const [formData, setFormData] = useState({
@@ -104,19 +109,28 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
     }
   }, [groupId, user]);
 
-  const fetchEvents = async () => {
+  const fetchEvents = async (loadMore = false) => {
     try {
+      if (loadMore) {
+        setLoadingMore(true);
+      }
+      
+      const currentPage = loadMore ? page + 1 : 0;
+      const from = currentPage * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
       const { data, error } = await supabase
         .from('group_events')
         .select('*')
         .eq('group_id', groupId)
         .gte('start_date', new Date().toISOString().split('T')[0])
-        .order('start_date', { ascending: true });
+        .order('start_date', { ascending: true })
+        .range(from, to);
 
       if (error) throw error;
 
-      const events = data || [];
-      const eventIds = events.map(e => e.id);
+      const newEvents = data || [];
+      const eventIds = newEvents.map(e => e.id);
 
       // Batch fetch attendee counts - NO N+1!
       let countMap: Record<string, number> = {};
@@ -134,16 +148,25 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
         });
       }
 
-      const eventsWithCounts = events.map(event => ({
+      const eventsWithCounts = newEvents.map(event => ({
         ...event,
         attendee_count: countMap[event.id] || 0
       }));
 
-      setEvents(eventsWithCounts);
+      if (loadMore) {
+        setEvents(prev => [...prev, ...eventsWithCounts]);
+        setPage(currentPage);
+      } else {
+        setEvents(eventsWithCounts);
+        setPage(0);
+      }
+      
+      setHasMore(newEvents.length === ITEMS_PER_PAGE);
     } catch (error) {
       console.error('Error fetching events:', error);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
@@ -573,6 +596,19 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Load More Button */}
+      {hasMore && events.length > 0 && (
+        <div className="flex justify-center mt-6">
+          <Button 
+            variant="outline" 
+            onClick={() => fetchEvents(true)} 
+            disabled={loadingMore}
+          >
+            {loadingMore ? t('common.loading', 'Loading...') : t('common.loadMore', 'Load More')}
+          </Button>
         </div>
       )}
     </div>

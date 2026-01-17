@@ -84,6 +84,8 @@ interface GroupDiscussionsEnhancedProps {
   allowPublicDiscussions?: boolean;
 }
 
+const ITEMS_PER_PAGE = 15;
+
 const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
   groupId,
   groupName,
@@ -102,6 +104,9 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
   const [showNewDiscussion, setShowNewDiscussion] = useState(false);
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [submitting, setSubmitting] = useState(false);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   // New discussion form
   const [formData, setFormData] = useState({
@@ -140,20 +145,29 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
     }
   };
 
-  const fetchDiscussions = async () => {
+  const fetchDiscussions = async (loadMore = false) => {
     try {
+      if (loadMore) {
+        setLoadingMore(true);
+      }
+
+      const currentPage = loadMore ? page + 1 : 0;
+      const from = currentPage * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
       const { data, error } = await supabase
         .from('group_discussions')
         .select('*')
         .eq('group_id', groupId)
         .order('is_pinned', { ascending: false })
-        .order('updated_at', { ascending: false });
+        .order('updated_at', { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
 
-      const discussions = data || [];
-      const discussionIds = discussions.map(d => d.id);
-      const authorIds = [...new Set(discussions.map(d => d.author_id))];
+      const newDiscussions = data || [];
+      const discussionIds = newDiscussions.map(d => d.id);
+      const authorIds = [...new Set(newDiscussions.map(d => d.author_id))];
 
       // Batch fetch authors - NO N+1!
       let authorMap = new Map<string, { full_name: string; profile_photo: string | null }>();
@@ -192,7 +206,7 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
       }
 
       // Map discussions with authors and tags
-      const discussionsWithDetails = discussions.map(discussion => ({
+      const discussionsWithDetails = newDiscussions.map(discussion => ({
         ...discussion,
         author: authorMap.get(discussion.author_id) || null,
         tags: (tagLinksMap.get(discussion.id) || [])
@@ -200,11 +214,20 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
           .filter((t): t is DiscussionTag => t !== undefined)
       }));
 
-      setDiscussions(discussionsWithDetails);
+      if (loadMore) {
+        setDiscussions(prev => [...prev, ...discussionsWithDetails]);
+        setPage(currentPage);
+      } else {
+        setDiscussions(discussionsWithDetails);
+        setPage(0);
+      }
+
+      setHasMore(newDiscussions.length === ITEMS_PER_PAGE);
     } catch (error) {
       console.error('Error fetching discussions:', error);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
@@ -700,10 +723,23 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
                     </div>
                   </div>
                 </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+              <ChevronRight className="h-5 w-5 text-muted-foreground" />
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Load More Button */}
+      {hasMore && filteredDiscussions.length > 0 && (
+        <div className="flex justify-center mt-6">
+          <Button 
+            variant="outline" 
+            onClick={() => fetchDiscussions(true)} 
+            disabled={loadingMore}
+          >
+            {loadingMore ? t('common.loading', 'Loading...') : t('common.loadMore', 'Load More')}
+          </Button>
         </div>
       )}
     </div>
