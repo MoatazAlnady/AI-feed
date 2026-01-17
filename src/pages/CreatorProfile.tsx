@@ -33,7 +33,8 @@ import {
   ArrowRight,
   Zap,
   Share2,
-  Building2
+  Building2,
+  ChevronDown
 } from 'lucide-react';
 import UnsubscribeFromCreatorModal from '@/components/UnsubscribeFromCreatorModal';
 import SubscribeToCreatorModal from '@/components/SubscribeToCreatorModal';
@@ -44,6 +45,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import PremiumBadge, { type PremiumTier } from '@/components/PremiumBadge';
 import ProfilePhotoUploader from '@/components/ProfilePhotoUploader';
@@ -892,13 +894,23 @@ const CreatorProfile: React.FC = () => {
                       </Button>
                       
                       {isSubscribed && (
-                        <Button 
-                          variant="outline"
-                          onClick={() => setShowUnsubscribeModal(true)}
-                        >
-                          <Settings className="h-4 w-4 mr-2" />
-                          Manage Subscription
-                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button 
+                              variant="default"
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                            >
+                              <Check className="h-4 w-4 mr-2" />
+                              Subscribed
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => setShowUnsubscribeModal(true)}>
+                              <Settings className="h-4 w-4 mr-2" />
+                              Manage / Cancel Subscription
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       )}
                       
                       {!isSubscribed && hasTiers && (

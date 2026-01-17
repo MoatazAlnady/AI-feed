@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { Bell, Heart, MessageCircle, UserPlus, Share2, Star, CheckCircle, X } from 'lucide-react';
+import { Bell, Heart, MessageCircle, UserPlus, Share2, Star, CheckCircle, X, Calendar, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../integrations/supabase/client';
 
 interface Notification {
   id: string;
-  type: 'like' | 'comment' | 'follow' | 'share' | 'mention' | 'system';
+  type: string;
   title: string;
   message: string;
   created_at: string;
@@ -117,6 +117,9 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       case 'share': return Share2;
       case 'mention': return MessageCircle;
       case 'system': return CheckCircle;
+      case 'creator_update': return Sparkles;
+      case 'event_invitation': return Calendar;
+      case 'connection_request': return UserPlus;
       default: return Bell;
     }
   };
@@ -129,6 +132,9 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       case 'share': return 'text-purple-500 bg-purple-50 dark:bg-purple-900/20';
       case 'mention': return 'text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20';
       case 'system': return 'text-gray-500 bg-gray-50 dark:bg-gray-700';
+      case 'creator_update': return 'text-orange-500 bg-orange-50 dark:bg-orange-900/20';
+      case 'event_invitation': return 'text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20';
+      case 'connection_request': return 'text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20';
       default: return 'text-gray-500 bg-gray-50 dark:bg-gray-700';
     }
   };
