@@ -37,6 +37,9 @@ import MentionInput from './MentionInput';
 import PremiumBadge from './PremiumBadge';
 import ArticleCard from './feed/ArticleCard';
 import SharedArticleCard from './feed/SharedArticleCard';
+import FeedToolCard from './feed/FeedToolCard';
+import SharedToolCard from './feed/SharedToolCard';
+import ShareToolModal from './ShareToolModal';
 
 interface Post {
   id: string;
@@ -106,6 +109,7 @@ const NewsFeed: React.FC = () => {
   const [editContent, setEditContent] = useState<string>('');
   const [shareModalPost, setShareModalPost] = useState<Post | null>(null);
   const [shareModalArticle, setShareModalArticle] = useState<any>(null);
+  const [shareModalTool, setShareModalTool] = useState<any>(null);
   const [showNewsletterPopup, setShowNewsletterPopup] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [postReactions, setPostReactions] = useState<{ [key: string]: { [key: string]: { count: number; users: string[] } } }>({});
@@ -233,13 +237,14 @@ const NewsFeed: React.FC = () => {
         console.error('Error fetching posts:', postsError);
       }
 
-      // Fetch shared posts with original post AND article data
+      // Fetch shared posts with original post, article, AND tool data
       const { data: sharedPostsData, error: sharedError } = await supabase
         .from('shared_posts')
         .select(`
           *,
           original_post:posts!shared_posts_original_post_id_fkey(*),
-          original_article:articles!shared_posts_original_article_id_fkey(*)
+          original_article:articles!shared_posts_original_article_id_fkey(*),
+          original_tool:tools!shared_posts_original_tool_id_fkey(*)
         `)
         .order('created_at', { ascending: false })
         .limit(50);
@@ -275,13 +280,42 @@ const NewsFeed: React.FC = () => {
         }
       }
 
+      // Fetch tools from followed creators
+      let toolsData: any[] = [];
+      if (followedIds.length > 0) {
+        const { data: tools, error: toolsError } = await supabase
+          .from('tools')
+          .select('*')
+          .eq('status', 'approved')
+          .in('user_id', followedIds)
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        if (!toolsError && tools) {
+          toolsData = tools.map(tool => ({
+            ...tool,
+            type: 'tool',
+            created_at: tool.created_at
+          }));
+        }
+      }
+
       const allPosts: any[] = [];
       if (postsData) allPosts.push(...postsData.map(post => ({ ...post, type: 'original' })));
       
-      // Handle shared posts AND shared articles
+      // Handle shared posts, shared articles, AND shared tools
       if (sharedPostsData) {
         sharedPostsData.forEach(share => {
-          if (share.content_type === 'article' && share.original_article) {
+          if (share.content_type === 'tool' && share.original_tool) {
+            allPosts.push({
+              ...share.original_tool,
+              type: 'shared_tool',
+              shared_by: share.user_id,
+              share_text: share.share_text,
+              shared_at: share.created_at,
+              sharedPostId: share.id
+            });
+          } else if (share.content_type === 'article' && share.original_article) {
             allPosts.push({
               ...share.original_article,
               type: 'shared_article',
@@ -304,12 +338,20 @@ const NewsFeed: React.FC = () => {
       }
       
       if (articlesData) allPosts.push(...articlesData);
+      if (toolsData) allPosts.push(...toolsData);
 
       // Sort all posts by creation time
       allPosts.sort((a, b) => {
-        const dateA = new Date(a.type === 'shared' ? a.shared_at : a.type === 'article' ? a.published_at : a.created_at);
-        const dateB = new Date(b.type === 'shared' ? b.shared_at : b.type === 'article' ? b.published_at : b.created_at);
-        return dateB.getTime() - dateA.getTime();
+        const getDate = (item: any) => {
+          if (item.type === 'shared' || item.type === 'shared_article' || item.type === 'shared_tool') {
+            return new Date(item.shared_at);
+          }
+          if (item.type === 'article') {
+            return new Date(item.published_at);
+          }
+          return new Date(item.created_at);
+        };
+        return getDate(b).getTime() - getDate(a).getTime();
       });
 
       console.log('All posts data:', allPosts);
@@ -320,10 +362,11 @@ const NewsFeed: React.FC = () => {
         return;
       }
 
-      // Fetch user profiles for each post (including sharers for both shared posts and shared articles)
+      // Fetch user profiles for each post (including sharers for shared posts, articles, and tools)
       const userIds = [...new Set(allPosts.flatMap(post => [
         post.user_id, 
-        post.type === 'shared' || post.type === 'shared_article' ? post.shared_by : null
+        post.type === 'shared' || post.type === 'shared_article' || post.type === 'shared_tool' ? post.shared_by : null,
+        post.type === 'tool' ? post.user_id : null
       ]).filter(Boolean))];
       console.log('User IDs from posts:', userIds);
       let userProfiles = [];
@@ -1172,6 +1215,53 @@ const NewsFeed: React.FC = () => {
           );
         }
 
+        // Helper function to check if a tool was recently added
+        const isRecentlyAdded = (dateString: string) => {
+          const date = new Date(dateString);
+          const now = new Date();
+          const diffHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+          return diffHours < 48; // Tool added within last 48 hours
+        };
+
+        // Handle Tool type (from followed creators)
+        if (post.type === 'tool') {
+          const toolAuthorProfile = profilesMap.get(post.user_id);
+          return (
+            <FeedToolCard
+              key={`tool-${post.id}`}
+              tool={post}
+              author={toolAuthorProfile ? {
+                id: post.user_id,
+                name: toolAuthorProfile.full_name || 'Creator',
+                avatar: toolAuthorProfile.profile_photo,
+                handle: toolAuthorProfile.handle
+              } : undefined}
+              onShare={(tool) => setShareModalTool(tool)}
+              isNew={isRecentlyAdded(post.created_at)}
+            />
+          );
+        }
+
+        // Handle Shared Tool type
+        if (post.type === 'shared_tool') {
+          const sharedByProfile = profilesMap.get(post.shared_by);
+          return (
+            <SharedToolCard
+              key={`shared-tool-${post.id}-${index}`}
+              tool={post}
+              sharedBy={{
+                id: post.shared_by,
+                name: sharedByProfile?.full_name || 'Someone',
+                avatar: sharedByProfile?.profile_photo,
+                handle: sharedByProfile?.handle
+              }}
+              shareText={post.share_text || ''}
+              sharedAt={new Date(post.shared_at).toLocaleDateString()}
+              onShare={(tool) => setShareModalTool(tool)}
+            />
+          );
+        }
+
         // Regular posts and shared posts
         return (
         <div 
@@ -1694,6 +1784,25 @@ const NewsFeed: React.FC = () => {
           onShare={() => {
             fetchPosts();
             setShareModalArticle(null);
+          }}
+        />
+      )}
+
+      {/* Share Modal for Tools */}
+      {shareModalTool && (
+        <ShareToolModal
+          isOpen={!!shareModalTool}
+          onClose={() => setShareModalTool(null)}
+          tool={{
+            id: shareModalTool.id,
+            name: shareModalTool.name,
+            description: shareModalTool.description,
+            logo_url: shareModalTool.logo_url,
+            website: shareModalTool.website
+          }}
+          onShare={() => {
+            fetchPosts();
+            setShareModalTool(null);
           }}
         />
       )}

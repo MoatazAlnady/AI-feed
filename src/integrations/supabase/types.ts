@@ -3786,7 +3786,8 @@ export type Database = {
           group_ids: string[] | null
           id: string
           original_article_id: string | null
-          original_post_id: string
+          original_post_id: string | null
+          original_tool_id: string | null
           share_text: string | null
           updated_at: string
           user_id: string
@@ -3798,7 +3799,8 @@ export type Database = {
           group_ids?: string[] | null
           id?: string
           original_article_id?: string | null
-          original_post_id: string
+          original_post_id?: string | null
+          original_tool_id?: string | null
           share_text?: string | null
           updated_at?: string
           user_id: string
@@ -3810,7 +3812,8 @@ export type Database = {
           group_ids?: string[] | null
           id?: string
           original_article_id?: string | null
-          original_post_id?: string
+          original_post_id?: string | null
+          original_tool_id?: string | null
           share_text?: string | null
           updated_at?: string
           user_id?: string
@@ -3829,6 +3832,13 @@ export type Database = {
             columns: ["original_post_id"]
             isOneToOne: false
             referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_posts_original_tool_id_fkey"
+            columns: ["original_tool_id"]
+            isOneToOne: false
+            referencedRelation: "tools"
             referencedColumns: ["id"]
           },
         ]
