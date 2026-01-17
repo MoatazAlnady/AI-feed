@@ -4,6 +4,7 @@ import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { supabase } from '../integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface Interest {
   id: string;
@@ -15,16 +16,22 @@ interface Interest {
 interface InterestTagSelectorProps {
   selectedTags: string[];
   onTagsChange: (tags: string[]) => void;
+  maxTags?: number;
+  label?: string;
 }
 
 const InterestTagSelector: React.FC<InterestTagSelectorProps> = ({
   selectedTags,
-  onTagsChange
+  onTagsChange,
+  maxTags = 10,
+  label = 'Tags & Interests'
 }) => {
   const [interests, setInterests] = useState<Interest[]>([]);
   const [customTag, setCustomTag] = useState('');
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [loading, setLoading] = useState(true);
+  
+  const isAtLimit = selectedTags.length >= maxTags;
 
   useEffect(() => {
     fetchInterests();
@@ -53,14 +60,24 @@ const InterestTagSelector: React.FC<InterestTagSelectorProps> = ({
   };
 
   const toggleTag = (tagName: string) => {
-    const updated = selectedTags.includes(tagName)
-      ? selectedTags.filter(tag => tag !== tagName)
-      : [...selectedTags, tagName];
-    
-    onTagsChange(updated);
+    if (selectedTags.includes(tagName)) {
+      // Always allow removal
+      onTagsChange(selectedTags.filter(tag => tag !== tagName));
+    } else {
+      // Check limit before adding
+      if (selectedTags.length >= maxTags) {
+        toast.warning(`Maximum ${maxTags} interests allowed`);
+        return;
+      }
+      onTagsChange([...selectedTags, tagName]);
+    }
   };
 
   const addCustomTag = () => {
+    if (selectedTags.length >= maxTags) {
+      toast.warning(`Maximum ${maxTags} interests allowed`);
+      return;
+    }
     if (customTag.trim() && !selectedTags.includes(customTag.trim())) {
       onTagsChange([...selectedTags, customTag.trim()]);
       setCustomTag('');
@@ -98,9 +115,14 @@ const InterestTagSelector: React.FC<InterestTagSelectorProps> = ({
 
   return (
     <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-        Tags & Interests
-      </label>
+      <div className="flex items-center justify-between mb-2">
+        <label className="block text-sm font-medium text-foreground">
+          {label}
+        </label>
+        <span className={`text-xs ${isAtLimit ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
+          {selectedTags.length}/{maxTags}
+        </span>
+      </div>
 
       {/* Selected Tags */}
       {selectedTags.length > 0 && (
@@ -133,20 +155,27 @@ const InterestTagSelector: React.FC<InterestTagSelectorProps> = ({
                 {category}
               </h4>
               <div className="flex flex-wrap gap-2">
-                {categoryInterests.map(interest => (
-                  <button
-                    key={interest.id}
-                    type="button"
-                    onClick={() => toggleTag(interest.name)}
-                    className={`px-3 py-1 text-sm rounded-full border transition-all ${
-                      selectedTags.includes(interest.name)
-                        ? 'bg-gray-600 text-white border-gray-600'
-                        : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
-                    }`}
-                  >
-                    #{interest.name}
-                  </button>
-                ))}
+                {categoryInterests.map(interest => {
+                  const isSelected = selectedTags.includes(interest.name);
+                  const isDisabled = !isSelected && isAtLimit;
+                  return (
+                    <button
+                      key={interest.id}
+                      type="button"
+                      onClick={() => toggleTag(interest.name)}
+                      disabled={isDisabled}
+                      className={`px-3 py-1 text-sm rounded-full border transition-all ${
+                        isSelected
+                          ? 'bg-primary text-primary-foreground border-primary'
+                          : isDisabled
+                            ? 'bg-muted text-muted-foreground border-border opacity-50 cursor-not-allowed'
+                            : 'bg-muted/50 text-foreground border-border hover:border-primary/50'
+                      }`}
+                    >
+                      #{interest.name}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           );
@@ -197,9 +226,10 @@ const InterestTagSelector: React.FC<InterestTagSelectorProps> = ({
             variant="secondary"
             size="sm"
             className="w-full"
+            disabled={isAtLimit}
           >
             <Plus className="h-4 w-4 mr-2" />
-            Add Custom Tag
+            {isAtLimit ? `Limit reached (${maxTags})` : 'Add Custom Tag'}
           </Button>
         )}
       </div>
