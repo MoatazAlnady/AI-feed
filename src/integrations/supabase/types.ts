@@ -1525,21 +1525,62 @@ export type Database = {
           },
         ]
       }
+      favorite_post_views: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_viewed_at: string | null
+          post_id: string
+          total_view_time_seconds: number | null
+          user_id: string
+          view_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_viewed_at?: string | null
+          post_id: string
+          total_view_time_seconds?: number | null
+          user_id: string
+          view_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_viewed_at?: string | null
+          post_id?: string
+          total_view_time_seconds?: number | null
+          user_id?: string
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorite_post_views_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       follows: {
         Row: {
           created_at: string
+          follow_status: string | null
           follower_id: string
           following_id: string
           id: string
         }
         Insert: {
           created_at?: string
+          follow_status?: string | null
           follower_id: string
           following_id: string
           id?: string
         }
         Update: {
           created_at?: string
+          follow_status?: string | null
           follower_id?: string
           following_id?: string
           id?: string

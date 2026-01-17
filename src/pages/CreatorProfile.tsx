@@ -56,6 +56,7 @@ import ShareToolModal from '@/components/ShareToolModal';
 import PremiumUpgradeModal from '@/components/PremiumUpgradeModal';
 import InterestManagement from '@/components/InterestManagement';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
+import { FollowStatusDropdown, FollowStatus } from '@/components/FollowStatusDropdown';
 
 interface CreatorProfile {
   id: string;
@@ -115,8 +116,7 @@ const CreatorProfile: React.FC = () => {
   const [notFound, setNotFound] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [followLoading, setFollowLoading] = useState(false);
+  const [followStatus, setFollowStatus] = useState<FollowStatus>(null);
   const [creatorTools, setCreatorTools] = useState<CreatorTool[]>([]);
   const [loadingTools, setLoadingTools] = useState(true);
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -564,55 +564,23 @@ const CreatorProfile: React.FC = () => {
     try {
       const { data, error } = await (supabase as any)
         .from('follows')
-        .select('id')
+        .select('id, follow_status')
         .eq('follower_id', user.id)
         .eq('following_id', profile.id)
         .maybeSingle();
 
-      if (!error) {
-        setIsFollowing(!!data);
+      if (!error && data) {
+        setFollowStatus(data.follow_status || 'following');
+      } else {
+        setFollowStatus(null);
       }
     } catch (error) {
       console.error('Error checking follow status:', error);
     }
   };
 
-  const handleFollow = async () => {
-    if (!user || !profile) {
-      toast.error(t('creatorProfile.toast.loginToFollow'));
-      return;
-    }
-
-    setFollowLoading(true);
-    try {
-      if (isFollowing) {
-        const { error } = await (supabase as any)
-          .from('follows')
-          .delete()
-          .eq('follower_id', user.id)
-          .eq('following_id', profile.id);
-
-        if (error) throw error;
-        setIsFollowing(false);
-        toast.success(t('creatorProfile.toast.unfollowed'));
-      } else {
-        const { error } = await (supabase as any)
-          .from('follows')
-          .insert([{
-            follower_id: user.id,
-            following_id: profile.id
-          }]);
-
-        if (error) throw error;
-        setIsFollowing(true);
-        toast.success(t('creatorProfile.toast.following'));
-      }
-    } catch (error: any) {
-      console.error('Error toggling follow:', error);
-      toast.error(error?.message || t('creatorProfile.toast.failedFollow'));
-    } finally {
-      setFollowLoading(false);
-    }
+  const handleFollowStatusChange = (newStatus: FollowStatus) => {
+    setFollowStatus(newStatus);
   };
 
   const sendConnectionRequest = async () => {
@@ -870,23 +838,11 @@ const CreatorProfile: React.FC = () => {
                 <div className="flex items-center space-x-3 mt-4 md:mt-0">
                   {!isOwnProfile && user && (
                     <>
-                      <Button 
-                        onClick={handleFollow}
-                        disabled={followLoading}
-                        variant="outline"
-                      >
-                        {isFollowing ? (
-                          <>
-                            <UserCheck className="h-4 w-4 mr-2" />
-                            {t('creatorProfile.actions.following')}
-                          </>
-                        ) : (
-                          <>
-                            <UserPlus className="h-4 w-4 mr-2" />
-                            {t('creatorProfile.actions.follow')}
-                          </>
-                        )}
-                      </Button>
+                      <FollowStatusDropdown
+                        userId={profile.id}
+                        currentStatus={followStatus}
+                        onStatusChange={handleFollowStatusChange}
+                      />
                       <Button 
                         onClick={connectionStatus === 'pending' ? withdrawConnectionRequest : sendConnectionRequest}
                         disabled={connectionStatus === 'connected'}
