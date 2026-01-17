@@ -238,8 +238,7 @@ const GroupMembersList: React.FC<GroupMembersListProps> = ({
 
   const filteredMembers = members.filter(member => {
     const matchesSearch = !searchTerm || 
-      member.user?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.user?.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      member.user?.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesRole = roleFilter === 'all' || member.role === roleFilter;
     

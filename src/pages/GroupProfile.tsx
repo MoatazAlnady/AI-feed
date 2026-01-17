@@ -56,6 +56,16 @@ interface Group {
   welcome_message?: string | null;
   creator_id: string;
   created_at: string;
+  require_approval?: boolean;
+  who_can_post?: string;
+  who_can_comment?: string;
+  who_can_discuss?: string;
+  who_can_invite?: string;
+  who_can_chat?: string;
+  posts_need_approval?: boolean;
+  discussions_need_approval?: boolean;
+  members_can_view_members?: boolean;
+  posts_visibility?: string;
 }
 
 interface GroupMember {
