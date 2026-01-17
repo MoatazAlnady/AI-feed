@@ -71,6 +71,29 @@ const Community: React.FC = () => {
   const [userGroupMemberships, setUserGroupMemberships] = useState<string[]>([]);
   const [mutualConnections, setMutualConnections] = useState<Record<string, number>>({});
 
+  // Pagination constants
+  const ITEMS_PER_PAGE = 20;
+
+  // Events pagination
+  const [eventsPage, setEventsPage] = useState(0);
+  const [hasMoreEvents, setHasMoreEvents] = useState(true);
+  const [loadingMoreEvents, setLoadingMoreEvents] = useState(false);
+
+  // Groups pagination
+  const [groupsPage, setGroupsPage] = useState(0);
+  const [hasMoreGroups, setHasMoreGroups] = useState(true);
+  const [loadingMoreGroups, setLoadingMoreGroups] = useState(false);
+
+  // Discussions pagination
+  const [discussionsPage, setDiscussionsPage] = useState(0);
+  const [hasMoreDiscussions, setHasMoreDiscussions] = useState(true);
+  const [loadingMoreDiscussions, setLoadingMoreDiscussions] = useState(false);
+
+  // Creators pagination
+  const [creatorsPage, setCreatorsPage] = useState(0);
+  const [hasMoreCreators, setHasMoreCreators] = useState(true);
+  const [loadingMoreCreators, setLoadingMoreCreators] = useState(false);
+
   // Fetch events from database
   useEffect(() => {
     if (activeTab === 'events') {
@@ -85,18 +108,25 @@ const Community: React.FC = () => {
     }
   }, [activeTab]);
 
-  const fetchEvents = async () => {
+  const fetchEvents = async (loadMore = false) => {
+    if (loadMore) {
+      setLoadingMoreEvents(true);
+    }
+    
     try {
+      const page = loadMore ? eventsPage + 1 : 0;
+      const from = page * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
       // 1. Fetch regular events
       const { data: regularData, error: regularError } = await supabase
         .from('events')
         .select('*')
         .gte('event_date', new Date().toISOString())
         .order('event_date', { ascending: true })
-        .limit(20);
+        .range(from, to);
 
       if (regularError) throw regularError;
-      setEvents(regularData || []);
       
       // 2. Fetch standalone events (Gold feature)
       const { data: standaloneData } = await supabase
@@ -104,9 +134,7 @@ const Community: React.FC = () => {
         .select('*')
         .gte('event_date', new Date().toISOString())
         .order('event_date', { ascending: true })
-        .limit(20);
-      
-      setStandaloneEvents(standaloneData || []);
+        .range(from, to);
 
       // 3. Fetch public group events
       const { data: publicGroupData } = await supabase
@@ -115,9 +143,25 @@ const Community: React.FC = () => {
         .eq('is_public', true)
         .gte('start_date', new Date().toISOString().split('T')[0])
         .order('start_date', { ascending: true })
-        .limit(20);
+        .range(from, to);
 
-      setPublicGroupEvents(publicGroupData || []);
+      // Check if there's more data
+      const hasMore = (regularData?.length === ITEMS_PER_PAGE) || 
+                      (standaloneData?.length === ITEMS_PER_PAGE) || 
+                      (publicGroupData?.length === ITEMS_PER_PAGE);
+      setHasMoreEvents(hasMore);
+      
+      if (loadMore) {
+        setEvents(prev => [...prev, ...(regularData || [])]);
+        setStandaloneEvents(prev => [...prev, ...(standaloneData || [])]);
+        setPublicGroupEvents(prev => [...prev, ...(publicGroupData || [])]);
+        setEventsPage(page);
+      } else {
+        setEvents(regularData || []);
+        setStandaloneEvents(standaloneData || []);
+        setPublicGroupEvents(publicGroupData || []);
+        setEventsPage(0);
+      }
       
       // Fetch user attendance if logged in
       if (user) {
@@ -136,16 +180,26 @@ const Community: React.FC = () => {
           attendanceData?.forEach(a => {
             attendanceMap[a.event_id] = a.status;
           });
-          setUserAttendance(attendanceMap);
+          setUserAttendance(prev => loadMore ? { ...prev, ...attendanceMap } : attendanceMap);
         }
       }
     } catch (error) {
       console.error('Error fetching events:', error);
+    } finally {
+      setLoadingMoreEvents(false);
     }
   };
 
-  const fetchDiscussions = async () => {
+  const fetchDiscussions = async (loadMore = false) => {
+    if (loadMore) {
+      setLoadingMoreDiscussions(true);
+    }
+    
     try {
+      const page = loadMore ? discussionsPage + 1 : 0;
+      const from = page * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
       // 1. Fetch community discussions
       const { data: communityData, error } = await supabase
         .from('community_discussions')
@@ -155,10 +209,9 @@ const Community: React.FC = () => {
         `)
         .order('is_pinned', { ascending: false })
         .order('created_at', { ascending: false })
-        .limit(20);
+        .range(from, to);
 
       if (error) throw error;
-      setDiscussions(communityData || []);
 
       // 2. Fetch public group discussions
       const { data: publicData } = await supabase
@@ -169,7 +222,12 @@ const Community: React.FC = () => {
         `)
         .eq('is_public', true)
         .order('created_at', { ascending: false })
-        .limit(20);
+        .range(from, to);
+
+      // Check if there's more data
+      const hasMore = (communityData?.length === ITEMS_PER_PAGE) || 
+                      (publicData?.length === ITEMS_PER_PAGE);
+      setHasMoreDiscussions(hasMore);
 
       // Optimized: Batch fetch author info for public discussions instead of N+1
       const authorIds = [...new Set((publicData || []).map(d => d.author_id))];
@@ -189,9 +247,19 @@ const Community: React.FC = () => {
         author: authorMap.get(d.author_id) || null
       }));
 
-      setPublicGroupDiscussions(publicWithAuthors);
+      if (loadMore) {
+        setDiscussions(prev => [...prev, ...(communityData || [])]);
+        setPublicGroupDiscussions(prev => [...prev, ...publicWithAuthors]);
+        setDiscussionsPage(page);
+      } else {
+        setDiscussions(communityData || []);
+        setPublicGroupDiscussions(publicWithAuthors);
+        setDiscussionsPage(0);
+      }
     } catch (error) {
       console.error('Error fetching discussions:', error);
+    } finally {
+      setLoadingMoreDiscussions(false);
     }
   };
 
@@ -288,18 +356,30 @@ const Community: React.FC = () => {
     }
   }, [activeTab]);
 
-  const fetchGroups = async () => {
+  const fetchGroups = async (loadMore = false) => {
+    if (loadMore) {
+      setLoadingMoreGroups(true);
+    }
+    
     try {
+      const page = loadMore ? groupsPage + 1 : 0;
+      const from = page * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
       const { data, error } = await supabase
         .from('groups')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
       
+      // Check if there's more data
+      setHasMoreGroups((data?.length || 0) === ITEMS_PER_PAGE);
+      
       // If logged in, fetch user's group memberships
-      let memberships: string[] = [];
-      if (user) {
+      let memberships: string[] = userGroupMemberships;
+      if (user && !loadMore) {
         const { data: membershipData } = await supabase
           .from('group_members')
           .select('group_id')
@@ -316,7 +396,13 @@ const Community: React.FC = () => {
         return memberships.includes(group.id); // Private groups visible to members
       });
 
-      setGroups(visibleGroups);
+      if (loadMore) {
+        setGroups(prev => [...prev, ...visibleGroups]);
+        setGroupsPage(page);
+      } else {
+        setGroups(visibleGroups);
+        setGroupsPage(0);
+      }
 
       // Optimized: Fetch mutual connections in batch instead of N+1
       if (user && visibleGroups.length > 0) {
@@ -351,11 +437,13 @@ const Community: React.FC = () => {
             }
           });
           
-          setMutualConnections(mutuals);
+          setMutualConnections(prev => loadMore ? { ...prev, ...mutuals } : mutuals);
         }
       }
     } catch (error) {
       console.error('Error fetching groups:', error);
+    } finally {
+      setLoadingMoreGroups(false);
     }
   };
 
@@ -527,27 +615,44 @@ const Community: React.FC = () => {
     return `/creator/${creator.id}`;
   };
 
-  const fetchCreators = async () => {
-    setLoading(true);
+  const fetchCreators = async (loadMore = false) => {
+    if (loadMore) {
+      setLoadingMoreCreators(true);
+    } else {
+      setLoading(true);
+    }
+    
     try {
+      const page = loadMore ? creatorsPage + 1 : 0;
+      const offset = page * ITEMS_PER_PAGE;
+
       const { data: profiles, error } = await supabase.rpc('get_public_user_profiles', {
         search: searchTerm || null,
-        limit_param: 20,
-        offset_param: 0,
+        limit_param: ITEMS_PER_PAGE,
+        offset_param: offset,
       });
 
       if (error) {
         console.error('Error fetching creators:', error);
         toast.error('Failed to load creators');
       } else {
-        console.log('Fetched creators:', profiles);
-        setCreators(profiles || []);
+        // Check if there's more data
+        setHasMoreCreators((profiles?.length || 0) === ITEMS_PER_PAGE);
+        
+        if (loadMore) {
+          setCreators(prev => [...prev, ...(profiles || [])]);
+          setCreatorsPage(page);
+        } else {
+          setCreators(profiles || []);
+          setCreatorsPage(0);
+        }
       }
     } catch (error) {
       console.error('Error fetching creators:', error);
       toast.error('Failed to load creators');
     } finally {
       setLoading(false);
+      setLoadingMoreCreators(false);
     }
   };
 
@@ -692,6 +797,19 @@ const Community: React.FC = () => {
           </>
         )}
       </div>
+
+      {/* Load More Discussions Button */}
+      {hasMoreDiscussions && (discussions.length > 0 || publicGroupDiscussions.length > 0) && (
+        <div className="flex justify-center mt-6">
+          <Button 
+            variant="outline" 
+            onClick={() => fetchDiscussions(true)} 
+            disabled={loadingMoreDiscussions}
+          >
+            {loadingMoreDiscussions ? t('common.loading', 'Loading...') : t('common.loadMore', 'Load More')}
+          </Button>
+        </div>
+      )}
     </div>
   );
 
@@ -720,6 +838,164 @@ const Community: React.FC = () => {
                 className="gap-2"
               >
                 <Plus className="h-4 w-4" />
+                {t('events.createEvent', 'Create Event')}
+              </Button>
+            )}
+            <button 
+              onClick={() => setShowCreateEventModal(true)}
+              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200"
+            >
+              <Plus className="h-4 w-4" />
+              <span>{t('community.events.createEvent')}</span>
+            </button>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {allEvents.length === 0 ? (
+            <div className="col-span-full bg-card rounded-2xl shadow-sm p-6 text-center">
+              <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">{t('communityEvents.noEvents', 'No upcoming events. Create one!')}</p>
+            </div>
+          ) : (
+            allEvents.map((event) => (
+              <div 
+                key={`${event.eventType}-${event.id}`} 
+                className="bg-card rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => {
+                  if (event.eventType === 'group') {
+                    navigate(`/event/${event.id}`);
+                  } else if (event.eventType === 'standalone') {
+                    navigate(`/standalone-event/${event.id}`);
+                  }
+                }}
+              >
+                {/* Cover Image */}
+                {(event.cover_image_url || event.cover_image) && (
+                  <img 
+                    src={event.cover_image_url || event.cover_image} 
+                    alt={event.title} 
+                    className="w-full h-32 object-cover" 
+                  />
+                )}
+                
+                <div className="p-5">
+                  {/* Event Type Badge */}
+                  <div className="flex items-center gap-2 mb-2">
+                    {event.eventType === 'standalone' && (
+                      <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/30">
+                        <Star className="h-3 w-3 mr-1" />
+                        Gold Event
+                      </Badge>
+                    )}
+                    {event.eventType === 'group' && event.group && (
+                      <Badge variant="secondary">
+                        <Hash className="h-3 w-3 mr-1" />
+                        {event.group.name}
+                      </Badge>
+                    )}
+                    {event.is_online && (
+                      <Badge variant="outline" className="gap-1">
+                        <Video className="h-3 w-3" />
+                        Online
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Date */}
+                  <div className="flex items-center space-x-2 mb-3">
+                    <Calendar className="h-5 w-5 text-primary" />
+                    <span className="text-sm text-muted-foreground">
+                      {format(new Date(event.event_date || event.start_date), 'MMM d, yyyy')}
+                      {event.start_time && ` • ${event.start_time}`}
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h4 className="font-semibold text-foreground mb-2">{event.title}</h4>
+
+                  {/* Location */}
+                  {event.location && (
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
+                      <MapPin className="h-4 w-4" />
+                      {event.location}
+                    </div>
+                  )}
+
+                  {/* Description */}
+                  {event.description && (
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                      {event.description}
+                    </p>
+                  )}
+
+                  {/* RSVP button for regular events */}
+                  {event.eventType === 'regular' && (
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRSVP(event.id, 'attending');
+                        }}
+                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
+                          userAttendance[event.id] === 'attending'
+                            ? 'bg-green-500 text-white'
+                            : 'bg-primary/10 text-primary hover:bg-primary/20'
+                        }`}
+                      >
+                        <Check className="h-4 w-4" />
+                        {t('communityEvents.attending', 'Attending')}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* View button for group events */}
+                  {event.eventType === 'group' && (
+                    <Button 
+                      variant="outline" 
+                      className="w-full gap-2"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/event/${event.id}`);
+                      }}
+                    >
+                      View Event
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  )}
+
+                  {/* View button for standalone events */}
+                  {event.eventType === 'standalone' && (
+                    <Button 
+                      variant="outline" 
+                      className="w-full gap-2"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/standalone-event/${event.id}`);
+                      }}
+                    >
+                      View Event
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Load More Events Button */}
+        {hasMoreEvents && allEvents.length > 0 && (
+          <div className="flex justify-center mt-6">
+            <Button 
+              variant="outline" 
+              onClick={() => fetchEvents(true)} 
+              disabled={loadingMoreEvents}
+            >
+              {loadingMoreEvents ? t('common.loading', 'Loading...') : t('common.loadMore', 'Load More')}
+            </Button>
+          </div>
+        )}
                 {t('events.createEvent', 'Create Event')}
               </Button>
             )}
@@ -1032,6 +1308,19 @@ const Community: React.FC = () => {
             ))
           )}
         </div>
+
+        {/* Load More Groups Button */}
+        {hasMoreGroups && groups.length > 0 && (
+          <div className="flex justify-center mt-6">
+            <Button 
+              variant="outline" 
+              onClick={() => fetchGroups(true)} 
+              disabled={loadingMoreGroups}
+            >
+              {loadingMoreGroups ? t('common.loading', 'Loading...') : t('common.loadMore', 'Load More')}
+            </Button>
+          </div>
+        )}
       </div>
     );
   };
@@ -1067,6 +1356,7 @@ const Community: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCreators.map((creator) => (
             <div key={creator.id} className="bg-card rounded-2xl shadow-sm p-6">
+              {/* ... existing creator card content ... */}
               <div className="flex items-center space-x-3 mb-4">
                 {creator.profile_photo ? (
                   <img 
@@ -1076,6 +1366,93 @@ const Community: React.FC = () => {
                     onClick={() => navigate(getProfileLink(creator))}
                   />
                 ) : (
+                  <div 
+                    className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+                    onClick={() => navigate(getProfileLink(creator))}
+                  >
+                    <span className="text-white font-semibold">
+                      {(creator.full_name || 'U').charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2">
+                    <h4 
+                      className="font-semibold text-foreground cursor-pointer hover:text-primary transition-colors"
+                      onClick={() => navigate(`/profile/${creator.id}`)}
+                    >
+                    {creator.full_name || t('community.networking.anonymousUser')}
+                  </h4>
+                  {creator.verified && (
+                    <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                  )}
+                  {creator.ai_nexus_top_voice && (
+                    <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {creator.job_title || t('community.networking.aiEnthusiast')}
+                </p>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              {creator.bio || t('community.networking.defaultBio')}
+            </p>
+              {user?.id !== creator.id && (
+                <div className="mt-6 flex w-full items-center justify-center gap-3">
+                  {connectionStates[creator.id]?.isConnected ? (
+                    <div className="flex items-center space-x-1 px-3 py-2 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-lg text-sm font-medium">
+                      <UserCheck className="h-4 w-4" />
+                      <span>{t('community.networking.connected')}</span>
+                    </div>
+                  ) : connectionStates[creator.id]?.hasPendingRequest ? (
+                    <button 
+                      disabled
+                      className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors disabled:opacity-50 bg-card border-border text-foreground"
+                    >
+                      <UserCheck className="h-4 w-4 inline mr-1" />
+                      {t('community.networking.requestSent')}
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => sendConnectionRequest(creator.id, creator.full_name)}
+                      className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-card border-border text-foreground hover:bg-muted"
+                    >
+                      <UserPlus className="h-4 w-4 inline mr-1" />
+                      {t('community.networking.connect')}
+                    </button>
+                  )}
+                  
+                  <button 
+                    onClick={() => handleMessage(creator.id, creator.full_name)}
+                    className="px-3 py-2 border rounded-lg text-sm font-medium transition-colors bg-card border-border text-foreground hover:bg-muted"
+                  >
+                    <MessageCircle className="h-4 w-4 inline mr-1" />
+                    {t('community.networking.message')}
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Load More Creators Button */}
+      {hasMoreCreators && filteredCreators.length > 0 && !loading && (
+        <div className="flex justify-center mt-6">
+          <Button 
+            variant="outline" 
+            onClick={() => fetchCreators(true)} 
+            disabled={loadingMoreCreators}
+          >
+            {loadingMoreCreators ? t('common.loading', 'Loading...') : t('common.loadMore', 'Load More')}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
                   <div 
                     className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
                     onClick={() => navigate(getProfileLink(creator))}
