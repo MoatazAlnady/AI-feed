@@ -23,27 +23,27 @@ interface Group {
   id: string;
   name: string;
   description: string | null;
-  cover_photo: string | null;
-  cover_image: string | null;
-  category: string | null;
-  is_private: boolean;
-  rules: string | null;
-  welcome_message: string | null;
-  join_type: string;
-  require_approval: boolean;
-  who_can_post: string;
-  who_can_comment: string;
-  who_can_discuss: string;
-  who_can_invite: string;
-  who_can_chat: string;
-  posts_need_approval: boolean;
-  discussions_need_approval: boolean;
-  members_can_view_members: boolean;
-  posts_visibility: string;
-  membership_type: string;
-  membership_price: number;
-  membership_currency: string;
-  membership_frequency: string | null;
+  cover_photo?: string | null;
+  cover_image?: string | null;
+  category?: string | null;
+  is_private?: boolean;
+  rules?: string | null;
+  welcome_message?: string | null;
+  join_type?: string;
+  require_approval?: boolean;
+  who_can_post?: string;
+  who_can_comment?: string;
+  who_can_discuss?: string;
+  who_can_invite?: string;
+  who_can_chat?: string;
+  posts_need_approval?: boolean;
+  discussions_need_approval?: boolean;
+  members_can_view_members?: boolean;
+  posts_visibility?: string;
+  membership_type?: string;
+  membership_price?: number;
+  membership_currency?: string;
+  membership_frequency?: string | null;
 }
 
 interface GroupAdminSettingsModalProps {
