@@ -105,6 +105,8 @@ interface EventAttendee {
   };
 }
 
+const ITEMS_PER_PAGE = 10;
+
 const EventProfile: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
   const { t } = useTranslation();
@@ -128,6 +130,17 @@ const EventProfile: React.FC = () => {
   const [uploadingCover, setUploadingCover] = useState(false);
   const [isEventCreator, setIsEventCreator] = useState(false);
   const [showEditEventModal, setShowEditEventModal] = useState(false);
+
+  // Pagination states
+  const [postsPage, setPostsPage] = useState(0);
+  const [hasMorePosts, setHasMorePosts] = useState(true);
+  const [loadingMorePosts, setLoadingMorePosts] = useState(false);
+  const [discussionsPage, setDiscussionsPage] = useState(0);
+  const [hasMoreDiscussions, setHasMoreDiscussions] = useState(true);
+  const [loadingMoreDiscussions, setLoadingMoreDiscussions] = useState(false);
+  const [attendeesPage, setAttendeesPage] = useState(0);
+  const [hasMoreAttendees, setHasMoreAttendees] = useState(true);
+  const [loadingMoreAttendees, setLoadingMoreAttendees] = useState(false);
 
   // Check if user is event creator
   useEffect(() => {
@@ -183,18 +196,27 @@ const EventProfile: React.FC = () => {
     }
   };
 
-  const fetchDiscussions = async () => {
+  const fetchDiscussions = async (loadMore = false) => {
     try {
+      if (loadMore) {
+        setLoadingMoreDiscussions(true);
+      }
+
+      const currentPage = loadMore ? discussionsPage + 1 : 0;
+      const from = currentPage * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
       const { data, error } = await supabase
         .from('group_event_discussions')
         .select('*')
         .eq('event_id', eventId)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
 
-      const discussions = data || [];
-      const authorIds = [...new Set(discussions.map(d => d.author_id))];
+      const newDiscussions = data || [];
+      const authorIds = [...new Set(newDiscussions.map(d => d.author_id))];
 
       // Batch fetch authors - NO N+1!
       let authorMap = new Map<string, { full_name: string; profile_photo: string | null }>();
@@ -206,29 +228,48 @@ const EventProfile: React.FC = () => {
         authorMap = new Map(authors?.map(a => [a.id, { full_name: a.full_name, profile_photo: a.profile_photo }]) || []);
       }
 
-      const discussionsWithAuthors = discussions.map(discussion => ({
+      const discussionsWithAuthors = newDiscussions.map(discussion => ({
         ...discussion,
         author: authorMap.get(discussion.author_id) || null
       }));
 
-      setDiscussions(discussionsWithAuthors);
+      if (loadMore) {
+        setDiscussions(prev => [...prev, ...discussionsWithAuthors]);
+        setDiscussionsPage(currentPage);
+      } else {
+        setDiscussions(discussionsWithAuthors);
+        setDiscussionsPage(0);
+      }
+
+      setHasMoreDiscussions(newDiscussions.length === ITEMS_PER_PAGE);
     } catch (error) {
       console.error('Error fetching discussions:', error);
+    } finally {
+      setLoadingMoreDiscussions(false);
     }
   };
 
-  const fetchPosts = async () => {
+  const fetchPosts = async (loadMore = false) => {
     try {
+      if (loadMore) {
+        setLoadingMorePosts(true);
+      }
+
+      const currentPage = loadMore ? postsPage + 1 : 0;
+      const from = currentPage * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
       const { data, error } = await supabase
         .from('group_event_posts')
         .select('*')
         .eq('event_id', eventId)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
 
-      const posts = data || [];
-      const authorIds = [...new Set(posts.map(p => p.author_id))];
+      const newPosts = data || [];
+      const authorIds = [...new Set(newPosts.map(p => p.author_id))];
 
       // Batch fetch authors - NO N+1!
       let authorMap = new Map<string, { full_name: string; profile_photo: string | null }>();
@@ -240,30 +281,48 @@ const EventProfile: React.FC = () => {
         authorMap = new Map(authors?.map(a => [a.id, { full_name: a.full_name, profile_photo: a.profile_photo }]) || []);
       }
 
-      const postsWithAuthors = posts.map(post => ({
+      const postsWithAuthors = newPosts.map(post => ({
         ...post,
         author: authorMap.get(post.author_id) || null
       }));
 
-      setPosts(postsWithAuthors);
+      if (loadMore) {
+        setPosts(prev => [...prev, ...postsWithAuthors]);
+        setPostsPage(currentPage);
+      } else {
+        setPosts(postsWithAuthors);
+        setPostsPage(0);
+      }
+
+      setHasMorePosts(newPosts.length === ITEMS_PER_PAGE);
     } catch (error) {
       console.error('Error fetching posts:', error);
+    } finally {
+      setLoadingMorePosts(false);
     }
   };
 
-  const fetchAttendees = async () => {
+  const fetchAttendees = async (loadMore = false) => {
     try {
+      if (loadMore) {
+        setLoadingMoreAttendees(true);
+      }
+
+      const currentPage = loadMore ? attendeesPage + 1 : 0;
+      const from = currentPage * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
       const { data, error } = await supabase
         .from('group_event_attendees')
         .select('*')
         .eq('event_id', eventId)
         .eq('status', 'attending')
-        .limit(10);
+        .range(from, to);
 
       if (error) throw error;
 
-      const attendees = data || [];
-      const userIds = attendees.map(a => a.user_id);
+      const newAttendees = data || [];
+      const userIds = newAttendees.map(a => a.user_id);
 
       // Batch fetch users - NO N+1!
       let userMap = new Map<string, { full_name: string; profile_photo: string | null }>();
@@ -275,14 +334,24 @@ const EventProfile: React.FC = () => {
         userMap = new Map(users?.map(u => [u.id, { full_name: u.full_name, profile_photo: u.profile_photo }]) || []);
       }
 
-      const attendeesWithUsers = attendees.map(attendee => ({
+      const attendeesWithUsers = newAttendees.map(attendee => ({
         ...attendee,
         user: userMap.get(attendee.user_id) || null
       }));
 
-      setAttendees(attendeesWithUsers);
+      if (loadMore) {
+        setAttendees(prev => [...prev, ...attendeesWithUsers]);
+        setAttendeesPage(currentPage);
+      } else {
+        setAttendees(attendeesWithUsers);
+        setAttendeesPage(0);
+      }
+
+      setHasMoreAttendees(newAttendees.length === ITEMS_PER_PAGE);
     } catch (error) {
       console.error('Error fetching attendees:', error);
+    } finally {
+      setLoadingMoreAttendees(false);
     }
   };
 

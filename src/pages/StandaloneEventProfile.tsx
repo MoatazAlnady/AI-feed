@@ -53,6 +53,8 @@ interface Attendee {
   };
 }
 
+const ITEMS_PER_PAGE = 20;
+
 const StandaloneEventProfile: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
@@ -65,6 +67,9 @@ const StandaloneEventProfile: React.FC = () => {
   const [isAttending, setIsAttending] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [rsvpLoading, setRsvpLoading] = useState(false);
+  const [attendeesPage, setAttendeesPage] = useState(0);
+  const [hasMoreAttendees, setHasMoreAttendees] = useState(true);
+  const [loadingMoreAttendees, setLoadingMoreAttendees] = useState(false);
 
   const isCreator = user?.id === event?.creator_id;
 
@@ -99,15 +104,24 @@ const StandaloneEventProfile: React.FC = () => {
     }
   };
 
-  const fetchAttendees = async () => {
+  const fetchAttendees = async (loadMore = false) => {
     if (!eventId) return;
     
     try {
+      if (loadMore) {
+        setLoadingMoreAttendees(true);
+      }
+
+      const currentPage = loadMore ? attendeesPage + 1 : 0;
+      const from = currentPage * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
       const { data, error } = await supabase
         .from('standalone_event_attendees')
         .select('*')
         .eq('event_id', eventId)
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: true })
+        .range(from, to);
 
       if (error) throw error;
       
@@ -131,14 +145,25 @@ const StandaloneEventProfile: React.FC = () => {
         user: userProfiles[a.user_id]
       }));
       
-      setAttendees(attendeesWithUsers);
-      
-      if (user) {
-        const userAttending = data?.some(a => a.user_id === user.id);
-        setIsAttending(!!userAttending);
+      if (loadMore) {
+        setAttendees(prev => [...prev, ...attendeesWithUsers]);
+        setAttendeesPage(currentPage);
+      } else {
+        setAttendees(attendeesWithUsers);
+        setAttendeesPage(0);
+        
+        // Check if current user is attending
+        if (user) {
+          const userAttending = data?.some(a => a.user_id === user.id);
+          setIsAttending(!!userAttending);
+        }
       }
+      
+      setHasMoreAttendees(data?.length === ITEMS_PER_PAGE);
     } catch (error) {
       console.error('Error fetching attendees:', error);
+    } finally {
+      setLoadingMoreAttendees(false);
     }
   };
 
@@ -457,7 +482,7 @@ const StandaloneEventProfile: React.FC = () => {
                   {t('events.attendees', 'Attendees')} ({attendees.length})
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {attendees.slice(0, 10).map((attendee) => (
+                  {attendees.map((attendee) => (
                     <Avatar key={attendee.id} className="border-2 border-background">
                       <AvatarImage src={attendee.user?.profile_photo || undefined} />
                       <AvatarFallback className="text-xs">
@@ -465,12 +490,20 @@ const StandaloneEventProfile: React.FC = () => {
                       </AvatarFallback>
                     </Avatar>
                   ))}
-                  {attendees.length > 10 && (
-                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm font-medium">
-                      +{attendees.length - 10}
-                    </div>
-                  )}
                 </div>
+                {/* Load More Attendees */}
+                {hasMoreAttendees && (
+                  <div className="mt-4">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => fetchAttendees(true)} 
+                      disabled={loadingMoreAttendees}
+                    >
+                      {loadingMoreAttendees ? t('common.loading', 'Loading...') : t('common.loadMore', 'Load More')}
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
