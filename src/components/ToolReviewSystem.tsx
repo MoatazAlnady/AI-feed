@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 
 interface Review {
-  id: number;
+  id: any;
   userId: string;
   userName: string;
   userPhoto?: string;
@@ -26,7 +26,7 @@ interface Review {
 }
 
 interface Reply {
-  id: number;
+  id: any;
   userId: string;
   userName: string;
   userPhoto?: string;
@@ -176,29 +176,48 @@ const ToolReviewSystem: React.FC<ToolReviewSystemProps> = ({ toolId, toolName, c
       const filteredPros = formData.pros.filter(pro => pro.trim());
       const filteredCons = formData.cons.filter(con => con.trim());
       
+      // Insert review into database
+      const { data, error } = await supabase
+        .from('tool_reviews')
+        .insert({
+          tool_id: String(toolId),
+          user_id: user.id,
+          rating: formData.rating,
+          content: formData.comment,
+          comment: formData.comment,
+          pros: filteredPros,
+          cons: filteredCons,
+          status: 'published'
+        })
+        .select('id, rating, content, pros, cons, helpful_count, created_at, user_id')
+        .single();
+
+      if (error) throw error;
+
+      // Fetch user profile separately
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('id, full_name, profile_photo, job_title, verified, ai_feed_top_voice')
+        .eq('id', user.id)
+        .single();
+
       const newReview: Review = {
-        id: Date.now(),
+        id: data.id,
         userId: user.id,
-        userName: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
-        userPhoto: user.user_metadata?.profile_photo,
-        userTitle: user.user_metadata?.job_title,
-        userVerified: user.user_metadata?.verified || false,
-        userTopVoice: user.user_metadata?.ai_feed_top_voice || false,
-        rating: formData.rating,
-        comment: formData.comment,
-        pros: filteredPros,
-        cons: filteredCons,
+        userName: profile?.full_name || 'Anonymous',
+        userPhoto: profile?.profile_photo,
+        userTitle: profile?.job_title,
+        userVerified: profile?.verified || false,
+        userTopVoice: profile?.ai_feed_top_voice || false,
+        rating: data.rating,
+        comment: data.content || '',
+        pros: data.pros || [],
+        cons: data.cons || [],
         date: 'Just now',
         likes: 0,
         dislikes: 0,
         replies: []
       };
-      
-      // In real app, send to API
-      // await fetch(`/api/tools/${toolId}/reviews`, {
-      //   method: 'POST',
-      //   body: JSON.stringify(newReview)
-      // });
       
       // Update local state
       setUserReview(newReview);

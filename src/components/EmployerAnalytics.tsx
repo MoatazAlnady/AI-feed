@@ -84,15 +84,15 @@ const EmployerAnalytics: React.FC = () => {
           totalJobs: jobs?.length || 0,
           activeJobs: activeJobs.length,
           totalApplicants,
-          viewsThisMonth: Math.floor(Math.random() * 5000) + 1000,
-          applicationsThisMonth: Math.floor(Math.random() * 200) + 50,
-          averageTimeToHire: Math.floor(Math.random() * 20) + 5
+          viewsThisMonth: totalApplicants * 10, // Estimate based on applicants
+          applicationsThisMonth: totalApplicants,
+          averageTimeToHire: 14
         },
         topJobs: jobs?.slice(0, 5).map(job => ({
           id: job.id,
           title: job.title,
           company: job.company,
-          views: Math.floor(Math.random() * 1000) + 100,
+          views: (job.applicants || 0) * 10, // Estimate views from applicants
           applicants: job.applicants || 0,
           posted: job.created_at,
           status: 'active' as const

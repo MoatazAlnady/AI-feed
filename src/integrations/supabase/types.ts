@@ -1828,7 +1828,8 @@ export type Database = {
           author_id: string
           content: string | null
           created_at: string | null
-          group_id: string
+          event_id: string | null
+          group_id: string | null
           has_participant_chat: boolean | null
           id: string
           interests: string[] | null
@@ -1849,7 +1850,8 @@ export type Database = {
           author_id: string
           content?: string | null
           created_at?: string | null
-          group_id: string
+          event_id?: string | null
+          group_id?: string | null
           has_participant_chat?: boolean | null
           id?: string
           interests?: string[] | null
@@ -1870,7 +1872,8 @@ export type Database = {
           author_id?: string
           content?: string | null
           created_at?: string | null
-          group_id?: string
+          event_id?: string | null
+          group_id?: string | null
           has_participant_chat?: boolean | null
           id?: string
           interests?: string[] | null
@@ -1887,6 +1890,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "group_discussions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "group_events"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "group_discussions_group_id_fkey"
             columns: ["group_id"]
@@ -4035,9 +4045,11 @@ export type Database = {
           id: string
           interests: string[] | null
           is_online: boolean | null
+          is_public: boolean | null
           location: string | null
           max_attendees: number | null
           online_link: string | null
+          organizer_id: string | null
           tags: string[] | null
           title: string
           updated_at: string | null
@@ -4053,9 +4065,11 @@ export type Database = {
           id?: string
           interests?: string[] | null
           is_online?: boolean | null
+          is_public?: boolean | null
           location?: string | null
           max_attendees?: number | null
           online_link?: string | null
+          organizer_id?: string | null
           tags?: string[] | null
           title: string
           updated_at?: string | null
@@ -4071,9 +4085,11 @@ export type Database = {
           id?: string
           interests?: string[] | null
           is_online?: boolean | null
+          is_public?: boolean | null
           location?: string | null
           max_attendees?: number | null
           online_link?: string | null
+          organizer_id?: string | null
           tags?: string[] | null
           title?: string
           updated_at?: string | null
@@ -4089,6 +4105,20 @@ export type Database = {
           {
             foreignKeyName: "standalone_events_creator_id_fkey"
             columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "standalone_events_organizer_id_fkey"
+            columns: ["organizer_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "standalone_events_organizer_id_fkey"
+            columns: ["organizer_id"]
             isOneToOne: false
             referencedRelation: "user_profiles_safe"
             referencedColumns: ["id"]
@@ -4334,6 +4364,68 @@ export type Database = {
           },
         ]
       }
+      tool_comments: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          likes_count: number | null
+          parent_id: string | null
+          tool_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          likes_count?: number | null
+          parent_id?: string | null
+          tool_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          likes_count?: number | null
+          parent_id?: string | null
+          tool_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tool_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "tool_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tool_comments_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "tools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tool_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tool_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tool_comparison_cache: {
         Row: {
           ai_insight: string
@@ -4438,8 +4530,12 @@ export type Database = {
       tool_reviews: {
         Row: {
           comment: string | null
+          cons: string[] | null
+          content: string | null
           created_at: string
+          helpful_count: number | null
           id: string
+          pros: string[] | null
           rating: number
           status: string
           title: string | null
@@ -4449,8 +4545,12 @@ export type Database = {
         }
         Insert: {
           comment?: string | null
+          cons?: string[] | null
+          content?: string | null
           created_at?: string
+          helpful_count?: number | null
           id?: string
+          pros?: string[] | null
           rating: number
           status?: string
           title?: string | null
@@ -4460,8 +4560,12 @@ export type Database = {
         }
         Update: {
           comment?: string | null
+          cons?: string[] | null
+          content?: string | null
           created_at?: string
+          helpful_count?: number | null
           id?: string
+          pros?: string[] | null
           rating?: number
           status?: string
           title?: string | null
