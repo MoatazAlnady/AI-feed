@@ -10,7 +10,8 @@ import {
   ArrowLeft,
   Tag,
   BarChart3,
-  Paperclip
+  Paperclip,
+  Share2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +36,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
+import ShareDiscussionModal from '@/components/ShareDiscussionModal';
 
 interface DiscussionTag {
   id: string;
@@ -107,6 +109,7 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [shareDiscussion, setShareDiscussion] = useState<Discussion | null>(null);
 
   // New discussion form
   const [formData, setFormData] = useState({

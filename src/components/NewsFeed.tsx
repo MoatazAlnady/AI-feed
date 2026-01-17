@@ -39,7 +39,16 @@ import ArticleCard from './feed/ArticleCard';
 import SharedArticleCard from './feed/SharedArticleCard';
 import FeedToolCard from './feed/FeedToolCard';
 import SharedToolCard from './feed/SharedToolCard';
+import FeedGroupCard from './feed/FeedGroupCard';
+import SharedGroupCard from './feed/SharedGroupCard';
+import FeedEventCard from './feed/FeedEventCard';
+import SharedEventCard from './feed/SharedEventCard';
+import FeedDiscussionCard from './feed/FeedDiscussionCard';
+import SharedDiscussionCard from './feed/SharedDiscussionCard';
 import ShareToolModal from './ShareToolModal';
+import ShareGroupModal from './ShareGroupModal';
+import ShareEventModal from './ShareEventModal';
+import ShareDiscussionModal from './ShareDiscussionModal';
 
 interface Post {
   id: string;
@@ -119,6 +128,9 @@ const NewsFeed: React.FC = () => {
   const [editCommentContent, setEditCommentContent] = useState('');
   const [replyingTo, setReplyingTo] = useState<{ postId: string; commentId: string; authorName: string } | null>(null);
   const [replyContent, setReplyContent] = useState('');
+  const [shareModalGroup, setShareModalGroup] = useState<any>(null);
+  const [shareModalEvent, setShareModalEvent] = useState<{ event: any; eventType: string } | null>(null);
+  const [shareModalDiscussion, setShareModalDiscussion] = useState<any>(null);
 
   // Get user interests for personalized feed
   const userInterests = user?.user_metadata?.interests || [];
@@ -237,14 +249,18 @@ const NewsFeed: React.FC = () => {
         console.error('Error fetching posts:', postsError);
       }
 
-      // Fetch shared posts with original post, article, AND tool data
+      // Fetch shared posts with original post, article, tool, group, event, and discussion data
       const { data: sharedPostsData, error: sharedError } = await supabase
         .from('shared_posts')
         .select(`
           *,
           original_post:posts!shared_posts_original_post_id_fkey(*),
           original_article:articles!shared_posts_original_article_id_fkey(*),
-          original_tool:tools!shared_posts_original_tool_id_fkey(*)
+          original_tool:tools!shared_posts_original_tool_id_fkey(*),
+          original_group:groups!shared_posts_original_group_id_fkey(*),
+          original_group_event:group_events!shared_posts_original_group_event_id_fkey(*),
+          original_standalone_event:standalone_events!shared_posts_original_standalone_event_id_fkey(*),
+          original_discussion:group_discussions!shared_posts_original_discussion_id_fkey(*)
         `)
         .order('created_at', { ascending: false })
         .limit(50);
@@ -300,10 +316,91 @@ const NewsFeed: React.FC = () => {
         }
       }
 
+      // Fetch public groups from followed creators
+      let groupsData: any[] = [];
+      if (followedIds.length > 0) {
+        const { data: groups, error: groupsError } = await supabase
+          .from('groups')
+          .select('*')
+          .eq('is_private', false)
+          .in('creator_id', followedIds)
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        if (!groupsError && groups) {
+          groupsData = groups.map(group => ({
+            ...group,
+            type: 'group',
+            created_at: group.created_at
+          }));
+        }
+      }
+
+      // Fetch public group events from followed creators
+      let groupEventsData: any[] = [];
+      if (followedIds.length > 0) {
+        const { data: events, error: eventsError } = await supabase
+          .from('group_events')
+          .select('*, groups!inner(name)')
+          .eq('is_public', true)
+          .in('created_by', followedIds)
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        if (!eventsError && events) {
+          groupEventsData = events.map(event => ({
+            ...event,
+            type: 'group_event',
+            groupName: (event as any).groups?.name,
+            created_at: event.created_at
+          }));
+        }
+      }
+
+      // Fetch standalone events from followed creators
+      let standaloneEventsData: any[] = [];
+      if (followedIds.length > 0) {
+        const { data: events, error: eventsError } = await supabase
+          .from('standalone_events')
+          .select('*')
+          .in('creator_id', followedIds)
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        if (!eventsError && events) {
+          standaloneEventsData = events.map(event => ({
+            ...event,
+            type: 'standalone_event',
+            created_at: event.created_at
+          }));
+        }
+      }
+
+      // Fetch public discussions from followed creators
+      let discussionsData: any[] = [];
+      if (followedIds.length > 0) {
+        const { data: discussions, error: discussionsError } = await supabase
+          .from('group_discussions')
+          .select('*, groups!inner(name)')
+          .eq('is_public', true)
+          .in('author_id', followedIds)
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        if (!discussionsError && discussions) {
+          discussionsData = discussions.map(discussion => ({
+            ...discussion,
+            type: 'discussion',
+            groupName: (discussion as any).groups?.name,
+            created_at: discussion.created_at
+          }));
+        }
+      }
+
       const allPosts: any[] = [];
       if (postsData) allPosts.push(...postsData.map(post => ({ ...post, type: 'original' })));
       
-      // Handle shared posts, shared articles, AND shared tools
+      // Handle shared posts, shared articles, tools, groups, events, and discussions
       if (sharedPostsData) {
         sharedPostsData.forEach(share => {
           if (share.content_type === 'tool' && share.original_tool) {
@@ -324,6 +421,43 @@ const NewsFeed: React.FC = () => {
               shared_at: share.created_at,
               sharedPostId: share.id
             });
+          } else if (share.content_type === 'group' && share.original_group) {
+            allPosts.push({
+              ...share.original_group,
+              type: 'shared_group',
+              shared_by: share.user_id,
+              share_text: share.share_text,
+              shared_at: share.created_at,
+              sharedPostId: share.id
+            });
+          } else if (share.content_type === 'group_event' && share.original_group_event) {
+            allPosts.push({
+              ...share.original_group_event,
+              type: 'shared_group_event',
+              shared_by: share.user_id,
+              share_text: share.share_text,
+              shared_at: share.created_at,
+              sharedPostId: share.id
+            });
+          } else if (share.content_type === 'standalone_event' && share.original_standalone_event) {
+            allPosts.push({
+              ...share.original_standalone_event,
+              type: 'shared_standalone_event',
+              shared_by: share.user_id,
+              share_text: share.share_text,
+              shared_at: share.created_at,
+              sharedPostId: share.id
+            });
+          } else if (share.content_type === 'discussion' && share.original_discussion) {
+            allPosts.push({
+              ...share.original_discussion,
+              type: 'shared_discussion',
+              shared_by: share.user_id,
+              share_text: share.share_text,
+              shared_at: share.created_at,
+              sharedPostId: share.id,
+              groupName: (share.original_discussion as any).groups?.name
+            });
           } else if (share.original_post) {
             allPosts.push({
               ...share.original_post,
@@ -339,11 +473,15 @@ const NewsFeed: React.FC = () => {
       
       if (articlesData) allPosts.push(...articlesData);
       if (toolsData) allPosts.push(...toolsData);
+      if (groupsData) allPosts.push(...groupsData);
+      if (groupEventsData) allPosts.push(...groupEventsData);
+      if (standaloneEventsData) allPosts.push(...standaloneEventsData);
+      if (discussionsData) allPosts.push(...discussionsData);
 
       // Sort all posts by creation time
       allPosts.sort((a, b) => {
         const getDate = (item: any) => {
-          if (item.type === 'shared' || item.type === 'shared_article' || item.type === 'shared_tool') {
+          if (['shared', 'shared_article', 'shared_tool', 'shared_group', 'shared_group_event', 'shared_standalone_event', 'shared_discussion'].includes(item.type)) {
             return new Date(item.shared_at);
           }
           if (item.type === 'article') {
@@ -362,11 +500,13 @@ const NewsFeed: React.FC = () => {
         return;
       }
 
-      // Fetch user profiles for each post (including sharers for shared posts, articles, and tools)
+      // Fetch user profiles for each post (including sharers for shared posts, articles, tools, groups, events, discussions)
       const userIds = [...new Set(allPosts.flatMap(post => [
-        post.user_id, 
-        post.type === 'shared' || post.type === 'shared_article' || post.type === 'shared_tool' ? post.shared_by : null,
-        post.type === 'tool' ? post.user_id : null
+        post.user_id,
+        post.creator_id,
+        post.created_by,
+        post.author_id,
+        ['shared', 'shared_article', 'shared_tool', 'shared_group', 'shared_group_event', 'shared_standalone_event', 'shared_discussion'].includes(post.type) ? post.shared_by : null,
       ]).filter(Boolean))];
       console.log('User IDs from posts:', userIds);
       let userProfiles = [];
@@ -1262,6 +1402,169 @@ const NewsFeed: React.FC = () => {
           );
         }
 
+        // Handle Group type (from followed creators)
+        if (post.type === 'group') {
+          const creatorProfile = profilesMap.get(post.creator_id);
+          return (
+            <FeedGroupCard
+              key={`group-${post.id}`}
+              group={post}
+              creator={creatorProfile ? {
+                id: post.creator_id,
+                name: creatorProfile.full_name || 'Creator',
+                avatar: creatorProfile.profile_photo,
+                handle: creatorProfile.handle
+              } : undefined}
+              onShare={(group) => setShareModalGroup(group)}
+              isNew={isRecentlyAdded(post.created_at)}
+            />
+          );
+        }
+
+        // Handle Shared Group type
+        if (post.type === 'shared_group') {
+          const sharedByProfile = profilesMap.get(post.shared_by);
+          return (
+            <SharedGroupCard
+              key={`shared-group-${post.id}-${index}`}
+              group={post}
+              sharedBy={{
+                id: post.shared_by,
+                name: sharedByProfile?.full_name || 'Someone',
+                avatar: sharedByProfile?.profile_photo,
+                handle: sharedByProfile?.handle
+              }}
+              shareText={post.share_text || ''}
+              sharedAt={new Date(post.shared_at).toLocaleDateString()}
+              onShare={(group) => setShareModalGroup(group)}
+            />
+          );
+        }
+
+        // Handle Group Event type
+        if (post.type === 'group_event') {
+          const creatorProfile = profilesMap.get(post.created_by);
+          return (
+            <FeedEventCard
+              key={`group-event-${post.id}`}
+              event={post}
+              eventType="group_event"
+              creator={creatorProfile ? {
+                id: post.created_by,
+                name: creatorProfile.full_name || 'Creator',
+                avatar: creatorProfile.profile_photo,
+                handle: creatorProfile.handle
+              } : undefined}
+              groupName={post.groupName}
+              onShare={(event, eventType) => setShareModalEvent({ event, eventType })}
+              isNew={isRecentlyAdded(post.created_at)}
+            />
+          );
+        }
+
+        // Handle Standalone Event type
+        if (post.type === 'standalone_event') {
+          const creatorProfile = profilesMap.get(post.creator_id);
+          return (
+            <FeedEventCard
+              key={`standalone-event-${post.id}`}
+              event={post}
+              eventType="standalone_event"
+              creator={creatorProfile ? {
+                id: post.creator_id,
+                name: creatorProfile.full_name || 'Creator',
+                avatar: creatorProfile.profile_photo,
+                handle: creatorProfile.handle
+              } : undefined}
+              onShare={(event, eventType) => setShareModalEvent({ event, eventType })}
+              isNew={isRecentlyAdded(post.created_at)}
+            />
+          );
+        }
+
+        // Handle Shared Group Event type
+        if (post.type === 'shared_group_event') {
+          const sharedByProfile = profilesMap.get(post.shared_by);
+          return (
+            <SharedEventCard
+              key={`shared-group-event-${post.id}-${index}`}
+              event={post}
+              eventType="group_event"
+              sharedBy={{
+                id: post.shared_by,
+                name: sharedByProfile?.full_name || 'Someone',
+                avatar: sharedByProfile?.profile_photo,
+                handle: sharedByProfile?.handle
+              }}
+              shareText={post.share_text || ''}
+              sharedAt={new Date(post.shared_at).toLocaleDateString()}
+              onShare={(event, eventType) => setShareModalEvent({ event, eventType })}
+            />
+          );
+        }
+
+        // Handle Shared Standalone Event type
+        if (post.type === 'shared_standalone_event') {
+          const sharedByProfile = profilesMap.get(post.shared_by);
+          return (
+            <SharedEventCard
+              key={`shared-standalone-event-${post.id}-${index}`}
+              event={post}
+              eventType="standalone_event"
+              sharedBy={{
+                id: post.shared_by,
+                name: sharedByProfile?.full_name || 'Someone',
+                avatar: sharedByProfile?.profile_photo,
+                handle: sharedByProfile?.handle
+              }}
+              shareText={post.share_text || ''}
+              sharedAt={new Date(post.shared_at).toLocaleDateString()}
+              onShare={(event, eventType) => setShareModalEvent({ event, eventType })}
+            />
+          );
+        }
+
+        // Handle Discussion type
+        if (post.type === 'discussion') {
+          const authorProfile = profilesMap.get(post.author_id);
+          return (
+            <FeedDiscussionCard
+              key={`discussion-${post.id}`}
+              discussion={post}
+              groupName={post.groupName || 'Group'}
+              author={authorProfile ? {
+                id: post.author_id,
+                name: authorProfile.full_name || 'Author',
+                avatar: authorProfile.profile_photo,
+                handle: authorProfile.handle
+              } : undefined}
+              onShare={(discussion) => setShareModalDiscussion({ ...discussion, groupName: post.groupName })}
+              isNew={isRecentlyAdded(post.created_at)}
+            />
+          );
+        }
+
+        // Handle Shared Discussion type
+        if (post.type === 'shared_discussion') {
+          const sharedByProfile = profilesMap.get(post.shared_by);
+          return (
+            <SharedDiscussionCard
+              key={`shared-discussion-${post.id}-${index}`}
+              discussion={post}
+              groupName={post.groupName || 'Group'}
+              sharedBy={{
+                id: post.shared_by,
+                name: sharedByProfile?.full_name || 'Someone',
+                avatar: sharedByProfile?.profile_photo,
+                handle: sharedByProfile?.handle
+              }}
+              shareText={post.share_text || ''}
+              sharedAt={new Date(post.shared_at).toLocaleDateString()}
+              onShare={(discussion) => setShareModalDiscussion({ ...discussion, groupName: post.groupName })}
+            />
+          );
+        }
+
         // Regular posts and shared posts
         return (
         <div 
@@ -1803,6 +2106,47 @@ const NewsFeed: React.FC = () => {
           onShare={() => {
             fetchPosts();
             setShareModalTool(null);
+          }}
+        />
+      )}
+
+      {/* Share Modal for Groups */}
+      {shareModalGroup && (
+        <ShareGroupModal
+          isOpen={!!shareModalGroup}
+          onClose={() => setShareModalGroup(null)}
+          group={shareModalGroup}
+          onShare={() => {
+            fetchPosts();
+            setShareModalGroup(null);
+          }}
+        />
+      )}
+
+      {/* Share Modal for Events */}
+      {shareModalEvent && (
+        <ShareEventModal
+          isOpen={!!shareModalEvent}
+          onClose={() => setShareModalEvent(null)}
+          event={shareModalEvent.event}
+          eventType={shareModalEvent.eventType as 'group_event' | 'standalone_event'}
+          onShare={() => {
+            fetchPosts();
+            setShareModalEvent(null);
+          }}
+        />
+      )}
+
+      {/* Share Modal for Discussions */}
+      {shareModalDiscussion && (
+        <ShareDiscussionModal
+          isOpen={!!shareModalDiscussion}
+          onClose={() => setShareModalDiscussion(null)}
+          discussion={shareModalDiscussion}
+          groupName={shareModalDiscussion.groupName || 'Group'}
+          onShare={() => {
+            fetchPosts();
+            setShareModalDiscussion(null);
           }}
         />
       )}

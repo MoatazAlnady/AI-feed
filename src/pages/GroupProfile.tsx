@@ -15,7 +15,8 @@ import {
   Flag,
   MessageCircle,
   Image,
-  DollarSign
+  DollarSign,
+  Share2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -37,6 +38,7 @@ import GroupEventsTab from '@/components/GroupEventsTab';
 import GroupAdminSettingsModal from '@/components/GroupAdminSettingsModal';
 import GroupMemberNotificationSettings from '@/components/GroupMemberNotificationSettings';
 import GroupMembersList from '@/components/GroupMembersList';
+import ShareGroupModal from '@/components/ShareGroupModal';
 
 interface Group {
   id: string;
@@ -90,6 +92,7 @@ const GroupProfile: React.FC = () => {
   const [showNotificationSettings, setShowNotificationSettings] = useState(false);
   const [showMembersList, setShowMembersList] = useState(false);
   const [mutualConnections, setMutualConnections] = useState<number>(0);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     if (groupId) {
@@ -425,6 +428,10 @@ const GroupProfile: React.FC = () => {
               </div>
 
               <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setShowShareModal(true)} className="gap-2">
+                  <Share2 className="h-4 w-4" />
+                  Share
+                </Button>
                 {!isMember ? (
                   <Button onClick={handleJoinGroup} className="gap-2">
                     <Users className="h-4 w-4" />
@@ -514,6 +521,14 @@ const GroupProfile: React.FC = () => {
           groupName={group.name}
           isAdmin={isAdmin}
           isOwner={isOwner}
+        />
+      )}
+
+      {group && (
+        <ShareGroupModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          group={group}
         />
       )}
     </>
