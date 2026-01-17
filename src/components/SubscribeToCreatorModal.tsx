@@ -131,12 +131,23 @@ const SubscribeToCreatorModal: React.FC<SubscribeToCreatorModalProps> = ({
 
         onClose();
       } else {
-        // For paid tiers, redirect to payment (Stripe integration would go here)
-        toast({
-          title: "Payment Required",
-          description: "Paid subscriptions require Stripe integration. Coming soon!",
-          variant: "default"
+        // For paid tiers, redirect to Stripe checkout
+        const { data, error } = await supabase.functions.invoke('create-creator-subscription-checkout', {
+          body: { 
+            creatorId,
+            creatorName,
+            tierId: selectedTier,
+            tierName: tier.name,
+            price: tier.price,
+            currency: tier.currency
+          }
         });
+
+        if (error) throw error;
+        
+        if (data?.url) {
+          window.open(data.url, '_blank');
+        }
       }
     } catch (error: any) {
       console.error('Error subscribing:', error);

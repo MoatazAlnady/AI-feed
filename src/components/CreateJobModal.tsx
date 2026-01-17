@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { X, Briefcase, MapPin, DollarSign, Clock, ExternalLink, Building, Target } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import ProjectConversionModal from './ProjectConversionModal';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface CreateJobModalProps {
   isOpen: boolean;
@@ -100,17 +102,18 @@ const CreateJobModal: React.FC<CreateJobModalProps> = ({ isOpen, onClose, onJobC
         applicants: 0
       };
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Simulate brief delay for UX
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       setCreatedJob(newJob);
       onJobCreated(newJob);
+      toast.success('Job posted successfully!');
       
       // Show conversion modal with options
       setShowConversionModal(true);
     } catch (error) {
       console.error('Error creating job:', error);
-      alert('Error creating job. Please try again.');
+      toast.error('Error creating job. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

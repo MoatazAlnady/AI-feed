@@ -218,12 +218,39 @@ const OrganizationManagement: React.FC = () => {
       return;
     }
 
-    // For now, just show a placeholder message
-    toast({
-      title: "Invitation Sent",
-      description: `Invitation sent to ${inviteEmail} (placeholder - email integration coming soon)`
-    });
-    setInviteEmail('');
+    try {
+      // Generate invitation token
+      const token = crypto.randomUUID();
+
+      // Send invitation email via edge function
+      const { error: emailError } = await supabase.functions.invoke('send-company-invite', {
+        body: {
+          email: inviteEmail.trim(),
+          token,
+          organizationName: organization.name,
+          inviterName: user?.user_metadata?.full_name || 'A team member'
+        }
+      });
+
+      if (emailError) {
+        console.error('Email error:', emailError);
+        throw emailError;
+      }
+
+      toast({
+        title: "Invitation Sent",
+        description: `Invitation sent to ${inviteEmail}`
+      });
+      setInviteEmail('');
+      
+    } catch (error) {
+      console.error('Error inviting member:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send invitation",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleRemoveMember = async (memberId: string) => {

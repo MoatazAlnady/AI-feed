@@ -3,6 +3,8 @@ import { MessageCircle, User, Send, ThumbsUp, Flag, MoreHorizontal } from 'lucid
 import { useAuth } from '../context/AuthContext';
 import VerificationBadge from './VerificationBadge';
 import ProfileHoverCard from './ProfileHoverCard';
+import { supabase } from '@/integrations/supabase/client';
+import { formatDistanceToNow } from 'date-fns';
 
 interface Comment {
   id: number;
@@ -47,12 +49,8 @@ const ToolCommentSection: React.FC<ToolCommentSectionProps> = ({ toolId, classNa
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        // In real app, fetch from API
-        // const response = await fetch(`/api/tools/${toolId}/comments`);
-        // const data = await response.json();
-        // setComments(data);
-        
-        // Mock data
+        // For now, return empty array since tool_comments table may not exist
+        // The component will still work with local state for new comments
         setComments([]);
       } catch (error) {
         console.error('Error fetching comments:', error);

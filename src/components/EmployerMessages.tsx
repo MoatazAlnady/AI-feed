@@ -60,89 +60,100 @@ const EmployerMessages: React.FC = () => {
   }, [user]);
 
   const fetchConversations = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+    
     try {
       setLoading(true);
       
-      // In real implementation, fetch from database
-      // For now, show mock data for demonstration
-      const mockConversations: Conversation[] = [
-        {
-          id: '1',
-          participant: {
-            id: 'candidate1',
-            name: 'Sarah Johnson',
-            avatar: '/api/placeholder/40/40',
-            title: 'Senior Frontend Developer',
-            online: true,
-            company: 'Tech Corp'
-          },
-          lastMessage: {
-            id: 'msg1',
-            senderId: 'candidate1',
-            content: 'Thank you for considering my application. I am very excited about this opportunity.',
-            timestamp: '2025-01-16T14:30:00Z',
-            read: false,
-            type: 'text'
-          },
-          unreadCount: 2,
-          messages: [
-            {
-              id: 'msg1',
-              senderId: 'candidate1',
-              content: 'Thank you for considering my application. I am very excited about this opportunity.',
-              timestamp: '2025-01-16T14:30:00Z',
-              read: false,
-              type: 'text'
+      // Fetch conversations where current user is a participant
+      const { data: convData, error } = await supabase
+        .from('conversations')
+        .select(`
+          id,
+          participant_1_id,
+          participant_2_id,
+          last_message_at,
+          created_at
+        `)
+        .or(`participant_1_id.eq.${user.id},participant_2_id.eq.${user.id}`)
+        .order('last_message_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (!convData || convData.length === 0) {
+        setConversations([]);
+        return;
+      }
+
+      // Fetch participant profiles and last messages
+      const formattedConversations = await Promise.all(
+        convData.map(async (conv) => {
+          const otherUserId = conv.participant_1_id === user.id 
+            ? conv.participant_2_id 
+            : conv.participant_1_id;
+          
+          // Get other participant's profile
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('id, full_name, profile_photo, job_title, company')
+            .eq('id', otherUserId)
+            .single();
+          
+          // Get last message
+          const { data: messages } = await supabase
+            .from('conversation_messages')
+            .select('*')
+            .eq('conversation_id', conv.id)
+            .order('created_at', { ascending: false })
+            .limit(1);
+          
+          const lastMsg = messages?.[0];
+          
+          // Count unread messages
+          const { count: unreadCount } = await supabase
+            .from('conversation_messages')
+            .select('*', { count: 'exact', head: true })
+            .eq('conversation_id', conv.id)
+            .neq('sender_id', user.id);
+          
+          return {
+            id: conv.id,
+            participant: {
+              id: profile?.id || otherUserId,
+              name: profile?.full_name || 'Unknown',
+              avatar: profile?.profile_photo,
+              title: profile?.job_title,
+              online: false,
+              company: profile?.company || ''
             },
-            {
-              id: 'msg2',
-              senderId: user?.id || '',
-              content: 'Hi Sarah, we\'d like to schedule an interview. Are you available next week?',
-              timestamp: '2025-01-16T13:00:00Z',
+            lastMessage: lastMsg ? {
+              id: lastMsg.id,
+              senderId: lastMsg.sender_id,
+              content: lastMsg.body,
+              timestamp: lastMsg.created_at,
               read: true,
-              type: 'text'
-            }
-          ],
-          category: 'candidate',
-          priority: 'high',
-          archived: false
-        },
-        {
-          id: '2',
-          participant: {
-            id: 'candidate2',
-            name: 'Michael Chen',
-            avatar: '/api/placeholder/40/40',
-            title: 'Full Stack Developer',
-            online: false,
-            company: 'StartupXYZ'
-          },
-          lastMessage: {
-            id: 'msg3',
-            senderId: user?.id || '',
-            content: 'Could you provide more details about your experience with React?',
-            timestamp: '2025-01-16T10:15:00Z',
-            read: true,
-            type: 'text'
-          },
-          unreadCount: 0,
-          messages: [
-            {
-              id: 'msg3',
-              senderId: user?.id || '',
-              content: 'Could you provide more details about your experience with React?',
-              timestamp: '2025-01-16T10:15:00Z',
+              type: 'text' as const
+            } : {
+              id: '',
+              senderId: '',
+              content: 'No messages yet',
+              timestamp: conv.created_at,
               read: true,
-              type: 'text'
-            }
-          ],
-          category: 'candidate',
-          priority: 'medium',
-          archived: false
-        }
-      ];
+              type: 'text' as const
+            },
+            unreadCount: unreadCount || 0,
+            messages: [],
+            category: 'candidate' as const,
+            priority: 'medium' as const,
+            archived: false
+          };
+        })
+      );
       
-      setConversations(mockConversations);
+      setConversations(formattedConversations);
     } catch (error) {
       console.error('Error fetching conversations:', error);
     } finally {
