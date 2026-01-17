@@ -13,7 +13,12 @@ import {
   MessageSquare,
   Image,
   Link as LinkIcon,
-  ExternalLink
+  ExternalLink,
+  MoreVertical,
+  Edit,
+  Trash2,
+  Upload,
+  MessageCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,11 +26,26 @@ import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import SEOHead from '@/components/SEOHead';
+import EventChatWindow from '@/components/EventChatWindow';
 
 interface GroupEvent {
   id: string;
@@ -102,6 +122,17 @@ const EventProfile: React.FC = () => {
   const [newDiscussionContent, setNewDiscussionContent] = useState('');
   const [showNewDiscussion, setShowNewDiscussion] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [showEditCoverDialog, setShowEditCoverDialog] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [isEventCreator, setIsEventCreator] = useState(false);
+
+  // Check if user is event creator
+  useEffect(() => {
+    if (user && event) {
+      setIsEventCreator(event.created_by === user.id);
+    }
+  }, [user, event]);
 
   useEffect(() => {
     if (eventId) {
@@ -345,6 +376,67 @@ const EventProfile: React.FC = () => {
     }
   };
 
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !event) return;
+
+    setUploadingCover(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `event-covers/${event.id}/${Date.now()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('user-uploads')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('user-uploads')
+        .getPublicUrl(fileName);
+
+      // Update event cover
+      const { error: updateError } = await supabase
+        .from('group_events')
+        .update({ cover_image: publicUrl })
+        .eq('id', event.id);
+
+      if (updateError) throw updateError;
+
+      setEvent({ ...event, cover_image: publicUrl });
+      setShowEditCoverDialog(false);
+      toast.success('Cover photo updated!');
+    } catch (error) {
+      console.error('Error uploading cover:', error);
+      toast.error('Failed to upload cover photo');
+    } finally {
+      setUploadingCover(false);
+    }
+  };
+
+  const handleDeleteEvent = async () => {
+    if (!event || !user) return;
+    
+    if (!confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('group_events')
+        .delete()
+        .eq('id', event.id);
+
+      if (error) throw error;
+
+      toast.success('Event deleted');
+      navigate('/community');
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      toast.error('Failed to delete event');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-muted/50 flex items-center justify-center">
@@ -414,6 +506,39 @@ const EventProfile: React.FC = () => {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
+
+          {/* 3-dots menu for event admin */}
+          {isEventCreator && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-4 right-4 bg-black/30 text-white hover:bg-black/50"
+                >
+                  <MoreVertical className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => setShowEditCoverDialog(true)}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Change Cover Photo
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => toast.info('Edit feature coming soon')}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Event
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={handleDeleteEvent}
+                  className="text-destructive"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Event
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         {/* Event Details */}
@@ -477,6 +602,18 @@ const EventProfile: React.FC = () => {
                   <span className="text-xs">/ {event.max_attendees} max</span>
                 )}
               </div>
+
+              {/* Open Chat Button */}
+              {userAttendance === 'attending' && (
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowChat(true)}
+                  className="gap-2"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Event Chat
+                </Button>
+              )}
             </div>
 
             {/* RSVP Buttons */}
@@ -687,6 +824,58 @@ const EventProfile: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Event Chat Sheet */}
+      <Sheet open={showChat} onOpenChange={setShowChat}>
+        <SheetContent side="right" className="w-full sm:max-w-md p-0">
+          <SheetHeader className="p-4 border-b">
+            <SheetTitle className="flex items-center gap-2">
+              <MessageCircle className="h-5 w-5" />
+              Event Chat
+            </SheetTitle>
+          </SheetHeader>
+          <div className="h-[calc(100vh-80px)]">
+            <EventChatWindow
+              eventId={eventId!}
+              eventTitle={event.title}
+              eventType="group_event"
+              onClose={() => setShowChat(false)}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Edit Cover Photo Dialog */}
+      <Dialog open={showEditCoverDialog} onOpenChange={setShowEditCoverDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Cover Photo</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleCoverUpload}
+                disabled={uploadingCover}
+                className="hidden"
+                id="event-cover-upload"
+              />
+              <label htmlFor="event-cover-upload" className="cursor-pointer">
+                {uploadingCover ? (
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
+                ) : (
+                  <>
+                    <Upload className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-sm text-muted-foreground">Click to upload new cover photo</p>
+                    <p className="text-xs text-muted-foreground mt-1">Recommended: 1200x630px</p>
+                  </>
+                )}
+              </label>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
