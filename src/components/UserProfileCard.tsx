@@ -21,6 +21,16 @@ import { useChatDock } from '../context/ChatDockContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 
 interface UserProfileCardProps {
@@ -76,6 +86,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
   const [loading, setLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [hasRequestPending, setHasRequestPending] = useState(false);
+  const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
 
   const isOwnProfile = user?.id === userId;
 
@@ -275,6 +286,37 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
     }
   };
 
+  const disconnectUser = async () => {
+    if (!user) return;
+
+    setLoading(true);
+    try {
+      // Delete from connections table (either direction)
+      const { error } = await supabase
+        .from('connections')
+        .delete()
+        .or(`and(user_1_id.eq.${user.id},user_2_id.eq.${userId}),and(user_1_id.eq.${userId},user_2_id.eq.${user.id})`);
+
+      if (error) throw error;
+
+      setIsConnected(false);
+      toast.success('Connection removed');
+
+      if (onConnect) {
+        onConnect(); // Refresh parent component
+      }
+      
+      // Dispatch event to notify other components
+      window.dispatchEvent(new CustomEvent('connectionRequestProcessed'));
+    } catch (error) {
+      console.error('Error disconnecting user:', error);
+      toast.error('Failed to remove connection');
+    } finally {
+      setLoading(false);
+      setShowDisconnectConfirm(false);
+    }
+  };
+
   const handleMessage = async () => {
     if (!user) {
       toast.error('Please log in to send messages');
@@ -407,10 +449,37 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
         <div className="mt-6 flex w-full items-center justify-center gap-3">
           {/* Connection status button */}
           {isConnected ? (
-            <div className="flex items-center space-x-1 px-3 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
-              <UserCheck className="h-4 w-4" />
-              <span>Connected</span>
-            </div>
+            <>
+              <button
+                onClick={() => setShowDisconnectConfirm(true)}
+                disabled={loading}
+                className="flex items-center space-x-1 px-3 py-2 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-lg text-sm font-medium hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors cursor-pointer"
+              >
+                <UserCheck className="h-4 w-4" />
+                <span>Connected</span>
+              </button>
+
+              {/* Disconnect Confirmation Dialog */}
+              <AlertDialog open={showDisconnectConfirm} onOpenChange={setShowDisconnectConfirm}>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Remove Connection</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to disconnect from {name}? You will need to send a new connection request to reconnect.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={disconnectUser} 
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Remove Connection
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
           ) : hasRequestPending ? (
             <button
               onClick={withdrawConnectionRequest}

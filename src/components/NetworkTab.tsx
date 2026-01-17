@@ -8,6 +8,16 @@ import { Search } from 'lucide-react';
 import UserProfileCard from './UserProfileCard';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface Connection {
   id: string;
@@ -28,6 +38,7 @@ const NetworkTab: React.FC = () => {
   const [connections, setConnections] = useState<Connection[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -95,7 +106,11 @@ const NetworkTab: React.FC = () => {
       if (error) throw error;
 
       setConnections(prev => prev.filter(c => c.id !== connectionId));
+      setConfirmRemove(null);
       toast.success(t('network.connectionRemoved'));
+      
+      // Dispatch event to notify other components
+      window.dispatchEvent(new CustomEvent('connectionRequestProcessed'));
     } catch (error) {
       console.error('Error removing connection:', error);
       toast.error(t('network.connectionRemovedError'));
@@ -175,7 +190,10 @@ const NetworkTab: React.FC = () => {
                     company={connection.connected_user.company}
                     profilePhoto={connection.connected_user.profile_photo}
                     onMessage={() => handleMessage(connection.connected_user.id)}
-                    onConnect={() => removeConnection(connection.id)}
+                    onConnect={() => setConfirmRemove({ 
+                      id: connection.id, 
+                      name: connection.connected_user.full_name || 'Deleted User' 
+                    })}
                     className="bg-primary/5 border-primary/20"
                   />
                 ))}
@@ -199,7 +217,10 @@ const NetworkTab: React.FC = () => {
                     company={connection.connected_user.company}
                     profilePhoto={connection.connected_user.profile_photo}
                     onMessage={() => handleMessage(connection.connected_user.id)}
-                    onConnect={() => removeConnection(connection.id)}
+                    onConnect={() => setConfirmRemove({ 
+                      id: connection.id, 
+                      name: connection.connected_user.full_name || 'Deleted User' 
+                    })}
                   />
                 ))}
               </div>
@@ -207,6 +228,27 @@ const NetworkTab: React.FC = () => {
           </TabsContent>
         </Tabs>
       )}
+
+      {/* Confirmation Dialog for Removing Connection */}
+      <AlertDialog open={!!confirmRemove} onOpenChange={() => setConfirmRemove(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('network.confirmRemoveTitle', 'Remove Connection')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('network.confirmRemoveMessage', 'Are you sure you want to remove this connection? You will need to send a new connection request to reconnect with {{name}}.', { name: confirmRemove?.name })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel', 'Cancel')}</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => confirmRemove && removeConnection(confirmRemove.id)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t('network.removeConnection', 'Remove Connection')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
