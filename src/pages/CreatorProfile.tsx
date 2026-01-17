@@ -835,6 +835,25 @@ const CreatorProfile: React.FC = () => {
                       <span>{profile.location}</span>
                     </div>
                   )}
+                  {/* Creator Interests - Show what topics this creator posts about */}
+                  {profile.interests && profile.interests.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {profile.interests.slice(0, 5).map((interest, index) => (
+                        <Badge 
+                          key={index} 
+                          variant="secondary" 
+                          className="text-xs bg-primary/10 text-primary hover:bg-primary/20"
+                        >
+                          {interest}
+                        </Badge>
+                      ))}
+                      {profile.interests.length > 5 && (
+                        <Badge variant="outline" className="text-xs">
+                          +{profile.interests.length - 5} more
+                        </Badge>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center space-x-3 mt-4 md:mt-0">

@@ -13,6 +13,7 @@ import { Settings, Users, Shield, Bell, Trash2, UserPlus, Crown, Upload } from '
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
+import InterestTagSelector from './InterestTagSelector';
 
 interface GroupSettingsProps {
   isOpen: boolean;
@@ -41,6 +42,7 @@ interface GroupData {
   cover_image: string;
   auto_approve_members: boolean;
   auto_approve_posts: boolean;
+  interests?: string[];
 }
 
 const GroupSettings: React.FC<GroupSettingsProps> = ({
@@ -60,7 +62,8 @@ const GroupSettings: React.FC<GroupSettingsProps> = ({
     category: '',
     is_private: false,
     auto_approve_members: true,
-    auto_approve_posts: true
+    auto_approve_posts: true,
+    interests: [] as string[]
   });
 
   useEffect(() => {
@@ -73,7 +76,7 @@ const GroupSettings: React.FC<GroupSettingsProps> = ({
   const fetchGroup = async () => {
     const { data, error } = await supabase
       .from('groups')
-      .select('*')
+      .select('*, interests')
       .eq('id', groupId)
       .single();
 
@@ -89,7 +92,8 @@ const GroupSettings: React.FC<GroupSettingsProps> = ({
       category: data.category || '',
       is_private: data.is_private || false,
       auto_approve_members: data.auto_approve_members ?? true,
-      auto_approve_posts: data.auto_approve_posts ?? true
+      auto_approve_posts: data.auto_approve_posts ?? true,
+      interests: data.interests || []
     });
   };
 
@@ -122,7 +126,8 @@ const GroupSettings: React.FC<GroupSettingsProps> = ({
           category: formData.category,
           is_private: formData.is_private,
           auto_approve_members: formData.auto_approve_members,
-          auto_approve_posts: formData.auto_approve_posts
+          auto_approve_posts: formData.auto_approve_posts,
+          interests: formData.interests
         })
         .eq('id', groupId);
 
@@ -276,6 +281,16 @@ const GroupSettings: React.FC<GroupSettingsProps> = ({
                 id="category"
                 value={formData.category}
                 onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+              />
+            </div>
+
+            {/* Interests */}
+            <div className="space-y-2">
+              <InterestTagSelector
+                selectedTags={formData.interests}
+                onTagsChange={(interests) => setFormData(prev => ({ ...prev, interests }))}
+                maxTags={5}
+                label="Group Interests (max 5)"
               />
             </div>
 

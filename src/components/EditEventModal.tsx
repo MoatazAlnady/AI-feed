@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import InterestTagSelector from './InterestTagSelector';
 
 interface EditEventModalProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ interface EditEventModalProps {
     max_attendees?: number;
     is_public?: boolean;
     cover_image?: string;
+    interests?: string[];
   };
   onEventUpdated: () => void;
 }
@@ -49,7 +51,8 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
     is_online: false,
     online_link: '',
     max_attendees: '',
-    is_public: true
+    is_public: true,
+    interests: [] as string[]
   });
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
@@ -68,7 +71,8 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
         is_online: event.is_online || false,
         online_link: event.online_link || '',
         max_attendees: event.max_attendees?.toString() || '',
-        is_public: event.is_public !== false
+        is_public: event.is_public !== false,
+        interests: event.interests || []
       });
       setCoverPreview(event.cover_image || null);
     }
@@ -136,6 +140,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
         max_attendees: formData.max_attendees ? parseInt(formData.max_attendees) : null,
         is_public: formData.is_public,
         cover_image: coverUrl,
+        interests: formData.interests,
         updated_at: new Date().toISOString()
       };
 
@@ -227,6 +232,16 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
               onChange={handleInputChange}
               rows={3}
               className="mt-1"
+            />
+          </div>
+
+          {/* Interests */}
+          <div>
+            <InterestTagSelector
+              selectedTags={formData.interests}
+              onTagsChange={(interests) => setFormData(prev => ({ ...prev, interests }))}
+              maxTags={5}
+              label="Event Interests (max 5)"
             />
           </div>
 
