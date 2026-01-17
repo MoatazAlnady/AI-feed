@@ -734,25 +734,40 @@ const EventProfile: React.FC = () => {
 
             {/* Attendees Preview */}
             {attendees.length > 0 && (
-              <div className="flex items-center gap-2 mb-6">
-                <div className="flex -space-x-2">
-                  {attendees.slice(0, 5).map((attendee) => (
-                    <Avatar key={attendee.id} className="border-2 border-background w-8 h-8">
-                      <AvatarImage src={attendee.user?.profile_photo || undefined} />
-                      <AvatarFallback className="text-xs">
-                        {(attendee.user?.full_name || 'U').charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                  ))}
+              <div className="mb-6">
+                <div className="flex items-center gap-2">
+                  <div className="flex -space-x-2">
+                    {attendees.slice(0, 5).map((attendee) => (
+                      <Avatar key={attendee.id} className="border-2 border-background w-8 h-8">
+                        <AvatarImage src={attendee.user?.profile_photo || undefined} />
+                        <AvatarFallback className="text-xs">
+                          {(attendee.user?.full_name || 'U').charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                    ))}
+                  </div>
+                  {attendees.length > 5 && (
+                    <span className="text-sm text-muted-foreground">
+                      +{attendees.length - 5} more
+                    </span>
+                  )}
                 </div>
-                {attendees.length > 5 && (
-                  <span className="text-sm text-muted-foreground">
-                    +{attendees.length - 5} more
-                  </span>
+                {/* Load More Attendees Button */}
+                {hasMoreAttendees && attendees.length >= ITEMS_PER_PAGE && (
+                  <div className="mt-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => fetchAttendees(true)} 
+                      disabled={loadingMoreAttendees}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      {loadingMoreAttendees ? 'Loading...' : 'View all attendees'}
+                    </Button>
+                  </div>
                 )}
               </div>
             )}
-
             {/* Description */}
             {event.description && (
               <>
@@ -908,6 +923,22 @@ const EventProfile: React.FC = () => {
                       );
                     }
                   })}
+              </div>
+            )}
+
+            {/* Load More Activity Button */}
+            {(hasMorePosts || hasMoreDiscussions) && (discussions.length > 0 || posts.length > 0) && (
+              <div className="flex justify-center mt-6">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    if (hasMorePosts) fetchPosts(true);
+                    if (hasMoreDiscussions) fetchDiscussions(true);
+                  }} 
+                  disabled={loadingMorePosts || loadingMoreDiscussions}
+                >
+                  {(loadingMorePosts || loadingMoreDiscussions) ? 'Loading...' : 'Load More Activity'}
+                </Button>
               </div>
             )}
           </div>
