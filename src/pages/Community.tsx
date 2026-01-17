@@ -25,6 +25,13 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import ChatDock from '../components/ChatDock';
 import SEOHead from '../components/SEOHead';
 import CreateEventModal from '../components/CreateEventModal';
@@ -32,6 +39,7 @@ import CreateGroupModal from '../components/CreateGroupModal';
 import CreateStandaloneEventModal from '../components/CreateStandaloneEventModal';
 import GroupDiscussions from '../components/GroupDiscussions';
 import GroupChatWindow from '../components/GroupChatWindow';
+import InviteToEventModal from '../components/InviteToEventModal';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../integrations/supabase/client';
 import { useAuth } from '../context/AuthContext';
@@ -70,6 +78,14 @@ const Community: React.FC = () => {
   const [showNewDiscussion, setShowNewDiscussion] = useState(false);
   const [userGroupMemberships, setUserGroupMemberships] = useState<string[]>([]);
   const [mutualConnections, setMutualConnections] = useState<Record<string, number>>({});
+  const [inviteEventModal, setInviteEventModal] = useState<{
+    isOpen: boolean;
+    eventId: string;
+    eventType: 'group_event' | 'standalone_event';
+    groupId?: string;
+    isPublic: boolean;
+    eventTitle?: string;
+  } | null>(null);
 
   // Pagination constants
   const ITEMS_PER_PAGE = 20;
@@ -263,7 +279,7 @@ const Community: React.FC = () => {
     }
   };
 
-  const handleRSVP = async (eventId: string, status: 'attending' | 'not_attending') => {
+  const handleRSVP = async (eventId: string, status: 'attending' | 'not_attending' | 'maybe' | 'undecided') => {
     if (!user) {
       toast.error(t('community.networking.pleaseLogIn'));
       return;
@@ -272,33 +288,30 @@ const Community: React.FC = () => {
     try {
       const currentStatus = userAttendance[eventId];
       
-      if (currentStatus) {
+      if (status === 'undecided') {
+        // Remove attendance
+        await supabase
+          .from('event_attendees')
+          .delete()
+          .eq('event_id', eventId)
+          .eq('user_id', user.id);
+        
+        setUserAttendance(prev => {
+          const newState = { ...prev };
+          delete newState[eventId];
+          return newState;
+        });
+        toast.success(t('communityEvents.rsvpRemoved', 'RSVP removed'));
+      } else if (currentStatus) {
         // Update existing attendance
-        if (currentStatus === status) {
-          // Remove attendance
-          await supabase
-            .from('event_attendees')
-            .delete()
-            .eq('event_id', eventId)
-            .eq('user_id', user.id);
-          
-          setUserAttendance(prev => {
-            const newState = { ...prev };
-            delete newState[eventId];
-            return newState;
-          });
-          toast.success(t('communityEvents.rsvpRemoved', 'RSVP removed'));
-        } else {
-          // Update status
-          await supabase
-            .from('event_attendees')
-            .update({ status })
-            .eq('event_id', eventId)
-            .eq('user_id', user.id);
-          
-          setUserAttendance(prev => ({ ...prev, [eventId]: status }));
-          toast.success(t('communityEvents.rsvpUpdated', 'RSVP updated'));
-        }
+        await supabase
+          .from('event_attendees')
+          .update({ status })
+          .eq('event_id', eventId)
+          .eq('user_id', user.id);
+        
+        setUserAttendance(prev => ({ ...prev, [eventId]: status }));
+        toast.success(t('communityEvents.rsvpUpdated', 'RSVP updated'));
       } else {
         // Create new attendance
         await supabase
@@ -306,9 +319,7 @@ const Community: React.FC = () => {
           .insert({ event_id: eventId, user_id: user.id, status });
         
         setUserAttendance(prev => ({ ...prev, [eventId]: status }));
-        toast.success(status === 'attending' 
-          ? t('communityEvents.attending', "You're attending!") 
-          : t('communityEvents.notAttending', 'Marked as not attending'));
+        toast.success(t('communityEvents.rsvpUpdated', 'RSVP updated'));
       }
     } catch (error) {
       console.error('Error updating RSVP:', error);
@@ -929,55 +940,43 @@ const Community: React.FC = () => {
                     </p>
                   )}
 
-                  {/* RSVP button for regular events */}
-                  {event.eventType === 'regular' && (
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRSVP(event.id, 'attending');
-                        }}
-                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
-                          userAttendance[event.id] === 'attending'
-                            ? 'bg-green-500 text-white'
-                            : 'bg-primary/10 text-primary hover:bg-primary/20'
-                        }`}
-                      >
-                        <Check className="h-4 w-4" />
-                        {t('communityEvents.attending', 'Attending')}
-                      </button>
-                    </div>
-                  )}
-
-                  {/* View button for group events */}
-                  {event.eventType === 'group' && (
-                    <Button 
-                      variant="outline" 
-                      className="w-full gap-2"
+                  {/* Attendance Status Dropdown + Invite Button */}
+                  <div className="flex gap-2 flex-wrap">
+                    <Select
+                      value={userAttendance[event.id] || 'undecided'}
+                      onValueChange={(value) => handleRSVP(event.id, value as any)}
+                    >
+                      <SelectTrigger className="flex-1 min-w-[140px]" onClick={(e) => e.stopPropagation()}>
+                        <SelectValue placeholder={t('events.attendanceNotDecided', 'Not Decided')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="undecided">{t('events.attendanceNotDecided', 'Not Decided')}</SelectItem>
+                        <SelectItem value="attending">{t('events.willAttend', 'Will Attend')}</SelectItem>
+                        <SelectItem value="maybe">{t('events.maybeAttending', 'Maybe')}</SelectItem>
+                        <SelectItem value="not_attending">{t('events.notAttending', 'Not Attending')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/event/${event.id}`);
+                        setInviteEventModal({
+                          isOpen: true,
+                          eventId: event.id,
+                          eventType: event.eventType === 'group' ? 'group_event' : 'standalone_event',
+                          groupId: event.group?.id,
+                          isPublic: event.is_public !== false,
+                          eventTitle: event.title
+                        });
                       }}
+                      className="gap-1"
                     >
-                      View Event
-                      <ChevronRight className="h-4 w-4" />
+                      <UserPlus className="h-4 w-4" />
+                      {t('events.invite', 'Invite')}
                     </Button>
-                  )}
-
-                  {/* View button for standalone events */}
-                  {event.eventType === 'standalone' && (
-                    <Button 
-                      variant="outline" 
-                      className="w-full gap-2"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/standalone-event/${event.id}`);
-                      }}
-                    >
-                      View Event
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  )}
+                  </div>
                 </div>
               </div>
             ))
@@ -1423,6 +1422,19 @@ const Community: React.FC = () => {
           fetchEvents();
         }}
       />
+
+      {/* Invite to Event Modal */}
+      {inviteEventModal && (
+        <InviteToEventModal
+          isOpen={inviteEventModal.isOpen}
+          onClose={() => setInviteEventModal(null)}
+          eventId={inviteEventModal.eventId}
+          eventType={inviteEventModal.eventType}
+          groupId={inviteEventModal.groupId}
+          isPublic={inviteEventModal.isPublic}
+          eventTitle={inviteEventModal.eventTitle}
+        />
+      )}
     </div>
     </>
   );

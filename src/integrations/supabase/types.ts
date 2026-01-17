@@ -1389,6 +1389,39 @@ export type Database = {
         }
         Relationships: []
       }
+      event_invitations: {
+        Row: {
+          created_at: string | null
+          event_id: string
+          event_type: string
+          id: string
+          invitee_id: string
+          inviter_id: string
+          responded_at: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_id: string
+          event_type: string
+          id?: string
+          invitee_id: string
+          inviter_id: string
+          responded_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string
+          event_type?: string
+          id?: string
+          invitee_id?: string
+          inviter_id?: string
+          responded_at?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
       event_messages: {
         Row: {
           body: string
