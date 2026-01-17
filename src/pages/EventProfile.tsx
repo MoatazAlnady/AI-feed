@@ -193,17 +193,23 @@ const EventProfile: React.FC = () => {
 
       if (error) throw error;
 
-      // Fetch author info
-      const discussionsWithAuthors = await Promise.all(
-        (data || []).map(async (discussion) => {
-          const { data: authorData } = await supabase
-            .from('user_profiles')
-            .select('full_name, profile_photo')
-            .eq('id', discussion.author_id)
-            .single();
-          return { ...discussion, author: authorData };
-        })
-      );
+      const discussions = data || [];
+      const authorIds = [...new Set(discussions.map(d => d.author_id))];
+
+      // Batch fetch authors - NO N+1!
+      let authorMap = new Map<string, { full_name: string; profile_photo: string | null }>();
+      if (authorIds.length > 0) {
+        const { data: authors } = await supabase
+          .from('user_profiles')
+          .select('id, full_name, profile_photo')
+          .in('id', authorIds);
+        authorMap = new Map(authors?.map(a => [a.id, { full_name: a.full_name, profile_photo: a.profile_photo }]) || []);
+      }
+
+      const discussionsWithAuthors = discussions.map(discussion => ({
+        ...discussion,
+        author: authorMap.get(discussion.author_id) || null
+      }));
 
       setDiscussions(discussionsWithAuthors);
     } catch (error) {
@@ -221,17 +227,23 @@ const EventProfile: React.FC = () => {
 
       if (error) throw error;
 
-      // Fetch author info
-      const postsWithAuthors = await Promise.all(
-        (data || []).map(async (post) => {
-          const { data: authorData } = await supabase
-            .from('user_profiles')
-            .select('full_name, profile_photo')
-            .eq('id', post.author_id)
-            .single();
-          return { ...post, author: authorData };
-        })
-      );
+      const posts = data || [];
+      const authorIds = [...new Set(posts.map(p => p.author_id))];
+
+      // Batch fetch authors - NO N+1!
+      let authorMap = new Map<string, { full_name: string; profile_photo: string | null }>();
+      if (authorIds.length > 0) {
+        const { data: authors } = await supabase
+          .from('user_profiles')
+          .select('id, full_name, profile_photo')
+          .in('id', authorIds);
+        authorMap = new Map(authors?.map(a => [a.id, { full_name: a.full_name, profile_photo: a.profile_photo }]) || []);
+      }
+
+      const postsWithAuthors = posts.map(post => ({
+        ...post,
+        author: authorMap.get(post.author_id) || null
+      }));
 
       setPosts(postsWithAuthors);
     } catch (error) {
@@ -250,17 +262,23 @@ const EventProfile: React.FC = () => {
 
       if (error) throw error;
 
-      // Fetch user info
-      const attendeesWithUsers = await Promise.all(
-        (data || []).map(async (attendee) => {
-          const { data: userData } = await supabase
-            .from('user_profiles')
-            .select('full_name, profile_photo')
-            .eq('id', attendee.user_id)
-            .single();
-          return { ...attendee, user: userData };
-        })
-      );
+      const attendees = data || [];
+      const userIds = attendees.map(a => a.user_id);
+
+      // Batch fetch users - NO N+1!
+      let userMap = new Map<string, { full_name: string; profile_photo: string | null }>();
+      if (userIds.length > 0) {
+        const { data: users } = await supabase
+          .from('user_profiles')
+          .select('id, full_name, profile_photo')
+          .in('id', userIds);
+        userMap = new Map(users?.map(u => [u.id, { full_name: u.full_name, profile_photo: u.profile_photo }]) || []);
+      }
+
+      const attendeesWithUsers = attendees.map(attendee => ({
+        ...attendee,
+        user: userMap.get(attendee.user_id) || null
+      }));
 
       setAttendees(attendeesWithUsers);
     } catch (error) {

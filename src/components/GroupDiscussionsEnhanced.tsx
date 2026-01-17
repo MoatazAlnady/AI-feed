@@ -142,46 +142,63 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
 
   const fetchDiscussions = async () => {
     try {
-      let query = supabase
+      const { data, error } = await supabase
         .from('group_discussions')
         .select('*')
         .eq('group_id', groupId)
         .order('is_pinned', { ascending: false })
         .order('updated_at', { ascending: false });
 
-      const { data, error } = await query;
-
       if (error) throw error;
 
-      // Fetch author info and tags for each discussion
-      const discussionsWithDetails = await Promise.all(
-        (data || []).map(async (discussion) => {
-          // Get author
-          const { data: authorData } = await supabase
-            .from('user_profiles')
-            .select('full_name, profile_photo')
-            .eq('id', discussion.author_id)
-            .single();
+      const discussions = data || [];
+      const discussionIds = discussions.map(d => d.id);
+      const authorIds = [...new Set(discussions.map(d => d.author_id))];
 
-          // Get tags
-          const { data: tagLinks } = await supabase
-            .from('group_discussion_tags')
-            .select('tag_id')
-            .eq('discussion_id', discussion.id);
+      // Batch fetch authors - NO N+1!
+      let authorMap = new Map<string, { full_name: string; profile_photo: string | null }>();
+      if (authorIds.length > 0) {
+        const { data: authors } = await supabase
+          .from('user_profiles')
+          .select('id, full_name, profile_photo')
+          .in('id', authorIds);
+        authorMap = new Map(authors?.map(a => [a.id, { full_name: a.full_name, profile_photo: a.profile_photo }]) || []);
+      }
 
-          let tags: DiscussionTag[] = [];
-          if (tagLinks && tagLinks.length > 0) {
-            const tagIds = tagLinks.map(t => t.tag_id);
-            const { data: tagData } = await supabase
-              .from('discussion_tags')
-              .select('*')
-              .in('id', tagIds);
-            tags = tagData || [];
-          }
+      // Batch fetch all tag links - NO N+1!
+      let tagLinksMap = new Map<string, string[]>();
+      if (discussionIds.length > 0) {
+        const { data: allTagLinks } = await supabase
+          .from('group_discussion_tags')
+          .select('discussion_id, tag_id')
+          .in('discussion_id', discussionIds);
+        
+        (allTagLinks || []).forEach(link => {
+          const existing = tagLinksMap.get(link.discussion_id) || [];
+          existing.push(link.tag_id);
+          tagLinksMap.set(link.discussion_id, existing);
+        });
+      }
 
-          return { ...discussion, author: authorData, tags };
-        })
-      );
+      // Batch fetch all used tags - NO N+1!
+      const allTagIds = [...new Set([...tagLinksMap.values()].flat())];
+      let tagMap = new Map<string, DiscussionTag>();
+      if (allTagIds.length > 0) {
+        const { data: allTags } = await supabase
+          .from('discussion_tags')
+          .select('*')
+          .in('id', allTagIds);
+        tagMap = new Map(allTags?.map(t => [t.id, t]) || []);
+      }
+
+      // Map discussions with authors and tags
+      const discussionsWithDetails = discussions.map(discussion => ({
+        ...discussion,
+        author: authorMap.get(discussion.author_id) || null,
+        tags: (tagLinksMap.get(discussion.id) || [])
+          .map(tagId => tagMap.get(tagId))
+          .filter((t): t is DiscussionTag => t !== undefined)
+      }));
 
       setDiscussions(discussionsWithDetails);
     } catch (error) {
@@ -201,17 +218,23 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
 
       if (error) throw error;
 
-      // Fetch author info for each reply
-      const repliesWithAuthors = await Promise.all(
-        (data || []).map(async (reply) => {
-          const { data: authorData } = await supabase
-            .from('user_profiles')
-            .select('full_name, profile_photo')
-            .eq('id', reply.author_id)
-            .single();
-          return { ...reply, author: authorData };
-        })
-      );
+      const replies = data || [];
+      const authorIds = [...new Set(replies.map(r => r.author_id))];
+
+      // Batch fetch authors - NO N+1!
+      let authorMap = new Map<string, { full_name: string; profile_photo: string | null }>();
+      if (authorIds.length > 0) {
+        const { data: authors } = await supabase
+          .from('user_profiles')
+          .select('id, full_name, profile_photo')
+          .in('id', authorIds);
+        authorMap = new Map(authors?.map(a => [a.id, { full_name: a.full_name, profile_photo: a.profile_photo }]) || []);
+      }
+
+      const repliesWithAuthors = replies.map(reply => ({
+        ...reply,
+        author: authorMap.get(reply.author_id) || null
+      }));
 
       setReplies(repliesWithAuthors);
     } catch (error) {

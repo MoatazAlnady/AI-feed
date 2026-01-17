@@ -115,18 +115,29 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
 
       if (error) throw error;
 
-      // Fetch attendee counts
-      const eventsWithCounts = await Promise.all(
-        (data || []).map(async (event) => {
-          const { count } = await supabase
-            .from('group_event_attendees')
-            .select('*', { count: 'exact', head: true })
-            .eq('event_id', event.id)
-            .eq('status', 'attending');
-          
-          return { ...event, attendee_count: count || 0 };
-        })
-      );
+      const events = data || [];
+      const eventIds = events.map(e => e.id);
+
+      // Batch fetch attendee counts - NO N+1!
+      let countMap: Record<string, number> = {};
+      if (eventIds.length > 0) {
+        const { data: attendeeCounts } = await supabase
+          .from('group_event_attendees')
+          .select('event_id')
+          .in('event_id', eventIds)
+          .eq('status', 'attending');
+        
+        // Count in memory
+        eventIds.forEach(id => { countMap[id] = 0; });
+        (attendeeCounts || []).forEach(a => {
+          countMap[a.event_id] = (countMap[a.event_id] || 0) + 1;
+        });
+      }
+
+      const eventsWithCounts = events.map(event => ({
+        ...event,
+        attendee_count: countMap[event.id] || 0
+      }));
 
       setEvents(eventsWithCounts);
     } catch (error) {
