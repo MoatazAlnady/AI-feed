@@ -19,10 +19,10 @@ import AdminToolRequests from '../pages/AdminToolRequests';
 import EmployerDashboard from '../pages/EmployerDashboard';
 import ProjectsPage from '../pages/ProjectsPage';
 import Profile from '../pages/Profile';
+import CreatorProfile from '../pages/CreatorProfile';
 import Messages from '../pages/Messages';
 import Notifications from '../pages/Notifications';
 import Settings from '../pages/Settings';
-import UserView from '../pages/UserView';
 import Analytics from '../pages/Analytics';
 import ProtectedRoute from './ProtectedRoute';
 
@@ -163,7 +163,7 @@ const AnimatedRoutes: React.FC = () => {
             } />
             <Route path="/admin/user/:userId" element={
               <ProtectedRoute requireAdmin={true}>
-                <UserView />
+                <CreatorProfile />
               </ProtectedRoute>
             } />
             <Route path="/admin/tool-requests" element={
