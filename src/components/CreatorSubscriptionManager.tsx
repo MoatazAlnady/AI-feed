@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DollarSign, Plus, Users, TrendingUp, Edit, Trash2, Check, Crown } from 'lucide-react';
+import { DollarSign, Plus, Users, TrendingUp, Edit, Trash2, Check, Crown, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,9 +7,11 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import CancellationSettingsManager from './CancellationSettingsManager';
 
 interface SubscriptionTier {
   id: string;
@@ -260,7 +262,17 @@ const CreatorSubscriptionManager: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <Tabs defaultValue="overview" className="space-y-6">
+      <TabsList className="grid w-full grid-cols-3">
+        <TabsTrigger value="overview">Overview & Tiers</TabsTrigger>
+        <TabsTrigger value="subscribers">Subscribers</TabsTrigger>
+        <TabsTrigger value="cancellation" className="gap-1">
+          <Settings className="h-4 w-4" />
+          Cancellation Settings
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="overview" className="space-y-6">
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
@@ -449,9 +461,11 @@ const CreatorSubscriptionManager: React.FC = () => {
           </div>
         )}
       </div>
+      </TabsContent>
 
+      <TabsContent value="subscribers">
       {/* Active Subscribers */}
-      {subscriptions.length > 0 && (
+      {subscriptions.length > 0 ? (
         <div>
           <h2 className="text-xl font-semibold mb-4">Active Subscribers</h2>
           <div className="space-y-2">
@@ -477,8 +491,18 @@ const CreatorSubscriptionManager: React.FC = () => {
             ))}
           </div>
         </div>
+      ) : (
+        <div className="text-center py-12 bg-muted/50 rounded-lg">
+          <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+          <p className="text-muted-foreground">No active subscribers yet</p>
+        </div>
       )}
-    </div>
+      </TabsContent>
+
+      <TabsContent value="cancellation">
+        <CancellationSettingsManager />
+      </TabsContent>
+    </Tabs>
   );
 };
 

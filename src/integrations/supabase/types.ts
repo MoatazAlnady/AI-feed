@@ -862,6 +862,96 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_cancellation_questions: {
+        Row: {
+          created_at: string | null
+          creator_id: string
+          id: string
+          is_active: boolean | null
+          is_mandatory: boolean | null
+          options: Json | null
+          order_index: number | null
+          question_text: string
+          question_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          creator_id: string
+          id?: string
+          is_active?: boolean | null
+          is_mandatory?: boolean | null
+          options?: Json | null
+          order_index?: number | null
+          question_text: string
+          question_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          creator_id?: string
+          id?: string
+          is_active?: boolean | null
+          is_mandatory?: boolean | null
+          options?: Json | null
+          order_index?: number | null
+          question_text?: string
+          question_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      creator_cancellation_responses: {
+        Row: {
+          cancelled: boolean | null
+          created_at: string | null
+          creator_id: string
+          id: string
+          offer_accepted: boolean | null
+          offer_shown_id: string | null
+          responses: Json
+          subscriber_id: string
+          subscription_id: string
+        }
+        Insert: {
+          cancelled?: boolean | null
+          created_at?: string | null
+          creator_id: string
+          id?: string
+          offer_accepted?: boolean | null
+          offer_shown_id?: string | null
+          responses: Json
+          subscriber_id: string
+          subscription_id: string
+        }
+        Update: {
+          cancelled?: boolean | null
+          created_at?: string | null
+          creator_id?: string
+          id?: string
+          offer_accepted?: boolean | null
+          offer_shown_id?: string | null
+          responses?: Json
+          subscriber_id?: string
+          subscription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_cancellation_responses_offer_shown_id_fkey"
+            columns: ["offer_shown_id"]
+            isOneToOne: false
+            referencedRelation: "creator_retention_offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_cancellation_responses_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "creator_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creator_earnings: {
         Row: {
           created_at: string
@@ -1038,6 +1128,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      creator_retention_offers: {
+        Row: {
+          condition_rules: Json | null
+          created_at: string | null
+          creator_id: string
+          description: string | null
+          discount_months: number | null
+          discount_percent: number | null
+          free_months: number | null
+          id: string
+          is_active: boolean | null
+          max_uses_per_subscriber: number | null
+          offer_type: string
+          priority: number | null
+          title: string
+        }
+        Insert: {
+          condition_rules?: Json | null
+          created_at?: string | null
+          creator_id: string
+          description?: string | null
+          discount_months?: number | null
+          discount_percent?: number | null
+          free_months?: number | null
+          id?: string
+          is_active?: boolean | null
+          max_uses_per_subscriber?: number | null
+          offer_type: string
+          priority?: number | null
+          title: string
+        }
+        Update: {
+          condition_rules?: Json | null
+          created_at?: string | null
+          creator_id?: string
+          description?: string | null
+          discount_months?: number | null
+          discount_percent?: number | null
+          free_months?: number | null
+          id?: string
+          is_active?: boolean | null
+          max_uses_per_subscriber?: number | null
+          offer_type?: string
+          priority?: number | null
+          title?: string
+        }
+        Relationships: []
       }
       creator_subscription_tiers: {
         Row: {
