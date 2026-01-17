@@ -20,7 +20,7 @@ interface Connection {
 interface SharePostModalProps {
   isOpen: boolean;
   onClose: () => void;
-  post: {
+  post?: {
     id: string;
     content: string;
     user_id: string;
@@ -29,6 +29,15 @@ interface SharePostModalProps {
     link_url?: string;
     shares?: number;
   };
+  article?: {
+    id: string;
+    title: string;
+    excerpt: string | null;
+    featured_image_url: string | null;
+    user_id: string;
+    category: string;
+    author: string;
+  };
   onShare?: () => void;
 }
 
@@ -36,6 +45,7 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
   isOpen,
   onClose,
   post,
+  article,
   onShare
 }) => {
   const [shareText, setShareText] = useState('');
@@ -115,15 +125,18 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
   );
 
   if (!isOpen) return null;
+  if (!post && !article) return null;
 
-  const postUrl = `${window.location.origin}/post/${post.id}`;
+  const contentUrl = article 
+    ? `${window.location.origin}/article/${article.id}`
+    : `${window.location.origin}/post/${post!.id}`;
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(postUrl);
+      await navigator.clipboard.writeText(contentUrl);
       toast({
         title: "Link copied!",
-        description: "Post link has been copied to your clipboard.",
+        description: `${article ? 'Article' : 'Post'} link has been copied to your clipboard.`,
       });
     } catch (error) {
       console.error('Failed to copy link:', error);
@@ -138,8 +151,8 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
   const handleExternalShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: 'Check out this post on AI Feed',
-        url: postUrl,
+        title: article ? `Check out this article: ${article.title}` : 'Check out this post on AI Feed',
+        url: contentUrl,
       }).catch(console.error);
     } else {
       handleCopyLink();
@@ -155,44 +168,56 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
     setIsSharing(true);
 
     try {
+      const contentType = article ? 'article' : 'post';
+      const contentId = article ? article.id : post!.id;
+
       const { error: sharesError } = await supabase
         .from('shares')
         .insert({
           user_id: user.id,
-          content_type: 'post',
-          content_id: post.id,
-          target_type: 'post',
-          target_id: post.id
+          content_type: contentType,
+          content_id: contentId,
+          target_type: contentType,
+          target_id: contentId
         });
 
       if (sharesError && !sharesError.message.includes('duplicate')) {
         throw sharesError;
       }
 
+      // Insert into shared_posts with appropriate field
+      const insertData: any = {
+        user_id: user.id,
+        share_text: shareText.trim() || null,
+        visibility: visibility,
+        content_type: contentType
+      };
+
+      if (article) {
+        insertData.original_article_id = article.id;
+      } else {
+        insertData.original_post_id = post!.id;
+      }
+
       const { error: shareError } = await supabase
         .from('shared_posts')
-        .insert({
-          user_id: user.id,
-          original_post_id: post.id,
-          share_text: shareText.trim() || null,
-          visibility: visibility,
-        });
+        .insert(insertData);
 
       if (shareError) throw shareError;
 
       toast({
-        title: "Post shared!",
-        description: "The post has been shared to your followers.",
+        title: article ? "Article shared!" : "Post shared!",
+        description: "Shared to your followers.",
       });
 
       onShare?.();
       onClose();
       setShareText('');
     } catch (error) {
-      console.error('Error sharing post:', error);
+      console.error('Error sharing:', error);
       toast({
         title: "Error",
-        description: "Failed to share post. Please try again.",
+        description: "Failed to share. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -236,8 +261,10 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
         conversationId = newConvo.id;
       }
 
-      // Format the message with the shared post
-      const messageContent = `📢 Shared a post with you:\n\n"${post.content.substring(0, 200)}${post.content.length > 200 ? '...' : ''}"\n\n🔗 View post: ${postUrl}`;
+      // Format the message with the shared content
+      const messageContent = article
+        ? `📰 Shared an article with you:\n\n"${article.title}"\n\n${article.excerpt ? article.excerpt.substring(0, 150) + '...' : ''}\n\n🔗 View article: ${contentUrl}`
+        : `📢 Shared a post with you:\n\n"${post!.content.substring(0, 200)}${post!.content.length > 200 ? '...' : ''}"\n\n🔗 View post: ${contentUrl}`;
 
       // Send the message
       const { error: messageError } = await supabase
@@ -288,7 +315,7 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="text-lg font-semibold text-foreground">
-            Share Post
+            Share {article ? 'Article' : 'Post'}
           </h2>
           <button
             onClick={onClose}
@@ -300,19 +327,42 @@ const SharePostModal: React.FC<SharePostModalProps> = ({
 
         {/* Content */}
         <div className="p-4 space-y-4">
-          {/* Post Preview */}
+          {/* Content Preview */}
           <div className="p-3 bg-muted rounded-lg">
-            <p className="text-sm text-muted-foreground line-clamp-3">
-              {post.content}
-            </p>
-            {post.image_url && (
-              <div className="mt-2">
-                <img 
-                  src={post.image_url} 
-                  alt="Post" 
-                  className="w-full h-32 object-cover rounded-lg"
-                />
+            {article ? (
+              <div className="flex gap-3">
+                {article.featured_image_url && (
+                  <img 
+                    src={article.featured_image_url} 
+                    alt={article.title}
+                    className="w-20 h-16 object-cover rounded flex-shrink-0"
+                  />
+                )}
+                <div className="flex-1 min-w-0">
+                  <span className="text-xs text-primary font-medium">{article.category}</span>
+                  <p className="font-medium text-sm line-clamp-2">{article.title}</p>
+                  {article.excerpt && (
+                    <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                      {article.excerpt}
+                    </p>
+                  )}
+                </div>
               </div>
+            ) : (
+              <>
+                <p className="text-sm text-muted-foreground line-clamp-3">
+                  {post!.content}
+                </p>
+                {post!.image_url && (
+                  <div className="mt-2">
+                    <img 
+                      src={post!.image_url} 
+                      alt="Post" 
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
+                  </div>
+                )}
+              </>
             )}
           </div>
 

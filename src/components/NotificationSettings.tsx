@@ -7,18 +7,20 @@ import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Bell, Mail, Shield, Eye, MessageSquare } from 'lucide-react';
+import { Bell, Mail, Shield, Eye, MessageSquare, Users, Calendar } from 'lucide-react';
 
 const NotificationSettings = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [accountType, setAccountType] = useState<string | null>(null);
   const [settings, setSettings] = useState({
     newsletter_frequency: 'weekly',
     email_notifications: true,
     push_notifications: true,
     marketing_emails: false,
-    security_alerts: true
+    security_alerts: true,
+    notify_followers_event_attendance: true
   });
 
   useEffect(() => {
@@ -31,20 +33,22 @@ const NotificationSettings = () => {
     try {
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('newsletter_frequency, notification_preferences')
+        .select('newsletter_frequency, notification_preferences, account_type')
         .eq('id', user?.id)
         .single();
 
       if (error) throw error;
 
       if (data) {
+        setAccountType(data.account_type);
         const notificationPrefs = (typeof data.notification_preferences === 'object' && data.notification_preferences) ? data.notification_preferences as Record<string, any> : {};
         setSettings({
           newsletter_frequency: data.newsletter_frequency || 'weekly',
           email_notifications: notificationPrefs.email_notifications ?? true,
           push_notifications: notificationPrefs.push_notifications ?? true,
           marketing_emails: notificationPrefs.marketing_emails ?? false,
-          security_alerts: notificationPrefs.security_alerts ?? true
+          security_alerts: notificationPrefs.security_alerts ?? true,
+          notify_followers_event_attendance: notificationPrefs.notify_followers_event_attendance ?? true
         });
       }
     } catch (error) {
@@ -221,6 +225,39 @@ const NotificationSettings = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Creator Notification Settings */}
+        {accountType === 'creator' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Creator Settings
+              </CardTitle>
+              <CardDescription>
+                Control what your followers are notified about
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    Event Attendance Notifications
+                  </Label>
+                  <div className="text-sm text-muted-foreground">
+                    Notify your followers when you attend events so they can join you
+                  </div>
+                </div>
+                <Switch
+                  checked={settings.notify_followers_event_attendance}
+                  onCheckedChange={(checked) => updateSettings('notify_followers_event_attendance', checked)}
+                  disabled={loading}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

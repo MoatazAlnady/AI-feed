@@ -3781,9 +3781,11 @@ export type Database = {
       }
       shared_posts: {
         Row: {
+          content_type: string | null
           created_at: string
           group_ids: string[] | null
           id: string
+          original_article_id: string | null
           original_post_id: string
           share_text: string | null
           updated_at: string
@@ -3791,9 +3793,11 @@ export type Database = {
           visibility: string | null
         }
         Insert: {
+          content_type?: string | null
           created_at?: string
           group_ids?: string[] | null
           id?: string
+          original_article_id?: string | null
           original_post_id: string
           share_text?: string | null
           updated_at?: string
@@ -3801,9 +3805,11 @@ export type Database = {
           visibility?: string | null
         }
         Update: {
+          content_type?: string | null
           created_at?: string
           group_ids?: string[] | null
           id?: string
+          original_article_id?: string | null
           original_post_id?: string
           share_text?: string | null
           updated_at?: string
@@ -3811,6 +3817,13 @@ export type Database = {
           visibility?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "shared_posts_original_article_id_fkey"
+            columns: ["original_article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "shared_posts_original_post_id_fkey"
             columns: ["original_post_id"]

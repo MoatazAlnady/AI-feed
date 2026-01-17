@@ -15,7 +15,8 @@ import {
   Check,
   X,
   RefreshCw,
-  Eye
+  Eye,
+  FileText
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,7 +24,9 @@ import { makeHashtagsClickable } from '@/utils/hashtagUtils';
 import { getCreatorProfileLink } from '@/utils/profileUtils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import PostReactions from './PostReactions';
 import CommentReactions from './CommentReactions';
 import PostOptionsMenu from './PostOptionsMenu';
@@ -98,6 +101,7 @@ const NewsFeed: React.FC = () => {
   const [editingPost, setEditingPost] = useState<string | null>(null);
   const [editContent, setEditContent] = useState<string>('');
   const [shareModalPost, setShareModalPost] = useState<Post | null>(null);
+  const [shareModalArticle, setShareModalArticle] = useState<any>(null);
   const [showNewsletterPopup, setShowNewsletterPopup] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [postReactions, setPostReactions] = useState<{ [key: string]: { [key: string]: { count: number; users: string[] } } }>({});
@@ -107,6 +111,7 @@ const NewsFeed: React.FC = () => {
   const [editCommentContent, setEditCommentContent] = useState('');
   const [replyingTo, setReplyingTo] = useState<{ postId: string; commentId: string; authorName: string } | null>(null);
   const [replyContent, setReplyContent] = useState('');
+  const navigate = useNavigate();
 
   // Get user interests for personalized feed
   const userInterests = user?.user_metadata?.interests || [];
@@ -239,7 +244,34 @@ const NewsFeed: React.FC = () => {
         console.error('Error fetching shared posts:', sharedError);
       }
 
-      const allPosts = [];
+      // Fetch articles from followed creators
+      let articlesData: any[] = [];
+      const { data: followsData } = user ? await supabase
+        .from('follows')
+        .select('following_id')
+        .eq('follower_id', user.id) : { data: [] };
+      
+      const followedIds = (followsData || []).map(f => f.following_id);
+      
+      if (followedIds.length > 0) {
+        const { data: articles, error: articlesError } = await supabase
+          .from('articles')
+          .select('id, title, excerpt, featured_image_url, published_at, user_id, category, views, share_count, author')
+          .eq('status', 'published')
+          .in('user_id', followedIds)
+          .order('published_at', { ascending: false })
+          .limit(15);
+
+        if (!articlesError && articles) {
+          articlesData = articles.map(article => ({
+            ...article,
+            type: 'article',
+            created_at: article.published_at
+          }));
+        }
+      }
+
+      const allPosts: any[] = [];
       if (postsData) allPosts.push(...postsData.map(post => ({ ...post, type: 'original' })));
       if (sharedPostsData) allPosts.push(...sharedPostsData.map(share => ({ 
         ...share.original_post, 
@@ -247,13 +279,14 @@ const NewsFeed: React.FC = () => {
         shared_by: share.user_id,
         share_text: share.share_text,
         shared_at: share.created_at,
-        sharedPostId: share.id // Track the shared_posts record ID
+        sharedPostId: share.id
       })));
+      if (articlesData) allPosts.push(...articlesData);
 
       // Sort all posts by creation time
       allPosts.sort((a, b) => {
-        const dateA = new Date(a.type === 'shared' ? a.shared_at : a.created_at);
-        const dateB = new Date(b.type === 'shared' ? b.shared_at : b.created_at);
+        const dateA = new Date(a.type === 'shared' ? a.shared_at : a.type === 'article' ? a.published_at : a.created_at);
+        const dateB = new Date(b.type === 'shared' ? b.shared_at : b.type === 'article' ? b.published_at : b.created_at);
         return dateB.getTime() - dateA.getTime();
       });
 
