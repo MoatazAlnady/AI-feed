@@ -81,10 +81,12 @@ const GroupAdminSettingsModal: React.FC<GroupAdminSettingsModalProps> = ({
     who_can_discuss: group.who_can_discuss || 'members',
     who_can_invite: group.who_can_invite || 'members',
     who_can_chat: group.who_can_chat || 'members',
+    who_can_create_events: (group as any).who_can_create_events || 'admins',
     posts_need_approval: group.posts_need_approval || false,
     discussions_need_approval: group.discussions_need_approval || false,
     members_can_view_members: group.members_can_view_members !== false,
     posts_visibility: group.posts_visibility || 'members',
+    allow_public_discussions: (group as any).allow_public_discussions || false,
     membership_type: group.membership_type || 'free',
     membership_price: group.membership_price || 0,
     membership_currency: group.membership_currency || 'USD',
@@ -154,10 +156,12 @@ const GroupAdminSettingsModal: React.FC<GroupAdminSettingsModalProps> = ({
           who_can_discuss: formData.who_can_discuss,
           who_can_invite: formData.who_can_invite,
           who_can_chat: formData.who_can_chat,
+          who_can_create_events: formData.who_can_create_events,
           posts_need_approval: formData.posts_need_approval,
           discussions_need_approval: formData.discussions_need_approval,
           members_can_view_members: formData.members_can_view_members,
           posts_visibility: formData.posts_visibility,
+          allow_public_discussions: formData.allow_public_discussions,
           membership_type: isGold ? formData.membership_type : 'free',
           membership_price: isGold ? formData.membership_price : 0,
           membership_currency: formData.membership_currency,
@@ -357,10 +361,45 @@ const GroupAdminSettingsModal: React.FC<GroupAdminSettingsModalProps> = ({
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Allow Public Discussions */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label>{t('groups.allowPublicDiscussions', 'Allow Public Discussions')}</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Members can mark their discussions as public (visible in Community tab)
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.allow_public_discussions}
+                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, allow_public_discussions: checked }))}
+                />
+              </div>
             </TabsContent>
 
             {/* Permissions Tab */}
             <TabsContent value="permissions" className="space-y-4 mt-0">
+              {/* Who can create events */}
+              <div>
+                <Label>{t('groups.whoCanCreateEvents', 'Who can create events')}</Label>
+                <Select 
+                  value={formData.who_can_create_events} 
+                  onValueChange={(value) => setFormData(prev => ({ 
+                    ...prev, 
+                    who_can_create_events: value 
+                  }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="admins">Admins Only</SelectItem>
+                    <SelectItem value="moderators">Admins & Moderators</SelectItem>
+                    <SelectItem value="all_members">All Members</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               {['post', 'comment', 'discuss', 'invite', 'chat'].map((action) => (
                 <div key={action}>
                   <Label>Who can {action}</Label>

@@ -16,18 +16,27 @@ import {
   MapPin,
   Clock,
   Check,
-  Pin
+  Pin,
+  Lock,
+  Globe,
+  DollarSign,
+  Video,
+  ChevronRight
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import ChatDock from '../components/ChatDock';
 import SEOHead from '../components/SEOHead';
 import CreateEventModal from '../components/CreateEventModal';
 import CreateGroupModal from '../components/CreateGroupModal';
+import CreateStandaloneEventModal from '../components/CreateStandaloneEventModal';
 import GroupDiscussions from '../components/GroupDiscussions';
 import GroupChatWindow from '../components/GroupChatWindow';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../integrations/supabase/client';
 import { useAuth } from '../context/AuthContext';
 import { useChatDock } from '../context/ChatDockContext';
+import { usePremiumStatus } from '../hooks/usePremiumStatus';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -35,6 +44,8 @@ const Community: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { openChatWith } = useChatDock();
+  const { isPremium, premiumTier } = usePremiumStatus();
+  const isGold = premiumTier === 'gold';
   const navigate = useNavigate();
   
   const [activeTab, setActiveTab] = useState<'networking' | 'discussion' | 'events' | 'groups'>('networking');
@@ -45,14 +56,20 @@ const Community: React.FC = () => {
   const [connectionStates, setConnectionStates] = useState<{[key: string]: {isConnected: boolean, hasPendingRequest: boolean}}>({});
   const [showCreateEventModal, setShowCreateEventModal] = useState(false);
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
+  const [showCreateStandaloneEventModal, setShowCreateStandaloneEventModal] = useState(false);
   const [events, setEvents] = useState<any[]>([]);
+  const [standaloneEvents, setStandaloneEvents] = useState<any[]>([]);
+  const [publicGroupEvents, setPublicGroupEvents] = useState<any[]>([]);
   const [groups, setGroups] = useState<any[]>([]);
   const [discussions, setDiscussions] = useState<any[]>([]);
+  const [publicGroupDiscussions, setPublicGroupDiscussions] = useState<any[]>([]);
   const [userAttendance, setUserAttendance] = useState<{[key: string]: string}>({});
   const [selectedGroup, setSelectedGroup] = useState<{ id: string; name: string; view: 'discussions' | 'chat' } | null>(null);
   const [newDiscussionTitle, setNewDiscussionTitle] = useState('');
   const [newDiscussionContent, setNewDiscussionContent] = useState('');
   const [showNewDiscussion, setShowNewDiscussion] = useState(false);
+  const [userGroupMemberships, setUserGroupMemberships] = useState<string[]>([]);
+  const [mutualConnections, setMutualConnections] = useState<Record<string, number>>({});
 
   // Fetch events from database
   useEffect(() => {
@@ -70,30 +87,57 @@ const Community: React.FC = () => {
 
   const fetchEvents = async () => {
     try {
-      const { data, error } = await supabase
+      // 1. Fetch regular events
+      const { data: regularData, error: regularError } = await supabase
         .from('events')
         .select('*')
         .gte('event_date', new Date().toISOString())
         .order('event_date', { ascending: true })
         .limit(20);
 
-      if (error) throw error;
-      setEvents(data || []);
+      if (regularError) throw regularError;
+      setEvents(regularData || []);
+      
+      // 2. Fetch standalone events (Gold feature)
+      const { data: standaloneData } = await supabase
+        .from('standalone_events')
+        .select('*')
+        .gte('event_date', new Date().toISOString())
+        .order('event_date', { ascending: true })
+        .limit(20);
+      
+      setStandaloneEvents(standaloneData || []);
+
+      // 3. Fetch public group events
+      const { data: publicGroupData } = await supabase
+        .from('group_events')
+        .select('*, group:groups(id, name)')
+        .eq('is_public', true)
+        .gte('start_date', new Date().toISOString().split('T')[0])
+        .order('start_date', { ascending: true })
+        .limit(20);
+
+      setPublicGroupEvents(publicGroupData || []);
       
       // Fetch user attendance if logged in
-      if (user && data && data.length > 0) {
-        const eventIds = data.map(e => e.id);
-        const { data: attendanceData } = await supabase
-          .from('event_attendees')
-          .select('event_id, status')
-          .eq('user_id', user.id)
-          .in('event_id', eventIds);
+      if (user) {
+        const allEventIds = [
+          ...(regularData || []).map(e => e.id),
+        ];
         
-        const attendanceMap: {[key: string]: string} = {};
-        attendanceData?.forEach(a => {
-          attendanceMap[a.event_id] = a.status;
-        });
-        setUserAttendance(attendanceMap);
+        if (allEventIds.length > 0) {
+          const { data: attendanceData } = await supabase
+            .from('event_attendees')
+            .select('event_id, status')
+            .eq('user_id', user.id)
+            .in('event_id', allEventIds);
+          
+          const attendanceMap: {[key: string]: string} = {};
+          attendanceData?.forEach(a => {
+            attendanceMap[a.event_id] = a.status;
+          });
+          setUserAttendance(attendanceMap);
+        }
       }
     } catch (error) {
       console.error('Error fetching events:', error);
@@ -102,7 +146,8 @@ const Community: React.FC = () => {
 
   const fetchDiscussions = async () => {
     try {
-      const { data, error } = await supabase
+      // 1. Fetch community discussions
+      const { data: communityData, error } = await supabase
         .from('community_discussions')
         .select(`
           *,
@@ -113,7 +158,32 @@ const Community: React.FC = () => {
         .limit(20);
 
       if (error) throw error;
-      setDiscussions(data || []);
+      setDiscussions(communityData || []);
+
+      // 2. Fetch public group discussions
+      const { data: publicData } = await supabase
+        .from('group_discussions')
+        .select(`
+          *,
+          group:groups(id, name)
+        `)
+        .eq('is_public', true)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      // Fetch author info for public discussions
+      const publicWithAuthors = await Promise.all(
+        (publicData || []).map(async (d) => {
+          const { data: authorData } = await supabase
+            .from('user_profiles')
+            .select('id, full_name, profile_photo')
+            .eq('id', d.author_id)
+            .single();
+          return { ...d, author: authorData };
+        })
+      );
+
+      setPublicGroupDiscussions(publicWithAuthors);
     } catch (error) {
       console.error('Error fetching discussions:', error);
     }
@@ -220,7 +290,58 @@ const Community: React.FC = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setGroups(data || []);
+      
+      // If logged in, fetch user's group memberships
+      let memberships: string[] = [];
+      if (user) {
+        const { data: membershipData } = await supabase
+          .from('group_members')
+          .select('group_id')
+          .eq('user_id', user.id);
+        
+        memberships = membershipData?.map(m => m.group_id) || [];
+        setUserGroupMemberships(memberships);
+      }
+
+      // Filter out private groups user is not a member of
+      const visibleGroups = (data || []).filter(group => {
+        if (!group.is_private) return true; // Public groups visible to all
+        if (!user) return false; // Private groups hidden from non-logged-in users
+        return memberships.includes(group.id); // Private groups visible to members
+      });
+
+      setGroups(visibleGroups);
+
+      // Fetch mutual connections count for each group
+      if (user && visibleGroups.length > 0) {
+        const mutuals: Record<string, number> = {};
+        
+        // Get user's connections first
+        const { data: connections } = await supabase
+          .from('connections')
+          .select('user_1_id, user_2_id')
+          .or(`user_1_id.eq.${user.id},user_2_id.eq.${user.id}`);
+        
+        const connectedUserIds = (connections || []).map(c => 
+          c.user_1_id === user.id ? c.user_2_id : c.user_1_id
+        );
+
+        // For each group, count how many connections are members
+        for (const group of visibleGroups) {
+          const { data: members } = await supabase
+            .from('group_members')
+            .select('user_id')
+            .eq('group_id', group.id)
+            .eq('status', 'active')
+            .neq('user_id', user.id);
+          
+          const memberIds = (members || []).map(m => m.user_id);
+          const mutualCount = memberIds.filter(id => connectedUserIds.includes(id)).length;
+          mutuals[group.id] = mutualCount;
+        }
+        
+        setMutualConnections(mutuals);
+      }
     } catch (error) {
       console.error('Error fetching groups:', error);
     }
@@ -475,108 +596,242 @@ const Community: React.FC = () => {
       )}
 
       <div className="space-y-4">
-        {discussions.length === 0 ? (
+        {discussions.length === 0 && publicGroupDiscussions.length === 0 ? (
           <div className="bg-card rounded-2xl shadow-sm p-6 text-center">
             <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">{t('communityDiscussions.noDiscussions', 'No discussions yet. Be the first to start one!')}</p>
           </div>
         ) : (
-          discussions.map((discussion) => (
-            <div key={discussion.id} className="bg-card rounded-2xl shadow-sm p-6">
-              <div className="flex items-start gap-3">
-                {discussion.author?.profile_photo ? (
-                  <img src={discussion.author.profile_photo} alt="" className="w-10 h-10 rounded-full object-cover" />
-                ) : (
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">
-                    {(discussion.author?.full_name || 'U').charAt(0)}
-                  </div>
-                )}
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    {discussion.is_pinned && <Pin className="h-4 w-4 text-primary" />}
-                    <h4 className="font-semibold text-foreground">{discussion.title}</h4>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {discussion.author?.full_name} • {format(new Date(discussion.created_at), 'MMM d, yyyy')}
-                  </p>
-                  {discussion.content && (
-                    <p className="text-muted-foreground line-clamp-2">{discussion.content}</p>
+          <>
+            {/* Community Discussions */}
+            {discussions.map((discussion) => (
+              <div key={`community-${discussion.id}`} className="bg-card rounded-2xl shadow-sm p-6">
+                <div className="flex items-start gap-3">
+                  {discussion.author?.profile_photo ? (
+                    <img src={discussion.author.profile_photo} alt="" className="w-10 h-10 rounded-full object-cover" />
+                  ) : (
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-semibold">
+                      {(discussion.author?.full_name || 'U').charAt(0)}
+                    </div>
                   )}
-                  <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <MessageSquare className="h-4 w-4" />
-                      {discussion.reply_count || 0} {t('communityDiscussions.replies', 'replies')}
-                    </span>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      {discussion.is_pinned && <Pin className="h-4 w-4 text-primary" />}
+                      <h4 className="font-semibold text-foreground">{discussion.title}</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {discussion.author?.full_name} • {format(new Date(discussion.created_at), 'MMM d, yyyy')}
+                    </p>
+                    {discussion.content && (
+                      <p className="text-muted-foreground line-clamp-2">{discussion.content}</p>
+                    )}
+                    <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <MessageSquare className="h-4 w-4" />
+                        {discussion.reply_count || 0} {t('communityDiscussions.replies', 'replies')}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))
+            ))}
+
+            {/* Public Group Discussions */}
+            {publicGroupDiscussions.map((discussion) => (
+              <div 
+                key={`group-${discussion.id}`} 
+                className="bg-card rounded-2xl shadow-sm p-6 cursor-pointer hover:border-primary/50 border border-transparent transition-colors"
+                onClick={() => navigate(`/group/${discussion.group_id}`)}
+              >
+                <div className="flex items-start gap-3">
+                  {discussion.author?.profile_photo ? (
+                    <img src={discussion.author.profile_photo} alt="" className="w-10 h-10 rounded-full object-cover" />
+                  ) : (
+                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold">
+                      {(discussion.author?.full_name || 'U').charAt(0)}
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge variant="secondary" className="text-xs">
+                        <Hash className="h-3 w-3 mr-1" />
+                        {discussion.group?.name || 'Group'}
+                      </Badge>
+                      {discussion.is_pinned && <Pin className="h-4 w-4 text-primary" />}
+                    </div>
+                    <h4 className="font-semibold text-foreground">{discussion.title}</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {discussion.author?.full_name} • {format(new Date(discussion.created_at), 'MMM d, yyyy')}
+                    </p>
+                    {discussion.content && (
+                      <p className="text-muted-foreground line-clamp-2">{discussion.content}</p>
+                    )}
+                    <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <MessageSquare className="h-4 w-4" />
+                        {discussion.reply_count || 0} {t('communityDiscussions.replies', 'replies')}
+                      </span>
+                      <ChevronRight className="h-4 w-4 text-primary" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </>
         )}
       </div>
     </div>
   );
 
-  const renderEvents = () => (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-foreground">{t('community.events.title')}</h3>
-        <button 
-          onClick={() => setShowCreateEventModal(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200"
-        >
-          <Plus className="h-4 w-4" />
-          <span>{t('community.events.createEvent')}</span>
-        </button>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {events.length === 0 ? (
-          <div className="col-span-full bg-card rounded-2xl shadow-sm p-6 text-center">
-            <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">{t('communityEvents.noEvents', 'No upcoming events. Create one!')}</p>
+  const renderEvents = () => {
+    // Combine all events with type indicator
+    const allEvents = [
+      ...events.map(e => ({ ...e, eventType: 'regular', dateField: e.event_date })),
+      ...standaloneEvents.map(e => ({ ...e, eventType: 'standalone', dateField: e.event_date })),
+      ...publicGroupEvents.map(e => ({ 
+        ...e, 
+        eventType: 'group',
+        dateField: e.start_date,
+        event_date: e.start_date,
+        cover_image_url: e.cover_image
+      }))
+    ].sort((a, b) => new Date(a.dateField).getTime() - new Date(b.dateField).getTime());
+
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <h3 className="text-xl font-semibold text-foreground">{t('community.events.title')}</h3>
+          <div className="flex gap-2">
+            {isGold && (
+              <Button 
+                onClick={() => setShowCreateStandaloneEventModal(true)}
+                className="gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                {t('events.createEvent', 'Create Event')}
+              </Button>
+            )}
+            <button 
+              onClick={() => setShowCreateEventModal(true)}
+              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200"
+            >
+              <Plus className="h-4 w-4" />
+              <span>{t('community.events.createEvent')}</span>
+            </button>
           </div>
-        ) : (
-          events.map((event) => (
-            <div key={event.id} className="bg-card rounded-2xl shadow-sm p-6">
-              {event.cover_image_url && (
-                <img src={event.cover_image_url} alt={event.title} className="w-full h-32 object-cover rounded-lg mb-4" />
-              )}
-              <div className="flex items-center space-x-2 mb-3">
-                <Calendar className="h-5 w-5 text-primary" />
-                <span className="text-sm text-muted-foreground">
-                  {format(new Date(event.event_date), 'MMM d, yyyy • h:mm a')}
-                </span>
-              </div>
-              <h4 className="font-semibold text-foreground mb-2">{event.title}</h4>
-              {event.location && (
-                <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
-                  <MapPin className="h-4 w-4" />
-                  {event.location}
-                </div>
-              )}
-              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                {event.description}
-              </p>
-              <div className="flex gap-2">
-                <button 
-                  onClick={() => handleRSVP(event.id, 'attending')}
-                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
-                    userAttendance[event.id] === 'attending'
-                      ? 'bg-green-500 text-white'
-                      : 'bg-primary/10 text-primary hover:bg-primary/20'
-                  }`}
-                >
-                  <Check className="h-4 w-4" />
-                  {t('communityEvents.attending', 'Attending')}
-                </button>
-              </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {allEvents.length === 0 ? (
+            <div className="col-span-full bg-card rounded-2xl shadow-sm p-6 text-center">
+              <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">{t('communityEvents.noEvents', 'No upcoming events. Create one!')}</p>
             </div>
-          ))
-        )}
+          ) : (
+            allEvents.map((event) => (
+              <div 
+                key={`${event.eventType}-${event.id}`} 
+                className="bg-card rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => event.eventType === 'group' ? navigate(`/event/${event.id}`) : null}
+              >
+                {/* Cover Image */}
+                {(event.cover_image_url || event.cover_image) && (
+                  <img 
+                    src={event.cover_image_url || event.cover_image} 
+                    alt={event.title} 
+                    className="w-full h-32 object-cover" 
+                  />
+                )}
+                
+                <div className="p-5">
+                  {/* Event Type Badge */}
+                  <div className="flex items-center gap-2 mb-2">
+                    {event.eventType === 'standalone' && (
+                      <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/30">
+                        <Star className="h-3 w-3 mr-1" />
+                        Gold Event
+                      </Badge>
+                    )}
+                    {event.eventType === 'group' && event.group && (
+                      <Badge variant="secondary">
+                        <Hash className="h-3 w-3 mr-1" />
+                        {event.group.name}
+                      </Badge>
+                    )}
+                    {event.is_online && (
+                      <Badge variant="outline" className="gap-1">
+                        <Video className="h-3 w-3" />
+                        Online
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Date */}
+                  <div className="flex items-center space-x-2 mb-3">
+                    <Calendar className="h-5 w-5 text-primary" />
+                    <span className="text-sm text-muted-foreground">
+                      {format(new Date(event.event_date || event.start_date), 'MMM d, yyyy')}
+                      {event.start_time && ` • ${event.start_time}`}
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h4 className="font-semibold text-foreground mb-2">{event.title}</h4>
+
+                  {/* Location */}
+                  {event.location && (
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
+                      <MapPin className="h-4 w-4" />
+                      {event.location}
+                    </div>
+                  )}
+
+                  {/* Description */}
+                  {event.description && (
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                      {event.description}
+                    </p>
+                  )}
+
+                  {/* RSVP button for regular events */}
+                  {event.eventType === 'regular' && (
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRSVP(event.id, 'attending');
+                        }}
+                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
+                          userAttendance[event.id] === 'attending'
+                            ? 'bg-green-500 text-white'
+                            : 'bg-primary/10 text-primary hover:bg-primary/20'
+                        }`}
+                      >
+                        <Check className="h-4 w-4" />
+                        {t('communityEvents.attending', 'Attending')}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* View button for group events */}
+                  {event.eventType === 'group' && (
+                    <Button 
+                      variant="outline" 
+                      className="w-full gap-2"
+                      onClick={() => navigate(`/event/${event.id}`)}
+                    >
+                      View Event
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderGroups = () => {
     // If a group is selected, show discussions or chat
@@ -663,38 +918,79 @@ const Community: React.FC = () => {
             </>
           ) : (
             groups.map((group) => (
-              <div key={group.id} className="bg-card rounded-2xl shadow-sm p-6">
-                <div className="flex items-center space-x-2 mb-3">
-                  <Hash className="h-5 w-5 text-primary" />
-                  <span className="font-semibold text-foreground">{group.name}</span>
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  {group.description}
-                </p>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm text-muted-foreground">{group.member_count || 0} {t('community.groups.members')}</span>
-                  <button 
-                    onClick={() => joinGroup(group.id)}
-                    className="text-primary hover:underline text-sm"
-                  >
-                    {t('community.groups.join', 'Join')}
-                  </button>
-                </div>
-                <div className="flex gap-2">
-                  <button 
-                    onClick={() => setSelectedGroup({ id: group.id, name: group.name, view: 'discussions' })}
-                    className="flex-1 px-3 py-2 text-sm bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors"
-                  >
-                    <MessageSquare className="h-4 w-4 inline mr-1" />
-                    {t('groups.discussions', 'Discussions')}
-                  </button>
-                  <button 
-                    onClick={() => setSelectedGroup({ id: group.id, name: group.name, view: 'chat' })}
-                    className="flex-1 px-3 py-2 text-sm bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors"
-                  >
-                    <MessageCircle className="h-4 w-4 inline mr-1" />
-                    {t('groups.chat', 'Chat')}
-                  </button>
+              <div 
+                key={group.id} 
+                className="bg-card rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => navigate(`/group/${group.id}`)}
+              >
+                {/* Cover Photo */}
+                {(group.cover_photo || group.cover_image) && (
+                  <img 
+                    src={group.cover_photo || group.cover_image} 
+                    alt={group.name} 
+                    className="w-full h-32 object-cover" 
+                  />
+                )}
+                
+                <div className="p-5">
+                  {/* Badges */}
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    {group.is_private ? (
+                      <Badge variant="secondary" className="gap-1">
+                        <Lock className="h-3 w-3" />
+                        Private
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="gap-1">
+                        <Globe className="h-3 w-3" />
+                        Public
+                      </Badge>
+                    )}
+                    {group.membership_type && group.membership_type !== 'free' ? (
+                      <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0">
+                        <DollarSign className="h-3 w-3" />
+                        {group.membership_price}/{group.membership_frequency || 'mo'}
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline">Free</Badge>
+                    )}
+                  </div>
+
+                  {/* Group Name */}
+                  <h4 className="font-semibold text-foreground mb-2">{group.name}</h4>
+                  
+                  {/* Description */}
+                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                    {group.description}
+                  </p>
+                  
+                  {/* Stats */}
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
+                    <span className="flex items-center gap-1">
+                      <Users className="h-4 w-4" />
+                      {group.member_count || 0} members
+                    </span>
+                    {mutualConnections[group.id] > 0 && (
+                      <span className="text-primary">
+                        {mutualConnections[group.id]} mutual
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="default"
+                      size="sm"
+                      className="flex-1"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        joinGroup(group.id);
+                      }}
+                    >
+                      {userGroupMemberships.includes(group.id) ? 'View' : 'Join'}
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))
@@ -925,6 +1221,14 @@ const Community: React.FC = () => {
         onGroupCreated={(group) => {
           setGroups(prev => [group, ...prev]);
           toast.success('Group created successfully!');
+        }}
+      />
+
+      <CreateStandaloneEventModal
+        isOpen={showCreateStandaloneEventModal}
+        onClose={() => setShowCreateStandaloneEventModal(false)}
+        onEventCreated={() => {
+          fetchEvents();
         }}
       />
     </div>

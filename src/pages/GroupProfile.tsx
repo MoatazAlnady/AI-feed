@@ -470,6 +470,7 @@ const GroupProfile: React.FC = () => {
                 groupName={group.name}
                 isMember={isMember}
                 canDiscuss={isMember}
+                allowPublicDiscussions={(group as any).allow_public_discussions || false}
               />
             </TabsContent>
 
@@ -479,6 +480,8 @@ const GroupProfile: React.FC = () => {
                 groupName={group.name}
                 isAdmin={isAdmin}
                 isMember={isMember}
+                whoCanCreateEvents={(group as any).who_can_create_events || 'admins'}
+                userRole={membership?.role || 'member'}
               />
             </TabsContent>
           </Tabs>
