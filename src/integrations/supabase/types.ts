@@ -1177,6 +1177,38 @@ export type Database = {
           },
         ]
       }
+      discussion_poll_votes: {
+        Row: {
+          discussion_id: string
+          id: string
+          option_index: number
+          user_id: string
+          voted_at: string | null
+        }
+        Insert: {
+          discussion_id: string
+          id?: string
+          option_index: number
+          user_id: string
+          voted_at?: string | null
+        }
+        Update: {
+          discussion_id?: string
+          id?: string
+          option_index?: number
+          user_id?: string
+          voted_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discussion_poll_votes_discussion_id_fkey"
+            columns: ["discussion_id"]
+            isOneToOne: false
+            referencedRelation: "group_discussions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       discussion_replies: {
         Row: {
           author_id: string
@@ -1224,6 +1256,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      discussion_tags: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
       }
       employer_projects: {
         Row: {
@@ -1436,15 +1489,175 @@ export type Database = {
           },
         ]
       }
+      group_discussion_participants: {
+        Row: {
+          discussion_id: string
+          id: string
+          joined_at: string | null
+          user_id: string
+        }
+        Insert: {
+          discussion_id: string
+          id?: string
+          joined_at?: string | null
+          user_id: string
+        }
+        Update: {
+          discussion_id?: string
+          id?: string
+          joined_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_discussion_participants_discussion_id_fkey"
+            columns: ["discussion_id"]
+            isOneToOne: false
+            referencedRelation: "group_discussions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_discussion_tags: {
+        Row: {
+          created_at: string | null
+          discussion_id: string
+          id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          discussion_id: string
+          id?: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string | null
+          discussion_id?: string
+          id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_discussion_tags_discussion_id_fkey"
+            columns: ["discussion_id"]
+            isOneToOne: false
+            referencedRelation: "group_discussions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_discussion_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "discussion_tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       group_discussions: {
         Row: {
+          attachments: Json | null
           author_id: string
           content: string | null
           created_at: string | null
           group_id: string
+          has_participant_chat: boolean | null
           id: string
+          is_approved: boolean | null
           is_pinned: boolean | null
+          media_urls: string[] | null
+          poll_end_date: string | null
+          poll_options: Json | null
           reply_count: number | null
+          subtitle: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          attachments?: Json | null
+          author_id: string
+          content?: string | null
+          created_at?: string | null
+          group_id: string
+          has_participant_chat?: boolean | null
+          id?: string
+          is_approved?: boolean | null
+          is_pinned?: boolean | null
+          media_urls?: string[] | null
+          poll_end_date?: string | null
+          poll_options?: Json | null
+          reply_count?: number | null
+          subtitle?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          attachments?: Json | null
+          author_id?: string
+          content?: string | null
+          created_at?: string | null
+          group_id?: string
+          has_participant_chat?: boolean | null
+          id?: string
+          is_approved?: boolean | null
+          is_pinned?: boolean | null
+          media_urls?: string[] | null
+          poll_end_date?: string | null
+          poll_options?: Json | null
+          reply_count?: number | null
+          subtitle?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_discussions_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_event_attendees: {
+        Row: {
+          created_at: string | null
+          event_id: string
+          id: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_id: string
+          id?: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string
+          id?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_event_attendees_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "group_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_event_discussions: {
+        Row: {
+          author_id: string
+          content: string | null
+          created_at: string | null
+          event_id: string
+          id: string
           title: string
           updated_at: string | null
         }
@@ -1452,10 +1665,8 @@ export type Database = {
           author_id: string
           content?: string | null
           created_at?: string | null
-          group_id: string
+          event_id: string
           id?: string
-          is_pinned?: boolean | null
-          reply_count?: number | null
           title: string
           updated_at?: string | null
         }
@@ -1463,16 +1674,126 @@ export type Database = {
           author_id?: string
           content?: string | null
           created_at?: string | null
-          group_id?: string
+          event_id?: string
           id?: string
-          is_pinned?: boolean | null
-          reply_count?: number | null
           title?: string
           updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "group_discussions_group_id_fkey"
+            foreignKeyName: "group_event_discussions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "group_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_event_posts: {
+        Row: {
+          author_id: string
+          comments_count: number | null
+          content: string
+          created_at: string | null
+          event_id: string
+          id: string
+          likes_count: number | null
+          media_urls: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          comments_count?: number | null
+          content: string
+          created_at?: string | null
+          event_id: string
+          id?: string
+          likes_count?: number | null
+          media_urls?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          comments_count?: number | null
+          content?: string
+          created_at?: string | null
+          event_id?: string
+          id?: string
+          likes_count?: number | null
+          media_urls?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_event_posts_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "group_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_events: {
+        Row: {
+          cover_image: string | null
+          created_at: string | null
+          created_by: string
+          description: string | null
+          end_date: string | null
+          end_time: string | null
+          group_id: string
+          id: string
+          is_online: boolean | null
+          is_public: boolean | null
+          location: string | null
+          max_attendees: number | null
+          online_link: string | null
+          start_date: string
+          start_time: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          cover_image?: string | null
+          created_at?: string | null
+          created_by: string
+          description?: string | null
+          end_date?: string | null
+          end_time?: string | null
+          group_id: string
+          id?: string
+          is_online?: boolean | null
+          is_public?: boolean | null
+          location?: string | null
+          max_attendees?: number | null
+          online_link?: string | null
+          start_date: string
+          start_time?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          cover_image?: string | null
+          created_at?: string | null
+          created_by?: string
+          description?: string | null
+          end_date?: string | null
+          end_time?: string | null
+          group_id?: string
+          id?: string
+          is_online?: boolean | null
+          is_public?: boolean | null
+          location?: string | null
+          max_attendees?: number | null
+          online_link?: string | null
+          start_date?: string
+          start_time?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_events_group_id_fkey"
             columns: ["group_id"]
             isOneToOne: false
             referencedRelation: "groups"
@@ -1551,24 +1872,36 @@ export type Database = {
       }
       group_members: {
         Row: {
+          banned_at: string | null
+          banned_reason: string | null
           group_id: string
           id: string
           joined_at: string
+          muted_until: string | null
           role: string
+          status: string | null
           user_id: string
         }
         Insert: {
+          banned_at?: string | null
+          banned_reason?: string | null
           group_id: string
           id?: string
           joined_at?: string
+          muted_until?: string | null
           role?: string
+          status?: string | null
           user_id: string
         }
         Update: {
+          banned_at?: string | null
+          banned_reason?: string | null
           group_id?: string
           id?: string
           joined_at?: string
+          muted_until?: string | null
           role?: string
+          status?: string | null
           user_id?: string
         }
         Relationships: [
@@ -1591,6 +1924,56 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "user_profiles_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_memberships: {
+        Row: {
+          cancelled_at: string | null
+          created_at: string | null
+          expires_at: string | null
+          group_id: string
+          id: string
+          started_at: string | null
+          status: string | null
+          stripe_payment_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cancelled_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          group_id: string
+          id?: string
+          started_at?: string | null
+          status?: string | null
+          stripe_payment_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cancelled_at?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          group_id?: string
+          id?: string
+          started_at?: string | null
+          status?: string | null
+          stripe_payment_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_memberships_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
             referencedColumns: ["id"]
           },
         ]
@@ -1749,42 +2132,102 @@ export type Database = {
           auto_approve_posts: boolean | null
           category: string | null
           cover_image: string | null
+          cover_photo: string | null
           created_at: string
           creator_id: string
           description: string | null
+          discussions_need_approval: boolean | null
           id: string
           is_private: boolean | null
+          join_questions: Json | null
+          join_type: string | null
           member_count: number | null
+          members_can_view_members: boolean | null
+          membership_currency: string | null
+          membership_frequency: string | null
+          membership_price: number | null
+          membership_type: string | null
           name: string
+          posts_need_approval: boolean | null
+          posts_visibility: string | null
+          require_approval: boolean | null
+          rules: string | null
+          stripe_price_id: string | null
           updated_at: string
+          welcome_message: string | null
+          who_can_chat: string | null
+          who_can_comment: string | null
+          who_can_discuss: string | null
+          who_can_invite: string | null
+          who_can_post: string | null
         }
         Insert: {
           auto_approve_members?: boolean | null
           auto_approve_posts?: boolean | null
           category?: string | null
           cover_image?: string | null
+          cover_photo?: string | null
           created_at?: string
           creator_id: string
           description?: string | null
+          discussions_need_approval?: boolean | null
           id?: string
           is_private?: boolean | null
+          join_questions?: Json | null
+          join_type?: string | null
           member_count?: number | null
+          members_can_view_members?: boolean | null
+          membership_currency?: string | null
+          membership_frequency?: string | null
+          membership_price?: number | null
+          membership_type?: string | null
           name: string
+          posts_need_approval?: boolean | null
+          posts_visibility?: string | null
+          require_approval?: boolean | null
+          rules?: string | null
+          stripe_price_id?: string | null
           updated_at?: string
+          welcome_message?: string | null
+          who_can_chat?: string | null
+          who_can_comment?: string | null
+          who_can_discuss?: string | null
+          who_can_invite?: string | null
+          who_can_post?: string | null
         }
         Update: {
           auto_approve_members?: boolean | null
           auto_approve_posts?: boolean | null
           category?: string | null
           cover_image?: string | null
+          cover_photo?: string | null
           created_at?: string
           creator_id?: string
           description?: string | null
+          discussions_need_approval?: boolean | null
           id?: string
           is_private?: boolean | null
+          join_questions?: Json | null
+          join_type?: string | null
           member_count?: number | null
+          members_can_view_members?: boolean | null
+          membership_currency?: string | null
+          membership_frequency?: string | null
+          membership_price?: number | null
+          membership_type?: string | null
           name?: string
+          posts_need_approval?: boolean | null
+          posts_visibility?: string | null
+          require_approval?: boolean | null
+          rules?: string | null
+          stripe_price_id?: string | null
           updated_at?: string
+          welcome_message?: string | null
+          who_can_chat?: string | null
+          who_can_comment?: string | null
+          who_can_discuss?: string | null
+          who_can_invite?: string | null
+          who_can_post?: string | null
         }
         Relationships: []
       }
