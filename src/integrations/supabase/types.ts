@@ -1831,6 +1831,7 @@ export type Database = {
           group_id: string
           has_participant_chat: boolean | null
           id: string
+          interests: string[] | null
           is_approved: boolean | null
           is_pinned: boolean | null
           is_public: boolean | null
@@ -1839,6 +1840,7 @@ export type Database = {
           poll_options: Json | null
           reply_count: number | null
           subtitle: string | null
+          tags: string[] | null
           title: string
           updated_at: string | null
         }
@@ -1850,6 +1852,7 @@ export type Database = {
           group_id: string
           has_participant_chat?: boolean | null
           id?: string
+          interests?: string[] | null
           is_approved?: boolean | null
           is_pinned?: boolean | null
           is_public?: boolean | null
@@ -1858,6 +1861,7 @@ export type Database = {
           poll_options?: Json | null
           reply_count?: number | null
           subtitle?: string | null
+          tags?: string[] | null
           title: string
           updated_at?: string | null
         }
@@ -1869,6 +1873,7 @@ export type Database = {
           group_id?: string
           has_participant_chat?: boolean | null
           id?: string
+          interests?: string[] | null
           is_approved?: boolean | null
           is_pinned?: boolean | null
           is_public?: boolean | null
@@ -1877,6 +1882,7 @@ export type Database = {
           poll_options?: Json | null
           reply_count?: number | null
           subtitle?: string | null
+          tags?: string[] | null
           title?: string
           updated_at?: string | null
         }
@@ -2014,6 +2020,7 @@ export type Database = {
           end_time: string | null
           group_id: string
           id: string
+          interests: string[] | null
           is_online: boolean | null
           is_public: boolean | null
           location: string | null
@@ -2021,6 +2028,7 @@ export type Database = {
           online_link: string | null
           start_date: string
           start_time: string | null
+          tags: string[] | null
           title: string
           updated_at: string | null
         }
@@ -2033,6 +2041,7 @@ export type Database = {
           end_time?: string | null
           group_id: string
           id?: string
+          interests?: string[] | null
           is_online?: boolean | null
           is_public?: boolean | null
           location?: string | null
@@ -2040,6 +2049,7 @@ export type Database = {
           online_link?: string | null
           start_date: string
           start_time?: string | null
+          tags?: string[] | null
           title: string
           updated_at?: string | null
         }
@@ -2052,6 +2062,7 @@ export type Database = {
           end_time?: string | null
           group_id?: string
           id?: string
+          interests?: string[] | null
           is_online?: boolean | null
           is_public?: boolean | null
           location?: string | null
@@ -2059,6 +2070,7 @@ export type Database = {
           online_link?: string | null
           start_date?: string
           start_time?: string | null
+          tags?: string[] | null
           title?: string
           updated_at?: string | null
         }
@@ -2410,6 +2422,7 @@ export type Database = {
           description: string | null
           discussions_need_approval: boolean | null
           id: string
+          interests: string[] | null
           is_private: boolean | null
           join_questions: Json | null
           join_type: string | null
@@ -2425,6 +2438,7 @@ export type Database = {
           require_approval: boolean | null
           rules: string | null
           stripe_price_id: string | null
+          tags: string[] | null
           updated_at: string
           welcome_message: string | null
           who_can_chat: string | null
@@ -2446,6 +2460,7 @@ export type Database = {
           description?: string | null
           discussions_need_approval?: boolean | null
           id?: string
+          interests?: string[] | null
           is_private?: boolean | null
           join_questions?: Json | null
           join_type?: string | null
@@ -2461,6 +2476,7 @@ export type Database = {
           require_approval?: boolean | null
           rules?: string | null
           stripe_price_id?: string | null
+          tags?: string[] | null
           updated_at?: string
           welcome_message?: string | null
           who_can_chat?: string | null
@@ -2482,6 +2498,7 @@ export type Database = {
           description?: string | null
           discussions_need_approval?: boolean | null
           id?: string
+          interests?: string[] | null
           is_private?: boolean | null
           join_questions?: Json | null
           join_type?: string | null
@@ -2497,6 +2514,7 @@ export type Database = {
           require_approval?: boolean | null
           rules?: string | null
           stripe_price_id?: string | null
+          tags?: string[] | null
           updated_at?: string
           welcome_message?: string | null
           who_can_chat?: string | null
@@ -3786,7 +3804,11 @@ export type Database = {
           group_ids: string[] | null
           id: string
           original_article_id: string | null
+          original_discussion_id: string | null
+          original_group_event_id: string | null
+          original_group_id: string | null
           original_post_id: string | null
+          original_standalone_event_id: string | null
           original_tool_id: string | null
           share_text: string | null
           updated_at: string
@@ -3799,7 +3821,11 @@ export type Database = {
           group_ids?: string[] | null
           id?: string
           original_article_id?: string | null
+          original_discussion_id?: string | null
+          original_group_event_id?: string | null
+          original_group_id?: string | null
           original_post_id?: string | null
+          original_standalone_event_id?: string | null
           original_tool_id?: string | null
           share_text?: string | null
           updated_at?: string
@@ -3812,7 +3838,11 @@ export type Database = {
           group_ids?: string[] | null
           id?: string
           original_article_id?: string | null
+          original_discussion_id?: string | null
+          original_group_event_id?: string | null
+          original_group_id?: string | null
           original_post_id?: string | null
+          original_standalone_event_id?: string | null
           original_tool_id?: string | null
           share_text?: string | null
           updated_at?: string
@@ -3828,10 +3858,38 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "shared_posts_original_discussion_id_fkey"
+            columns: ["original_discussion_id"]
+            isOneToOne: false
+            referencedRelation: "group_discussions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_posts_original_group_event_id_fkey"
+            columns: ["original_group_event_id"]
+            isOneToOne: false
+            referencedRelation: "group_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_posts_original_group_id_fkey"
+            columns: ["original_group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "shared_posts_original_post_id_fkey"
             columns: ["original_post_id"]
             isOneToOne: false
             referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_posts_original_standalone_event_id_fkey"
+            columns: ["original_standalone_event_id"]
+            isOneToOne: false
+            referencedRelation: "standalone_events"
             referencedColumns: ["id"]
           },
           {
@@ -3969,10 +4027,12 @@ export type Database = {
           event_date: string
           event_end_date: string | null
           id: string
+          interests: string[] | null
           is_online: boolean | null
           location: string | null
           max_attendees: number | null
           online_link: string | null
+          tags: string[] | null
           title: string
           updated_at: string | null
         }
@@ -3985,10 +4045,12 @@ export type Database = {
           event_date: string
           event_end_date?: string | null
           id?: string
+          interests?: string[] | null
           is_online?: boolean | null
           location?: string | null
           max_attendees?: number | null
           online_link?: string | null
+          tags?: string[] | null
           title: string
           updated_at?: string | null
         }
@@ -4001,10 +4063,12 @@ export type Database = {
           event_date?: string
           event_end_date?: string | null
           id?: string
+          interests?: string[] | null
           is_online?: boolean | null
           location?: string | null
           max_attendees?: number | null
           online_link?: string | null
+          tags?: string[] | null
           title?: string
           updated_at?: string | null
         }
