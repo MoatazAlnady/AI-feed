@@ -120,6 +120,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       case 'creator_update': return Sparkles;
       case 'event_invitation': return Calendar;
       case 'connection_request': return UserPlus;
+      case 'creator_event_attendance': return Calendar;
       default: return Bell;
     }
   };
@@ -135,6 +136,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       case 'creator_update': return 'text-orange-500 bg-orange-50 dark:bg-orange-900/20';
       case 'event_invitation': return 'text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20';
       case 'connection_request': return 'text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20';
+      case 'creator_event_attendance': return 'text-purple-500 bg-purple-50 dark:bg-purple-900/20';
       default: return 'text-gray-500 bg-gray-50 dark:bg-gray-700';
     }
   };

@@ -35,6 +35,8 @@ import LinkPreview from './LinkPreview';
 import ProfileHoverCard from './ProfileHoverCard';
 import MentionInput from './MentionInput';
 import PremiumBadge from './PremiumBadge';
+import ArticleCard from './feed/ArticleCard';
+import SharedArticleCard from './feed/SharedArticleCard';
 
 interface Post {
   id: string;
@@ -95,7 +97,9 @@ interface Comment {
 
 const NewsFeed: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [posts, setPosts] = useState<Post[]>([]);
+  const [profilesMap, setProfilesMap] = useState<Map<string, any>>(new Map());
   const [newComment, setNewComment] = useState<{ [key: string]: string }>({});
   const [showComments, setShowComments] = useState<{ [key: string]: boolean }>({});
   const [editingPost, setEditingPost] = useState<string | null>(null);
@@ -111,7 +115,6 @@ const NewsFeed: React.FC = () => {
   const [editCommentContent, setEditCommentContent] = useState('');
   const [replyingTo, setReplyingTo] = useState<{ postId: string; commentId: string; authorName: string } | null>(null);
   const [replyContent, setReplyContent] = useState('');
-  const navigate = useNavigate();
 
   // Get user interests for personalized feed
   const userInterests = user?.user_metadata?.interests || [];
@@ -230,12 +233,13 @@ const NewsFeed: React.FC = () => {
         console.error('Error fetching posts:', postsError);
       }
 
-      // Fetch shared posts with original post data
+      // Fetch shared posts with original post AND article data
       const { data: sharedPostsData, error: sharedError } = await supabase
         .from('shared_posts')
         .select(`
           *,
-          original_post:posts!shared_posts_original_post_id_fkey(*)
+          original_post:posts!shared_posts_original_post_id_fkey(*),
+          original_article:articles!shared_posts_original_article_id_fkey(*)
         `)
         .order('created_at', { ascending: false })
         .limit(50);
@@ -273,14 +277,32 @@ const NewsFeed: React.FC = () => {
 
       const allPosts: any[] = [];
       if (postsData) allPosts.push(...postsData.map(post => ({ ...post, type: 'original' })));
-      if (sharedPostsData) allPosts.push(...sharedPostsData.map(share => ({ 
-        ...share.original_post, 
-        type: 'shared',
-        shared_by: share.user_id,
-        share_text: share.share_text,
-        shared_at: share.created_at,
-        sharedPostId: share.id
-      })));
+      
+      // Handle shared posts AND shared articles
+      if (sharedPostsData) {
+        sharedPostsData.forEach(share => {
+          if (share.content_type === 'article' && share.original_article) {
+            allPosts.push({
+              ...share.original_article,
+              type: 'shared_article',
+              shared_by: share.user_id,
+              share_text: share.share_text,
+              shared_at: share.created_at,
+              sharedPostId: share.id
+            });
+          } else if (share.original_post) {
+            allPosts.push({
+              ...share.original_post,
+              type: 'shared',
+              shared_by: share.user_id,
+              share_text: share.share_text,
+              shared_at: share.created_at,
+              sharedPostId: share.id
+            });
+          }
+        });
+      }
+      
       if (articlesData) allPosts.push(...articlesData);
 
       // Sort all posts by creation time
@@ -298,10 +320,10 @@ const NewsFeed: React.FC = () => {
         return;
       }
 
-      // Fetch user profiles for each post
+      // Fetch user profiles for each post (including sharers for both shared posts and shared articles)
       const userIds = [...new Set(allPosts.flatMap(post => [
         post.user_id, 
-        post.type === 'shared' ? post.shared_by : null
+        post.type === 'shared' || post.type === 'shared_article' ? post.shared_by : null
       ]).filter(Boolean))];
       console.log('User IDs from posts:', userIds);
       let userProfiles = [];
@@ -321,7 +343,8 @@ const NewsFeed: React.FC = () => {
         }
       }
 
-      const profilesMap = new Map(userProfiles.map(profile => [profile.id, profile]));
+      const profilesMapLocal = new Map(userProfiles.map(profile => [profile.id, profile]));
+      setProfilesMap(profilesMapLocal); // Store in state for render access
 
       // Fetch user's followed creators with status for prioritization
       let followedCreators: { following_id: string; follow_status: string }[] = [];
@@ -393,8 +416,13 @@ const NewsFeed: React.FC = () => {
       });
 
       const formattedPosts = filteredPosts.map(post => {
-        const profile = profilesMap.get(post.user_id);
-        const sharedByProfile = post.type === 'shared' ? profilesMap.get(post.shared_by) : null;
+        // Skip articles - they're rendered separately
+        if (post.type === 'article' || post.type === 'shared_article') {
+          return post;
+        }
+        
+        const profile = profilesMapLocal.get(post.user_id);
+        const sharedByProfile = post.type === 'shared' ? profilesMapLocal.get(post.shared_by) : null;
         console.log(`Post ${post.id}: user_id = ${post.user_id}, found profile:`, profile);
         
         // If no profile found, try to get user data from auth context for current user
@@ -1112,7 +1140,40 @@ const NewsFeed: React.FC = () => {
         </div>
       )}
 
-      {posts.map((post: any, index: number) => (
+      {posts.map((post: any, index: number) => {
+        // Handle Article type
+        if (post.type === 'article') {
+          return (
+            <ArticleCard
+              key={`article-${post.id}`}
+              article={post}
+              onShare={(article) => setShareModalArticle(article)}
+            />
+          );
+        }
+
+        // Handle Shared Article type
+        if (post.type === 'shared_article') {
+          const sharedByProfile = profilesMap.get(post.shared_by);
+          return (
+            <SharedArticleCard
+              key={`shared-article-${post.id}-${index}`}
+              article={post}
+              sharedBy={{
+                id: post.shared_by,
+                name: sharedByProfile?.full_name || 'Someone',
+                avatar: sharedByProfile?.avatar_url,
+                handle: sharedByProfile?.handle
+              }}
+              shareText={post.share_text || ''}
+              sharedAt={new Date(post.shared_at).toLocaleDateString()}
+              onShare={(article) => setShareModalArticle(article)}
+            />
+          );
+        }
+
+        // Regular posts and shared posts
+        return (
         <div 
           key={post.type === 'shared' ? `shared-${post.id}-${index}` : post.id}
           className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6"
@@ -1599,9 +1660,10 @@ const NewsFeed: React.FC = () => {
             </div>
           </div>
         </div>
-      ))}
+        );
+      })}
 
-      {/* Share Modal */}
+      {/* Share Modal for Posts */}
       {shareModalPost && (
         <SharePostModal
           isOpen={!!shareModalPost}
@@ -1611,6 +1673,27 @@ const NewsFeed: React.FC = () => {
             handleShareComplete(shareModalPost.id); // Update share count
             fetchPosts(); // Refresh posts to show the shared post
             setShareModalPost(null);
+          }}
+        />
+      )}
+
+      {/* Share Modal for Articles */}
+      {shareModalArticle && (
+        <SharePostModal
+          isOpen={!!shareModalArticle}
+          onClose={() => setShareModalArticle(null)}
+          article={{
+            id: shareModalArticle.id,
+            title: shareModalArticle.title,
+            excerpt: shareModalArticle.excerpt,
+            featured_image_url: shareModalArticle.featured_image_url,
+            user_id: shareModalArticle.user_id,
+            category: shareModalArticle.category,
+            author: shareModalArticle.author
+          }}
+          onShare={() => {
+            fetchPosts();
+            setShareModalArticle(null);
           }}
         />
       )}
