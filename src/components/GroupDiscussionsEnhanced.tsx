@@ -81,13 +81,15 @@ interface GroupDiscussionsEnhancedProps {
   groupName: string;
   isMember: boolean;
   canDiscuss: boolean;
+  allowPublicDiscussions?: boolean;
 }
 
 const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
   groupId,
   groupName,
   isMember,
-  canDiscuss
+  canDiscuss,
+  allowPublicDiscussions = false
 }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -108,7 +110,8 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
     content: '',
     selectedTags: [] as string[],
     hasPoll: false,
-    pollOptions: ['', '']
+    pollOptions: ['', ''],
+    isPublic: false
   });
 
   useEffect(() => {
@@ -230,6 +233,7 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
           subtitle: formData.subtitle.trim() || null,
           content: formData.content.trim() || null,
           author_id: user.id,
+          is_public: allowPublicDiscussions ? formData.isPublic : false,
           poll_options: formData.hasPoll 
             ? formData.pollOptions.filter(o => o.trim()).map((option, idx) => ({
                 id: idx,
@@ -263,7 +267,8 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
         content: '',
         selectedTags: [],
         hasPoll: false,
-        pollOptions: ['', '']
+        pollOptions: ['', ''],
+        isPublic: false
       });
       fetchDiscussions();
     } catch (error) {
@@ -567,6 +572,24 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
                         Add Option
                       </Button>
                     )}
+                  </div>
+                )}
+
+                {/* Public Discussion Toggle (Silver Feature) */}
+                {allowPublicDiscussions && (
+                  <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
+                    <input
+                      type="checkbox"
+                      checked={formData.isPublic}
+                      onChange={(e) => setFormData(prev => ({ ...prev, isPublic: e.target.checked }))}
+                      className="rounded"
+                    />
+                    <div>
+                      <label className="text-sm font-medium">{t('groups.makePublic', 'Make this discussion public')}</label>
+                      <p className="text-xs text-muted-foreground">
+                        {t('groups.publicDiscussionDesc', 'This discussion will appear in the Community Discussions tab for everyone to see')}
+                      </p>
+                    </div>
                   </div>
                 )}
 

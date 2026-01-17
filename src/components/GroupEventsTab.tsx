@@ -53,13 +53,17 @@ interface GroupEventsTabProps {
   groupName: string;
   isAdmin: boolean;
   isMember: boolean;
+  whoCanCreateEvents?: string;
+  userRole?: string;
 }
 
 const GroupEventsTab: React.FC<GroupEventsTabProps> = ({ 
   groupId, 
   groupName, 
   isAdmin, 
-  isMember 
+  isMember,
+  whoCanCreateEvents = 'admins',
+  userRole = 'member'
 }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -75,6 +79,7 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    cover_image: '',
     start_date: '',
     end_date: '',
     start_time: '',
@@ -85,6 +90,12 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
     is_public: false,
     max_attendees: ''
   });
+  const [uploadingCover, setUploadingCover] = useState(false);
+
+  // Check if user can create events
+  const canCreateEvents = isAdmin || 
+    whoCanCreateEvents === 'all_members' ||
+    (whoCanCreateEvents === 'moderators' && (userRole === 'moderator' || userRole === 'admin'));
 
   useEffect(() => {
     fetchEvents();
@@ -196,6 +207,35 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
     }
   };
 
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setUploadingCover(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `event-covers/${user.id}/${Date.now()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('uploads')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('uploads')
+        .getPublicUrl(fileName);
+
+      setFormData(prev => ({ ...prev, cover_image: publicUrl }));
+      toast.success('Cover photo uploaded!');
+    } catch (error) {
+      console.error('Error uploading cover:', error);
+      toast.error('Failed to upload cover photo');
+    } finally {
+      setUploadingCover(false);
+    }
+  };
+
   const createEvent = async () => {
     if (!user || !formData.title.trim() || !formData.start_date) return;
 
@@ -208,6 +248,7 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
           created_by: user.id,
           title: formData.title.trim(),
           description: formData.description.trim() || null,
+          cover_image: formData.cover_image || null,
           start_date: formData.start_date,
           end_date: formData.end_date || null,
           start_time: formData.start_time || null,
@@ -226,6 +267,7 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
       setFormData({
         title: '',
         description: '',
+        cover_image: '',
         start_date: '',
         end_date: '',
         start_time: '',
@@ -260,7 +302,7 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
         <h3 className="text-lg font-semibold text-foreground">
           {t('groups.upcomingEvents', 'Upcoming Events')}
         </h3>
-        {isAdmin && (
+        {canCreateEvents && (
           <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
             <DialogTrigger asChild>
               <Button className="gap-2">
@@ -273,6 +315,49 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
                 <DialogTitle>{t('groups.newEvent', 'New Event')}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
+                {/* Cover Photo Upload */}
+                <div>
+                  <Label>{t('groups.coverPhoto', 'Cover Photo')}</Label>
+                  {formData.cover_image ? (
+                    <div className="relative">
+                      <img 
+                        src={formData.cover_image} 
+                        alt="Cover" 
+                        className="w-full h-32 object-cover rounded-lg"
+                      />
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-2 right-2"
+                        onClick={() => setFormData(prev => ({ ...prev, cover_image: '' }))}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="border-2 border-dashed border-border rounded-lg p-4 text-center">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleCoverUpload}
+                        disabled={uploadingCover}
+                        className="hidden"
+                        id="event-cover-upload"
+                      />
+                      <label htmlFor="event-cover-upload" className="cursor-pointer">
+                        {uploadingCover ? (
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
+                        ) : (
+                          <>
+                            <p className="text-sm text-muted-foreground">Click to upload cover photo</p>
+                            <p className="text-xs text-muted-foreground mt-1">Recommended: 1200x630px</p>
+                          </>
+                        )}
+                      </label>
+                    </div>
+                  )}
+                </div>
+
                 <div>
                   <Label>{t('common.title', 'Title')} *</Label>
                   <Input
