@@ -162,6 +162,9 @@ export type Database = {
       }
       articles: {
         Row: {
+          audio_content_hash: string | null
+          audio_generated_at: string | null
+          audio_url: string | null
           author: string
           category: string
           content: string
@@ -183,6 +186,9 @@ export type Database = {
           views: number | null
         }
         Insert: {
+          audio_content_hash?: string | null
+          audio_generated_at?: string | null
+          audio_url?: string | null
           author: string
           category: string
           content: string
@@ -204,6 +210,9 @@ export type Database = {
           views?: number | null
         }
         Update: {
+          audio_content_hash?: string | null
+          audio_generated_at?: string | null
+          audio_url?: string | null
           author?: string
           category?: string
           content?: string

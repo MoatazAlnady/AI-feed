@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
   Calendar, MapPin, Users, Globe, Clock, ArrowLeft, 
-  MessageCircle, MoreVertical, Image, Trash2, Share2, Crown, Radio
+  MessageCircle, MoreVertical, Image, Trash2, Share2, Crown, Radio, PlayCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import ShareEventModal from '@/components/ShareEventModal';
 import AddToCalendarButton from '@/components/AddToCalendarButton';
 import TranslateButton from '@/components/TranslateButton';
+import EventRecordingViewer from '@/components/EventRecordingViewer';
 
 interface UnifiedEvent {
   id: string;
@@ -65,6 +66,14 @@ interface Attendee {
   };
 }
 
+interface EventRecording {
+  id: string;
+  recording_url: string | null;
+  transcript: string | null;
+  summary: string | null;
+  status: string | null;
+}
+
 const ITEMS_PER_PAGE = 20;
 
 const StandaloneEventProfile: React.FC = () => {
@@ -84,6 +93,8 @@ const StandaloneEventProfile: React.FC = () => {
   const [loadingMoreAttendees, setLoadingMoreAttendees] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [translatedDescription, setTranslatedDescription] = useState<string | null>(null);
+  const [recording, setRecording] = useState<EventRecording | null>(null);
+  const [showRecording, setShowRecording] = useState(false);
 
   const isCreator = user?.id === event?.creator_id || user?.id === event?.organizer_id;
 
@@ -91,8 +102,27 @@ const StandaloneEventProfile: React.FC = () => {
     if (eventId) {
       fetchEvent();
       fetchAttendees();
+      fetchRecording();
     }
   }, [eventId, user?.id]);
+
+  const fetchRecording = async () => {
+    if (!eventId) return;
+    try {
+      const { data } = await supabase
+        .from('event_recordings')
+        .select('id, recording_url, transcript, summary, status')
+        .eq('event_id', eventId)
+        .eq('status', 'ready')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      setRecording(data);
+    } catch (error) {
+      console.error('Error fetching recording:', error);
+    }
+  };
 
   const fetchEvent = async () => {
     try {
@@ -557,6 +587,30 @@ const StandaloneEventProfile: React.FC = () => {
                 </>
               )}
             </div>
+
+            {/* Event Recording Section */}
+            {recording && (
+              <div className="mt-6 pt-6 border-t">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <PlayCircle className="h-5 w-5 text-primary" />
+                    <h3 className="font-semibold text-foreground">Event Recording</h3>
+                  </div>
+                  <Button onClick={() => setShowRecording(!showRecording)} variant="outline" size="sm">
+                    {showRecording ? 'Hide' : 'View'}
+                  </Button>
+                </div>
+                {showRecording && (
+                  <EventRecordingViewer
+                    recordingUrl={recording.recording_url || ''}
+                    transcript={recording.transcript || ''}
+                    summary={recording.summary || ''}
+                    eventTitle={event.title}
+                    status={recording.status || 'ready'}
+                  />
+                )}
+              </div>
+            )}
 
             {/* Attendees Section */}
             <div className="mt-6 pt-6 border-t">

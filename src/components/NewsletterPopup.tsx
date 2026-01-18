@@ -164,11 +164,13 @@ const NewsletterPopup: React.FC<NewsletterPopupProps> = ({ onClose }) => {
                   <label className="block text-sm font-medium text-foreground mb-2">
                     How often would you like to hear from us?
                   </label>
-                  <div className="flex space-x-4">
+                  <div className="space-y-2">
                     <TooltipProvider>
                       {[
                         { value: 'daily', label: 'Daily', premium: true },
+                        { value: 'semiweekly', label: 'Semi-weekly (2x/week)', premium: false },
                         { value: 'weekly', label: 'Weekly', premium: false },
+                        { value: 'biweekly', label: 'Bi-weekly (every 2 weeks)', premium: false },
                         { value: 'monthly', label: 'Monthly', premium: false }
                       ].map(({ value, label, premium }) => {
                         const isDisabled = premium && !isPremium;

@@ -17,6 +17,7 @@ import SEOHead from '@/components/SEOHead';
 import { InArticleAd } from '@/components/GoogleAd';
 import PremiumBadge from '@/components/PremiumBadge';
 import TranslateButton from '@/components/TranslateButton';
+import ArticleAudioPlayer from '@/components/ArticleAudioPlayer';
 
 interface Article {
   id: string;
@@ -32,6 +33,8 @@ interface Article {
   views: number | null;
   user_id: string | null;
   tags: string[] | null;
+  audio_url: string | null;
+  audio_content_hash: string | null;
 }
 
 interface AuthorProfile {
@@ -224,6 +227,17 @@ const ArticleDetails = () => {
               />
             </div>
           )}
+
+          {/* Audio Player */}
+          <div className="mb-6">
+            <ArticleAudioPlayer
+              articleId={article.id}
+              audioUrl={article.audio_url}
+              contentHash={article.audio_content_hash}
+              currentContent={article.content}
+              articleTitle={article.title}
+            />
+          </div>
 
           {/* Article Content */}
           <div className="mb-4">

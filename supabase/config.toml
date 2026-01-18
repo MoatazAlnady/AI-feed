@@ -95,3 +95,6 @@ verify_jwt = false
 
 [functions.send-recording-notification]
 verify_jwt = false
+
+[functions.generate-article-audio]
+verify_jwt = false

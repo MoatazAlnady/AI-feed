@@ -20,7 +20,8 @@ import {
   Upload,
   MessageCircle,
   Share2,
-  Radio
+  Radio,
+  PlayCircle
 } from 'lucide-react';
 import AddToCalendarButton from '@/components/AddToCalendarButton';
 import { Button } from '@/components/ui/button';
@@ -52,6 +53,7 @@ import EventChatWindow from '@/components/EventChatWindow';
 import EditEventModal from '@/components/EditEventModal';
 import ShareEventModal from '@/components/ShareEventModal';
 import TranslateButton from '@/components/TranslateButton';
+import EventRecordingViewer from '@/components/EventRecordingViewer';
 
 interface UnifiedEvent {
   id: string;
@@ -116,6 +118,14 @@ interface EventAttendee {
   };
 }
 
+interface EventRecording {
+  id: string;
+  recording_url: string | null;
+  transcript: string | null;
+  summary: string | null;
+  status: string | null;
+}
+
 const ITEMS_PER_PAGE = 10;
 
 const EventProfile: React.FC = () => {
@@ -143,6 +153,8 @@ const EventProfile: React.FC = () => {
   const [showEditEventModal, setShowEditEventModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [translatedDescription, setTranslatedDescription] = useState<string | null>(null);
+  const [recording, setRecording] = useState<EventRecording | null>(null);
+  const [showRecording, setShowRecording] = useState(false);
 
   // Pagination states
   const [postsPage, setPostsPage] = useState(0);
@@ -169,8 +181,27 @@ const EventProfile: React.FC = () => {
       fetchDiscussions();
       fetchPosts();
       fetchAttendees();
+      fetchRecording();
     }
   }, [eventId]);
+
+  const fetchRecording = async () => {
+    if (!eventId) return;
+    try {
+      const { data } = await supabase
+        .from('event_recordings')
+        .select('id, recording_url, transcript, summary, status')
+        .eq('event_id', eventId)
+        .eq('status', 'ready')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      setRecording(data);
+    } catch (error) {
+      console.error('Error fetching recording:', error);
+    }
+  };
 
   useEffect(() => {
     if (user && eventId) {
@@ -824,6 +855,36 @@ const EventProfile: React.FC = () => {
               </>
             )}
           </div>
+
+          {/* Event Recording Section */}
+          {recording && (
+            <div className="bg-card rounded-2xl shadow-lg p-6 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-full">
+                    <PlayCircle className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-foreground">Event Recording</h2>
+                    <p className="text-sm text-muted-foreground">Watch the recording and view the transcript</p>
+                  </div>
+                </div>
+                <Button onClick={() => setShowRecording(!showRecording)} variant="outline">
+                  {showRecording ? 'Hide Recording' : 'View Recording'}
+                </Button>
+              </div>
+              
+              {showRecording && (
+                <EventRecordingViewer
+                  recordingUrl={recording.recording_url || ''}
+                  transcript={recording.transcript || ''}
+                  summary={recording.summary || ''}
+                  eventTitle={event.title}
+                  status={recording.status || 'ready'}
+                />
+              )}
+            </div>
+          )}
 
           {/* Combined Feed - Discussions and Posts */}
           <div className="space-y-6 pb-8">
