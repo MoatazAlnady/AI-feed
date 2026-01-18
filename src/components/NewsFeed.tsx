@@ -507,6 +507,9 @@ const NewsFeed: React.FC = () => {
       let userLanguage = 'en';
       let userInterestsFromDb: string[] = [];
 
+      // Fetch user's behavioral engagement preferences for feed personalization
+      let engagementPrefs: { preference_type: string; preference_value: string; engagement_score: number }[] = [];
+
       if (user) {
         const { data: followsData } = await supabase
           .from('follows')
@@ -524,6 +527,15 @@ const NewsFeed: React.FC = () => {
         userCountry = userProfile?.country || '';
         userLanguage = userProfile?.preferred_language || localStorage.getItem('preferredLocale') || 'en';
         userInterestsFromDb = userProfile?.interests || [];
+
+        // Fetch engagement preferences for personalized feed scoring
+        const { data: prefs } = await supabase
+          .from('user_engagement_preferences')
+          .select('preference_type, preference_value, engagement_score')
+          .eq('user_id', user.id)
+          .order('engagement_score', { ascending: false })
+          .limit(100);
+        engagementPrefs = prefs || [];
       }
 
       const favoriteCreators = new Set(
@@ -620,6 +632,41 @@ const NewsFeed: React.FC = () => {
           const createdAt = item.type?.includes('shared') ? item.shared_at : item.created_at;
           const ageInHours = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60);
           score += Math.max(0, 5 - ageInHours / 24); // Up to 5 bonus for content < 24 hours old
+
+          // Add behavioral engagement-based personalization
+          if (engagementPrefs.length > 0) {
+            // Boost content from creators user frequently engages with
+            const creatorPref = engagementPrefs.find(
+              p => p.preference_type === 'creator' && p.preference_value === creatorId
+            );
+            if (creatorPref) {
+              score += Math.min(25, creatorPref.engagement_score / 4);
+            }
+            
+            // Boost content with hashtags/tags user has engaged with
+            const itemTags = item.tags || item.interests || [];
+            for (const tag of itemTags) {
+              const tagPref = engagementPrefs.find(
+                p => p.preference_type === 'hashtag' && 
+                     p.preference_value.toLowerCase() === String(tag).toLowerCase()
+              );
+              if (tagPref) {
+                score += Math.min(8, tagPref.engagement_score / 8);
+                break; // Only count one tag match to avoid over-boosting
+              }
+            }
+            
+            // Boost content types user prefers
+            const contentType = item.type === 'article' ? 'article' : 
+                                item.type === 'tool' ? 'tool' : 
+                                item.type === 'event' ? 'event' : 'post';
+            const typePref = engagementPrefs.find(
+              p => p.preference_type === 'content_type' && p.preference_value === contentType
+            );
+            if (typePref) {
+              score += Math.min(12, typePref.engagement_score / 6);
+            }
+          }
 
           return score;
         };
