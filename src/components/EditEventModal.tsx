@@ -18,16 +18,19 @@ interface EditEventModalProps {
     id: string;
     title: string;
     description?: string;
-    start_date: string;
+    event_date?: string;
+    start_date?: string; // Legacy support
     start_time?: string;
-    end_date?: string;
+    event_end_date?: string;
+    end_date?: string; // Legacy support
     end_time?: string;
     location?: string;
     is_online?: boolean;
     online_link?: string;
     max_attendees?: number;
     is_public?: boolean;
-    cover_image?: string;
+    cover_image_url?: string;
+    cover_image?: string; // Legacy support
     interests?: string[];
   };
   onEventUpdated: () => void;
@@ -60,12 +63,17 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
 
   useEffect(() => {
     if (event && isOpen) {
+      // Support both unified (event_date) and legacy (start_date) field names
+      const startDate = event.event_date || event.start_date || '';
+      const endDate = event.event_end_date || event.end_date || '';
+      const coverImage = event.cover_image_url || event.cover_image || null;
+      
       setFormData({
         title: event.title || '',
         description: event.description || '',
-        start_date: event.start_date ? event.start_date.split('T')[0] : '',
+        start_date: startDate ? startDate.split('T')[0] : '',
         start_time: event.start_time || '',
-        end_date: event.end_date ? event.end_date.split('T')[0] : '',
+        end_date: endDate ? endDate.split('T')[0] : '',
         end_time: event.end_time || '',
         location: event.location || '',
         is_online: event.is_online || false,
@@ -74,7 +82,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
         is_public: event.is_public !== false,
         interests: event.interests || []
       });
-      setCoverPreview(event.cover_image || null);
+      setCoverPreview(coverImage);
     }
   }, [event, isOpen]);
 
@@ -122,7 +130,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
     setIsSubmitting(true);
 
     try {
-      let coverUrl = event.cover_image;
+      let coverUrl = event.cover_image_url || event.cover_image;
       if (coverImage) {
         coverUrl = await uploadCover(coverImage) || coverUrl;
       }
@@ -130,22 +138,23 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
       const updateData: any = {
         title: formData.title,
         description: formData.description || null,
-        start_date: formData.start_date,
+        event_date: formData.start_date,
         start_time: formData.start_time || null,
-        end_date: formData.end_date || null,
+        event_end_date: formData.end_date || null,
         end_time: formData.end_time || null,
         location: formData.is_online ? null : formData.location,
         is_online: formData.is_online,
         online_link: formData.is_online ? formData.online_link : null,
         max_attendees: formData.max_attendees ? parseInt(formData.max_attendees) : null,
         is_public: formData.is_public,
-        cover_image: coverUrl,
+        cover_image_url: coverUrl,
         interests: formData.interests,
         updated_at: new Date().toISOString()
       };
 
+      // Use unified events table
       const { error } = await supabase
-        .from('group_events')
+        .from('events')
         .update(updateData)
         .eq('id', event.id);
 

@@ -117,57 +117,37 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
 
       let newEventData;
 
-      if (groupId) {
-        // Create group event
-        const { data, error } = await supabase
-          .from('group_events')
-          .insert({
-            group_id: groupId,
-            title: formData.title,
-            description: formData.description,
-            start_date: formData.date,
-            start_time: formData.time,
-            end_date: formData.endDate || null,
-            end_time: formData.endTime || null,
-            location: formData.isLiveVideo ? formData.liveVideoUrl : formData.location,
-            is_online: formData.type === 'online' || formData.type === 'hybrid',
-            online_link: formData.type === 'online' || formData.type === 'hybrid' ? formData.location : null,
-            is_public: formData.isPublic,
-            max_attendees: formData.maxAttendees ? parseInt(formData.maxAttendees) : null,
-            created_by: user.id,
-            interests: formData.interests,
-            tags: formData.tags
-          })
-          .select()
-          .single();
+      // Always use unified events table
+      const { data, error } = await supabase
+        .from('events')
+        .insert({
+          group_id: groupId || null,
+          title: formData.title,
+          description: formData.description,
+          event_date: startDateTime,
+          event_end_date: endDateTime,
+          start_time: formData.time,
+          end_time: formData.endTime || null,
+          location: formData.isLiveVideo ? formData.liveVideoUrl : formData.location,
+          is_online: formData.type === 'online' || formData.type === 'hybrid',
+          online_link: formData.type === 'online' || formData.type === 'hybrid' ? formData.location : null,
+          event_type: formData.type,
+          category: formData.category,
+          is_public: formData.isPublic,
+          max_attendees: formData.maxAttendees ? parseInt(formData.maxAttendees) : null,
+          creator_id: user.id,
+          organizer_id: user.id,
+          is_live_video: formData.isLiveVideo,
+          live_video_room_id: formData.liveVideoRoomId || null,
+          live_video_url: formData.liveVideoUrl || null,
+          interests: formData.interests,
+          tags: formData.tags
+        })
+        .select()
+        .single();
 
-        if (error) throw error;
-        newEventData = data;
-      } else {
-        // Create standalone event using events table
-        const { data, error } = await supabase
-          .from('events')
-          .insert({
-            title: formData.title,
-            description: formData.description,
-            event_date: startDateTime,
-            event_end_date: endDateTime,
-            location: formData.isLiveVideo ? formData.liveVideoUrl : formData.location,
-            event_type: formData.type,
-            category: formData.category,
-            is_public: formData.isPublic,
-            max_attendees: formData.maxAttendees ? parseInt(formData.maxAttendees) : null,
-            organizer_id: user.id,
-            is_live_video: formData.isLiveVideo,
-            live_video_room_id: formData.liveVideoRoomId || null,
-            live_video_url: formData.liveVideoUrl || null
-          })
-          .select()
-          .single();
-
-        if (error) throw error;
-        newEventData = data;
-      }
+      if (error) throw error;
+      newEventData = data;
 
       toast.success('Event created successfully!');
       onEventCreated(newEventData);

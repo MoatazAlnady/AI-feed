@@ -92,28 +92,16 @@ const EventChatWindow: React.FC<EventChatWindowProps> = ({
     }
 
     try {
-      let isAttending = false;
-
-      if (eventType === 'group_event') {
-        const { data } = await supabase
-          .from('group_event_attendees')
-          .select('id')
-          .eq('event_id', eventId)
-          .eq('user_id', user.id)
-          .eq('status', 'attending')
-          .maybeSingle();
-        isAttending = !!data;
-      } else if (eventType === 'standalone_event') {
-        const { data } = await supabase
-          .from('standalone_event_attendees')
-          .select('id')
-          .eq('event_id', eventId)
-          .eq('user_id', user.id)
-          .maybeSingle();
-        isAttending = !!data;
-      }
-
-      setIsAttendee(isAttending);
+      // Use unified event_attendees table for all event types
+      const { data } = await supabase
+        .from('event_attendees')
+        .select('id')
+        .eq('event_id', eventId)
+        .eq('user_id', user.id)
+        .eq('status', 'attending')
+        .maybeSingle();
+      
+      setIsAttendee(!!data);
     } catch (error) {
       console.error('Error checking attendance:', error);
       setIsAttendee(false);

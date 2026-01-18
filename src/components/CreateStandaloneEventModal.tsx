@@ -108,14 +108,16 @@ const CreateStandaloneEventModal: React.FC<CreateStandaloneEventModalProps> = ({
 
     setSubmitting(true);
     try {
+      // Use unified events table (no group_id for standalone events)
       const { error } = await supabase
-        .from('standalone_events')
+        .from('events')
         .insert({
           creator_id: user.id,
+          organizer_id: user.id,
           title: formData.title.trim(),
           description: formData.description.trim() || null,
           category: formData.category || null,
-          cover_image: formData.cover_image || null,
+          cover_image_url: formData.cover_image || null,
           event_date: formData.start_date,
           event_end_date: formData.end_date || null,
           start_time: formData.start_time || null,
