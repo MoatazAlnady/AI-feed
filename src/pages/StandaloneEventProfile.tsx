@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
   Calendar, MapPin, Users, Globe, Clock, ArrowLeft, 
-  MessageCircle, MoreVertical, Image, Trash2, Share2, Crown
+  MessageCircle, MoreVertical, Image, Trash2, Share2, Crown, Radio
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -21,21 +21,31 @@ import { toast } from 'sonner';
 import EventChatWindow from '@/components/EventChatWindow';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ShareEventModal from '@/components/ShareEventModal';
+import AddToCalendarButton from '@/components/AddToCalendarButton';
 
-interface StandaloneEvent {
+interface UnifiedEvent {
   id: string;
   title: string;
   description: string | null;
-  cover_image: string | null;
+  cover_image_url: string | null;
   event_date: string;
   event_end_date: string | null;
+  start_time: string | null;
+  end_time: string | null;
   location: string | null;
   is_online: boolean;
   online_link: string | null;
   max_attendees: number | null;
   category: string | null;
-  creator_id: string;
-  created_at: string;
+  creator_id: string | null;
+  organizer_id: string | null;
+  created_at: string | null;
+  is_live_stream: boolean | null;
+  live_stream_url: string | null;
+  live_stream_room_id: string | null;
+  timezone: string | null;
+  rsvp_email_enabled: boolean | null;
+  group_id: string | null;
   creator?: {
     id: string;
     full_name: string;
@@ -62,7 +72,7 @@ const StandaloneEventProfile: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   
-  const [event, setEvent] = useState<StandaloneEvent | null>(null);
+  const [event, setEvent] = useState<UnifiedEvent | null>(null);
   const [attendees, setAttendees] = useState<Attendee[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAttending, setIsAttending] = useState(false);
@@ -73,7 +83,7 @@ const StandaloneEventProfile: React.FC = () => {
   const [loadingMoreAttendees, setLoadingMoreAttendees] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
 
-  const isCreator = user?.id === event?.creator_id;
+  const isCreator = user?.id === event?.creator_id || user?.id === event?.organizer_id;
 
   useEffect(() => {
     if (eventId) {
@@ -84,19 +94,28 @@ const StandaloneEventProfile: React.FC = () => {
 
   const fetchEvent = async () => {
     try {
+      // Query unified events table
       const { data, error } = await supabase
-        .from('standalone_events')
-        .select(`
-          *,
-          creator:user_profiles!standalone_events_creator_id_fkey(
-            id, full_name, profile_photo, handle
-          )
-        `)
+        .from('events')
+        .select('*')
         .eq('id', eventId)
         .single();
 
       if (error) throw error;
-      setEvent(data);
+      
+      // Fetch creator profile separately
+      const creatorId = data.creator_id || data.organizer_id;
+      if (creatorId) {
+        const { data: creatorData } = await supabase
+          .from('user_profiles')
+          .select('id, full_name, profile_photo, handle')
+          .eq('id', creatorId)
+          .single();
+        
+        setEvent({ ...data, creator: creatorData || undefined });
+      } else {
+        setEvent(data);
+      }
     } catch (error) {
       console.error('Error fetching event:', error);
       toast.error('Event not found');
@@ -118,8 +137,9 @@ const StandaloneEventProfile: React.FC = () => {
       const from = currentPage * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
 
+      // Query unified event_attendees table
       const { data, error } = await supabase
-        .from('standalone_event_attendees')
+        .from('event_attendees')
         .select('*')
         .eq('event_id', eventId)
         .order('created_at', { ascending: true })
@@ -179,7 +199,7 @@ const StandaloneEventProfile: React.FC = () => {
     try {
       if (isAttending) {
         const { error } = await supabase
-          .from('standalone_event_attendees')
+          .from('event_attendees')
           .delete()
           .eq('event_id', eventId)
           .eq('user_id', user.id);
@@ -189,16 +209,27 @@ const StandaloneEventProfile: React.FC = () => {
         toast.success(t('events.rsvpCancelled', 'RSVP cancelled'));
       } else {
         const { error } = await supabase
-          .from('standalone_event_attendees')
+          .from('event_attendees')
           .insert({
             event_id: eventId,
             user_id: user.id,
-            status: 'going'
+            status: 'attending'
           });
         
         if (error) throw error;
         setIsAttending(true);
         toast.success(t('events.rsvpConfirmed', 'RSVP confirmed!'));
+
+        // Send RSVP confirmation email
+        if (event?.rsvp_email_enabled !== false) {
+          try {
+            await supabase.functions.invoke('send-rsvp-confirmation', {
+              body: { event_id: eventId, user_id: user.id }
+            });
+          } catch (emailError) {
+            console.error('Failed to send RSVP confirmation email:', emailError);
+          }
+        }
       }
       fetchAttendees();
     } catch (error) {
@@ -214,7 +245,7 @@ const StandaloneEventProfile: React.FC = () => {
     
     try {
       const { error } = await supabase
-        .from('standalone_events')
+        .from('events')
         .delete()
         .eq('id', eventId);
       
@@ -247,13 +278,13 @@ const StandaloneEventProfile: React.FC = () => {
         .getPublicUrl(filePath);
 
       const { error: updateError } = await supabase
-        .from('standalone_events')
-        .update({ cover_image: publicUrl })
+        .from('events')
+        .update({ cover_image_url: publicUrl })
         .eq('id', eventId);
 
       if (updateError) throw updateError;
 
-      setEvent(prev => prev ? { ...prev, cover_image: publicUrl } : null);
+      setEvent(prev => prev ? { ...prev, cover_image_url: publicUrl } : null);
       toast.success('Cover photo updated');
     } catch (error) {
       console.error('Error uploading cover:', error);
@@ -279,6 +310,12 @@ const StandaloneEventProfile: React.FC = () => {
 
   const eventDate = new Date(event.event_date);
   const spotsLeft = event.max_attendees ? event.max_attendees - attendees.length : null;
+  
+  // Live stream info
+  const isLiveStream = event.is_live_stream;
+  const liveStreamUrl = event.live_stream_url || (event.live_stream_room_id 
+    ? `${window.location.origin}/live/${event.live_stream_room_id}` 
+    : null);
 
   return (
     <div className="min-h-screen bg-background">
@@ -286,9 +323,9 @@ const StandaloneEventProfile: React.FC = () => {
       <div className="relative">
         {/* Cover Image */}
         <div className="h-64 md:h-80 bg-gradient-to-br from-primary/20 to-primary/5 relative">
-          {event.cover_image && (
+          {event.cover_image_url && (
             <img
-              src={event.cover_image}
+              src={event.cover_image_url}
               alt={event.title}
               className="w-full h-full object-cover"
             />
@@ -362,7 +399,7 @@ const StandaloneEventProfile: React.FC = () => {
             {/* Creator */}
             <div 
               className="flex items-center gap-3 mb-6 cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={() => navigate(`/creator/${event.creator?.handle || event.creator_id}`)}
+              onClick={() => navigate(`/creator/${event.creator?.handle || event.creator_id || event.organizer_id}`)}
             >
               <Avatar>
                 <AvatarImage src={event.creator?.profile_photo || undefined} />
@@ -421,6 +458,26 @@ const StandaloneEventProfile: React.FC = () => {
                 </div>
               )}
 
+              {/* Live Stream Badge */}
+              {isLiveStream && (
+                <div className="flex items-center gap-3 text-foreground">
+                  <Radio className="h-5 w-5 text-destructive animate-pulse shrink-0" />
+                  <div>
+                    <p className="font-medium text-destructive">{t('events.liveStreamEvent', 'Live Stream Event')}</p>
+                    {liveStreamUrl && isAttending && (
+                      <a 
+                        href={liveStreamUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-sm text-primary hover:underline"
+                      >
+                        {t('events.joinStream', 'Join Stream')}
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-center gap-3 text-foreground">
                 <Users className="h-5 w-5 text-primary shrink-0" />
                 <p>
@@ -462,23 +519,34 @@ const StandaloneEventProfile: React.FC = () => {
               </Button>
 
               {isAttending && (
-                <Button
-                  variant="outline"
-                  onClick={() => setShowChat(true)}
-                  className="gap-2"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  {t('events.openChat', 'Open Chat')}
-                </Button>
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowChat(true)}
+                    className="gap-2"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    {t('events.openChat', 'Open Chat')}
+                  </Button>
+
+                  {/* Add to Calendar Button */}
+                  <AddToCalendarButton 
+                    event={{
+                      title: event.title,
+                      description: event.description,
+                      event_date: event.event_date,
+                      event_end_date: event.event_end_date,
+                      start_time: event.start_time,
+                      end_time: event.end_time,
+                      location: event.location,
+                      is_online: event.is_online,
+                      online_link: event.online_link || liveStreamUrl,
+                      timezone: event.timezone,
+                    }}
+                    isAttending={true}
+                  />
+                </>
               )}
-
-              <Button variant="outline" size="icon" onClick={() => setShowShareModal(true)}>
-                <Share2 className="h-4 w-4" />
-              </Button>
-            </div>
-
-            {/* Attendees Preview */}
-            {attendees.length > 0 && (
               <div className="mt-6 pt-6 border-t">
                 <h3 className="font-semibold text-foreground mb-3">
                   {t('events.attendees', 'Attendees')} ({attendees.length})

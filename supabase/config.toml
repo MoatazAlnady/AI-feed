@@ -74,3 +74,6 @@ verify_jwt = true
 
 [functions.create-employer-checkout]
 verify_jwt = true
+
+[functions.send-rsvp-confirmation]
+verify_jwt = false

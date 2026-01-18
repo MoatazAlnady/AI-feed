@@ -19,8 +19,10 @@ import {
   Trash2,
   Upload,
   MessageCircle,
-  Share2
+  Share2,
+  Radio
 } from 'lucide-react';
+import AddToCalendarButton from '@/components/AddToCalendarButton';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -50,14 +52,14 @@ import EventChatWindow from '@/components/EventChatWindow';
 import EditEventModal from '@/components/EditEventModal';
 import ShareEventModal from '@/components/ShareEventModal';
 
-interface GroupEvent {
+interface UnifiedEvent {
   id: string;
-  group_id: string;
+  group_id: string | null;
   title: string;
   description: string | null;
-  cover_image: string | null;
-  start_date: string;
-  end_date: string | null;
+  cover_image_url: string | null;
+  event_date: string;
+  event_end_date: string | null;
   start_time: string | null;
   end_time: string | null;
   location: string | null;
@@ -65,8 +67,14 @@ interface GroupEvent {
   online_link: string | null;
   is_public: boolean;
   max_attendees: number | null;
-  created_by: string;
-  created_at: string;
+  creator_id: string | null;
+  organizer_id: string | null;
+  created_at: string | null;
+  is_live_stream: boolean | null;
+  live_stream_url: string | null;
+  live_stream_room_id: string | null;
+  timezone: string | null;
+  rsvp_email_enabled: boolean | null;
 }
 
 interface EventDiscussion {
@@ -115,7 +123,7 @@ const EventProfile: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [event, setEvent] = useState<GroupEvent | null>(null);
+  const [event, setEvent] = useState<UnifiedEvent | null>(null);
   const [groupName, setGroupName] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [discussions, setDiscussions] = useState<EventDiscussion[]>([]);
@@ -148,7 +156,8 @@ const EventProfile: React.FC = () => {
   // Check if user is event creator
   useEffect(() => {
     if (user && event) {
-      setIsEventCreator(event.created_by === user.id);
+      const creatorId = event.creator_id || event.organizer_id;
+      setIsEventCreator(creatorId === user.id);
     }
   }, [user, event]);
 
@@ -169,8 +178,9 @@ const EventProfile: React.FC = () => {
 
   const fetchEvent = async () => {
     try {
+      // Query unified events table
       const { data, error } = await supabase
-        .from('group_events')
+        .from('events')
         .select('*')
         .eq('id', eventId)
         .single();
@@ -178,7 +188,7 @@ const EventProfile: React.FC = () => {
       if (error) throw error;
       setEvent(data);
 
-      // Fetch group name
+      // Fetch group name if this is a group event
       if (data.group_id) {
         const { data: groupData } = await supabase
           .from('groups')
@@ -210,7 +220,7 @@ const EventProfile: React.FC = () => {
       const to = from + ITEMS_PER_PAGE - 1;
 
       const { data, error } = await supabase
-        .from('group_event_discussions')
+        .from('group_discussions')
         .select('*')
         .eq('event_id', eventId)
         .order('created_at', { ascending: false })
@@ -252,57 +262,12 @@ const EventProfile: React.FC = () => {
     }
   };
 
-  const fetchPosts = async (loadMore = false) => {
-    try {
-      if (loadMore) {
-        setLoadingMorePosts(true);
-      }
-
-      const currentPage = loadMore ? postsPage + 1 : 0;
-      const from = currentPage * ITEMS_PER_PAGE;
-      const to = from + ITEMS_PER_PAGE - 1;
-
-      const { data, error } = await supabase
-        .from('group_event_posts')
-        .select('*')
-        .eq('event_id', eventId)
-        .order('created_at', { ascending: false })
-        .range(from, to);
-
-      if (error) throw error;
-
-      const newPosts = data || [];
-      const authorIds = [...new Set(newPosts.map(p => p.author_id))];
-
-      // Batch fetch authors - NO N+1!
-      let authorMap = new Map<string, { full_name: string; profile_photo: string | null }>();
-      if (authorIds.length > 0) {
-        const { data: authors } = await supabase
-          .from('user_profiles')
-          .select('id, full_name, profile_photo')
-          .in('id', authorIds);
-        authorMap = new Map(authors?.map(a => [a.id, { full_name: a.full_name, profile_photo: a.profile_photo }]) || []);
-      }
-
-      const postsWithAuthors = newPosts.map(post => ({
-        ...post,
-        author: authorMap.get(post.author_id) || null
-      }));
-
-      if (loadMore) {
-        setPosts(prev => [...prev, ...postsWithAuthors]);
-        setPostsPage(currentPage);
-      } else {
-        setPosts(postsWithAuthors);
-        setPostsPage(0);
-      }
-
-      setHasMorePosts(newPosts.length === ITEMS_PER_PAGE);
-    } catch (error) {
-      console.error('Error fetching posts:', error);
-    } finally {
-      setLoadingMorePosts(false);
-    }
+  const fetchPosts = async (_loadMore = false) => {
+    // Note: Posts table doesn't have event_id column
+    // Event activity is now handled through group_discussions with event_id
+    // Keeping this function for interface compatibility but returning empty
+    setPosts([]);
+    setHasMorePosts(false);
   };
 
   const fetchAttendees = async (loadMore = false) => {
@@ -315,8 +280,9 @@ const EventProfile: React.FC = () => {
       const from = currentPage * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
 
+      // Query unified event_attendees table
       const { data, error } = await supabase
-        .from('group_event_attendees')
+        .from('event_attendees')
         .select('*')
         .eq('event_id', eventId)
         .eq('status', 'attending')
@@ -363,7 +329,7 @@ const EventProfile: React.FC = () => {
 
     try {
       const { data } = await supabase
-        .from('group_event_attendees')
+        .from('event_attendees')
         .select('status')
         .eq('event_id', eventId)
         .eq('user_id', user.id)
@@ -382,10 +348,12 @@ const EventProfile: React.FC = () => {
     }
 
     try {
+      const wasNotAttending = !userAttendance || userAttendance !== 'attending';
+      
       if (userAttendance) {
         // Update existing
         const { error } = await supabase
-          .from('group_event_attendees')
+          .from('event_attendees')
           .update({ status })
           .eq('event_id', eventId)
           .eq('user_id', user.id);
@@ -394,7 +362,7 @@ const EventProfile: React.FC = () => {
       } else {
         // Create new
         const { error } = await supabase
-          .from('group_event_attendees')
+          .from('event_attendees')
           .insert({
             event_id: eventId,
             user_id: user.id,
@@ -407,6 +375,18 @@ const EventProfile: React.FC = () => {
       setUserAttendance(status);
       fetchAttendees();
       toast.success('RSVP updated!');
+
+      // Send RSVP confirmation email if user is now attending
+      if (status === 'attending' && wasNotAttending && event?.rsvp_email_enabled !== false) {
+        try {
+          await supabase.functions.invoke('send-rsvp-confirmation', {
+            body: { event_id: eventId, user_id: user.id }
+          });
+        } catch (emailError) {
+          console.error('Failed to send RSVP confirmation email:', emailError);
+          // Don't show error to user, RSVP was still successful
+        }
+      }
     } catch (error) {
       console.error('Error updating RSVP:', error);
       toast.error('Failed to update RSVP');
@@ -414,22 +394,26 @@ const EventProfile: React.FC = () => {
   };
 
   const createPost = async () => {
-    if (!user || !newPostContent.trim()) return;
-
+    // Note: Event posts functionality removed - use discussions instead
+    // Posts table doesn't have event_id column
+    if (!newPostContent.trim()) return;
+    
+    // Create a discussion instead
     setSubmitting(true);
     try {
       const { error } = await supabase
-        .from('group_event_posts')
+        .from('group_discussions')
         .insert({
           event_id: eventId,
-          author_id: user.id,
+          author_id: user?.id,
+          title: 'Event Post',
           content: newPostContent.trim()
         });
 
       if (error) throw error;
 
       setNewPostContent('');
-      fetchPosts();
+      fetchDiscussions();
       toast.success('Post created!');
     } catch (error) {
       console.error('Error creating post:', error);
@@ -445,7 +429,7 @@ const EventProfile: React.FC = () => {
     setSubmitting(true);
     try {
       const { error } = await supabase
-        .from('group_event_discussions')
+        .from('group_discussions')
         .insert({
           event_id: eventId,
           author_id: user.id,
@@ -489,13 +473,13 @@ const EventProfile: React.FC = () => {
 
       // Update event cover
       const { error: updateError } = await supabase
-        .from('group_events')
-        .update({ cover_image: publicUrl })
+        .from('events')
+        .update({ cover_image_url: publicUrl })
         .eq('id', event.id);
 
       if (updateError) throw updateError;
 
-      setEvent({ ...event, cover_image: publicUrl });
+      setEvent({ ...event, cover_image_url: publicUrl });
       setShowEditCoverDialog(false);
       toast.success('Cover photo updated!');
     } catch (error) {
@@ -515,7 +499,7 @@ const EventProfile: React.FC = () => {
 
     try {
       const { error } = await supabase
-        .from('group_events')
+        .from('events')
         .delete()
         .eq('id', event.id);
 
@@ -549,10 +533,10 @@ const EventProfile: React.FC = () => {
   }
 
   const formatEventDate = () => {
-    const startDate = format(new Date(event.start_date), 'EEEE, MMMM d, yyyy');
-    const endDate = event.end_date ? format(new Date(event.end_date), 'EEEE, MMMM d, yyyy') : null;
+    const startDate = format(new Date(event.event_date), 'EEEE, MMMM d, yyyy');
+    const endDate = event.event_end_date ? format(new Date(event.event_end_date), 'EEEE, MMMM d, yyyy') : null;
     
-    if (endDate && event.end_date !== event.start_date) {
+    if (endDate && event.event_end_date !== event.event_date) {
       return `${startDate} - ${endDate}`;
     }
     return startDate;
@@ -570,7 +554,13 @@ const EventProfile: React.FC = () => {
     return startTime;
   };
 
-  const coverImage = event.cover_image || 'https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg?auto=compress&cs=tinysrgb&w=1200';
+  const coverImage = event.cover_image_url || 'https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg?auto=compress&cs=tinysrgb&w=1200';
+  
+  // Check if this is a live stream event
+  const isLiveStream = event.is_live_stream;
+  const liveStreamUrl = event.live_stream_url || event.live_stream_room_id 
+    ? `${window.location.origin}/live/${event.live_stream_room_id}` 
+    : null;
 
   return (
     <>
@@ -695,16 +685,53 @@ const EventProfile: React.FC = () => {
                 )}
               </div>
 
+              {/* Live Stream Badge */}
+              {isLiveStream && (
+                <div className="flex items-center gap-3 text-muted-foreground">
+                  <Radio className="h-5 w-5 text-destructive animate-pulse" />
+                  <span className="text-destructive font-medium">Live Stream Event</span>
+                  {userAttendance === 'attending' && liveStreamUrl && (
+                    <a 
+                      href={liveStreamUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline flex items-center gap-1"
+                    >
+                      Join Stream <ExternalLink className="h-3 w-3" />
+                    </a>
+                  )}
+                </div>
+              )}
+
               {/* Open Chat Button */}
               {userAttendance === 'attending' && (
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowChat(true)}
-                  className="gap-2"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  Event Chat
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowChat(true)}
+                    className="gap-2"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    Event Chat
+                  </Button>
+                  
+                  {/* Add to Calendar Button */}
+                  <AddToCalendarButton 
+                    event={{
+                      title: event.title,
+                      description: event.description,
+                      event_date: event.event_date,
+                      event_end_date: event.event_end_date,
+                      start_time: event.start_time,
+                      end_time: event.end_time,
+                      location: event.location,
+                      is_online: event.is_online,
+                      online_link: event.online_link || liveStreamUrl,
+                      timezone: event.timezone,
+                    }}
+                    isAttending={true}
+                  />
+                </div>
               )}
             </div>
 
@@ -1009,7 +1036,21 @@ const EventProfile: React.FC = () => {
         <EditEventModal
           isOpen={showEditEventModal}
           onClose={() => setShowEditEventModal(false)}
-          event={event}
+          event={{
+            id: event.id,
+            title: event.title,
+            description: event.description || undefined,
+            start_date: event.event_date,
+            start_time: event.start_time || undefined,
+            end_date: event.event_end_date || undefined,
+            end_time: event.end_time || undefined,
+            location: event.location || undefined,
+            is_online: event.is_online,
+            online_link: event.online_link || undefined,
+            max_attendees: event.max_attendees || undefined,
+            is_public: event.is_public,
+            cover_image: event.cover_image_url || undefined,
+          }}
           onEventUpdated={() => {
             fetchEvent();
             setShowEditEventModal(false);
