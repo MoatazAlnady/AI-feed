@@ -633,6 +633,19 @@ const NewsFeed: React.FC = () => {
           const ageInHours = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60);
           score += Math.max(0, 5 - ageInHours / 24); // Up to 5 bonus for content < 24 hours old
 
+          // Add viral/trending score based on overall engagement (Phase 1)
+          const engagementCount = (item.likes_count || item.likes || 0) + 
+                                  (item.comments_count || 0) * 2 + 
+                                  (item.share_count || 0) * 3;
+          const viralScore = Math.min(15, Math.log10(engagementCount + 1) * 5);
+          score += viralScore;
+
+          // Boost rapidly trending content (high engagement in short time)
+          if (ageInHours < 24 && engagementCount > 10) {
+            const trendingVelocity = engagementCount / Math.max(1, ageInHours);
+            score += Math.min(10, trendingVelocity);
+          }
+
           // Add behavioral engagement-based personalization
           if (engagementPrefs.length > 0) {
             // Boost content from creators user frequently engages with

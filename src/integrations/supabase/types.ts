@@ -988,6 +988,42 @@ export type Database = {
           },
         ]
       }
+      creator_content_reviews: {
+        Row: {
+          comment: string | null
+          content_id: string
+          content_type: string
+          created_at: string | null
+          creator_id: string
+          id: string
+          rating: number
+          reviewer_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          comment?: string | null
+          content_id: string
+          content_type: string
+          created_at?: string | null
+          creator_id: string
+          id?: string
+          rating: number
+          reviewer_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          comment?: string | null
+          content_id?: string
+          content_type?: string
+          created_at?: string | null
+          creator_id?: string
+          id?: string
+          rating?: number
+          reviewer_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       creator_earnings: {
         Row: {
           created_at: string
@@ -1664,8 +1700,44 @@ export type Database = {
           },
         ]
       }
+      event_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          event_id: string
+          id: string
+          rating: number
+          reviewer_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          event_id: string
+          id?: string
+          rating: number
+          reviewer_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          event_id?: string
+          id?: string
+          rating?: number
+          reviewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_reviews_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
+          average_rating: number | null
           category: string | null
           company_page_id: string | null
           cover_image_url: string | null
@@ -1683,6 +1755,7 @@ export type Database = {
           is_live_stream: boolean | null
           is_live_video: boolean | null
           is_online: boolean | null
+          is_paid: boolean | null
           is_public: boolean | null
           live_stream_room_id: string | null
           live_stream_url: string | null
@@ -1692,15 +1765,20 @@ export type Database = {
           max_attendees: number | null
           online_link: string | null
           organizer_id: string | null
+          review_count: number | null
           rsvp_email_enabled: boolean | null
           rsvp_email_template: string | null
           start_time: string | null
+          stripe_price_id: string | null
           tags: string[] | null
+          ticket_currency: string | null
+          ticket_price: number | null
           timezone: string | null
           title: string
           updated_at: string | null
         }
         Insert: {
+          average_rating?: number | null
           category?: string | null
           company_page_id?: string | null
           cover_image_url?: string | null
@@ -1718,6 +1796,7 @@ export type Database = {
           is_live_stream?: boolean | null
           is_live_video?: boolean | null
           is_online?: boolean | null
+          is_paid?: boolean | null
           is_public?: boolean | null
           live_stream_room_id?: string | null
           live_stream_url?: string | null
@@ -1727,15 +1806,20 @@ export type Database = {
           max_attendees?: number | null
           online_link?: string | null
           organizer_id?: string | null
+          review_count?: number | null
           rsvp_email_enabled?: boolean | null
           rsvp_email_template?: string | null
           start_time?: string | null
+          stripe_price_id?: string | null
           tags?: string[] | null
+          ticket_currency?: string | null
+          ticket_price?: number | null
           timezone?: string | null
           title: string
           updated_at?: string | null
         }
         Update: {
+          average_rating?: number | null
           category?: string | null
           company_page_id?: string | null
           cover_image_url?: string | null
@@ -1753,6 +1837,7 @@ export type Database = {
           is_live_stream?: boolean | null
           is_live_video?: boolean | null
           is_online?: boolean | null
+          is_paid?: boolean | null
           is_public?: boolean | null
           live_stream_room_id?: string | null
           live_stream_url?: string | null
@@ -1762,10 +1847,14 @@ export type Database = {
           max_attendees?: number | null
           online_link?: string | null
           organizer_id?: string | null
+          review_count?: number | null
           rsvp_email_enabled?: boolean | null
           rsvp_email_template?: string | null
           start_time?: string | null
+          stripe_price_id?: string | null
           tags?: string[] | null
+          ticket_currency?: string | null
+          ticket_price?: number | null
           timezone?: string | null
           title?: string
           updated_at?: string | null
@@ -2351,11 +2440,47 @@ export type Database = {
           },
         ]
       }
+      group_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          group_id: string
+          id: string
+          rating: number
+          reviewer_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          group_id: string
+          id?: string
+          rating: number
+          reviewer_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          group_id?: string
+          id?: string
+          rating?: number
+          reviewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_reviews_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       groups: {
         Row: {
           allow_public_discussions: boolean | null
           auto_approve_members: boolean | null
           auto_approve_posts: boolean | null
+          average_rating: number | null
           category: string | null
           cover_image: string | null
           cover_photo: string | null
@@ -2378,6 +2503,7 @@ export type Database = {
           posts_need_approval: boolean | null
           posts_visibility: string | null
           require_approval: boolean | null
+          review_count: number | null
           rules: string | null
           stripe_price_id: string | null
           tags: string[] | null
@@ -2394,6 +2520,7 @@ export type Database = {
           allow_public_discussions?: boolean | null
           auto_approve_members?: boolean | null
           auto_approve_posts?: boolean | null
+          average_rating?: number | null
           category?: string | null
           cover_image?: string | null
           cover_photo?: string | null
@@ -2416,6 +2543,7 @@ export type Database = {
           posts_need_approval?: boolean | null
           posts_visibility?: string | null
           require_approval?: boolean | null
+          review_count?: number | null
           rules?: string | null
           stripe_price_id?: string | null
           tags?: string[] | null
@@ -2432,6 +2560,7 @@ export type Database = {
           allow_public_discussions?: boolean | null
           auto_approve_members?: boolean | null
           auto_approve_posts?: boolean | null
+          average_rating?: number | null
           category?: string | null
           cover_image?: string | null
           cover_photo?: string | null
@@ -2454,6 +2583,7 @@ export type Database = {
           posts_need_approval?: boolean | null
           posts_visibility?: string | null
           require_approval?: boolean | null
+          review_count?: number | null
           rules?: string | null
           stripe_price_id?: string | null
           tags?: string[] | null
@@ -4759,6 +4889,8 @@ export type Database = {
           country: string | null
           cover_photo: string | null
           created_at: string | null
+          creator_average_rating: number | null
+          creator_review_count: number | null
           default_post_groups: string[] | null
           default_post_visibility: string | null
           display_name: string | null
@@ -4817,6 +4949,8 @@ export type Database = {
           country?: string | null
           cover_photo?: string | null
           created_at?: string | null
+          creator_average_rating?: number | null
+          creator_review_count?: number | null
           default_post_groups?: string[] | null
           default_post_visibility?: string | null
           display_name?: string | null
@@ -4875,6 +5009,8 @@ export type Database = {
           country?: string | null
           cover_photo?: string | null
           created_at?: string | null
+          creator_average_rating?: number | null
+          creator_review_count?: number | null
           default_post_groups?: string[] | null
           default_post_visibility?: string | null
           display_name?: string | null

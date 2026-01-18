@@ -16,7 +16,8 @@ import {
   MessageCircle,
   Image,
   DollarSign,
-  Share2
+  Share2,
+  Star
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -39,6 +40,8 @@ import GroupAdminSettingsModal from '@/components/GroupAdminSettingsModal';
 import GroupMemberNotificationSettings from '@/components/GroupMemberNotificationSettings';
 import GroupMembersList from '@/components/GroupMembersList';
 import ShareGroupModal from '@/components/ShareGroupModal';
+import GroupReviews from '@/components/GroupReviews';
+import RatingBadge from '@/components/RatingBadge';
 
 interface Group {
   id: string;
@@ -68,6 +71,8 @@ interface Group {
   discussions_need_approval?: boolean;
   members_can_view_members?: boolean;
   posts_visibility?: string;
+  average_rating?: number;
+  review_count?: number;
 }
 
 interface GroupMember {
@@ -443,6 +448,13 @@ const GroupProfile: React.FC = () => {
                       {getPriceDisplay()}
                     </Badge>
                   )}
+                  {(group.review_count || 0) > 0 && (
+                    <RatingBadge 
+                      rating={group.average_rating || 0} 
+                      reviewCount={group.review_count || 0}
+                      size="md"
+                    />
+                  )}
                 </div>
               </div>
 
@@ -465,9 +477,9 @@ const GroupProfile: React.FC = () => {
             </div>
           </div>
 
-          {/* Tabs for Posts, Discussions, Events */}
+          {/* Tabs for Posts, Discussions, Events, Reviews */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-            <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsList className="grid w-full grid-cols-4 mb-6">
               <TabsTrigger value="posts" className="flex items-center gap-2">
                 <Image className="h-4 w-4" />
                 {t('groups.posts', 'Posts')}
@@ -479,6 +491,10 @@ const GroupProfile: React.FC = () => {
               <TabsTrigger value="events" className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
                 {t('groups.events', 'Events')}
+              </TabsTrigger>
+              <TabsTrigger value="reviews" className="flex items-center gap-2">
+                <Star className="h-4 w-4" />
+                {t('groups.reviews', 'Reviews')}
               </TabsTrigger>
             </TabsList>
 
@@ -508,6 +524,15 @@ const GroupProfile: React.FC = () => {
                 isMember={isMember}
                 whoCanCreateEvents={(group as any).who_can_create_events || 'admins'}
                 userRole={membership?.role || 'member'}
+              />
+            </TabsContent>
+
+            <TabsContent value="reviews">
+              <GroupReviews 
+                groupId={groupId!}
+                isMember={isMember}
+                averageRating={group.average_rating || 0}
+                reviewCount={group.review_count || 0}
               />
             </TabsContent>
           </Tabs>
