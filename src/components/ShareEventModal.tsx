@@ -146,14 +146,9 @@ const ShareEventModal: React.FC<ShareEventModalProps> = ({
         user_id: user.id,
         share_text: shareText.trim() || null,
         visibility: visibility,
-        content_type: eventType
+        content_type: 'event',
+        original_event_id: event.id
       };
-
-      if (eventType === 'group_event') {
-        insertData.original_group_event_id = event.id;
-      } else {
-        insertData.original_standalone_event_id = event.id;
-      }
 
       const { error } = await supabase.from('shared_posts').insert(insertData);
 

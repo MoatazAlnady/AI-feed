@@ -77,3 +77,9 @@ verify_jwt = true
 
 [functions.send-rsvp-confirmation]
 verify_jwt = false
+
+[functions.send-creator-bulk-email]
+verify_jwt = true
+
+[functions.translate-content]
+verify_jwt = false
