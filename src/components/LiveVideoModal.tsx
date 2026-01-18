@@ -1,34 +1,42 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { X, Video, Users, MessageCircle, Send, Radio, StopCircle, Share2 } from 'lucide-react';
+import { X, Video, Users, MessageCircle, Send, Radio, StopCircle, Share2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LiveVideoModalProps {
   isOpen: boolean;
   onClose: () => void;
   onGoLive?: (streamId: string) => void;
+  eventId?: string;
+  eventTitle?: string;
 }
 
 const LiveVideoModal: React.FC<LiveVideoModalProps> = ({
   isOpen,
   onClose,
-  onGoLive
+  onGoLive,
+  eventId,
+  eventTitle
 }) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordedChunksRef = useRef<Blob[]>([]);
   
-  const [status, setStatus] = useState<'setup' | 'preview' | 'live' | 'ended'>('setup');
+  const [status, setStatus] = useState<'setup' | 'preview' | 'live' | 'ended' | 'uploading'>('setup');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [viewerCount, setViewerCount] = useState(0);
   const [duration, setDuration] = useState(0);
   const [messages, setMessages] = useState<Array<{ id: string; author: string; content: string }>>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -74,35 +82,141 @@ const LiveVideoModal: React.FC<LiveVideoModalProps> = ({
       return;
     }
 
-    // In a real implementation, this would connect to a streaming service
+    // Start recording
+    if (streamRef.current) {
+      recordedChunksRef.current = [];
+      
+      const options = { mimeType: 'video/webm;codecs=vp9,opus' };
+      let mediaRecorder: MediaRecorder;
+      
+      try {
+        mediaRecorder = new MediaRecorder(streamRef.current, options);
+      } catch (e) {
+        // Fallback to default codec
+        mediaRecorder = new MediaRecorder(streamRef.current);
+      }
+      
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+          recordedChunksRef.current.push(event.data);
+        }
+      };
+      
+      mediaRecorder.start(1000); // Capture every second
+      mediaRecorderRef.current = mediaRecorder;
+    }
+
     const streamId = `live-${Date.now()}`;
     setStatus('live');
     setViewerCount(1);
     
     toast({
       title: "You're now live!",
-      description: 'Your followers have been notified'
+      description: 'Your followers have been notified. Recording has started.'
     });
 
     onGoLive?.(streamId);
   };
 
-  const endStream = () => {
+  const endStream = async () => {
+    // Stop recording
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+    
+    // Stop media tracks
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
-    setStatus('ended');
+    
+    setStatus('uploading');
+    setUploadProgress(10);
     
     toast({
       title: 'Stream ended',
-      description: `You were live for ${formatDuration(duration)}`
+      description: `You were live for ${formatDuration(duration)}. Uploading recording...`
     });
+
+    // Wait a bit for the last chunks
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Upload recording
+    if (recordedChunksRef.current.length > 0 && user && eventId) {
+      try {
+        setUploadProgress(20);
+        const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
+        const fileName = `${user.id}/${eventId}/${Date.now()}.webm`;
+        
+        setUploadProgress(40);
+        
+        // Upload to Supabase Storage
+        const { error: uploadError } = await supabase.storage
+          .from('event-recordings')
+          .upload(fileName, blob, {
+            contentType: 'video/webm',
+            upsert: false
+          });
+
+        if (uploadError) throw uploadError;
+        
+        setUploadProgress(60);
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('event-recordings')
+          .getPublicUrl(fileName);
+
+        setUploadProgress(80);
+
+        // Create recording record
+        const { data: recordingData, error: recordError } = await supabase
+          .from('event_recordings')
+          .insert({
+            event_id: eventId,
+            recording_url: publicUrl,
+            duration_seconds: duration,
+            file_size_bytes: blob.size,
+            status: 'processing',
+            created_by: user.id
+          })
+          .select()
+          .single();
+
+        if (recordError) throw recordError;
+
+        setUploadProgress(90);
+
+        // Trigger transcription
+        await supabase.functions.invoke('transcribe-recording', {
+          body: { recording_id: recordingData.id }
+        });
+
+        setUploadProgress(100);
+        
+        toast({
+          title: 'Recording uploaded!',
+          description: 'Transcription is being processed. Attendees will be notified when ready.'
+        });
+      } catch (error) {
+        console.error('Error uploading recording:', error);
+        toast({
+          title: 'Upload failed',
+          description: 'Failed to save recording. Please try again.',
+          variant: 'destructive'
+        });
+      }
+    }
+    
+    setStatus('ended');
   };
 
   const handleClose = () => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
+    }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
     }
     onClose();
     setStatus('setup');
@@ -111,6 +225,8 @@ const LiveVideoModal: React.FC<LiveVideoModalProps> = ({
     setDuration(0);
     setViewerCount(0);
     setMessages([]);
+    setUploadProgress(0);
+    recordedChunksRef.current = [];
   };
 
   const sendMessage = () => {
@@ -147,6 +263,7 @@ const LiveVideoModal: React.FC<LiveVideoModalProps> = ({
               {status === 'setup' && 'Go Live'}
               {status === 'preview' && 'Preview'}
               {status === 'live' && 'LIVE'}
+              {status === 'uploading' && 'Uploading Recording...'}
               {status === 'ended' && 'Stream Ended'}
             </span>
             {status === 'live' && (
@@ -155,7 +272,7 @@ const LiveVideoModal: React.FC<LiveVideoModalProps> = ({
               </span>
             )}
           </div>
-          <Button variant="ghost" size="icon" onClick={handleClose}>
+          <Button variant="ghost" size="icon" onClick={handleClose} disabled={status === 'uploading'}>
             <X className="h-5 w-5" />
           </Button>
         </div>
@@ -180,6 +297,12 @@ const LiveVideoModal: React.FC<LiveVideoModalProps> = ({
                     <span className="text-white text-sm font-medium">LIVE</span>
                   </div>
                   
+                  {/* Recording indicator */}
+                  <div className="absolute top-4 left-24 flex items-center space-x-2 bg-red-600/80 px-3 py-1 rounded-full">
+                    <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                    <span className="text-white text-sm font-medium">REC</span>
+                  </div>
+                  
                   {/* Viewer count */}
                   <div className="absolute top-4 right-4 flex items-center space-x-2 bg-black/50 px-3 py-1 rounded-full">
                     <Users className="h-4 w-4 text-white" />
@@ -196,13 +319,29 @@ const LiveVideoModal: React.FC<LiveVideoModalProps> = ({
                   </div>
                 </div>
               )}
+
+              {status === 'uploading' && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/70">
+                  <div className="text-center">
+                    <Loader2 className="h-12 w-12 mx-auto text-primary mb-4 animate-spin" />
+                    <p className="text-white mb-2">Uploading recording...</p>
+                    <div className="w-48 h-2 bg-muted rounded-full mx-auto">
+                      <div 
+                        className="h-full bg-primary rounded-full transition-all duration-300"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                    <p className="text-muted-foreground text-sm mt-2">{uploadProgress}%</p>
+                  </div>
+                </div>
+              )}
             </div>
             
             {/* Preview Feature Banner */}
             {status === 'setup' && (
               <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-950/30 rounded-lg text-sm text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
-                <strong>Preview Feature:</strong> Live streaming is currently in preview mode. 
-                Your video will be shown locally but not broadcast to viewers yet.
+                <strong>Recording Enabled:</strong> Your live stream will be recorded automatically. 
+                After ending, it will be transcribed and a summary will be sent to attendees.
               </div>
             )}
 

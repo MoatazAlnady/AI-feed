@@ -83,3 +83,15 @@ verify_jwt = true
 
 [functions.translate-content]
 verify_jwt = false
+
+[functions.create-event-checkout]
+verify_jwt = true
+
+[functions.transcribe-recording]
+verify_jwt = false
+
+[functions.summarize-transcript]
+verify_jwt = false
+
+[functions.send-recording-notification]
+verify_jwt = false
