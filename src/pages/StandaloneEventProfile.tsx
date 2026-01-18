@@ -547,35 +547,37 @@ const StandaloneEventProfile: React.FC = () => {
                   />
                 </>
               )}
-              <div className="mt-6 pt-6 border-t">
-                <h3 className="font-semibold text-foreground mb-3">
-                  {t('events.attendees', 'Attendees')} ({attendees.length})
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {attendees.map((attendee) => (
-                    <Avatar key={attendee.id} className="border-2 border-background">
-                      <AvatarImage src={attendee.user?.profile_photo || undefined} />
-                      <AvatarFallback className="text-xs">
-                        {(attendee.user?.full_name || 'U').charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                  ))}
-                </div>
-                {/* Load More Attendees */}
-                {hasMoreAttendees && (
-                  <div className="mt-4">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => fetchAttendees(true)} 
-                      disabled={loadingMoreAttendees}
-                    >
-                      {loadingMoreAttendees ? t('common.loading', 'Loading...') : t('common.loadMore', 'Load More')}
-                    </Button>
-                  </div>
-                )}
+            </div>
+
+            {/* Attendees Section */}
+            <div className="mt-6 pt-6 border-t">
+              <h3 className="font-semibold text-foreground mb-3">
+                {t('events.attendees', 'Attendees')} ({attendees.length})
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {attendees.map((attendee) => (
+                  <Avatar key={attendee.id} className="border-2 border-background">
+                    <AvatarImage src={attendee.user?.profile_photo || undefined} />
+                    <AvatarFallback className="text-xs">
+                      {(attendee.user?.full_name || 'U').charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                ))}
               </div>
-            )}
+              {/* Load More Attendees */}
+              {hasMoreAttendees && (
+                <div className="mt-4">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => fetchAttendees(true)} 
+                    disabled={loadingMoreAttendees}
+                  >
+                    {loadingMoreAttendees ? t('common.loading', 'Loading...') : t('common.loadMore', 'Load More')}
+                  </Button>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
