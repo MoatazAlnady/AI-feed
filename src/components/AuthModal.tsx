@@ -7,7 +7,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-
+import { isWorkEmail, getWorkEmailErrorMessage } from '@/utils/emailValidation';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -406,6 +406,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
             throw new Error('Please fill in all required fields including phone number and password confirmation');
           }
           
+          // Employer work email validation
+          if (accountType === 'employer' && !isWorkEmail(email)) {
+            throw new Error(getWorkEmailErrorMessage());
+          }
+          
           // Password confirmation validation
           if (password !== confirmPassword) {
             throw new Error('Passwords do not match');
@@ -588,75 +593,24 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
           )}
 
           {/* Progress indicator for signup */}
-          {mode === 'signup' && (
-            <div className="mb-6">
-              <div className="flex items-center space-x-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 ${
-                  step >= 1 ? 'bg-primary-500 text-white' : 'bg-gray-200 text-gray-600'
-                }`}>
-                  1
-                </div>
-                <div className={`flex-1 h-1 rounded transition-all duration-300 ${step >= 2 ? 'bg-primary-500' : 'bg-gray-200'}`} />
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 ${
-                  step >= 2 ? 'bg-primary-500 text-white' : 'bg-gray-200 text-gray-600'
-                }`}>
-                  2
-                </div>
-              </div>
-              <div className="flex justify-between mt-2 text-sm text-gray-600">
-                <span>Basic Info</span>
-                <span>Profile & Interests</span>
-              </div>
-            </div>
-          )}
-
-          {/* Email Confirmation Notice */}
-          {showEmailConfirmation && (
-            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg animate-slide-up">
-              <div className="flex items-start space-x-3">
-                <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                <div className="flex-1">
-                  <h4 className="font-medium text-blue-900 mb-2">Email Confirmation Required</h4>
-                  <p className="text-sm text-blue-800 mb-3">
-                    Before you can sign in, you need to confirm your email address. We've sent a confirmation link to <strong>{email}</strong>.
+          {/* Employer work email notice */}
+          {mode === 'signup' && accountType === 'employer' && (
+            <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 mb-4">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-amber-800 dark:text-amber-200">
+                  <p className="font-medium">Company email required</p>
+                  <p className="text-amber-700 dark:text-amber-300 mt-1">
+                    Employer accounts must be registered with a company email address. Personal email providers (Gmail, Yahoo, etc.) are not allowed.
                   </p>
-                  <div className="space-y-2 text-sm text-blue-700">
-                    <p>• Check your inbox for an email from AI Feed</p>
-                    <p>• Don't forget to check your spam/junk folder</p>
-                    <p>• Click the confirmation link in the email</p>
-                    <p>• Then return here to sign in</p>
-                  </div>
-                  <button
-                    onClick={handleResendConfirmation}
-                    disabled={loading}
-                    className="mt-3 text-sm text-blue-600 hover:text-blue-800 font-medium underline disabled:opacity-50"
-                  >
-                    {loading ? 'Sending...' : 'Resend confirmation email'}
-                  </button>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Success Message */}
-          {success && (
-            <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg animate-slide-up flex items-center space-x-2">
-              <CheckCircle className="h-5 w-5 flex-shrink-0" />
-              <span>{success}</span>
-            </div>
-          )}
-
-          {/* Error Message */}
-          {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg animate-slide-up flex items-center space-x-2">
-              <AlertCircle className="h-5 w-5 flex-shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          {/* OAuth Buttons - shown for both modes, but not on step 2 of signup */}
-          {(mode === 'signin' || (mode === 'signup' && step === 1)) && (
-            <div className="mb-4">
+          {/* OAuth Buttons - Hidden for employer accounts */}
+          {mode === 'signup' && accountType !== 'employer' && (
+            <div className="mb-6">
               {/* Row 1: Google and LinkedIn */}
               <div className="grid grid-cols-2 gap-2 mb-2">
                 {/* Google */}
@@ -668,7 +622,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                     try {
                       setLoading(true);
                       setError('');
-                      // Clear any existing session before OAuth to prevent stale session issues on mobile
                       await supabase.auth.signOut({ scope: 'local' });
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: 'google',
@@ -702,7 +655,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                     try {
                       setLoading(true);
                       setError('');
-                      // Clear any existing session before OAuth to prevent stale session issues on mobile
                       await supabase.auth.signOut({ scope: 'local' });
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: 'linkedin_oidc',
@@ -736,7 +688,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                     try {
                       setLoading(true);
                       setError('');
-                      // Clear any existing session before OAuth to prevent stale session issues on mobile
                       await supabase.auth.signOut({ scope: 'local' });
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: 'discord',
@@ -767,7 +718,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
                     try {
                       setLoading(true);
                       setError('');
-                      // Clear any existing session before OAuth to prevent stale session issues on mobile
                       await supabase.auth.signOut({ scope: 'local' });
                       const { error } = await supabase.auth.signInWithOAuth({
                         provider: 'github',

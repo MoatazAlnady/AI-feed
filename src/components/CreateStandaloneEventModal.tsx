@@ -19,6 +19,7 @@ import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 import { toast } from 'sonner';
 import PremiumUpgradeModal from './PremiumUpgradeModal';
 import InterestTagSelector from './InterestTagSelector';
+import { detectLanguage } from '@/utils/languageDetection';
 
 interface CreateStandaloneEventModalProps {
   isOpen: boolean;
@@ -108,6 +109,9 @@ const CreateStandaloneEventModal: React.FC<CreateStandaloneEventModalProps> = ({
 
     setSubmitting(true);
     try {
+      // Detect language from description
+      const detected_language = detectLanguage(formData.description);
+
       // Use unified events table (no group_id for standalone events)
       const { error } = await supabase
         .from('events')
@@ -128,7 +132,8 @@ const CreateStandaloneEventModal: React.FC<CreateStandaloneEventModalProps> = ({
           is_public: formData.is_public,
           max_attendees: formData.max_attendees ? parseInt(formData.max_attendees) : null,
           interests: formData.interests,
-          tags: formData.tags
+          tags: formData.tags,
+          detected_language
         });
 
       if (error) throw error;

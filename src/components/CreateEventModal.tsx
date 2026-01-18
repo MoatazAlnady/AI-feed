@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { supabase } from '../integrations/supabase/client';
 import PremiumUpgradeModal from './PremiumUpgradeModal';
 import InterestTagSelector from './InterestTagSelector';
-
+import { detectLanguage } from '@/utils/languageDetection';
 interface CreateEventModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -117,6 +117,9 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
 
       let newEventData;
 
+      // Detect language from description
+      const detected_language = detectLanguage(formData.description);
+
       // Always use unified events table
       const { data, error } = await supabase
         .from('events')
@@ -141,7 +144,8 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
           live_video_room_id: formData.liveVideoRoomId || null,
           live_video_url: formData.liveVideoUrl || null,
           interests: formData.interests,
-          tags: formData.tags
+          tags: formData.tags,
+          detected_language
         })
         .select()
         .single();

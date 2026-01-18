@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import ChatDock from '../components/ChatDock';
 import InterestTagSelector from '../components/InterestTagSelector';
-
+import { detectLanguage } from '@/utils/languageDetection';
 interface LocationState {
   prefillContent?: string;
   prefillTitle?: string;
@@ -94,6 +94,9 @@ const SubmitArticle: React.FC = () => {
         }
       }
 
+      // Detect language from content
+      const detected_language = detectLanguage(formData.content);
+
       const { error } = await supabase
         .from('articles')
         .insert({
@@ -108,7 +111,8 @@ const SubmitArticle: React.FC = () => {
           user_id: user.id,
           author: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
           email: user.email || '',
-          status: 'pending'
+          status: 'pending',
+          detected_language
         });
 
       if (error) throw error;

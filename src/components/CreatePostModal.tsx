@@ -12,6 +12,7 @@ import LiveVideoModal from './LiveVideoModal';
 import PremiumUpgradeModal from './PremiumUpgradeModal';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 import { useToast } from '@/hooks/use-toast';
+import { detectLanguage } from '@/utils/languageDetection';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -109,6 +110,9 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onPo
     setIsSubmitting(true);
 
     try {
+      // Detect language from content
+      const detected_language = detectLanguage(content);
+
       const { data: newPostData, error } = await supabase
         .from('posts')
         .insert({
@@ -119,7 +123,8 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onPo
           link_url: linkUrl || null,
           link_metadata: linkMetadata,
           visibility,
-          visible_to_groups: visibility === 'groups' ? selectedGroups : []
+          visible_to_groups: visibility === 'groups' ? selectedGroups : [],
+          detected_language
         } as any)
         .select()
         .single();

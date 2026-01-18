@@ -12,9 +12,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
-import { User, Calendar, MapPin, Phone, Globe, Lock, ChevronsUpDown, Check, Briefcase, Sparkles, ChevronRight, ChevronLeft, X, FileText, Upload, HelpCircle, Loader2, PenLine } from 'lucide-react';
+import { User, Calendar, MapPin, Phone, Globe, Lock, ChevronsUpDown, Check, Briefcase, Sparkles, ChevronRight, ChevronLeft, X, FileText, Upload, HelpCircle, Loader2, PenLine, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
+import { isPublicEmail } from '@/utils/emailValidation';
 const countriesWithCodes = [
   { name: 'United States', code: '+1' },
   { name: 'United Kingdom', code: '+44' },
@@ -1031,9 +1031,34 @@ export default function OAuthProfileCompletion() {
                     </span>
                   )}
                 </Label>
+                
+                {/* Warning for employer selection with public email */}
+                {formData.account_type === 'employer' && user?.email && isPublicEmail(user.email) && (
+                  <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                      <div className="text-sm text-amber-800 dark:text-amber-200">
+                        <p className="font-medium">Cannot create employer account</p>
+                        <p className="text-amber-700 dark:text-amber-300 mt-1">
+                          Employer accounts require a company email address. Your email ({user.email}) is from a public provider.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
                 <RadioGroup 
                   value={formData.account_type}
-                  onValueChange={(value) => !accountTypeLocked && setFormData(prev => ({ ...prev, account_type: value }))}
+                  onValueChange={(value) => {
+                    // Prevent employer selection if using public email
+                    if (value === 'employer' && user?.email && isPublicEmail(user.email)) {
+                      toast.error('Employer accounts require a company email address');
+                      return;
+                    }
+                    if (!accountTypeLocked) {
+                      setFormData(prev => ({ ...prev, account_type: value }));
+                    }
+                  }}
                   disabled={accountTypeLocked}
                   className="flex gap-6"
                 >
@@ -1042,8 +1067,20 @@ export default function OAuthProfileCompletion() {
                     <Label htmlFor="oauth-creator" className={cn("cursor-pointer", accountTypeLocked && "opacity-60 cursor-not-allowed")}>Creator</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="employer" id="oauth-employer" disabled={accountTypeLocked} />
-                    <Label htmlFor="oauth-employer" className={cn("cursor-pointer", accountTypeLocked && "opacity-60 cursor-not-allowed")}>Employer</Label>
+                    <RadioGroupItem 
+                      value="employer" 
+                      id="oauth-employer" 
+                      disabled={accountTypeLocked || (user?.email ? isPublicEmail(user.email) : false)} 
+                    />
+                    <Label 
+                      htmlFor="oauth-employer" 
+                      className={cn(
+                        "cursor-pointer", 
+                        (accountTypeLocked || (user?.email && isPublicEmail(user.email))) && "opacity-60 cursor-not-allowed"
+                      )}
+                    >
+                      Employer
+                    </Label>
                   </div>
                 </RadioGroup>
               </div>
