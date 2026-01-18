@@ -720,7 +720,6 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
           isOpen={inviteModal.isOpen}
           onClose={() => setInviteModal(null)}
           eventId={inviteModal.eventId}
-          eventType="group_event"
           groupId={groupId}
           isPublic={inviteModal.isPublic}
           eventTitle={inviteModal.title}

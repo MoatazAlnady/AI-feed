@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Send, User, Users, Bell, Eye } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Send, User, Users, Bell, Eye, Save, FolderOpen, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,9 +8,18 @@ import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+
+interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  html_content: string;
+  created_at: string;
+}
 
 interface CreatorBulkEmailModalProps {
   isOpen: boolean;
@@ -31,12 +40,113 @@ const CreatorBulkEmailModal: React.FC<CreatorBulkEmailModalProps> = ({
   const [sendPushNotification, setSendPushNotification] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [activeTab, setActiveTab] = useState<'compose' | 'preview'>('compose');
+  
+  // Template management
+  const [templates, setTemplates] = useState<EmailTemplate[]>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
+  const [templateName, setTemplateName] = useState('');
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [savingTemplate, setSavingTemplate] = useState(false);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
 
   const placeholders = [
     { label: 'First Name', value: '{{name}}', description: 'Subscriber\'s first name' },
     { label: 'Full Name', value: '{{full_name}}', description: 'Subscriber\'s full name' },
     { label: 'Your Name', value: '{{creator_name}}', description: 'Your creator name' },
   ];
+
+  // Fetch templates on modal open
+  useEffect(() => {
+    if (isOpen && user) {
+      fetchTemplates();
+    }
+  }, [isOpen, user]);
+
+  const fetchTemplates = async () => {
+    if (!user) return;
+    setLoadingTemplates(true);
+    try {
+      const { data, error } = await supabase
+        .from('email_templates')
+        .select('id, name, subject, html_content, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error && !error.message.includes('does not exist')) {
+        console.error('Error fetching templates:', error);
+      } else if (data) {
+        setTemplates(data as unknown as EmailTemplate[]);
+      }
+    } catch (err) {
+      console.error('Error fetching templates:', err);
+    } finally {
+      setLoadingTemplates(false);
+    }
+  };
+
+  const loadTemplate = (templateId: string) => {
+    const template = templates.find(t => t.id === templateId);
+    if (template) {
+      setSubject(template.subject);
+      setContent(template.html_content);
+      setSelectedTemplateId(templateId);
+      toast.success(`Loaded template: ${template.name}`);
+    }
+  };
+
+  const saveTemplate = async () => {
+    if (!user || !templateName.trim() || !subject.trim()) {
+      toast.error('Please enter a template name and subject');
+      return;
+    }
+
+    setSavingTemplate(true);
+    try {
+      const { error } = await supabase
+        .from('email_templates')
+        .insert({
+          user_id: user.id,
+          name: templateName.trim(),
+          subject: subject,
+          html_content: content,
+          template_type: 'bulk_email'
+        } as any);
+
+      if (error) throw error;
+
+      toast.success('Template saved!');
+      setShowSaveDialog(false);
+      setTemplateName('');
+      fetchTemplates();
+    } catch (err: any) {
+      console.error('Error saving template:', err);
+      toast.error(err.message || 'Failed to save template');
+    } finally {
+      setSavingTemplate(false);
+    }
+  };
+
+  const deleteTemplate = async (templateId: string) => {
+    if (!confirm('Delete this template?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('email_templates')
+        .delete()
+        .eq('id', templateId as any);
+
+      if (error) throw error;
+
+      toast.success('Template deleted');
+      if (selectedTemplateId === templateId) {
+        setSelectedTemplateId('');
+      }
+      fetchTemplates();
+    } catch (err: any) {
+      console.error('Error deleting template:', err);
+      toast.error('Failed to delete template');
+    }
+  };
 
   const insertPlaceholder = (placeholder: string) => {
     setContent(prev => prev + placeholder);
@@ -118,6 +228,7 @@ const CreatorBulkEmailModal: React.FC<CreatorBulkEmailModalProps> = ({
       onClose();
       setSubject('');
       setContent('');
+      setSelectedTemplateId('');
     } catch (err: any) {
       console.error('Error sending bulk email:', err);
       toast.error(err.message || 'Failed to send emails');
@@ -150,6 +261,38 @@ const CreatorBulkEmailModal: React.FC<CreatorBulkEmailModalProps> = ({
           </TabsList>
 
           <TabsContent value="compose" className="space-y-4 mt-4">
+            {/* Template Selector */}
+            {templates.length > 0 && (
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">Load Saved Template</Label>
+                <div className="flex gap-2">
+                  <Select value={selectedTemplateId} onValueChange={loadTemplate}>
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Select a template..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {templates.map((template) => (
+                        <SelectItem key={template.id} value={template.id}>
+                          {template.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {selectedTemplateId && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => deleteTemplate(selectedTemplateId)}
+                      className="text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Placeholders */}
             <div className="space-y-2">
               <Label className="text-sm text-muted-foreground">Insert Placeholders</Label>
@@ -204,6 +347,18 @@ const CreatorBulkEmailModal: React.FC<CreatorBulkEmailModalProps> = ({
                 onCheckedChange={setSendPushNotification}
               />
             </div>
+
+            {/* Save Template Button */}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowSaveDialog(true)}
+              disabled={!subject.trim()}
+              className="w-full"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              Save as Template
+            </Button>
           </TabsContent>
 
           <TabsContent value="preview" className="mt-4">
@@ -243,6 +398,34 @@ const CreatorBulkEmailModal: React.FC<CreatorBulkEmailModalProps> = ({
             )}
           </Button>
         </div>
+
+        {/* Save Template Dialog */}
+        <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Save as Template</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="templateName">Template Name</Label>
+                <Input
+                  id="templateName"
+                  value={templateName}
+                  onChange={(e) => setTemplateName(e.target.value)}
+                  placeholder="e.g., Weekly Newsletter"
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={saveTemplate} disabled={savingTemplate || !templateName.trim()}>
+                  {savingTemplate ? 'Saving...' : 'Save Template'}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </DialogContent>
     </Dialog>
   );

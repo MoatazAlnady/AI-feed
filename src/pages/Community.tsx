@@ -1396,7 +1396,6 @@ const Community: React.FC = () => {
           isOpen={inviteEventModal.isOpen}
           onClose={() => setInviteEventModal(null)}
           eventId={inviteEventModal.eventId}
-          eventType={inviteEventModal.eventType}
           groupId={inviteEventModal.groupId}
           isPublic={inviteEventModal.isPublic}
           eventTitle={inviteEventModal.eventTitle}

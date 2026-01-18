@@ -1452,6 +1452,42 @@ export type Database = {
         }
         Relationships: []
       }
+      email_templates: {
+        Row: {
+          created_at: string | null
+          html_content: string
+          id: string
+          is_default: boolean | null
+          name: string
+          subject: string
+          template_type: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          html_content: string
+          id?: string
+          is_default?: boolean | null
+          name: string
+          subject: string
+          template_type?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          html_content?: string
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          subject?: string
+          template_type?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       employer_projects: {
         Row: {
           company_page_id: string | null
@@ -4542,6 +4578,33 @@ export type Database = {
           mime_type?: string | null
           parsed_data?: Json | null
           uploaded_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_engagement_preferences: {
+        Row: {
+          engagement_score: number | null
+          id: string
+          last_updated: string | null
+          preference_type: string
+          preference_value: string
+          user_id: string
+        }
+        Insert: {
+          engagement_score?: number | null
+          id?: string
+          last_updated?: string | null
+          preference_type: string
+          preference_value: string
+          user_id: string
+        }
+        Update: {
+          engagement_score?: number | null
+          id?: string
+          last_updated?: string | null
+          preference_type?: string
+          preference_value?: string
           user_id?: string
         }
         Relationships: []

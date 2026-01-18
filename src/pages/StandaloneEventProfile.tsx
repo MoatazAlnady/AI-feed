@@ -599,7 +599,6 @@ const StandaloneEventProfile: React.FC = () => {
           </SheetHeader>
           <EventChatWindow
             eventId={event.id}
-            eventType="standalone_event"
             eventTitle={event.title}
             onClose={() => setShowChat(false)}
           />
