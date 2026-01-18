@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Star, ExternalLink, Share2, Wrench, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/providers/ThemeProvider';
 import ProfileHoverCard from '@/components/ProfileHoverCard';
+import TranslateButton from '@/components/TranslateButton';
 
 interface FeedToolCardProps {
   tool: {
@@ -24,6 +25,7 @@ interface FeedToolCardProps {
     is_dark_logo?: boolean;
     user_id?: string;
     created_at?: string;
+    detected_language?: string | null;
   };
   author?: {
     id: string;
@@ -43,6 +45,7 @@ const FeedToolCard: React.FC<FeedToolCardProps> = ({
 }) => {
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const [translatedDescription, setTranslatedDescription] = useState<string | null>(null);
 
   const shouldInvertLogo = () => {
     if (!tool.logo_url) return false;
@@ -124,9 +127,19 @@ const FeedToolCard: React.FC<FeedToolCardProps> = ({
             </div>
 
             {/* Description */}
-            <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-              {tool.description}
+            <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+              {translatedDescription || tool.description}
             </p>
+
+            {/* Translate Button */}
+            <TranslateButton
+              contentType="tool"
+              contentId={tool.id}
+              originalText={tool.description}
+              detectedLanguage={tool.detected_language || undefined}
+              onTranslated={setTranslatedDescription}
+              className="mb-2"
+            />
 
             {/* Tags & Pricing */}
             <div className="flex flex-wrap items-center gap-2">

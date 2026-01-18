@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { RefreshCw, Calendar, MapPin, Globe, Share2, Heart, MessageCircle, Clock, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProfileHoverCard from '@/components/ProfileHoverCard';
+import TranslateButton from '@/components/TranslateButton';
 import { getCreatorProfileLink } from '@/utils/profileUtils';
 import { format } from 'date-fns';
 
@@ -19,8 +20,9 @@ interface SharedEventCardProps {
     is_online?: boolean;
     interests?: string[];
     tags?: string[];
+    group_id?: string | null;
+    detected_language?: string | null;
   };
-  eventType: 'group_event' | 'standalone_event';
   sharedBy: {
     id: string;
     name: string;
@@ -30,12 +32,11 @@ interface SharedEventCardProps {
   shareText: string;
   sharedAt: string;
   groupName?: string;
-  onShare: (event: any, eventType: string) => void;
+  onShare: (event: any) => void;
 }
 
 const SharedEventCard: React.FC<SharedEventCardProps> = ({
   event,
-  eventType,
   sharedBy,
   shareText,
   sharedAt,
@@ -44,7 +45,9 @@ const SharedEventCard: React.FC<SharedEventCardProps> = ({
 }) => {
   const navigate = useNavigate();
   const eventDate = event.event_date || event.start_date;
-  const eventUrl = eventType === 'group_event' ? `/event/${event.id}` : `/standalone-event/${event.id}`;
+  // Use group_id presence to determine URL
+  const eventUrl = event.group_id ? `/event/${event.id}` : `/standalone-event/${event.id}`;
+  const [translatedDescription, setTranslatedDescription] = useState<string | null>(null);
 
   return (
     <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
@@ -102,8 +105,22 @@ const SharedEventCard: React.FC<SharedEventCardProps> = ({
                 ) : null}
               </div>
 
+              {(translatedDescription || event.description) && (
+                <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                  {translatedDescription || event.description}
+                </p>
+              )}
+
+              {/* Translate Button */}
               {event.description && (
-                <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{event.description}</p>
+                <TranslateButton
+                  contentType="event"
+                  contentId={event.id}
+                  originalText={event.description}
+                  detectedLanguage={event.detected_language || undefined}
+                  onTranslated={setTranslatedDescription}
+                  className="mb-2"
+                />
               )}
 
               <div className="flex flex-wrap items-center gap-2">
@@ -127,7 +144,7 @@ const SharedEventCard: React.FC<SharedEventCardProps> = ({
       <div className="px-6 py-3 border-t flex gap-4">
         <Button variant="ghost" size="sm"><Heart className="h-4 w-4 mr-1" />Like</Button>
         <Button variant="ghost" size="sm"><MessageCircle className="h-4 w-4 mr-1" />Comment</Button>
-        <Button variant="ghost" size="sm" onClick={() => onShare(event, eventType)}><Share2 className="h-4 w-4 mr-1" />Share</Button>
+        <Button variant="ghost" size="sm" onClick={() => onShare(event)}><Share2 className="h-4 w-4 mr-1" />Share</Button>
         <Link to={eventUrl} className="ml-auto">
           <Button variant="outline" size="sm">RSVP</Button>
         </Link>

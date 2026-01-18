@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Globe, Users, Share2, Sparkles, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProfileHoverCard from '@/components/ProfileHoverCard';
+import TranslateButton from '@/components/TranslateButton';
 import { format } from 'date-fns';
 
 interface FeedEventCardProps {
@@ -21,8 +22,9 @@ interface FeedEventCardProps {
     created_by?: string;
     creator_id?: string;
     created_at?: string;
+    group_id?: string | null;
+    detected_language?: string | null;
   };
-  eventType: 'group_event' | 'standalone_event';
   creator?: {
     id: string;
     name: string;
@@ -30,13 +32,12 @@ interface FeedEventCardProps {
     handle?: string;
   };
   groupName?: string;
-  onShare: (event: any, eventType: string) => void;
+  onShare: (event: any) => void;
   isNew?: boolean;
 }
 
 const FeedEventCard: React.FC<FeedEventCardProps> = ({ 
   event, 
-  eventType,
   creator, 
   groupName,
   onShare, 
@@ -44,7 +45,9 @@ const FeedEventCard: React.FC<FeedEventCardProps> = ({
 }) => {
   const navigate = useNavigate();
   const eventDate = event.event_date || event.start_date;
-  const eventUrl = eventType === 'group_event' ? `/event/${event.id}` : `/standalone-event/${event.id}`;
+  // Use group_id presence to determine URL
+  const eventUrl = event.group_id ? `/event/${event.id}` : `/standalone-event/${event.id}`;
+  const [translatedDescription, setTranslatedDescription] = useState<string | null>(null);
 
   return (
     <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden hover:shadow-md transition-shadow">
@@ -126,10 +129,22 @@ const FeedEventCard: React.FC<FeedEventCardProps> = ({
                 </div>
               </div>
 
-              {event.description && (
-                <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-                  {event.description}
+              {(translatedDescription || event.description) && (
+                <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                  {translatedDescription || event.description}
                 </p>
+              )}
+
+              {/* Translate Button */}
+              {event.description && (
+                <TranslateButton
+                  contentType="event"
+                  contentId={event.id}
+                  originalText={event.description}
+                  detectedLanguage={event.detected_language || undefined}
+                  onTranslated={setTranslatedDescription}
+                  className="mb-2"
+                />
               )}
 
               <div className="flex flex-wrap items-center gap-2">
@@ -152,7 +167,7 @@ const FeedEventCard: React.FC<FeedEventCardProps> = ({
       </div>
 
       <div className="px-6 py-3 border-t flex items-center justify-between">
-        <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); onShare(event, eventType); }}>
+        <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); onShare(event); }}>
           <Share2 className="h-4 w-4 mr-1" />Share
         </Button>
         <Link to={eventUrl}>
