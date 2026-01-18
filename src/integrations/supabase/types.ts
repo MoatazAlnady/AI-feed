@@ -2904,9 +2904,14 @@ export type Database = {
           id: string
           intro_text: string | null
           outro_text: string | null
+          requires_review: boolean | null
+          review_status: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           scheduled_for: string | null
           status: string | null
           subject: string | null
+          template_id: string | null
           title: string
           updated_at: string | null
         }
@@ -2916,9 +2921,14 @@ export type Database = {
           id?: string
           intro_text?: string | null
           outro_text?: string | null
+          requires_review?: boolean | null
+          review_status?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           scheduled_for?: string | null
           status?: string | null
           subject?: string | null
+          template_id?: string | null
           title: string
           updated_at?: string | null
         }
@@ -2928,13 +2938,26 @@ export type Database = {
           id?: string
           intro_text?: string | null
           outro_text?: string | null
+          requires_review?: boolean | null
+          review_status?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           scheduled_for?: string | null
           status?: string | null
           subject?: string | null
+          template_id?: string | null
           title?: string
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_issues_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       newsletter_sent_content: {
         Row: {
@@ -3014,6 +3037,7 @@ export type Database = {
           email: string
           frequency: string
           id: string
+          interests: string[] | null
           unsubscribe_token: string | null
           user_id: string | null
         }
@@ -3022,6 +3046,7 @@ export type Database = {
           email: string
           frequency: string
           id?: string
+          interests?: string[] | null
           unsubscribe_token?: string | null
           user_id?: string | null
         }
@@ -3030,8 +3055,51 @@ export type Database = {
           email?: string
           frequency?: string
           id?: string
+          interests?: string[] | null
           unsubscribe_token?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      newsletter_templates: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          css_styles: string | null
+          description: string | null
+          footer_html: string | null
+          header_html: string | null
+          html_template: string
+          id: string
+          is_default: boolean | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          css_styles?: string | null
+          description?: string | null
+          footer_html?: string | null
+          header_html?: string | null
+          html_template: string
+          id?: string
+          is_default?: boolean | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          css_styles?: string | null
+          description?: string | null
+          footer_html?: string | null
+          header_html?: string | null
+          html_template?: string
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          updated_at?: string | null
         }
         Relationships: []
       }

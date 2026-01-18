@@ -186,10 +186,12 @@ const Newsletter: React.FC = () => {
           {/* Frequency Selection */}
           <div className="mb-6">
             <h3 className="text-white font-semibold mb-3">How often would you like to hear from us?</h3>
-            <div className="flex justify-center space-x-4">
+            <div className="flex flex-wrap justify-center gap-3">
               <TooltipProvider>
                 {[
                   { value: 'daily', label: 'Daily', premium: true },
+                  { value: 'semi_weekly', label: 'Semi-Weekly (2x/week)', premium: true },
+                  { value: 'biweekly', label: 'Biweekly (3x/week)', premium: true },
                   { value: 'weekly', label: 'Weekly', premium: false },
                   { value: 'monthly', label: 'Monthly', premium: false }
                 ].map(({ value, label, premium }) => {
@@ -197,7 +199,7 @@ const Newsletter: React.FC = () => {
                   const radioOption = (
                     <label 
                       key={value} 
-                      className={`flex items-center space-x-2 text-white ${
+                      className={`flex items-center space-x-2 text-white text-sm ${
                         isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                       }`}
                     >
@@ -227,7 +229,7 @@ const Newsletter: React.FC = () => {
                           {radioOption}
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Upgrade to Premium for daily updates</p>
+                          <p>Upgrade to Premium for this frequency</p>
                         </TooltipContent>
                       </Tooltip>
                     );
