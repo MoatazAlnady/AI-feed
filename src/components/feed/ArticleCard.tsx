@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText, Eye, Share2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import TranslateButton from '@/components/TranslateButton';
 
 interface ArticleCardProps {
   article: {
@@ -17,12 +18,14 @@ interface ArticleCardProps {
     user_id?: string;
     tags?: string[];
     interests?: string[];
+    detected_language?: string | null;
   };
   onShare: (article: any) => void;
 }
 
 const ArticleCard: React.FC<ArticleCardProps> = ({ article, onShare }) => {
   const navigate = useNavigate();
+  const [translatedExcerpt, setTranslatedExcerpt] = useState<string | null>(null);
 
   return (
     <div className="bg-card rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow border border-border">
@@ -55,10 +58,22 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onShare }) => {
           </h3>
 
           {/* Excerpt */}
-          {article.excerpt && (
+          {(translatedExcerpt || article.excerpt) && (
             <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-              {article.excerpt}
+              {translatedExcerpt || article.excerpt}
             </p>
+          )}
+
+          {/* Translate Button */}
+          {article.excerpt && (
+            <TranslateButton
+              contentType="article"
+              contentId={article.id}
+              originalText={article.excerpt}
+              detectedLanguage={article.detected_language || undefined}
+              onTranslated={setTranslatedExcerpt}
+              className="mt-1"
+            />
           )}
 
           {/* Meta info */}

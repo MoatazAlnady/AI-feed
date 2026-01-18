@@ -3,6 +3,8 @@ import { Globe, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LanguageSelectorProps {
   variant?: 'header' | 'menu';
@@ -27,6 +29,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   onLocaleChange 
 }) => {
   const { i18n, t } = useTranslation('common');
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [currentLocale, setCurrentLocale] = useState(i18n.language || 'en');
   const currentLanguage = languages.find(lang => lang.code === currentLocale) || languages[0];
@@ -59,6 +62,15 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
       
       // Store in localStorage
       localStorage.setItem('preferredLocale', languageCode);
+      
+      // Sync to database if user is logged in
+      if (user) {
+        await supabase
+          .from('user_profiles')
+          .update({ preferred_language: languageCode })
+          .eq('id', user.id);
+        console.log('✅ Language preference synced to database');
+      }
       
       // Update local state
       setCurrentLocale(languageCode);

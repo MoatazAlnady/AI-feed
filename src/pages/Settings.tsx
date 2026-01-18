@@ -18,6 +18,7 @@ import InterestTagSelector from '@/components/InterestTagSelector';
 import CompanySelector from '@/components/CompanySelector';
 import MyReportsTab from '@/components/MyReportsTab';
 import { FollowingManagement } from '@/components/FollowingManagement';
+import LanguageSelector from '@/components/LanguageSelector';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 
@@ -669,6 +670,28 @@ const Settings = () => {
                 maxTags={10}
                 label="Your Interests (max 10)"
               />
+            </CardContent>
+          </Card>
+
+          {/* Language & Translation */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Globe className="h-5 w-5" />
+                {t('settings.languageTranslation', 'Language & Translation')}
+              </CardTitle>
+              <CardDescription>
+                {t('settings.languageTranslationDesc', 'Set your preferred language. Content in other languages will show a "Translate" button.')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>{t('settings.preferredLanguage', 'Preferred Language')}</Label>
+                <LanguageSelector />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {t('settings.translationCacheNote', 'Translations are cached so they load instantly for everyone.')}
+              </p>
             </CardContent>
           </Card>
 

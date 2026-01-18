@@ -1416,7 +1416,6 @@ const NewsFeed: React.FC = () => {
             <FeedEventCard
               key={`group-event-${post.id}`}
               event={post}
-              eventType="group_event"
               creator={creatorProfile ? {
                 id: post.created_by,
                 name: creatorProfile.full_name || 'Creator',
@@ -1424,7 +1423,7 @@ const NewsFeed: React.FC = () => {
                 handle: creatorProfile.handle
               } : undefined}
               groupName={post.groupName}
-              onShare={(event, eventType) => setShareModalEvent({ event, eventType })}
+              onShare={(event) => setShareModalEvent({ event, eventType: event.group_id ? 'group_event' : 'standalone_event' })}
               isNew={isRecentlyAdded(post.created_at)}
             />
           );
@@ -1437,14 +1436,13 @@ const NewsFeed: React.FC = () => {
             <FeedEventCard
               key={`standalone-event-${post.id}`}
               event={post}
-              eventType="standalone_event"
               creator={creatorProfile ? {
                 id: post.creator_id,
                 name: creatorProfile.full_name || 'Creator',
                 avatar: creatorProfile.profile_photo,
                 handle: creatorProfile.handle
               } : undefined}
-              onShare={(event, eventType) => setShareModalEvent({ event, eventType })}
+              onShare={(event) => setShareModalEvent({ event, eventType: event.group_id ? 'group_event' : 'standalone_event' })}
               isNew={isRecentlyAdded(post.created_at)}
             />
           );
@@ -1457,7 +1455,6 @@ const NewsFeed: React.FC = () => {
             <SharedEventCard
               key={`shared-group-event-${post.id}-${index}`}
               event={post}
-              eventType="group_event"
               sharedBy={{
                 id: post.shared_by,
                 name: sharedByProfile?.full_name || 'Someone',
@@ -1466,7 +1463,7 @@ const NewsFeed: React.FC = () => {
               }}
               shareText={post.share_text || ''}
               sharedAt={new Date(post.shared_at).toLocaleDateString()}
-              onShare={(event, eventType) => setShareModalEvent({ event, eventType })}
+              onShare={(event) => setShareModalEvent({ event, eventType: event.group_id ? 'group_event' : 'standalone_event' })}
             />
           );
         }
@@ -1478,7 +1475,6 @@ const NewsFeed: React.FC = () => {
             <SharedEventCard
               key={`shared-standalone-event-${post.id}-${index}`}
               event={post}
-              eventType="standalone_event"
               sharedBy={{
                 id: post.shared_by,
                 name: sharedByProfile?.full_name || 'Someone',
@@ -1487,7 +1483,7 @@ const NewsFeed: React.FC = () => {
               }}
               shareText={post.share_text || ''}
               sharedAt={new Date(post.shared_at).toLocaleDateString()}
-              onShare={(event, eventType) => setShareModalEvent({ event, eventType })}
+              onShare={(event) => setShareModalEvent({ event, eventType: event.group_id ? 'group_event' : 'standalone_event' })}
             />
           );
         }

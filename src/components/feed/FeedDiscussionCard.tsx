@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MessageSquare, BarChart3, Share2, Sparkles, MessageCircle, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProfileHoverCard from '@/components/ProfileHoverCard';
+import TranslateButton from '@/components/TranslateButton';
 
 interface FeedDiscussionCardProps {
   discussion: {
@@ -18,6 +19,7 @@ interface FeedDiscussionCardProps {
     tags?: string[];
     author_id?: string;
     created_at?: string;
+    detected_language?: string | null;
   };
   groupName: string;
   author?: {
@@ -40,6 +42,7 @@ const FeedDiscussionCard: React.FC<FeedDiscussionCardProps> = ({
   const navigate = useNavigate();
   const hasPoll = discussion.poll_options && discussion.poll_options.length > 0;
   const discussionUrl = `/group/${discussion.group_id}?tab=discussions`;
+  const [translatedContent, setTranslatedContent] = useState<string | null>(null);
 
   return (
     <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden hover:shadow-md transition-shadow">
@@ -94,10 +97,22 @@ const FeedDiscussionCard: React.FC<FeedDiscussionCardProps> = ({
               </p>
             )}
 
-            {discussion.content && (
+            {(translatedContent || discussion.content) && (
               <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-                {discussion.content}
+                {translatedContent || discussion.content}
               </p>
+            )}
+
+            {/* Translate Button */}
+            {discussion.content && (
+              <TranslateButton
+                contentType="discussion"
+                contentId={discussion.id}
+                originalText={discussion.content}
+                detectedLanguage={discussion.detected_language || undefined}
+                onTranslated={setTranslatedContent}
+                className="mb-2"
+              />
             )}
 
             {hasPoll && (
