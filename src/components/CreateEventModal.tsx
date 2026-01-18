@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Calendar, MapPin, Clock, Crown, Video, Copy, RefreshCw } from 'lucide-react';
+import { X, Calendar, MapPin, Clock, Crown, Video, Copy, RefreshCw, DollarSign } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { usePremiumStatus } from '../hooks/usePremiumStatus';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,16 @@ import { supabase } from '../integrations/supabase/client';
 import PremiumUpgradeModal from './PremiumUpgradeModal';
 import InterestTagSelector from './InterestTagSelector';
 import { detectLanguage } from '@/utils/languageDetection';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 interface CreateEventModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -46,7 +56,10 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
     interests: [] as string[],
     tags: [] as string[],
     isPublic: true,
-    maxAttendees: ''
+    maxAttendees: '',
+    isPaid: false,
+    ticketPrice: '',
+    ticketCurrency: 'USD'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -145,7 +158,10 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
           live_video_url: formData.liveVideoUrl || null,
           interests: formData.interests,
           tags: formData.tags,
-          detected_language
+          detected_language,
+          is_paid: formData.isPaid,
+          ticket_price: formData.isPaid && formData.ticketPrice ? parseFloat(formData.ticketPrice) : 0,
+          ticket_currency: formData.ticketCurrency
         })
         .select()
         .single();
@@ -173,7 +189,10 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
         interests: [],
         tags: [],
         isPublic: true,
-        maxAttendees: ''
+        maxAttendees: '',
+        isPaid: false,
+        ticketPrice: '',
+        ticketCurrency: 'USD'
       });
       
       onClose();
@@ -489,7 +508,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
             </div>
 
             {/* Max Attendees */}
-            <div className="mb-8">
+            <div className="mb-6">
               <label htmlFor="maxAttendees" className="block text-sm font-medium text-foreground mb-2">
                 Max Attendees (optional)
               </label>
@@ -504,6 +523,55 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
                 placeholder="Leave empty for unlimited"
               />
             </div>
+
+            {/* Paid Event (Gold only) */}
+            {isPremium && (
+              <div className="mb-8 p-4 bg-muted/50 rounded-xl border border-border">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="h-5 w-5 text-amber-500" />
+                    <Label className="font-medium">Paid Event</Label>
+                  </div>
+                  <Switch
+                    checked={formData.isPaid}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isPaid: checked }))}
+                  />
+                </div>
+                
+                {formData.isPaid && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-sm">Ticket Price</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={formData.ticketPrice}
+                        onChange={(e) => setFormData(prev => ({ ...prev, ticketPrice: e.target.value }))}
+                        placeholder="0.00"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm">Currency</Label>
+                      <Select 
+                        value={formData.ticketCurrency} 
+                        onValueChange={(value) => setFormData(prev => ({ ...prev, ticketCurrency: value }))}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="USD">USD</SelectItem>
+                          <SelectItem value="EUR">EUR</SelectItem>
+                          <SelectItem value="GBP">GBP</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Submit Button */}
             <button
