@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { getCreatorProfileLink } from '@/utils/profileUtils';
 import PremiumBadge from '@/components/PremiumBadge';
+import TranslateButton from '@/components/TranslateButton';
 
 interface Author {
   name: string;
@@ -72,6 +73,7 @@ const PostDetails: React.FC = () => {
   const [commentSort, setCommentSort] = useState<'relevant' | 'recent'>('recent');
   const [editingComment, setEditingComment] = useState<string | null>(null);
   const [editCommentContent, setEditCommentContent] = useState('');
+  const [translatedContent, setTranslatedContent] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -519,8 +521,15 @@ const PostDetails: React.FC = () => {
           {/* Content */}
           <div className="mb-6">
             <p className="text-foreground whitespace-pre-wrap leading-relaxed">
-              {post.content}
+              {translatedContent || post.content}
             </p>
+            <TranslateButton
+              contentType="post"
+              contentId={post.id}
+              originalText={post.content}
+              onTranslated={setTranslatedContent}
+              className="mt-2"
+            />
           </div>
 
           {/* Media */}

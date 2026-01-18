@@ -16,6 +16,7 @@ import PromoteContentModal from '@/components/PromoteContentModal';
 import SEOHead from '@/components/SEOHead';
 import { InArticleAd } from '@/components/GoogleAd';
 import PremiumBadge from '@/components/PremiumBadge';
+import TranslateButton from '@/components/TranslateButton';
 
 interface Article {
   id: string;
@@ -53,6 +54,7 @@ const ArticleDetails = () => {
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showPromoteModal, setShowPromoteModal] = useState(false);
+  const [translatedContent, setTranslatedContent] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -224,9 +226,17 @@ const ArticleDetails = () => {
           )}
 
           {/* Article Content */}
+          <div className="mb-4">
+            <TranslateButton
+              contentType="article"
+              contentId={article.id}
+              originalText={article.content}
+              onTranslated={setTranslatedContent}
+            />
+          </div>
           <div 
             className="prose prose-lg dark:prose-invert max-w-none mb-8"
-            dangerouslySetInnerHTML={{ __html: article.content }}
+            dangerouslySetInnerHTML={{ __html: translatedContent || article.content }}
           />
 
           {/* In-Article Ad */}

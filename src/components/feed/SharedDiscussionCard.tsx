@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { RefreshCw, MessageSquare, BarChart3, Share2, Heart, MessageCircle, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProfileHoverCard from '@/components/ProfileHoverCard';
 import { getCreatorProfileLink } from '@/utils/profileUtils';
+import TranslateButton from '@/components/TranslateButton';
 
 interface SharedDiscussionCardProps {
   discussion: {
@@ -17,6 +18,7 @@ interface SharedDiscussionCardProps {
     group_id: string;
     interests?: string[];
     tags?: string[];
+    detected_language?: string | null;
   };
   groupName: string;
   sharedBy: {
@@ -41,6 +43,7 @@ const SharedDiscussionCard: React.FC<SharedDiscussionCardProps> = ({
   const navigate = useNavigate();
   const hasPoll = discussion.poll_options && discussion.poll_options.length > 0;
   const discussionUrl = `/group/${discussion.group_id}?tab=discussions`;
+  const [translatedContent, setTranslatedContent] = useState<string | null>(null);
 
   return (
     <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
@@ -78,7 +81,17 @@ const SharedDiscussionCard: React.FC<SharedDiscussionCardProps> = ({
             )}
 
             {discussion.content && (
-              <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{discussion.content}</p>
+              <>
+                <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{translatedContent || discussion.content}</p>
+                <TranslateButton
+                  contentType="discussion"
+                  contentId={discussion.id}
+                  originalText={discussion.content}
+                  detectedLanguage={discussion.detected_language}
+                  onTranslated={setTranslatedContent}
+                  className="mb-3"
+                />
+              </>
             )}
 
             {hasPoll && (

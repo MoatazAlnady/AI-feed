@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { RefreshCw, Star, ExternalLink, Share2, Heart, MessageCircle, Wrench, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from '@/providers/ThemeProvider';
 import ProfileHoverCard from '@/components/ProfileHoverCard';
 import { getCreatorProfileLink } from '@/utils/profileUtils';
+import TranslateButton from '@/components/TranslateButton';
 
 interface SharedToolCardProps {
   tool: {
@@ -23,6 +24,7 @@ interface SharedToolCardProps {
     views?: number;
     is_light_logo?: boolean;
     is_dark_logo?: boolean;
+    detected_language?: string | null;
   };
   sharedBy: {
     id: string;
@@ -44,6 +46,7 @@ const SharedToolCard: React.FC<SharedToolCardProps> = ({
 }) => {
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const [translatedDescription, setTranslatedDescription] = useState<string | null>(null);
 
   const shouldInvertLogo = () => {
     if (!tool.logo_url) return false;
@@ -117,9 +120,17 @@ const SharedToolCard: React.FC<SharedToolCardProps> = ({
                 </div>
               )}
             </div>
-            <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
-              {tool.description}
+            <p className="text-sm text-muted-foreground line-clamp-2 mb-1">
+              {translatedDescription || tool.description}
             </p>
+            <TranslateButton
+              contentType="tool"
+              contentId={tool.id}
+              originalText={tool.description}
+              detectedLanguage={tool.detected_language}
+              onTranslated={setTranslatedDescription}
+              className="mb-2"
+            />
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary">{tool.pricing || 'Free'}</Badge>
               {tool.free_plan === 'Yes' && (
