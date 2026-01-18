@@ -43,9 +43,9 @@ interface GroupEvent {
   group_id: string;
   title: string;
   description: string | null;
-  cover_image: string | null;
-  start_date: string;
-  end_date: string | null;
+  cover_image_url: string | null;
+  event_date: string;
+  event_end_date: string | null;
   start_time: string | null;
   end_time: string | null;
   location: string | null;
@@ -134,12 +134,13 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
       const from = currentPage * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
 
+      // Query unified events table with group_id filter
       const { data, error } = await supabase
-        .from('group_events')
+        .from('events')
         .select('*')
         .eq('group_id', groupId)
-        .gte('start_date', new Date().toISOString().split('T')[0])
-        .order('start_date', { ascending: true })
+        .gte('event_date', new Date().toISOString().split('T')[0])
+        .order('event_date', { ascending: true })
         .range(from, to);
 
       if (error) throw error;
@@ -147,11 +148,11 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
       const newEvents = data || [];
       const eventIds = newEvents.map(e => e.id);
 
-      // Batch fetch attendee counts - NO N+1!
+      // Batch fetch attendee counts from unified event_attendees table
       let countMap: Record<string, number> = {};
       if (eventIds.length > 0) {
         const { data: attendeeCounts } = await supabase
-          .from('group_event_attendees')
+          .from('event_attendees')
           .select('event_id')
           .in('event_id', eventIds)
           .eq('status', 'attending');
@@ -189,10 +190,25 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
     if (!user) return;
 
     try {
+      // Get all events for this group first
+      const { data: groupEvents } = await supabase
+        .from('events')
+        .select('id')
+        .eq('group_id', groupId);
+
+      if (!groupEvents || groupEvents.length === 0) {
+        setUserAttendance({});
+        return;
+      }
+
+      const eventIds = groupEvents.map(e => e.id);
+
+      // Query unified event_attendees table
       const { data } = await supabase
-        .from('group_event_attendees')
+        .from('event_attendees')
         .select('event_id, status')
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .in('event_id', eventIds);
 
       const attendance: Record<string, string> = {};
       data?.forEach(a => {
@@ -215,9 +231,9 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
       const targetStatus = newStatus || (currentStatus === 'attending' ? 'not_attending' : 'attending');
       
       if (targetStatus === 'not_attending' || targetStatus === 'undecided') {
-        // Remove RSVP
+        // Remove RSVP from unified event_attendees table
         await supabase
-          .from('group_event_attendees')
+          .from('event_attendees')
           .delete()
           .eq('event_id', eventId)
           .eq('user_id', user.id);
@@ -229,16 +245,16 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
         });
         toast.success('RSVP updated');
       } else {
-        // Add/Update RSVP
+        // Add/Update RSVP in unified event_attendees table
         if (currentStatus) {
           await supabase
-            .from('group_event_attendees')
+            .from('event_attendees')
             .update({ status: targetStatus })
             .eq('event_id', eventId)
             .eq('user_id', user.id);
         } else {
           await supabase
-            .from('group_event_attendees')
+            .from('event_attendees')
             .insert({
               event_id: eventId,
               user_id: user.id,
@@ -291,16 +307,17 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
 
     setSubmitting(true);
     try {
+      // Insert into unified events table with group_id
       const { error } = await supabase
-        .from('group_events')
+        .from('events')
         .insert({
           group_id: groupId,
-          created_by: user.id,
+          creator_id: user.id,
           title: formData.title.trim(),
           description: formData.description.trim() || null,
-          cover_image: formData.cover_image || null,
-          start_date: formData.start_date,
-          end_date: formData.end_date || null,
+          cover_image_url: formData.cover_image || null,
+          event_date: formData.start_date,
+          event_end_date: formData.end_date || null,
           start_time: formData.start_time || null,
           end_time: formData.end_time || null,
           location: formData.is_online ? null : formData.location || null,
@@ -508,19 +525,20 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
                     checked={formData.is_public}
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_public: checked }))}
                   />
-                  <Label>{t('groups.publicEvent', 'Make this event public')}</Label>
+                  <Label>{t('groups.publicEvent', 'Public Event')}</Label>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Public events will appear in the main Events tab for everyone to see
-                </p>
 
-                <Button 
-                  onClick={createEvent} 
-                  disabled={!formData.title.trim() || !formData.start_date || submitting}
-                  className="w-full"
-                >
-                  {submitting ? t('common.creating', 'Creating...') : t('groups.createEvent', 'Create Event')}
-                </Button>
+                <div className="flex gap-2 justify-end pt-4">
+                  <Button variant="outline" onClick={() => setShowCreateModal(false)}>
+                    {t('common.cancel', 'Cancel')}
+                  </Button>
+                  <Button 
+                    onClick={createEvent} 
+                    disabled={!formData.title.trim() || !formData.start_date || submitting}
+                  >
+                    {submitting ? t('common.creating', 'Creating...') : t('groups.createEvent', 'Create Event')}
+                  </Button>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
@@ -529,127 +547,170 @@ const GroupEventsTab: React.FC<GroupEventsTabProps> = ({
 
       {/* Events List */}
       {events.length === 0 ? (
-        <div className="bg-card rounded-xl p-8 text-center border border-border">
-          <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-foreground mb-2">
-            {t('groups.noEvents', 'No upcoming events')}
-          </h3>
+        <div className="text-center py-12 bg-muted/30 rounded-xl">
+          <Calendar className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
           <p className="text-muted-foreground">
-            {isAdmin 
-              ? t('groups.createFirstEvent', 'Create an event for your group!')
-              : t('groups.checkBackLater', 'Check back later for upcoming events')
-            }
+            {t('groups.noUpcomingEvents', 'No upcoming events')}
           </p>
+          {canCreateEvents && (
+            <Button 
+              variant="outline" 
+              className="mt-4"
+              onClick={() => setShowCreateModal(true)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              {t('groups.createFirstEvent', 'Create the first event')}
+            </Button>
+          )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {events.map((event) => (
-            <div 
-              key={event.id} 
-              className="bg-card rounded-xl border border-border overflow-hidden hover:border-primary/50 transition-colors cursor-pointer"
-              onClick={() => navigate(`/event/${event.id}`)}
-            >
-              {event.cover_image && (
-                <img 
-                  src={event.cover_image} 
-                  alt={event.title}
-                  className="w-full h-32 object-cover"
-                />
-              )}
-              <div className="p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  {event.is_public && (
-                    <Badge variant="secondary" className="text-xs">Public</Badge>
-                  )}
-                  {event.is_online && (
-                    <Badge variant="outline" className="text-xs">
-                      <Video className="h-3 w-3 mr-1" />
-                      Online
-                    </Badge>
-                  )}
-                </div>
+        <div className="space-y-4">
+          {events.map((event) => {
+            const isAttending = userAttendance[event.id] === 'attending';
+            
+            return (
+              <div 
+                key={event.id}
+                className="bg-card rounded-xl border border-border overflow-hidden hover:border-primary/50 transition-colors"
+              >
+                {/* Cover Image */}
+                {event.cover_image_url && (
+                  <img 
+                    src={event.cover_image_url} 
+                    alt={event.title}
+                    className="w-full h-40 object-cover"
+                  />
+                )}
+                
+                <div className="p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      {/* Title */}
+                      <h4 
+                        className="font-semibold text-foreground hover:text-primary cursor-pointer"
+                        onClick={() => navigate(`/event/${event.id}`)}
+                      >
+                        {event.title}
+                      </h4>
+                      
+                      {/* Date & Time */}
+                      <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          <span>
+                            {format(new Date(event.event_date), 'MMM d, yyyy')}
+                            {event.event_end_date && event.event_end_date !== event.event_date && (
+                              <> - {format(new Date(event.event_end_date), 'MMM d, yyyy')}</>
+                            )}
+                          </span>
+                        </div>
+                        
+                        {event.start_time && (
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-4 w-4" />
+                            <span>
+                              {event.start_time}
+                              {event.end_time && ` - ${event.end_time}`}
+                            </span>
+                          </div>
+                        )}
+                      </div>
 
-                <h4 className="font-semibold text-foreground mb-2">{event.title}</h4>
+                      {/* Location */}
+                      <div className="flex items-center gap-1 mt-2 text-sm text-muted-foreground">
+                        {event.is_online ? (
+                          <>
+                            <Video className="h-4 w-4" />
+                            <span>{t('groups.onlineEvent', 'Online Event')}</span>
+                          </>
+                        ) : event.location ? (
+                          <>
+                            <MapPin className="h-4 w-4" />
+                            <span>{event.location}</span>
+                          </>
+                        ) : null}
+                      </div>
 
-                <div className="space-y-1 text-sm text-muted-foreground mb-3">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    <span>{format(new Date(event.start_date), 'MMM d, yyyy')}</span>
-                    {event.start_time && (
-                      <>
-                        <Clock className="h-4 w-4 ml-2" />
-                        <span>{event.start_time}</span>
-                      </>
-                    )}
-                  </div>
-                  {!event.is_online && event.location && (
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      <span className="truncate">{event.location}</span>
+                      {/* Attendees */}
+                      <div className="flex items-center gap-1 mt-2 text-sm text-muted-foreground">
+                        <Users className="h-4 w-4" />
+                        <span>
+                          {event.attendee_count} {t('groups.attending', 'attending')}
+                          {event.max_attendees && ` / ${event.max_attendees} max`}
+                        </span>
+                      </div>
                     </div>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    <span>{event.attendee_count} attending</span>
-                  </div>
-                </div>
 
-                <div className="flex items-center justify-between gap-2">
-                  <Select
-                    value={userAttendance[event.id] || 'undecided'}
-                    onValueChange={(value) => {
-                      handleRSVP(event.id, value);
-                    }}
-                  >
-                    <SelectTrigger 
-                      className="w-[140px] h-8 text-xs"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <SelectValue placeholder="RSVP" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="undecided">Not Decided</SelectItem>
-                      <SelectItem value="attending">Will Attend</SelectItem>
-                      <SelectItem value="maybe">Maybe</SelectItem>
-                      <SelectItem value="not_attending">Not Attending</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  
-                  {(event.is_public || isMember) && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setInviteModal({
-                          isOpen: true,
-                          eventId: event.id,
-                          isPublic: event.is_public,
-                          title: event.title
-                        });
-                      }}
-                    >
-                      <UserPlus className="h-4 w-4" />
-                    </Button>
-                  )}
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    {/* Actions */}
+                    <div className="flex flex-col gap-2">
+                      <Button
+                        variant={isAttending ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => handleRSVP(event.id)}
+                        className="gap-1"
+                      >
+                        {isAttending ? (
+                          <>
+                            <Check className="h-4 w-4" />
+                            {t('groups.attending', 'Attending')}
+                          </>
+                        ) : (
+                          t('groups.rsvp', 'RSVP')
+                        )}
+                      </Button>
+
+                      {isMember && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setInviteModal({
+                            isOpen: true,
+                            eventId: event.id,
+                            isPublic: event.is_public,
+                            title: event.title
+                          })}
+                          className="gap-1"
+                        >
+                          <UserPlus className="h-4 w-4" />
+                          {t('groups.invite', 'Invite')}
+                        </Button>
+                      )}
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => navigate(`/event/${event.id}`)}
+                        className="gap-1"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                        {t('common.viewDetails', 'View')}
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            );
+          })}
 
-      {/* Load More Button */}
-      {hasMore && events.length > 0 && (
-        <div className="flex justify-center mt-6">
-          <Button 
-            variant="outline" 
-            onClick={() => fetchEvents(true)} 
-            disabled={loadingMore}
-          >
-            {loadingMore ? t('common.loading', 'Loading...') : t('common.loadMore', 'Load More')}
-          </Button>
+          {/* Load More */}
+          {hasMore && (
+            <div className="text-center pt-4">
+              <Button
+                variant="outline"
+                onClick={() => fetchEvents(true)}
+                disabled={loadingMore}
+              >
+                {loadingMore ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
+                    {t('common.loading', 'Loading...')}
+                  </>
+                ) : (
+                  t('common.loadMore', 'Load More')
+                )}
+              </Button>
+            </div>
+          )}
         </div>
       )}
 

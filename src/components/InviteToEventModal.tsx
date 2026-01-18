@@ -107,23 +107,13 @@ const InviteToEventModal: React.FC<InviteToEventModalProps> = ({
         (existingInvitations || []).map(inv => [inv.invitee_id, inv.status])
       );
 
-      // Get attendees for this event
-      let attendeeIds: string[] = [];
-      if (eventType === 'group_event') {
-        const { data: attendees } = await supabase
-          .from('group_event_attendees')
-          .select('user_id')
-          .eq('event_id', eventId)
-          .eq('status', 'attending');
-        attendeeIds = (attendees || []).map(a => a.user_id);
-      } else {
-        const { data: attendees } = await supabase
-          .from('standalone_event_attendees')
-          .select('user_id')
-          .eq('event_id', eventId)
-          .eq('status', 'attending');
-        attendeeIds = (attendees || []).map(a => a.user_id);
-      }
+      // Get attendees for this event using unified event_attendees table
+      const { data: attendees } = await supabase
+        .from('event_attendees')
+        .select('user_id')
+        .eq('event_id', eventId)
+        .eq('status', 'attending');
+      const attendeeIds = (attendees || []).map(a => a.user_id);
 
       // For private events, get group members
       let groupMemberIds: string[] = [];
