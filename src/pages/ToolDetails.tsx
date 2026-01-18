@@ -15,6 +15,7 @@ import { useAuth } from '@/context/AuthContext';
 import EditToolModal from '@/components/EditToolModal';
 import SEOHead from '@/components/SEOHead';
 import { getDeviceFingerprint } from '@/utils/deviceFingerprint';
+import TranslateButton from '@/components/TranslateButton';
 
 interface SubCategoryInfo {
   id: string;
@@ -61,6 +62,7 @@ const ToolDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [translatedDescription, setTranslatedDescription] = useState<string | null>(null);
 
   const canRequestEdit = user && !isAdmin;
 
@@ -279,9 +281,18 @@ const ToolDetails: React.FC = () => {
                   <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2">
                     {tool.name}
                   </h1>
-                  <p className="text-lg text-muted-foreground mb-4">
-                    {tool.description}
-                  </p>
+                  <div className="mb-4">
+                    <p className="text-lg text-muted-foreground">
+                      {translatedDescription || tool.description}
+                    </p>
+                    <TranslateButton
+                      contentType="tool"
+                      contentId={tool.id}
+                      originalText={tool.description}
+                      onTranslated={setTranslatedDescription}
+                      className="mt-2"
+                    />
+                  </div>
                   <div className="flex flex-wrap items-center gap-3 mb-4">
                     <ToolStars 
                       value={tool.average_rating || 0}

@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { FileText, RefreshCw, Heart, MessageCircle, Share2, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProfileHoverCard from '@/components/ProfileHoverCard';
 import { getCreatorProfileLink } from '@/utils/profileUtils';
+import TranslateButton from '@/components/TranslateButton';
 
 interface SharedArticleCardProps {
   article: {
@@ -19,6 +20,7 @@ interface SharedArticleCardProps {
     user_id?: string;
     tags?: string[];
     interests?: string[];
+    detected_language?: string | null;
   };
   sharedBy: {
     id: string;
@@ -39,6 +41,7 @@ const SharedArticleCard: React.FC<SharedArticleCardProps> = ({
   onShare,
 }) => {
   const navigate = useNavigate();
+  const [translatedExcerpt, setTranslatedExcerpt] = useState<string | null>(null);
 
   return (
     <div className="bg-card rounded-2xl shadow-sm overflow-hidden border border-border">
@@ -97,7 +100,17 @@ const SharedArticleCard: React.FC<SharedArticleCardProps> = ({
             </div>
             <h3 className="font-semibold line-clamp-2 text-foreground">{article.title}</h3>
             {article.excerpt && (
-              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{article.excerpt}</p>
+              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{translatedExcerpt || article.excerpt}</p>
+            )}
+            {article.excerpt && (
+              <TranslateButton
+                contentType="article"
+                contentId={article.id}
+                originalText={article.excerpt}
+                detectedLanguage={article.detected_language}
+                onTranslated={setTranslatedExcerpt}
+                className="mt-1"
+              />
             )}
             <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
               <span>{article.author}</span>

@@ -49,6 +49,7 @@ import ShareToolModal from './ShareToolModal';
 import ShareGroupModal from './ShareGroupModal';
 import ShareEventModal from './ShareEventModal';
 import ShareDiscussionModal from './ShareDiscussionModal';
+import TranslateButton from './TranslateButton';
 
 interface Post {
   id: string;
@@ -82,6 +83,7 @@ interface Post {
   view_count?: number;
   reach_score?: number;
   sharedPostId?: string; // ID of the shared_posts record for reshared posts
+  detected_language?: string | null;
 }
 
 interface Comment {
@@ -131,6 +133,7 @@ const NewsFeed: React.FC = () => {
   const [shareModalGroup, setShareModalGroup] = useState<any>(null);
   const [shareModalEvent, setShareModalEvent] = useState<{ event: any; eventType: string } | null>(null);
   const [shareModalDiscussion, setShareModalDiscussion] = useState<any>(null);
+  const [translatedPosts, setTranslatedPosts] = useState<Record<string, string>>({});
 
   // Get user interests for personalized feed
   const userInterests = user?.user_metadata?.interests || [];
@@ -237,10 +240,10 @@ const NewsFeed: React.FC = () => {
     try {
       console.log('Fetching posts...');
       
-      // Fetch regular posts with reach score, view count, and share count
+      // Fetch regular posts with reach score, view count, share count, and detected_language
       const { data: postsData, error: postsError } = await supabase
         .from('posts')
-        .select('*, reach_score, view_count, share_count')
+        .select('*, reach_score, view_count, share_count, detected_language')
         .order('reach_score', { ascending: false })
         .order('created_at', { ascending: false })
         .limit(50);
@@ -280,7 +283,7 @@ const NewsFeed: React.FC = () => {
       if (followedIds.length > 0) {
         const { data: articles, error: articlesError } = await supabase
           .from('articles')
-          .select('id, title, excerpt, featured_image_url, published_at, user_id, category, views, share_count, author')
+          .select('id, title, excerpt, featured_image_url, published_at, user_id, category, views, share_count, author, detected_language')
           .eq('status', 'published')
           .in('user_id', followedIds)
           .order('published_at', { ascending: false })
@@ -499,12 +502,27 @@ const NewsFeed: React.FC = () => {
 
       // Fetch user's followed creators with status for prioritization
       let followedCreators: { following_id: string; follow_status: string }[] = [];
+      let userCountry = '';
+      let userLanguage = 'en';
+      let userInterestsFromDb: string[] = [];
+
       if (user) {
         const { data: followsData } = await supabase
           .from('follows')
           .select('following_id, follow_status')
           .eq('follower_id', user.id);
         followedCreators = followsData || [];
+
+        // Fetch user profile for country, language, and interests
+        const { data: userProfile } = await supabase
+          .from('user_profiles')
+          .select('country, preferred_language, interests')
+          .eq('id', user.id)
+          .single();
+        
+        userCountry = userProfile?.country || '';
+        userLanguage = userProfile?.preferred_language || localStorage.getItem('preferredLocale') || 'en';
+        userInterestsFromDb = userProfile?.interests || [];
       }
 
       const favoriteCreators = new Set(
@@ -516,7 +534,9 @@ const NewsFeed: React.FC = () => {
 
       // Filter posts based on user interests if user has interests
       let filteredPosts = allPosts;
-      if (userInterests.length > 0) {
+      const combinedInterests = [...new Set([...userInterests, ...userInterestsFromDb])];
+      
+      if (combinedInterests.length > 0) {
         filteredPosts = allPosts.filter(post => {
           // Always show user's own posts
           if (user && (post.user_id === user.id || post.shared_by === user.id)) {
@@ -529,15 +549,15 @@ const NewsFeed: React.FC = () => {
           }
 
           // Check if post content matches user interests
-          const postContent = post.content.toLowerCase();
-          const matchesInterests = userInterests.some(interest => 
+          const postContent = (post.content || '').toLowerCase();
+          const matchesInterests = combinedInterests.some(interest => 
             postContent.includes(interest.toLowerCase())
           );
 
           // Check if post author has similar interests
           const authorProfile = profilesMap.get(post.user_id);
           const authorInterests = authorProfile?.interests || [];
-          const hasCommonInterests = userInterests.some(interest =>
+          const hasCommonInterests = combinedInterests.some(interest =>
             authorInterests.includes(interest)
           );
 
@@ -545,24 +565,74 @@ const NewsFeed: React.FC = () => {
         });
       }
 
-      // Sort posts with priority: Favorites first, then normal follows/interests, then others
+      // Priority-based sorting: favorites + interests + same language + same country
       filteredPosts.sort((a, b) => {
-        const aIsFavorite = favoriteCreators.has(a.user_id);
-        const bIsFavorite = favoriteCreators.has(b.user_id);
-        const aIsFollowed = normalFollows.has(a.user_id);
-        const bIsFollowed = normalFollows.has(b.user_id);
+        const getCreatorId = (item: any) => item.user_id || item.creator_id || item.author_id || item.shared_by;
+        const creatorA = profilesMapLocal.get(getCreatorId(a));
+        const creatorB = profilesMapLocal.get(getCreatorId(b));
 
-        // Favorites come first
-        if (aIsFavorite && !bIsFavorite) return -1;
-        if (!aIsFavorite && bIsFavorite) return 1;
+        // Calculate priority scores
+        const calculateScore = (item: any, creator: any) => {
+          let score = 0;
+          const creatorId = getCreatorId(item);
+          const isFavorite = favoriteCreators.has(creatorId);
+          const isFollowed = normalFollows.has(creatorId);
+          
+          // Check interests match
+          const itemInterests = item.interests || item.tags || [];
+          const matchesInterests = combinedInterests.some((interest: string) => 
+            itemInterests.some((i: string) => i.toLowerCase().includes(interest.toLowerCase()))
+          );
 
-        // Then followed creators
-        if (aIsFollowed && !bIsFollowed) return -1;
-        if (!aIsFollowed && bIsFollowed) return 1;
+          // Check language match
+          const creatorLanguage = creator?.preferred_language || item.detected_language || 'en';
+          const sameLanguage = creatorLanguage === userLanguage;
 
-        // Then sort by date within same priority
-        const dateA = new Date(a.type === 'shared' ? a.shared_at : a.created_at);
-        const dateB = new Date(b.type === 'shared' ? b.shared_at : b.created_at);
+          // Check country match
+          const creatorCountry = creator?.country || '';
+          const sameCountry = creatorCountry && userCountry && creatorCountry === userCountry;
+
+          // Priority scoring (higher = shown first)
+          if (isFavorite && matchesInterests && sameLanguage && sameCountry) {
+            score = 100; // Highest priority
+          } else if (isFavorite && matchesInterests && sameLanguage) {
+            score = 90; // Second priority
+          } else if (isFavorite && matchesInterests) {
+            score = 80;
+          } else if (isFollowed && matchesInterests && sameLanguage && sameCountry) {
+            score = 75;
+          } else if (isFollowed && matchesInterests && sameLanguage) {
+            score = 70;
+          } else if (isFollowed && matchesInterests) {
+            score = 60;
+          } else if (isFavorite || isFollowed) {
+            score = 50;
+          } else if (sameLanguage && sameCountry) {
+            score = 40;
+          } else if (sameLanguage) {
+            score = 30;
+          } else {
+            score = 10;
+          }
+
+          // Add time decay (newer content gets slight boost)
+          const createdAt = item.type?.includes('shared') ? item.shared_at : item.created_at;
+          const ageInHours = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60);
+          score += Math.max(0, 5 - ageInHours / 24); // Up to 5 bonus for content < 24 hours old
+
+          return score;
+        };
+
+        const scoreA = calculateScore(a, creatorA);
+        const scoreB = calculateScore(b, creatorB);
+
+        // First sort by priority, then by date for same priority
+        if (Math.abs(scoreB - scoreA) > 0.5) {
+          return scoreB - scoreA;
+        }
+
+        const dateA = new Date(a.type?.includes('shared') ? a.shared_at : a.created_at);
+        const dateB = new Date(b.type?.includes('shared') ? b.shared_at : b.created_at);
         return dateB.getTime() - dateA.getTime();
       });
 

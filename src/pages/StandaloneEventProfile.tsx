@@ -22,6 +22,7 @@ import EventChatWindow from '@/components/EventChatWindow';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ShareEventModal from '@/components/ShareEventModal';
 import AddToCalendarButton from '@/components/AddToCalendarButton';
+import TranslateButton from '@/components/TranslateButton';
 
 interface UnifiedEvent {
   id: string;
@@ -82,6 +83,7 @@ const StandaloneEventProfile: React.FC = () => {
   const [hasMoreAttendees, setHasMoreAttendees] = useState(true);
   const [loadingMoreAttendees, setLoadingMoreAttendees] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [translatedDescription, setTranslatedDescription] = useState<string | null>(null);
 
   const isCreator = user?.id === event?.creator_id || user?.id === event?.organizer_id;
 
@@ -496,8 +498,15 @@ const StandaloneEventProfile: React.FC = () => {
                   {t('events.about', 'About this event')}
                 </h3>
                 <p className="text-muted-foreground whitespace-pre-wrap">
-                  {event.description}
+                  {translatedDescription || event.description}
                 </p>
+                <TranslateButton
+                  contentType="event"
+                  contentId={event.id}
+                  originalText={event.description}
+                  onTranslated={setTranslatedDescription}
+                  className="mt-2"
+                />
               </div>
             )}
 

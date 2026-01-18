@@ -51,6 +51,7 @@ import SEOHead from '@/components/SEOHead';
 import EventChatWindow from '@/components/EventChatWindow';
 import EditEventModal from '@/components/EditEventModal';
 import ShareEventModal from '@/components/ShareEventModal';
+import TranslateButton from '@/components/TranslateButton';
 
 interface UnifiedEvent {
   id: string;
@@ -141,6 +142,7 @@ const EventProfile: React.FC = () => {
   const [isEventCreator, setIsEventCreator] = useState(false);
   const [showEditEventModal, setShowEditEventModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [translatedDescription, setTranslatedDescription] = useState<string | null>(null);
 
   // Pagination states
   const [postsPage, setPostsPage] = useState(0);
@@ -809,8 +811,15 @@ const EventProfile: React.FC = () => {
                 <div>
                   <h3 className="font-semibold text-foreground mb-2">About this event</h3>
                   <p className="text-muted-foreground whitespace-pre-wrap">
-                    {event.description}
+                    {translatedDescription || event.description}
                   </p>
+                  <TranslateButton
+                    contentType="event"
+                    contentId={event.id}
+                    originalText={event.description}
+                    onTranslated={setTranslatedDescription}
+                    className="mt-2"
+                  />
                 </div>
               </>
             )}
