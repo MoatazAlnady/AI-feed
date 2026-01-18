@@ -24,17 +24,17 @@ interface EventMessage {
 
 interface EventChatWindowProps {
   eventId: string;
-  eventType: 'group_event' | 'standalone_event' | 'company_event';
   eventTitle: string;
   onClose: () => void;
 }
 
 const EventChatWindow: React.FC<EventChatWindowProps> = ({
   eventId,
-  eventType,
   eventTitle,
   onClose
 }) => {
+  // Unified event type for all events
+  const eventType = 'event';
   const { t } = useTranslation();
   const { user } = useAuth();
   const [messages, setMessages] = useState<EventMessage[]>([]);

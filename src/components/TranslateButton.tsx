@@ -51,9 +51,20 @@ const TranslateButton: React.FC<TranslateButtonProps> = ({
 
   const userLanguage = getUserLanguage();
 
-  // Don't show if content is already in user's language
+  // Only show translate button if:
+  // 1. We know the content language (detected_language exists)
+  // 2. Content language is different from user's language
+  // 3. Content is long enough to be worth translating (min 20 chars)
+  if (!detectedLanguage) {
+    return null; // Don't show if language is unknown
+  }
+  
   if (detectedLanguage === userLanguage) {
-    return null;
+    return null; // Same language, no need to translate
+  }
+  
+  if (!originalText || originalText.length < 20) {
+    return null; // Content too short
   }
 
   const handleTranslate = async () => {

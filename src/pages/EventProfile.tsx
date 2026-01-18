@@ -1001,7 +1001,6 @@ const EventProfile: React.FC = () => {
             <EventChatWindow
               eventId={eventId!}
               eventTitle={event.title}
-              eventType="group_event"
               onClose={() => setShowChat(false)}
             />
           </div>

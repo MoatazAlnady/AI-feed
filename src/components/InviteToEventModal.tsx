@@ -30,7 +30,6 @@ interface InviteToEventModalProps {
   isOpen: boolean;
   onClose: () => void;
   eventId: string;
-  eventType: 'group_event' | 'standalone_event';
   groupId?: string;
   isPublic: boolean;
   eventTitle?: string;
@@ -40,11 +39,12 @@ const InviteToEventModal: React.FC<InviteToEventModalProps> = ({
   isOpen,
   onClose,
   eventId,
-  eventType,
   groupId,
   isPublic,
   eventTitle
 }) => {
+  // Determine event type based on groupId - unified to 'event' type
+  const eventType = 'event';
   const { t } = useTranslation();
   const { user } = useAuth();
   const [connections, setConnections] = useState<Connection[]>([]);
