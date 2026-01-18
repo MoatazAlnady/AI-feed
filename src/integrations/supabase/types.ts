@@ -166,6 +166,7 @@ export type Database = {
           category: string
           content: string
           created_at: string | null
+          detected_language: string | null
           email: string
           excerpt: string | null
           featured_image_url: string | null
@@ -186,6 +187,7 @@ export type Database = {
           category: string
           content: string
           created_at?: string | null
+          detected_language?: string | null
           email: string
           excerpt?: string | null
           featured_image_url?: string | null
@@ -206,6 +208,7 @@ export type Database = {
           category?: string
           content?: string
           created_at?: string | null
+          detected_language?: string | null
           email?: string
           excerpt?: string | null
           featured_image_url?: string | null
@@ -659,6 +662,39 @@ export type Database = {
           estimated_revenue?: number | null
           id?: string
           impression_count?: number | null
+        }
+        Relationships: []
+      }
+      content_translations: {
+        Row: {
+          content_id: string
+          content_type: string
+          id: string
+          original_text: string
+          source_language: string
+          target_language: string
+          translated_at: string | null
+          translated_text: string
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          id?: string
+          original_text: string
+          source_language: string
+          target_language: string
+          translated_at?: string | null
+          translated_text: string
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          id?: string
+          original_text?: string
+          source_language?: string
+          target_language?: string
+          translated_at?: string | null
+          translated_text?: string
         }
         Relationships: []
       }
@@ -1600,6 +1636,7 @@ export type Database = {
           created_at: string | null
           creator_id: string | null
           description: string | null
+          detected_language: string | null
           end_time: string | null
           event_date: string
           event_end_date: string | null
@@ -1634,6 +1671,7 @@ export type Database = {
           created_at?: string | null
           creator_id?: string | null
           description?: string | null
+          detected_language?: string | null
           end_time?: string | null
           event_date: string
           event_end_date?: string | null
@@ -1668,6 +1706,7 @@ export type Database = {
           created_at?: string | null
           creator_id?: string | null
           description?: string | null
+          detected_language?: string | null
           end_time?: string | null
           event_date?: string
           event_end_date?: string | null
@@ -1877,6 +1916,7 @@ export type Database = {
           author_id: string
           content: string | null
           created_at: string | null
+          detected_language: string | null
           event_id: string | null
           group_id: string | null
           has_participant_chat: boolean | null
@@ -1899,6 +1939,7 @@ export type Database = {
           author_id: string
           content?: string | null
           created_at?: string | null
+          detected_language?: string | null
           event_id?: string | null
           group_id?: string | null
           has_participant_chat?: boolean | null
@@ -1921,6 +1962,7 @@ export type Database = {
           author_id?: string
           content?: string | null
           created_at?: string | null
+          detected_language?: string | null
           event_id?: string | null
           group_id?: string | null
           has_participant_chat?: boolean | null
@@ -1940,202 +1982,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "group_discussions_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "group_events"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "group_discussions_group_id_fkey"
-            columns: ["group_id"]
-            isOneToOne: false
-            referencedRelation: "groups"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      group_event_attendees: {
-        Row: {
-          created_at: string | null
-          event_id: string
-          id: string
-          status: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          event_id: string
-          id?: string
-          status?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          event_id?: string
-          id?: string
-          status?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "group_event_attendees_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "group_events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      group_event_discussions: {
-        Row: {
-          author_id: string
-          content: string | null
-          created_at: string | null
-          event_id: string
-          id: string
-          title: string
-          updated_at: string | null
-        }
-        Insert: {
-          author_id: string
-          content?: string | null
-          created_at?: string | null
-          event_id: string
-          id?: string
-          title: string
-          updated_at?: string | null
-        }
-        Update: {
-          author_id?: string
-          content?: string | null
-          created_at?: string | null
-          event_id?: string
-          id?: string
-          title?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "group_event_discussions_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "group_events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      group_event_posts: {
-        Row: {
-          author_id: string
-          comments_count: number | null
-          content: string
-          created_at: string | null
-          event_id: string
-          id: string
-          likes_count: number | null
-          media_urls: string[] | null
-          updated_at: string | null
-        }
-        Insert: {
-          author_id: string
-          comments_count?: number | null
-          content: string
-          created_at?: string | null
-          event_id: string
-          id?: string
-          likes_count?: number | null
-          media_urls?: string[] | null
-          updated_at?: string | null
-        }
-        Update: {
-          author_id?: string
-          comments_count?: number | null
-          content?: string
-          created_at?: string | null
-          event_id?: string
-          id?: string
-          likes_count?: number | null
-          media_urls?: string[] | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "group_event_posts_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "group_events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      group_events: {
-        Row: {
-          cover_image: string | null
-          created_at: string | null
-          created_by: string
-          description: string | null
-          end_date: string | null
-          end_time: string | null
-          group_id: string
-          id: string
-          interests: string[] | null
-          is_online: boolean | null
-          is_public: boolean | null
-          location: string | null
-          max_attendees: number | null
-          online_link: string | null
-          start_date: string
-          start_time: string | null
-          tags: string[] | null
-          title: string
-          updated_at: string | null
-        }
-        Insert: {
-          cover_image?: string | null
-          created_at?: string | null
-          created_by: string
-          description?: string | null
-          end_date?: string | null
-          end_time?: string | null
-          group_id: string
-          id?: string
-          interests?: string[] | null
-          is_online?: boolean | null
-          is_public?: boolean | null
-          location?: string | null
-          max_attendees?: number | null
-          online_link?: string | null
-          start_date: string
-          start_time?: string | null
-          tags?: string[] | null
-          title: string
-          updated_at?: string | null
-        }
-        Update: {
-          cover_image?: string | null
-          created_at?: string | null
-          created_by?: string
-          description?: string | null
-          end_date?: string | null
-          end_time?: string | null
-          group_id?: string
-          id?: string
-          interests?: string[] | null
-          is_online?: boolean | null
-          is_public?: boolean | null
-          location?: string | null
-          max_attendees?: number | null
-          online_link?: string | null
-          start_date?: string
-          start_time?: string | null
-          tags?: string[] | null
-          title?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "group_events_group_id_fkey"
             columns: ["group_id"]
             isOneToOne: false
             referencedRelation: "groups"
@@ -3385,6 +3232,7 @@ export type Database = {
         Row: {
           content: string
           created_at: string | null
+          detected_language: string | null
           id: string
           image_url: string | null
           interests: string[] | null
@@ -3405,6 +3253,7 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string | null
+          detected_language?: string | null
           id?: string
           image_url?: string | null
           interests?: string[] | null
@@ -3425,6 +3274,7 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string | null
+          detected_language?: string | null
           id?: string
           image_url?: string | null
           interests?: string[] | null
@@ -3871,10 +3721,8 @@ export type Database = {
           original_article_id: string | null
           original_discussion_id: string | null
           original_event_id: string | null
-          original_group_event_id: string | null
           original_group_id: string | null
           original_post_id: string | null
-          original_standalone_event_id: string | null
           original_tool_id: string | null
           share_text: string | null
           updated_at: string
@@ -3889,10 +3737,8 @@ export type Database = {
           original_article_id?: string | null
           original_discussion_id?: string | null
           original_event_id?: string | null
-          original_group_event_id?: string | null
           original_group_id?: string | null
           original_post_id?: string | null
-          original_standalone_event_id?: string | null
           original_tool_id?: string | null
           share_text?: string | null
           updated_at?: string
@@ -3907,10 +3753,8 @@ export type Database = {
           original_article_id?: string | null
           original_discussion_id?: string | null
           original_event_id?: string | null
-          original_group_event_id?: string | null
           original_group_id?: string | null
           original_post_id?: string | null
-          original_standalone_event_id?: string | null
           original_tool_id?: string | null
           share_text?: string | null
           updated_at?: string
@@ -3940,13 +3784,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "shared_posts_original_group_event_id_fkey"
-            columns: ["original_group_event_id"]
-            isOneToOne: false
-            referencedRelation: "group_events"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "shared_posts_original_group_id_fkey"
             columns: ["original_group_id"]
             isOneToOne: false
@@ -3958,13 +3795,6 @@ export type Database = {
             columns: ["original_post_id"]
             isOneToOne: false
             referencedRelation: "posts"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "shared_posts_original_standalone_event_id_fkey"
-            columns: ["original_standalone_event_id"]
-            isOneToOne: false
-            referencedRelation: "standalone_events"
             referencedColumns: ["id"]
           },
           {
@@ -4059,130 +3889,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
-      }
-      standalone_event_attendees: {
-        Row: {
-          created_at: string | null
-          event_id: string
-          id: string
-          status: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          event_id: string
-          id?: string
-          status?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          event_id?: string
-          id?: string
-          status?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "standalone_event_attendees_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "standalone_events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      standalone_events: {
-        Row: {
-          category: string | null
-          cover_image: string | null
-          created_at: string | null
-          creator_id: string
-          description: string | null
-          event_date: string
-          event_end_date: string | null
-          id: string
-          interests: string[] | null
-          is_online: boolean | null
-          is_public: boolean | null
-          location: string | null
-          max_attendees: number | null
-          online_link: string | null
-          organizer_id: string | null
-          tags: string[] | null
-          title: string
-          updated_at: string | null
-        }
-        Insert: {
-          category?: string | null
-          cover_image?: string | null
-          created_at?: string | null
-          creator_id: string
-          description?: string | null
-          event_date: string
-          event_end_date?: string | null
-          id?: string
-          interests?: string[] | null
-          is_online?: boolean | null
-          is_public?: boolean | null
-          location?: string | null
-          max_attendees?: number | null
-          online_link?: string | null
-          organizer_id?: string | null
-          tags?: string[] | null
-          title: string
-          updated_at?: string | null
-        }
-        Update: {
-          category?: string | null
-          cover_image?: string | null
-          created_at?: string | null
-          creator_id?: string
-          description?: string | null
-          event_date?: string
-          event_end_date?: string | null
-          id?: string
-          interests?: string[] | null
-          is_online?: boolean | null
-          is_public?: boolean | null
-          location?: string | null
-          max_attendees?: number | null
-          online_link?: string | null
-          organizer_id?: string | null
-          tags?: string[] | null
-          title?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "standalone_events_creator_id_fkey"
-            columns: ["creator_id"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "standalone_events_creator_id_fkey"
-            columns: ["creator_id"]
-            isOneToOne: false
-            referencedRelation: "user_profiles_safe"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "standalone_events_organizer_id_fkey"
-            columns: ["organizer_id"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "standalone_events_organizer_id_fkey"
-            columns: ["organizer_id"]
-            isOneToOne: false
-            referencedRelation: "user_profiles_safe"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       sub_categories: {
         Row: {
@@ -4709,6 +4415,7 @@ export type Database = {
           cons: string[] | null
           created_at: string | null
           description: string
+          detected_language: string | null
           features: string[] | null
           free_plan: string | null
           id: string
@@ -4736,6 +4443,7 @@ export type Database = {
           cons?: string[] | null
           created_at?: string | null
           description: string
+          detected_language?: string | null
           features?: string[] | null
           free_plan?: string | null
           id?: string
@@ -4763,6 +4471,7 @@ export type Database = {
           cons?: string[] | null
           created_at?: string | null
           description?: string
+          detected_language?: string | null
           features?: string[] | null
           free_plan?: string | null
           id?: string
@@ -4944,6 +4653,7 @@ export type Database = {
           organization_id: string | null
           phone: string | null
           phone_country_code: string | null
+          preferred_language: string | null
           premium_tier: string | null
           premium_until: string | null
           profile_photo: string | null
@@ -5001,6 +4711,7 @@ export type Database = {
           organization_id?: string | null
           phone?: string | null
           phone_country_code?: string | null
+          preferred_language?: string | null
           premium_tier?: string | null
           premium_until?: string | null
           profile_photo?: string | null
@@ -5058,6 +4769,7 @@ export type Database = {
           organization_id?: string | null
           phone?: string | null
           phone_country_code?: string | null
+          preferred_language?: string | null
           premium_tier?: string | null
           premium_until?: string | null
           profile_photo?: string | null

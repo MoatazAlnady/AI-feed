@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Plus, Send, Calendar, Users, Edit, Trash2, Eye } from 'lucide-react';
+import { Mail, Plus, Send, Calendar, Users, Edit, Trash2, Eye, Megaphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import CreatorBulkEmailModal from './CreatorBulkEmailModal';
 
 interface Newsletter {
   id: string;
@@ -36,13 +37,25 @@ const CreatorNewsletterManager: React.FC = () => {
     content: '',
     excerpt: ''
   });
+  const [showBulkEmailModal, setShowBulkEmailModal] = useState(false);
+  const [creatorName, setCreatorName] = useState('');
 
   useEffect(() => {
     if (user) {
       fetchNewsletters();
       fetchSubscriberCount();
+      fetchCreatorName();
     }
   }, [user]);
+
+  const fetchCreatorName = async () => {
+    const { data } = await supabase
+      .from('user_profiles')
+      .select('full_name')
+      .eq('id', user?.id)
+      .single();
+    setCreatorName(data?.full_name || 'Creator');
+  };
 
   const fetchNewsletters = async () => {
     try {
@@ -334,11 +347,24 @@ const CreatorNewsletterManager: React.FC = () => {
           </CardContent>
         </Card>
       ) : (
-        <Button onClick={() => setShowEditor(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Newsletter
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => setShowEditor(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Newsletter
+          </Button>
+          <Button variant="outline" onClick={() => setShowBulkEmailModal(true)}>
+            <Megaphone className="h-4 w-4 mr-2" />
+            Send Bulk Email
+          </Button>
+        </div>
       )}
+
+      <CreatorBulkEmailModal
+        isOpen={showBulkEmailModal}
+        onClose={() => setShowBulkEmailModal(false)}
+        subscriberCount={subscriberCount}
+        creatorName={creatorName}
+      />
 
       {/* Newsletter List */}
       <Tabs defaultValue="all">

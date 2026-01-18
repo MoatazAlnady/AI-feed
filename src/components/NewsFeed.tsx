@@ -258,8 +258,7 @@ const NewsFeed: React.FC = () => {
           original_article:articles!shared_posts_original_article_id_fkey(*),
           original_tool:tools!shared_posts_original_tool_id_fkey(*),
           original_group:groups!shared_posts_original_group_id_fkey(*),
-          original_group_event:group_events!shared_posts_original_group_event_id_fkey(*),
-          original_standalone_event:standalone_events!shared_posts_original_standalone_event_id_fkey(*),
+          original_event:events!shared_posts_original_event_id_fkey(*),
           original_discussion:group_discussions!shared_posts_original_discussion_id_fkey(*)
         `)
         .order('created_at', { ascending: false })
@@ -336,41 +335,20 @@ const NewsFeed: React.FC = () => {
         }
       }
 
-      // Fetch public group events from followed creators
-      let groupEventsData: any[] = [];
+      // Fetch events from followed creators (unified events table)
+      let eventsData: any[] = [];
       if (followedIds.length > 0) {
-        const { data: events, error: eventsError } = await supabase
-          .from('group_events')
-          .select('*, groups!inner(name)')
-          .eq('is_public', true)
-          .in('created_by', followedIds)
-          .order('created_at', { ascending: false })
-          .limit(10);
-
-        if (!eventsError && events) {
-          groupEventsData = events.map(event => ({
-            ...event,
-            type: 'group_event',
-            groupName: (event as any).groups?.name,
-            created_at: event.created_at
-          }));
-        }
-      }
-
-      // Fetch standalone events from followed creators
-      let standaloneEventsData: any[] = [];
-      if (followedIds.length > 0) {
-        const { data: events, error: eventsError } = await supabase
-          .from('standalone_events')
+        const { data: eventsFetched, error: eventsError } = await supabase
+          .from('events')
           .select('*')
-          .in('creator_id', followedIds)
+          .or(`creator_id.in.(${followedIds.join(',')}),organizer_id.in.(${followedIds.join(',')})`)
           .order('created_at', { ascending: false })
-          .limit(10);
+          .limit(15);
 
-        if (!eventsError && events) {
-          standaloneEventsData = events.map(event => ({
+        if (!eventsError && eventsFetched) {
+          eventsData = eventsFetched.map(event => ({
             ...event,
-            type: 'standalone_event',
+            type: event.group_id ? 'group_event' : 'standalone_event',
             created_at: event.created_at
           }));
         }
@@ -430,19 +408,10 @@ const NewsFeed: React.FC = () => {
               shared_at: share.created_at,
               sharedPostId: share.id
             });
-          } else if (share.content_type === 'group_event' && share.original_group_event) {
+          } else if ((share.content_type === 'group_event' || share.content_type === 'standalone_event' || share.content_type === 'event') && share.original_event) {
             allPosts.push({
-              ...share.original_group_event,
-              type: 'shared_group_event',
-              shared_by: share.user_id,
-              share_text: share.share_text,
-              shared_at: share.created_at,
-              sharedPostId: share.id
-            });
-          } else if (share.content_type === 'standalone_event' && share.original_standalone_event) {
-            allPosts.push({
-              ...share.original_standalone_event,
-              type: 'shared_standalone_event',
+              ...share.original_event,
+              type: share.original_event.group_id ? 'shared_group_event' : 'shared_standalone_event',
               shared_by: share.user_id,
               share_text: share.share_text,
               shared_at: share.created_at,
@@ -474,8 +443,7 @@ const NewsFeed: React.FC = () => {
       if (articlesData) allPosts.push(...articlesData);
       if (toolsData) allPosts.push(...toolsData);
       if (groupsData) allPosts.push(...groupsData);
-      if (groupEventsData) allPosts.push(...groupEventsData);
-      if (standaloneEventsData) allPosts.push(...standaloneEventsData);
+      if (eventsData) allPosts.push(...eventsData);
       if (discussionsData) allPosts.push(...discussionsData);
 
       // Sort all posts by creation time

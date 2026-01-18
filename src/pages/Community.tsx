@@ -66,8 +66,6 @@ const Community: React.FC = () => {
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
   const [showCreateStandaloneEventModal, setShowCreateStandaloneEventModal] = useState(false);
   const [events, setEvents] = useState<any[]>([]);
-  const [standaloneEvents, setStandaloneEvents] = useState<any[]>([]);
-  const [publicGroupEvents, setPublicGroupEvents] = useState<any[]>([]);
   const [groups, setGroups] = useState<any[]>([]);
   const [discussions, setDiscussions] = useState<any[]>([]);
   const [publicGroupDiscussions, setPublicGroupDiscussions] = useState<any[]>([]);
@@ -134,56 +132,31 @@ const Community: React.FC = () => {
       const from = page * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
 
-      // 1. Fetch regular events
-      const { data: regularData, error: regularError } = await supabase
+      // Fetch all events from unified events table
+      const { data: eventsData, error: eventsError } = await supabase
         .from('events')
         .select('*')
         .gte('event_date', new Date().toISOString())
         .order('event_date', { ascending: true })
         .range(from, to);
 
-      if (regularError) throw regularError;
-      
-      // 2. Fetch standalone events (Gold feature)
-      const { data: standaloneData } = await supabase
-        .from('standalone_events')
-        .select('*')
-        .gte('event_date', new Date().toISOString())
-        .order('event_date', { ascending: true })
-        .range(from, to);
-
-      // 3. Fetch public group events
-      const { data: publicGroupData } = await supabase
-        .from('group_events')
-        .select('*, group:groups(id, name)')
-        .eq('is_public', true)
-        .gte('start_date', new Date().toISOString().split('T')[0])
-        .order('start_date', { ascending: true })
-        .range(from, to);
+      if (eventsError) throw eventsError;
 
       // Check if there's more data
-      const hasMore = (regularData?.length === ITEMS_PER_PAGE) || 
-                      (standaloneData?.length === ITEMS_PER_PAGE) || 
-                      (publicGroupData?.length === ITEMS_PER_PAGE);
+      const hasMore = (eventsData?.length === ITEMS_PER_PAGE);
       setHasMoreEvents(hasMore);
       
       if (loadMore) {
-        setEvents(prev => [...prev, ...(regularData || [])]);
-        setStandaloneEvents(prev => [...prev, ...(standaloneData || [])]);
-        setPublicGroupEvents(prev => [...prev, ...(publicGroupData || [])]);
+        setEvents(prev => [...prev, ...(eventsData || [])]);
         setEventsPage(page);
       } else {
-        setEvents(regularData || []);
-        setStandaloneEvents(standaloneData || []);
-        setPublicGroupEvents(publicGroupData || []);
+        setEvents(eventsData || []);
         setEventsPage(0);
       }
       
       // Fetch user attendance if logged in
       if (user) {
-        const allEventIds = [
-          ...(regularData || []).map(e => e.id),
-        ];
+        const allEventIds = (eventsData || []).map(e => e.id);
         
         if (allEventIds.length > 0) {
           const { data: attendanceData } = await supabase
@@ -825,18 +798,12 @@ const Community: React.FC = () => {
   );
 
   const renderEvents = () => {
-    // Combine all events with type indicator
-    const allEvents = [
-      ...events.map(e => ({ ...e, eventType: 'regular', dateField: e.event_date })),
-      ...standaloneEvents.map(e => ({ ...e, eventType: 'standalone', dateField: e.event_date })),
-      ...publicGroupEvents.map(e => ({ 
-        ...e, 
-        eventType: 'group',
-        dateField: e.start_date,
-        event_date: e.start_date,
-        cover_image_url: e.cover_image
-      }))
-    ].sort((a, b) => new Date(a.dateField).getTime() - new Date(b.dateField).getTime());
+    // All events from unified table - categorize by group_id presence
+    const allEvents = events.map(e => ({ 
+      ...e, 
+      eventType: e.group_id ? 'group' : 'standalone', 
+      dateField: e.event_date 
+    })).sort((a, b) => new Date(a.dateField).getTime() - new Date(b.dateField).getTime());
 
     return (
       <div className="space-y-6">
