@@ -1598,18 +1598,32 @@ export type Database = {
           company_page_id: string | null
           cover_image_url: string | null
           created_at: string | null
+          creator_id: string | null
           description: string | null
+          end_time: string | null
           event_date: string
           event_end_date: string | null
           event_type: string | null
+          group_id: string | null
           id: string
+          interests: string[] | null
+          is_live_stream: boolean | null
           is_live_video: boolean | null
+          is_online: boolean | null
           is_public: boolean | null
+          live_stream_room_id: string | null
+          live_stream_url: string | null
           live_video_room_id: string | null
           live_video_url: string | null
           location: string | null
           max_attendees: number | null
+          online_link: string | null
           organizer_id: string | null
+          rsvp_email_enabled: boolean | null
+          rsvp_email_template: string | null
+          start_time: string | null
+          tags: string[] | null
+          timezone: string | null
           title: string
           updated_at: string | null
         }
@@ -1618,18 +1632,32 @@ export type Database = {
           company_page_id?: string | null
           cover_image_url?: string | null
           created_at?: string | null
+          creator_id?: string | null
           description?: string | null
+          end_time?: string | null
           event_date: string
           event_end_date?: string | null
           event_type?: string | null
+          group_id?: string | null
           id?: string
+          interests?: string[] | null
+          is_live_stream?: boolean | null
           is_live_video?: boolean | null
+          is_online?: boolean | null
           is_public?: boolean | null
+          live_stream_room_id?: string | null
+          live_stream_url?: string | null
           live_video_room_id?: string | null
           live_video_url?: string | null
           location?: string | null
           max_attendees?: number | null
+          online_link?: string | null
           organizer_id?: string | null
+          rsvp_email_enabled?: boolean | null
+          rsvp_email_template?: string | null
+          start_time?: string | null
+          tags?: string[] | null
+          timezone?: string | null
           title: string
           updated_at?: string | null
         }
@@ -1638,18 +1666,32 @@ export type Database = {
           company_page_id?: string | null
           cover_image_url?: string | null
           created_at?: string | null
+          creator_id?: string | null
           description?: string | null
+          end_time?: string | null
           event_date?: string
           event_end_date?: string | null
           event_type?: string | null
+          group_id?: string | null
           id?: string
+          interests?: string[] | null
+          is_live_stream?: boolean | null
           is_live_video?: boolean | null
+          is_online?: boolean | null
           is_public?: boolean | null
+          live_stream_room_id?: string | null
+          live_stream_url?: string | null
           live_video_room_id?: string | null
           live_video_url?: string | null
           location?: string | null
           max_attendees?: number | null
+          online_link?: string | null
           organizer_id?: string | null
+          rsvp_email_enabled?: boolean | null
+          rsvp_email_template?: string | null
+          start_time?: string | null
+          tags?: string[] | null
+          timezone?: string | null
           title?: string
           updated_at?: string | null
         }
@@ -1659,6 +1701,13 @@ export type Database = {
             columns: ["company_page_id"]
             isOneToOne: false
             referencedRelation: "company_pages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
             referencedColumns: ["id"]
           },
         ]
@@ -3821,6 +3870,7 @@ export type Database = {
           id: string
           original_article_id: string | null
           original_discussion_id: string | null
+          original_event_id: string | null
           original_group_event_id: string | null
           original_group_id: string | null
           original_post_id: string | null
@@ -3838,6 +3888,7 @@ export type Database = {
           id?: string
           original_article_id?: string | null
           original_discussion_id?: string | null
+          original_event_id?: string | null
           original_group_event_id?: string | null
           original_group_id?: string | null
           original_post_id?: string | null
@@ -3855,6 +3906,7 @@ export type Database = {
           id?: string
           original_article_id?: string | null
           original_discussion_id?: string | null
+          original_event_id?: string | null
           original_group_event_id?: string | null
           original_group_id?: string | null
           original_post_id?: string | null
@@ -3878,6 +3930,13 @@ export type Database = {
             columns: ["original_discussion_id"]
             isOneToOne: false
             referencedRelation: "group_discussions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_posts_original_event_id_fkey"
+            columns: ["original_event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
             referencedColumns: ["id"]
           },
           {
