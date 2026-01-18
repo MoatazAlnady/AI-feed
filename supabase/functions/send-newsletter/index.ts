@@ -12,6 +12,7 @@ const CONTENT_LIMITS = {
   posts: 5,
   tools: 5,
   jobs: 3,
+  events: 3,
 };
 
 interface Subscriber {
@@ -113,10 +114,20 @@ serve(async (req) => {
     const frequenciesToProcess: string[] = [];
     if (frequency === "all") {
       const hour = now.getUTCHours();
+      const dayOfWeek = now.getUTCDay(); // 0 = Sunday, 1 = Monday, etc.
+      
       // Daily newsletters sent at 8 AM UTC
       if (hour === 8) frequenciesToProcess.push("daily");
+      
+      // Semi-weekly: Tuesday (2) and Friday (5) at 8 AM UTC
+      if ([2, 5].includes(dayOfWeek) && hour === 8) frequenciesToProcess.push("semi_weekly");
+      
+      // Biweekly: Monday (1), Wednesday (3), Friday (5) at 8 AM UTC
+      if ([1, 3, 5].includes(dayOfWeek) && hour === 8) frequenciesToProcess.push("biweekly");
+      
       // Weekly newsletters sent on Mondays at 8 AM UTC
-      if (now.getUTCDay() === 1 && hour === 8) frequenciesToProcess.push("weekly");
+      if (dayOfWeek === 1 && hour === 8) frequenciesToProcess.push("weekly");
+      
       // Monthly newsletters sent on 1st of month at 8 AM UTC
       if (now.getUTCDate() === 1 && hour === 8) frequenciesToProcess.push("monthly");
     } else {
@@ -295,6 +306,91 @@ serve(async (req) => {
               created_at: job.created_at
             });
             contentToTrack.push({ type: "job", id: job.id });
+          });
+
+          // Fetch upcoming events
+          let eventsQuery = supabase
+            .from("events")
+            .select("id, title, description, event_date, location, is_online, created_at, interests")
+            .eq("is_public", true)
+            .gte("event_date", new Date().toISOString())
+            .order("event_date", { ascending: true })
+            .limit(CONTENT_LIMITS.events);
+
+          if (sentContentMap.event?.length) {
+            eventsQuery = eventsQuery.not("id", "in", `(${sentContentMap.event.join(",")})`);
+          }
+
+          const { data: events } = await eventsQuery;
+
+          let filteredEvents = events || [];
+          if (subscriber.interests?.length) {
+            filteredEvents = filteredEvents.filter((event: any) => {
+              const eventInterests = event.interests || [];
+              return subscriber.interests.some(interest =>
+                eventInterests.some((tag: string) =>
+                  tag.toLowerCase().includes(interest.toLowerCase())
+                ) ||
+                event.title?.toLowerCase().includes(interest.toLowerCase()) ||
+                event.description?.toLowerCase().includes(interest.toLowerCase())
+              );
+            });
+          }
+
+          filteredEvents.slice(0, CONTENT_LIMITS.events).forEach((event: any) => {
+            const eventDate = new Date(event.event_date).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric'
+            });
+            content.push({
+              id: event.id,
+              title: event.title,
+              excerpt: `${eventDate} • ${event.is_online ? 'Online' : event.location || 'TBD'}`,
+              url: `/events/${event.id}`,
+              type: "event",
+              created_at: event.created_at
+            });
+            contentToTrack.push({ type: "event", id: event.id });
+          });
+
+          // Fetch posts (viral content first)
+          let postsQuery = supabase
+            .from("posts")
+            .select("id, content, user_id, reach_score, view_count, share_count, created_at, tags")
+            .gte("created_at", dateThreshold.toISOString())
+            .order("reach_score", { ascending: false })
+            .limit(CONTENT_LIMITS.posts);
+
+          if (sentContentMap.post?.length) {
+            postsQuery = postsQuery.not("id", "in", `(${sentContentMap.post.join(",")})`);
+          }
+
+          const { data: posts } = await postsQuery;
+
+          let filteredPosts = posts || [];
+          if (subscriber.interests?.length) {
+            filteredPosts = filteredPosts.filter((post: any) => {
+              const postTags = post.tags || [];
+              return subscriber.interests.some(interest =>
+                postTags.some((tag: string) =>
+                  tag.toLowerCase().includes(interest.toLowerCase())
+                ) ||
+                post.content?.toLowerCase().includes(interest.toLowerCase())
+              );
+            });
+          }
+
+          filteredPosts.slice(0, CONTENT_LIMITS.posts).forEach((post: any) => {
+            content.push({
+              id: post.id,
+              title: "Trending Post",
+              excerpt: post.content?.substring(0, 150) || "Check out this trending post",
+              url: `/posts/${post.id}`,
+              type: "post",
+              created_at: post.created_at
+            });
+            contentToTrack.push({ type: "post", id: post.id });
           });
 
           // Skip if no content to send
@@ -574,6 +670,8 @@ function generateNewsletterHtml(
   const articleItems = content.filter(c => c.type === "article");
   const toolItems = content.filter(c => c.type === "tool");
   const jobItems = content.filter(c => c.type === "job");
+  const eventItems = content.filter(c => c.type === "event");
+  const postItems = content.filter(c => c.type === "post");
 
   const frequencyLabel = frequency.charAt(0).toUpperCase() + frequency.slice(1);
   
@@ -650,6 +748,30 @@ function generateNewsletterHtml(
         <div class="item">
           <h3><a href="${baseUrl}${job.url}">${job.title}</a></h3>
           <p>${job.excerpt}</p>
+        </div>
+        `).join('')}
+      </div>
+      ` : ''}
+      
+      ${eventItems.length > 0 ? `
+      <div class="section">
+        <h2>📅 Upcoming Events</h2>
+        ${eventItems.map(event => `
+        <div class="item">
+          <h3><a href="${baseUrl}${event.url}">${event.title}</a></h3>
+          <p>${event.excerpt}</p>
+        </div>
+        `).join('')}
+      </div>
+      ` : ''}
+      
+      ${postItems.length > 0 ? `
+      <div class="section">
+        <h2>💬 Trending Posts</h2>
+        ${postItems.map(post => `
+        <div class="item">
+          <h3><a href="${baseUrl}${post.url}">${post.title}</a></h3>
+          <p>${post.excerpt}</p>
         </div>
         `).join('')}
       </div>
