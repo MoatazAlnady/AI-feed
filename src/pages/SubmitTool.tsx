@@ -10,6 +10,7 @@ import ChatDock from '../components/ChatDock';
 import PremiumUpgradeModal from '../components/PremiumUpgradeModal';
 import AuthModal from '../components/AuthModal';
 import CsvImportModal from '../components/CsvImportModal';
+import { detectLanguage } from '@/utils/languageDetection';
 
 const SubmitTool: React.FC = () => {
   const { t } = useTranslation();
@@ -370,6 +371,9 @@ const SubmitTool: React.FC = () => {
         }
       }
 
+      // Detect language from description
+      const detected_language = detectLanguage(formData.description);
+
       const submissionData = {
         name: formData.name,
         description: formData.description,
@@ -385,7 +389,8 @@ const SubmitTool: React.FC = () => {
         is_dark_logo: formData.is_dark_logo,
         logo_url: logoUrl,
         user_id: user?.id,
-        status: 'pending'
+        status: 'pending',
+        detected_language
       };
       
       console.log('Submitting tool data:', submissionData);

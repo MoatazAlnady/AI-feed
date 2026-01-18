@@ -50,6 +50,7 @@ import ShareGroupModal from './ShareGroupModal';
 import ShareEventModal from './ShareEventModal';
 import ShareDiscussionModal from './ShareDiscussionModal';
 import TranslateButton from './TranslateButton';
+import { trackUserAction } from '@/hooks/useViewTimeTracking';
 
 interface Post {
   id: string;
@@ -884,13 +885,23 @@ const NewsFeed: React.FC = () => {
     }
   };
 
-  const handleShareComplete = (postId: string) => {
+  const handleShareComplete = async (postId: string) => {
     // Update the post share_count immediately in local state
     setPosts(prevPosts => prevPosts.map(post => 
       post.id === postId 
         ? { ...post, share_count: (post.share_count || 0) + 1 }
         : post
     ));
+
+    // Track engagement for behavioral learning
+    if (user) {
+      const post = posts.find(p => p.id === postId);
+      await trackUserAction(user.id, 'share', {
+        creatorId: post?.user_id,
+        contentType: 'post',
+        tags: post?.tags || []
+      });
+    }
   };
 
   const handleEditPost = (postId: string) => {
@@ -976,6 +987,14 @@ const NewsFeed: React.FC = () => {
         .single();
 
       if (error) throw error;
+
+      // Track engagement for behavioral learning
+      const post = posts.find(p => p.id === postId);
+      trackUserAction(user.id, 'comment', {
+        creatorId: post?.user_id,
+        contentType: 'post',
+        tags: post?.tags || []
+      });
 
       // Get current user's profile
       const { data: profiles } = await supabase.rpc('get_public_profiles_by_ids', { ids: [user.id] });
@@ -1206,6 +1225,14 @@ const NewsFeed: React.FC = () => {
 
         // Update local state
         setUserReactions(prev => ({ ...prev, [postId]: reactionType }));
+
+        // Track engagement for behavioral learning
+        const post = posts.find(p => p.id === postId);
+        trackUserAction(user.id, 'like', {
+          creatorId: post?.user_id,
+          contentType: 'post',
+          tags: post?.tags || []
+        });
       }
 
       // Refresh post reactions
