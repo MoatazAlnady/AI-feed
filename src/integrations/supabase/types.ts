@@ -1700,6 +1700,65 @@ export type Database = {
           },
         ]
       }
+      event_recordings: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          duration_seconds: number | null
+          error_message: string | null
+          event_id: string
+          event_type: string | null
+          file_size_bytes: number | null
+          id: string
+          processed_at: string | null
+          recording_url: string | null
+          status: string | null
+          summary: string | null
+          transcript: string | null
+          transcript_language: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          duration_seconds?: number | null
+          error_message?: string | null
+          event_id: string
+          event_type?: string | null
+          file_size_bytes?: number | null
+          id?: string
+          processed_at?: string | null
+          recording_url?: string | null
+          status?: string | null
+          summary?: string | null
+          transcript?: string | null
+          transcript_language?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          duration_seconds?: number | null
+          error_message?: string | null
+          event_id?: string
+          event_type?: string | null
+          file_size_bytes?: number | null
+          id?: string
+          processed_at?: string | null
+          recording_url?: string | null
+          status?: string | null
+          summary?: string | null
+          transcript?: string | null
+          transcript_language?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_recordings_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_reviews: {
         Row: {
           comment: string | null
