@@ -87,35 +87,22 @@ serve(async (req) => {
       .eq('id', invitation.inviter_id)
       .single();
 
-    // Fetch event details based on type
-    let eventData: any;
-    if (invitation.event_type === 'group_event') {
-      const { data } = await supabaseClient
-        .from('group_events')
-        .select('title, description, start_date, start_time, location, is_online, online_link')
-        .eq('id', invitation.event_id)
-        .single();
-      eventData = data;
-    } else {
-      const { data } = await supabaseClient
-        .from('standalone_events')
-        .select('title, description, event_date, location, event_type')
-        .eq('id', invitation.event_id)
-        .single();
-      eventData = data ? {
-        ...data,
-        start_date: data.event_date,
-        is_online: data.event_type === 'online'
-      } : null;
-    }
+    // Fetch event details from unified events table
+    const { data: eventData, error: eventError } = await supabaseClient
+      .from('events')
+      .select('*')
+      .eq('id', invitation.event_id)
+      .single();
 
-    if (!eventData) {
+    if (eventError || !eventData) {
+      logStep("Event not found in unified table", { error: eventError });
       throw new Error("Event not found");
     }
 
     logStep("Event details fetched", { title: eventData.title });
 
-    const eventUrl = invitation.event_type === 'group_event'
+    // Determine event URL based on whether it has a group_id
+    const eventUrl = eventData.group_id 
       ? `https://aifeed.app/event/${invitation.event_id}`
       : `https://aifeed.app/standalone-event/${invitation.event_id}`;
 
@@ -126,7 +113,7 @@ serve(async (req) => {
         inviterName: inviter?.full_name || 'Someone',
         inviterPhoto: inviter?.profile_photo,
         eventTitle: eventData.title,
-        eventDate: eventData.start_date,
+        eventDate: eventData.event_date,
         eventTime: eventData.start_time,
         eventLocation: eventData.is_online ? 'Online Event' : eventData.location,
         eventUrl: eventUrl,
