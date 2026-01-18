@@ -22,8 +22,13 @@ import {
   Trash2,
   Download,
   Settings,
-  GripVertical
+  GripVertical,
+  FileCode,
+  CheckCircle,
+  XCircle,
+  ToggleLeft
 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 
 interface Subscriber {
   id: string;
@@ -65,13 +70,25 @@ interface IssueItem {
 interface NewsletterIssue {
   id: string;
   title: string;
-  frequency: 'daily' | 'weekly' | 'monthly';
+  frequency: 'daily' | 'weekly' | 'monthly' | 'semi_weekly' | 'biweekly';
   status: 'draft' | 'scheduled' | 'sent';
   subject?: string | null;
   intro_text?: string | null;
   outro_text?: string | null;
   scheduled_for?: string | null;
   created_at: string | null;
+  requires_review?: boolean;
+  review_status?: 'pending' | 'approved' | 'rejected' | 'auto_approved';
+}
+
+interface NewsletterTemplate {
+  id: string;
+  name: string;
+  html_content: string;
+  header_html?: string;
+  footer_html?: string;
+  is_default: boolean;
+  created_at: string;
 }
 
 const NewsletterManagement: React.FC = () => {
@@ -95,10 +112,42 @@ const NewsletterManagement: React.FC = () => {
   const [contentSearch, setContentSearch] = useState('');
   const [interests, setInterests] = useState<Interest[]>([]);
   const [recipientCount, setRecipientCount] = useState(0);
+  
+  // Templates tab state
+  const [templates, setTemplates] = useState<NewsletterTemplate[]>([]);
+  const [editingTemplate, setEditingTemplate] = useState<NewsletterTemplate | null>(null);
+  const [templateName, setTemplateName] = useState('');
+  const [templateHtmlContent, setTemplateHtmlContent] = useState('');
+  
+  // Review workflow state
+  const [requiresReview, setRequiresReview] = useState(false);
+  const [pendingIssues, setPendingIssues] = useState<NewsletterIssue[]>([]);
 
+  // Initial data fetch - functions defined below
   useEffect(() => {
-    fetchSubscribers();
-    fetchInterests();
+    const init = async () => {
+      // Fetch subscribers
+      const { data: subscribersData } = await supabase
+        .from('newsletter_subscribers')
+        .select('*, newsletter_subscriber_interests(interests(id, name, slug))');
+      if (subscribersData) {
+        setSubscribers(subscribersData.map(sub => ({
+          id: sub.id, email: sub.email, user_id: sub.user_id,
+          frequency: sub.frequency as any, created_at: sub.created_at, user_profiles: null,
+          interests: sub.newsletter_subscriber_interests?.map((ni: any) => ni.interests).flat().filter(Boolean) || []
+        })));
+      }
+      // Fetch interests
+      const { data: interestsData } = await supabase.from('interests').select('*').order('name');
+      if (interestsData) setInterests(interestsData);
+      // Fetch templates
+      const { data: templatesData } = await supabase.from('newsletter_templates').select('*').order('created_at', { ascending: false });
+      if (templatesData) setTemplates(templatesData.map(t => ({ id: t.id, name: t.name, html_content: t.html_template, header_html: t.header_html || '', footer_html: t.footer_html || '', is_default: t.is_default, created_at: t.created_at })));
+      // Fetch pending issues
+      const { data: pendingData } = await supabase.from('newsletter_issues').select('*').eq('review_status', 'pending').order('created_at', { ascending: false });
+      if (pendingData) setPendingIssues(pendingData.map(issue => ({ id: issue.id, title: issue.title, frequency: issue.frequency as any, status: (issue.status as any) || 'draft', subject: issue.subject, intro_text: issue.intro_text, outro_text: issue.outro_text, scheduled_for: issue.scheduled_for, created_at: issue.created_at, requires_review: issue.requires_review, review_status: issue.review_status as any })));
+    };
+    init();
     createOrGetDraftIssue();
   }, []);
 
@@ -378,6 +427,128 @@ const NewsletterManagement: React.FC = () => {
     }
   };
 
+  const fetchTemplates = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('newsletter_templates')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setTemplates(data?.map(t => ({
+        id: t.id,
+        name: t.name,
+        html_content: t.html_template,
+        header_html: t.header_html || '',
+        footer_html: t.footer_html || '',
+        is_default: t.is_default,
+        created_at: t.created_at
+      })) || []);
+    } catch (error) {
+      console.error('Error fetching templates:', error);
+    }
+  };
+
+  const fetchPendingIssues = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('newsletter_issues')
+        .select('*')
+        .eq('review_status', 'pending')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPendingIssues(data?.map(issue => ({
+        id: issue.id,
+        title: issue.title,
+        frequency: issue.frequency as any,
+        status: (issue.status as any) || 'draft',
+        subject: issue.subject,
+        intro_text: issue.intro_text,
+        outro_text: issue.outro_text,
+        scheduled_for: issue.scheduled_for,
+        created_at: issue.created_at,
+        requires_review: issue.requires_review,
+        review_status: issue.review_status as any
+      })) || []);
+    } catch (error) {
+      console.error('Error fetching pending issues:', error);
+    }
+  };
+
+  const saveTemplate = async () => {
+    if (!templateName.trim()) return;
+
+    try {
+      if (editingTemplate) {
+        const { error } = await supabase
+          .from('newsletter_templates')
+          .update({
+            name: templateName,
+            html_template: templateHtmlContent
+          })
+          .eq('id', editingTemplate.id);
+
+        if (error) throw error;
+        toast({ title: "Success", description: "Template updated" });
+      } else {
+        const { error } = await supabase
+          .from('newsletter_templates')
+          .insert([{
+            name: templateName,
+            html_template: templateHtmlContent,
+            is_default: false
+          }]);
+
+        if (error) throw error;
+        toast({ title: "Success", description: "Template created" });
+      }
+
+      setEditingTemplate(null);
+      setTemplateName('');
+      setTemplateHtmlContent('');
+      fetchTemplates();
+    } catch (error) {
+      console.error('Error saving template:', error);
+      toast({ title: "Error", description: "Failed to save template", variant: "destructive" });
+    }
+  };
+
+  const deleteTemplate = async (templateId: string) => {
+    try {
+      const { error } = await supabase
+        .from('newsletter_templates')
+        .delete()
+        .eq('id', templateId);
+
+      if (error) throw error;
+      toast({ title: "Success", description: "Template deleted" });
+      fetchTemplates();
+    } catch (error) {
+      console.error('Error deleting template:', error);
+      toast({ title: "Error", description: "Failed to delete template", variant: "destructive" });
+    }
+  };
+
+  const handleReviewAction = async (issueId: string, action: 'approved' | 'rejected') => {
+    try {
+      const { error } = await supabase
+        .from('newsletter_issues')
+        .update({
+          review_status: action,
+          reviewed_at: new Date().toISOString()
+        })
+        .eq('id', issueId);
+
+      if (error) throw error;
+      toast({ title: "Success", description: `Issue ${action}` });
+      fetchPendingIssues();
+    } catch (error) {
+      console.error('Error updating review:', error);
+      toast({ title: "Error", description: "Failed to update review", variant: "destructive" });
+    }
+  };
+
   const addItemToIssue = async (item: ContentItem, type: string) => {
     if (!currentIssue) return;
 
@@ -460,7 +631,9 @@ const NewsletterManagement: React.FC = () => {
           frequency: currentIssue.frequency,
           subject: currentIssue.subject,
           intro_text: currentIssue.intro_text,
-          outro_text: currentIssue.outro_text
+          outro_text: currentIssue.outro_text,
+          requires_review: requiresReview,
+          review_status: requiresReview ? 'pending' : 'auto_approved'
         })
         .eq('id', currentIssue.id)
         .select()
@@ -472,19 +645,26 @@ const NewsletterManagement: React.FC = () => {
         setCurrentIssue({
           id: data.id,
           title: data.title,
-          frequency: data.frequency as 'daily' | 'weekly' | 'monthly',
+          frequency: data.frequency as any,
           status: (data.status as 'draft' | 'scheduled' | 'sent') || 'draft',
           subject: data.subject,
           intro_text: data.intro_text,
           outro_text: data.outro_text,
           scheduled_for: data.scheduled_for,
-          created_at: data.created_at
+          created_at: data.created_at,
+          requires_review: data.requires_review,
+          review_status: data.review_status as any
         });
         
         toast({
           title: "Success",
           description: "Newsletter issue saved"
         });
+        
+        // Refresh pending issues if review is required
+        if (requiresReview) {
+          fetchPendingIssues();
+        }
       }
     } catch (error) {
       console.error('Error saving issue:', error);
@@ -608,7 +788,7 @@ const NewsletterManagement: React.FC = () => {
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="subscribers" className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
                 Subscribers
@@ -616,6 +796,14 @@ const NewsletterManagement: React.FC = () => {
               <TabsTrigger value="composer" className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
                 Composer
+              </TabsTrigger>
+              <TabsTrigger value="templates" className="flex items-center gap-2">
+                <FileCode className="h-4 w-4" />
+                Templates
+              </TabsTrigger>
+              <TabsTrigger value="reviews" className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                Reviews
               </TabsTrigger>
             </TabsList>
 
@@ -657,6 +845,8 @@ const NewsletterManagement: React.FC = () => {
                         <SelectContent>
                           <SelectItem value="all">All frequencies</SelectItem>
                           <SelectItem value="daily">Daily</SelectItem>
+                          <SelectItem value="semi_weekly">Semi-Weekly (2x/week)</SelectItem>
+                          <SelectItem value="biweekly">Biweekly (3x/week)</SelectItem>
                           <SelectItem value="weekly">Weekly</SelectItem>
                           <SelectItem value="monthly">Monthly</SelectItem>
                         </SelectContent>
@@ -894,6 +1084,8 @@ const NewsletterManagement: React.FC = () => {
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="daily">Daily</SelectItem>
+                                <SelectItem value="semi_weekly">Semi-Weekly</SelectItem>
+                                <SelectItem value="biweekly">Biweekly</SelectItem>
                                 <SelectItem value="weekly">Weekly</SelectItem>
                                 <SelectItem value="monthly">Monthly</SelectItem>
                               </SelectContent>
@@ -928,6 +1120,21 @@ const NewsletterManagement: React.FC = () => {
                             placeholder="Closing text (supports {{unsubscribe_url}})"
                             rows={3}
                           />
+                        </div>
+
+                        {/* Review Toggle */}
+                        <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                          <Switch
+                            checked={requiresReview}
+                            onCheckedChange={(checked) => {
+                              setRequiresReview(checked);
+                              updateCurrentIssue({ requires_review: checked } as any);
+                            }}
+                          />
+                          <div>
+                            <Label className="cursor-pointer">Require creator review before sending</Label>
+                            <p className="text-xs text-muted-foreground">Enable this to hold the newsletter for manual approval</p>
+                          </div>
                         </div>
 
                         {/* Selected Items */}
@@ -1017,6 +1224,197 @@ const NewsletterManagement: React.FC = () => {
                   </CardContent>
                 </Card>
               </div>
+            </TabsContent>
+
+            {/* Templates Tab */}
+            <TabsContent value="templates" className="space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Template List */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-sm flex items-center justify-between">
+                      <span>Existing Templates</span>
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          setEditingTemplate(null);
+                          setTemplateName('');
+                          setTemplateHtmlContent('');
+                        }}
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        New Template
+                      </Button>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                      {templates.length === 0 ? (
+                        <p className="text-sm text-muted-foreground text-center py-4">No templates yet</p>
+                      ) : (
+                        templates.map((template) => (
+                          <div
+                            key={template.id}
+                            className="flex items-center justify-between p-3 border rounded-lg"
+                          >
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-medium text-sm">{template.name}</h4>
+                                {template.is_default && (
+                                  <Badge variant="secondary" className="text-xs">Default</Badge>
+                                )}
+                              </div>
+                              <p className="text-xs text-muted-foreground">
+                                Created {new Date(template.created_at).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <div className="flex gap-1">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => {
+                                  setEditingTemplate(template);
+                                  setTemplateName(template.name);
+                                  setTemplateHtmlContent(template.html_content);
+                                }}
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => deleteTemplate(template.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Template Editor */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-sm">
+                      {editingTemplate ? 'Edit Template' : 'New Template'}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label>Template Name</Label>
+                      <Input
+                        value={templateName}
+                        onChange={(e) => setTemplateName(e.target.value)}
+                        placeholder="e.g., Weekly Digest Template"
+                      />
+                    </div>
+
+                    <div>
+                      <Label>HTML Content</Label>
+                      <Textarea
+                        value={templateHtmlContent}
+                        onChange={(e) => setTemplateHtmlContent(e.target.value)}
+                        placeholder="<html>...</html>"
+                        rows={10}
+                        className="font-mono text-sm"
+                      />
+                    </div>
+
+                    <div className="bg-muted/50 p-3 rounded-lg">
+                      <p className="text-xs font-medium mb-2">Available Placeholders:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {['{{subscriber_name}}', '{{frequency}}', '{{articles}}', '{{tools}}', '{{posts}}', '{{events}}', '{{jobs}}', '{{unsubscribe_link}}'].map((placeholder) => (
+                          <Badge key={placeholder} variant="outline" className="text-xs font-mono">
+                            {placeholder}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button onClick={saveTemplate} disabled={!templateName.trim()}>
+                        {editingTemplate ? 'Update Template' : 'Create Template'}
+                      </Button>
+                      {editingTemplate && (
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setEditingTemplate(null);
+                            setTemplateName('');
+                            setTemplateHtmlContent('');
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* Reviews Tab */}
+            <TabsContent value="reviews" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4" />
+                    Pending Reviews ({pendingIssues.length})
+                  </CardTitle>
+                  <CardDescription>
+                    Newsletter issues awaiting approval before sending
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {pendingIssues.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <CheckCircle className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                      <p>No pending reviews</p>
+                      <p className="text-sm">Issues requiring review will appear here</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {pendingIssues.map((issue) => (
+                        <div
+                          key={issue.id}
+                          className="flex items-center justify-between p-4 border rounded-lg"
+                        >
+                          <div className="flex-1">
+                            <h4 className="font-medium">{issue.title}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {issue.subject || 'No subject'} • {issue.frequency}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Created {issue.created_at ? new Date(issue.created_at).toLocaleString() : 'Unknown'}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-destructive"
+                              onClick={() => handleReviewAction(issue.id, 'rejected')}
+                            >
+                              <XCircle className="h-4 w-4 mr-1" />
+                              Reject
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => handleReviewAction(issue.id, 'approved')}
+                            >
+                              <CheckCircle className="h-4 w-4 mr-1" />
+                              Approve
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         </CardContent>
