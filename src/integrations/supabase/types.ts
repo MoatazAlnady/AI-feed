@@ -1396,6 +1396,35 @@ export type Database = {
           },
         ]
       }
+      discussion_bookmarks: {
+        Row: {
+          created_at: string | null
+          discussion_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          discussion_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          discussion_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discussion_bookmarks_discussion_id_fkey"
+            columns: ["discussion_id"]
+            isOneToOne: false
+            referencedRelation: "group_discussions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       discussion_poll_votes: {
         Row: {
           discussion_id: string
@@ -1421,6 +1450,38 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "discussion_poll_votes_discussion_id_fkey"
+            columns: ["discussion_id"]
+            isOneToOne: false
+            referencedRelation: "group_discussions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discussion_reactions: {
+        Row: {
+          created_at: string | null
+          discussion_id: string
+          id: string
+          reaction_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          discussion_id: string
+          id?: string
+          reaction_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          discussion_id?: string
+          id?: string
+          reaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discussion_reactions_discussion_id_fkey"
             columns: ["discussion_id"]
             isOneToOne: false
             referencedRelation: "group_discussions"
@@ -2107,6 +2168,7 @@ export type Database = {
         Row: {
           attachments: Json | null
           author_id: string
+          bookmarks_count: number | null
           content: string | null
           created_at: string | null
           detected_language: string | null
@@ -2118,18 +2180,22 @@ export type Database = {
           is_approved: boolean | null
           is_pinned: boolean | null
           is_public: boolean | null
+          likes_count: number | null
           media_urls: string[] | null
           poll_end_date: string | null
           poll_options: Json | null
           reply_count: number | null
+          share_count: number | null
           subtitle: string | null
           tags: string[] | null
           title: string
           updated_at: string | null
+          view_count: number | null
         }
         Insert: {
           attachments?: Json | null
           author_id: string
+          bookmarks_count?: number | null
           content?: string | null
           created_at?: string | null
           detected_language?: string | null
@@ -2141,18 +2207,22 @@ export type Database = {
           is_approved?: boolean | null
           is_pinned?: boolean | null
           is_public?: boolean | null
+          likes_count?: number | null
           media_urls?: string[] | null
           poll_end_date?: string | null
           poll_options?: Json | null
           reply_count?: number | null
+          share_count?: number | null
           subtitle?: string | null
           tags?: string[] | null
           title: string
           updated_at?: string | null
+          view_count?: number | null
         }
         Update: {
           attachments?: Json | null
           author_id?: string
+          bookmarks_count?: number | null
           content?: string | null
           created_at?: string | null
           detected_language?: string | null
@@ -2164,14 +2234,17 @@ export type Database = {
           is_approved?: boolean | null
           is_pinned?: boolean | null
           is_public?: boolean | null
+          likes_count?: number | null
           media_urls?: string[] | null
           poll_end_date?: string | null
           poll_options?: Json | null
           reply_count?: number | null
+          share_count?: number | null
           subtitle?: string | null
           tags?: string[] | null
           title?: string
           updated_at?: string | null
+          view_count?: number | null
         }
         Relationships: [
           {

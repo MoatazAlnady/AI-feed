@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { 
   MessageSquare, 
   Plus, 
@@ -11,7 +12,11 @@ import {
   Tag,
   BarChart3,
   Paperclip,
-  Share2
+  Share2,
+  Bookmark,
+  ThumbsUp,
+  Heart,
+  Lightbulb
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,6 +43,8 @@ import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import ShareDiscussionModal from '@/components/ShareDiscussionModal';
 import InterestTagSelector from '@/components/InterestTagSelector';
+import ProfileHoverCard from '@/components/ProfileHoverCard';
+import PostReactions from '@/components/PostReactions';
 
 interface DiscussionTag {
   id: string;
@@ -386,14 +393,37 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
         </Button>
 
         <div className="bg-card rounded-xl p-6 border border-border">
-          <div className="flex items-start gap-3 mb-4">
-            <Avatar className="w-10 h-10">
-              <AvatarImage src={selectedDiscussion.author?.profile_photo || undefined} />
-              <AvatarFallback>
-                {(selectedDiscussion.author?.full_name || 'U').charAt(0)}
-              </AvatarFallback>
-            </Avatar>
+          <div className="flex items-start gap-4 mb-4">
+            {/* Clickable Author Avatar */}
+            <ProfileHoverCard userId={selectedDiscussion.author_id}>
+              <Link 
+                to={`/creator/${selectedDiscussion.author_id}`}
+                className="shrink-0"
+              >
+                <Avatar className="w-12 h-12 hover:ring-2 hover:ring-primary/50 transition-all">
+                  <AvatarImage src={selectedDiscussion.author?.profile_photo || undefined} />
+                  <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/5">
+                    {(selectedDiscussion.author?.full_name || 'U').charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
+            </ProfileHoverCard>
             <div className="flex-1">
+              {/* Clickable Author Name */}
+              <div className="flex items-center gap-2 mb-1">
+                <ProfileHoverCard userId={selectedDiscussion.author_id}>
+                  <Link 
+                    to={`/creator/${selectedDiscussion.author_id}`}
+                    className="font-medium text-foreground hover:text-primary hover:underline transition-colors"
+                  >
+                    {selectedDiscussion.author?.full_name || 'Unknown'}
+                  </Link>
+                </ProfileHoverCard>
+                <span className="text-sm text-muted-foreground">
+                  · {formatDistanceToNow(new Date(selectedDiscussion.created_at), { addSuffix: true })}
+                </span>
+              </div>
+              
               {selectedDiscussion.tags && selectedDiscussion.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1 mb-2">
                   {selectedDiscussion.tags.map(tag => (
@@ -407,14 +437,12 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
                   ))}
                 </div>
               )}
-              <h3 className="text-lg font-semibold text-foreground">{selectedDiscussion.title}</h3>
+              
+              {/* Bold Headline */}
+              <h3 className="text-xl font-bold text-foreground">{selectedDiscussion.title}</h3>
               {selectedDiscussion.subtitle && (
-                <p className="text-sm text-muted-foreground">{selectedDiscussion.subtitle}</p>
+                <p className="text-sm text-muted-foreground mt-1">{selectedDiscussion.subtitle}</p>
               )}
-              <p className="text-xs text-muted-foreground mt-1">
-                {selectedDiscussion.author?.full_name || 'Unknown'} ·{' '}
-                {formatDistanceToNow(new Date(selectedDiscussion.created_at), { addSuffix: true })}
-              </p>
             </div>
           </div>
           
@@ -552,12 +580,13 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium">{t('common.content', 'Content')}</label>
+                  <label className="text-sm font-medium">{t('common.content', 'Description')} *</label>
                   <Textarea
                     value={formData.content}
                     onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                    placeholder="What would you like to discuss?"
+                    placeholder="Describe what you'd like to discuss..."
                     rows={4}
+                    required
                   />
                 </div>
 
@@ -656,7 +685,7 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
 
                 <Button
                   onClick={createDiscussion}
-                  disabled={!formData.title.trim() || submitting}
+                  disabled={!formData.title.trim() || !formData.content.trim() || submitting}
                   className="w-full"
                 >
                   {submitting ? t('common.creating', 'Creating...') : t('common.create', 'Create')}
@@ -689,67 +718,108 @@ const GroupDiscussionsEnhanced: React.FC<GroupDiscussionsEnhancedProps> = ({
               onClick={() => setSelectedDiscussion(discussion)}
               className="bg-card rounded-xl p-4 border border-border hover:border-primary/50 transition-colors cursor-pointer"
             >
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-3 flex-1">
-                  <Avatar className="w-10 h-10">
-                    <AvatarImage src={discussion.author?.profile_photo || undefined} />
-                    <AvatarFallback>
-                      {(discussion.author?.full_name || 'U').charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    {/* Tags */}
-                    {discussion.tags && discussion.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-1">
-                        {discussion.tags.map(tag => (
-                          <Badge 
-                            key={tag.id} 
-                            variant="secondary"
-                            className="text-xs"
-                            style={{ backgroundColor: tag.color + '20', color: tag.color }}
-                          >
-                            {tag.name}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                    
-                    <div className="flex items-center gap-2">
-                      {discussion.is_pinned && <Pin className="h-4 w-4 text-primary" />}
-                      {discussion.poll_options && <BarChart3 className="h-4 w-4 text-primary" />}
-                      <h4 className="font-medium text-foreground truncate">{discussion.title}</h4>
-                    </div>
-                    
-                    {discussion.subtitle && (
-                      <p className="text-sm text-muted-foreground truncate">{discussion.subtitle}</p>
-                    )}
-                    
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {discussion.author?.full_name || 'Unknown'} ·{' '}
-                      <Clock className="h-3 w-3 inline" />{' '}
-                      {formatDistanceToNow(new Date(discussion.updated_at), { addSuffix: true })}
-                    </p>
-                    
-                    <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <MessageSquare className="h-4 w-4" />
-                        {discussion.reply_count || 0} {t('groups.replies', 'replies')}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShareDiscussion(discussion);
-                    }}
+              <div className="flex items-start gap-3">
+                {/* Clickable Author Avatar */}
+                <ProfileHoverCard userId={discussion.author_id}>
+                  <Link 
+                    to={`/creator/${discussion.author_id}`} 
+                    onClick={(e) => e.stopPropagation()}
+                    className="shrink-0"
                   >
-                    <Share2 className="h-4 w-4" />
-                  </Button>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                    <Avatar className="w-12 h-12 hover:ring-2 hover:ring-primary/50 transition-all">
+                      <AvatarImage src={discussion.author?.profile_photo || undefined} />
+                      <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/5">
+                        {(discussion.author?.full_name || 'U').charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Link>
+                </ProfileHoverCard>
+                
+                <div className="flex-1 min-w-0">
+                  {/* Author Name - Clickable */}
+                  <div className="flex items-center gap-2 mb-1">
+                    <ProfileHoverCard userId={discussion.author_id}>
+                      <Link 
+                        to={`/creator/${discussion.author_id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="font-medium text-foreground hover:text-primary hover:underline transition-colors"
+                      >
+                        {discussion.author?.full_name || 'Unknown'}
+                      </Link>
+                    </ProfileHoverCard>
+                    <span className="text-xs text-muted-foreground">
+                      · {formatDistanceToNow(new Date(discussion.updated_at), { addSuffix: true })}
+                    </span>
+                    {discussion.is_pinned && <Pin className="h-4 w-4 text-primary" />}
+                    {discussion.poll_options && (
+                      <Badge variant="secondary" className="text-xs gap-1">
+                        <BarChart3 className="h-3 w-3" /> Poll
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  {/* Tags */}
+                  {discussion.tags && discussion.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {discussion.tags.map(tag => (
+                        <Badge 
+                          key={tag.id} 
+                          variant="secondary"
+                          className="text-xs"
+                          style={{ backgroundColor: tag.color + '20', color: tag.color }}
+                        >
+                          {tag.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Bold Headline */}
+                  <h4 className="font-bold text-lg text-foreground mb-1 line-clamp-2">
+                    {discussion.title}
+                  </h4>
+                  
+                  {/* Description (smaller than headline) */}
+                  {discussion.content && (
+                    <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                      {discussion.content}
+                    </p>
+                  )}
+                  
+                  {/* Engagement Bar - Like Posts */}
+                  <div className="flex items-center gap-4 pt-2 border-t border-border/50">
+                    <button 
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      <ThumbsUp className="h-4 w-4" />
+                      <span>Like</span>
+                    </button>
+                    <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <MessageSquare className="h-4 w-4" />
+                      {discussion.reply_count || 0} {t('groups.replies', 'replies')}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-muted-foreground hover:text-primary p-0 h-auto"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShareDiscussion(discussion);
+                      }}
+                    >
+                      <Share2 className="h-4 w-4 mr-1" />
+                      <span className="text-sm">Share</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-muted-foreground hover:text-primary p-0 h-auto ml-auto"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Bookmark className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
