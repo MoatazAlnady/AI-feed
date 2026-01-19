@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MessageSquare, BarChart3, Share2, Sparkles, MessageCircle, Users } from 'lucide-react';
+import { MessageSquare, BarChart3, Share2, Sparkles, MessageCircle, Users, ThumbsUp, Bookmark } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProfileHoverCard from '@/components/ProfileHoverCard';
 import TranslateButton from '@/components/TranslateButton';
+import { formatDistanceToNow } from 'date-fns';
 
 interface FeedDiscussionCardProps {
   discussion: {
@@ -47,32 +48,50 @@ const FeedDiscussionCard: React.FC<FeedDiscussionCardProps> = ({
   return (
     <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden hover:shadow-md transition-shadow">
       {author && (
-        <div className="px-6 py-3 bg-muted/50 border-b flex items-center gap-3">
+        <div className="px-6 py-4 border-b flex items-start gap-3">
           <ProfileHoverCard userId={author.id}>
-            <Link to={`/creator/${author.handle || author.id}`} className="flex items-center gap-2">
+            <Link to={`/creator/${author.handle || author.id}`} className="shrink-0">
               {author.avatar ? (
-                <img src={author.avatar} alt={author.name} className="w-8 h-8 rounded-full object-cover" />
+                <img src={author.avatar} alt={author.name} className="w-12 h-12 rounded-full object-cover hover:ring-2 hover:ring-primary/50 transition-all" />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-sm font-medium">{author.name.charAt(0)}</span>
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center hover:ring-2 hover:ring-primary/50 transition-all">
+                  <span className="text-lg font-medium">{author.name.charAt(0)}</span>
                 </div>
               )}
-              <span className="font-medium text-sm hover:underline">{author.name}</span>
             </Link>
           </ProfileHoverCard>
-          <span className="text-muted-foreground text-sm">
-            {isNew ? 'started a discussion' : 'shared a discussion'}
-            {hasPoll && ' with a poll'}
-          </span>
-          {isNew && (
-            <Badge variant="secondary" className="ml-auto flex items-center gap-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-              <Sparkles className="h-3 w-3" />New
-            </Badge>
-          )}
-          <Badge variant="outline" className={`${!isNew ? 'ml-auto' : ''} flex items-center gap-1`}>
-            {hasPoll ? <BarChart3 className="h-3 w-3" /> : <MessageSquare className="h-3 w-3" />}
-            {hasPoll ? 'Poll' : 'Discussion'}
-          </Badge>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <ProfileHoverCard userId={author.id}>
+                <Link 
+                  to={`/creator/${author.handle || author.id}`}
+                  className="font-medium text-foreground hover:text-primary hover:underline transition-colors"
+                >
+                  {author.name}
+                </Link>
+              </ProfileHoverCard>
+              <span className="text-sm text-muted-foreground">
+                {isNew ? 'started a discussion' : 'shared a discussion'}
+                {hasPoll && ' with a poll'}
+              </span>
+              {discussion.created_at && (
+                <span className="text-xs text-muted-foreground">
+                  · {formatDistanceToNow(new Date(discussion.created_at), { addSuffix: true })}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2 mt-1">
+              {isNew && (
+                <Badge variant="secondary" className="text-xs flex items-center gap-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                  <Sparkles className="h-3 w-3" />New
+                </Badge>
+              )}
+              <Badge variant="outline" className="flex items-center gap-1">
+                {hasPoll ? <BarChart3 className="h-3 w-3" /> : <MessageSquare className="h-3 w-3" />}
+                {hasPoll ? 'Poll' : 'Discussion'}
+              </Badge>
+            </div>
+          </div>
         </div>
       )}
 
@@ -87,7 +106,8 @@ const FeedDiscussionCard: React.FC<FeedDiscussionCardProps> = ({
           </div>
           
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg text-foreground hover:text-primary transition-colors line-clamp-2 mb-1">
+            {/* Bold Headline */}
+            <h3 className="font-bold text-lg text-foreground hover:text-primary transition-colors line-clamp-2 mb-1">
               {discussion.title}
             </h3>
             
@@ -97,6 +117,7 @@ const FeedDiscussionCard: React.FC<FeedDiscussionCardProps> = ({
               </p>
             )}
 
+            {/* Description - smaller than headline */}
             {(translatedContent || discussion.content) && (
               <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
                 {translatedContent || discussion.content}
@@ -157,10 +178,24 @@ const FeedDiscussionCard: React.FC<FeedDiscussionCardProps> = ({
         </div>
       </div>
 
+      {/* Engagement Bar - Like Posts */}
       <div className="px-6 py-3 border-t flex items-center justify-between">
-        <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); onShare(discussion); }}>
-          <Share2 className="h-4 w-4 mr-1" />Share
-        </Button>
+        <div className="flex items-center gap-4">
+          <button className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors">
+            <ThumbsUp className="h-4 w-4" />
+            <span>Like</span>
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); onShare(discussion); }}
+            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
+          >
+            <Share2 className="h-4 w-4" />
+            <span>Share</span>
+          </button>
+          <button className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors">
+            <Bookmark className="h-4 w-4" />
+          </button>
+        </div>
         <Link to={discussionUrl}>
           <Button variant="outline" size="sm">
             {hasPoll ? 'Vote Now' : 'Join Discussion'}

@@ -36,7 +36,6 @@ import ChatDock from '../components/ChatDock';
 import SEOHead from '../components/SEOHead';
 import CreateEventModal from '../components/CreateEventModal';
 import CreateGroupModal from '../components/CreateGroupModal';
-import CreateStandaloneEventModal from '../components/CreateStandaloneEventModal';
 import GroupDiscussions from '../components/GroupDiscussions';
 import GroupChatWindow from '../components/GroupChatWindow';
 import InviteToEventModal from '../components/InviteToEventModal';
@@ -64,7 +63,6 @@ const Community: React.FC = () => {
   const [connectionStates, setConnectionStates] = useState<{[key: string]: {isConnected: boolean, hasPendingRequest: boolean}}>({});
   const [showCreateEventModal, setShowCreateEventModal] = useState(false);
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
-  const [showCreateStandaloneEventModal, setShowCreateStandaloneEventModal] = useState(false);
   const [events, setEvents] = useState<any[]>([]);
   const [groups, setGroups] = useState<any[]>([]);
   const [discussions, setDiscussions] = useState<any[]>([]);
@@ -809,24 +807,13 @@ const Community: React.FC = () => {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <h3 className="text-xl font-semibold text-foreground">{t('community.events.title')}</h3>
-          <div className="flex gap-2">
-            {isGold && (
-              <Button 
-                onClick={() => setShowCreateStandaloneEventModal(true)}
-                className="gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                {t('events.createEvent', 'Create Event')}
-              </Button>
-            )}
-            <button 
-              onClick={() => setShowCreateEventModal(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200"
-            >
-              <Plus className="h-4 w-4" />
-              <span>{t('community.events.createEvent')}</span>
-            </button>
-          </div>
+          <button 
+            onClick={() => setShowCreateEventModal(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all duration-200"
+          >
+            <Plus className="h-4 w-4" />
+            <span>{t('community.events.createEvent', 'Create Event')}</span>
+          </button>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1379,14 +1366,6 @@ const Community: React.FC = () => {
         onGroupCreated={(group) => {
           setGroups(prev => [group, ...prev]);
           toast.success('Group created successfully!');
-        }}
-      />
-
-      <CreateStandaloneEventModal
-        isOpen={showCreateStandaloneEventModal}
-        onClose={() => setShowCreateStandaloneEventModal(false)}
-        onEventCreated={() => {
-          fetchEvents();
         }}
       />
 

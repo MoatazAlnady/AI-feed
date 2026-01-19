@@ -167,12 +167,12 @@ const NewsletterPopup: React.FC<NewsletterPopupProps> = ({ onClose }) => {
                   <div className="space-y-2">
                     <TooltipProvider>
                       {[
-                        { value: 'daily', label: 'Daily', premium: true },
+                        { value: 'daily', label: 'Daily', premium: true, tier: 'silver' },
                         { value: 'semiweekly', label: 'Semi-weekly (2x/week)', premium: false },
                         { value: 'weekly', label: 'Weekly', premium: false },
-                        { value: 'biweekly', label: 'Bi-weekly (every 2 weeks)', premium: false },
+                        { value: 'biweekly', label: 'Bi-weekly (every 2 weeks)', premium: true, tier: 'silver' },
                         { value: 'monthly', label: 'Monthly', premium: false }
-                      ].map(({ value, label, premium }) => {
+                      ].map(({ value, label, premium, tier }) => {
                         const isDisabled = premium && !isPremium;
                         const radioOption = (
                           <label 
@@ -192,9 +192,9 @@ const NewsletterPopup: React.FC<NewsletterPopupProps> = ({ onClose }) => {
                             />
                             <span>{label}</span>
                             {premium && (
-                              <Badge variant="secondary" className="text-xs flex items-center gap-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+                              <Badge variant="secondary" className="text-xs flex items-center gap-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
                                 <Crown className="h-3 w-3" />
-                                Premium
+                                Silver+
                               </Badge>
                             )}
                           </label>
@@ -207,7 +207,7 @@ const NewsletterPopup: React.FC<NewsletterPopupProps> = ({ onClose }) => {
                                 {radioOption}
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p>Upgrade to Premium for daily updates</p>
+                                <p>Upgrade to Silver or Gold for {value === 'daily' ? 'daily' : 'bi-weekly'} updates</p>
                               </TooltipContent>
                             </Tooltip>
                           );
