@@ -1099,17 +1099,46 @@ const Community: React.FC = () => {
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    <Button 
-                      variant="default"
-                      size="sm"
-                      className="flex-1"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        joinGroup(group.id);
-                      }}
-                    >
-                      {userGroupMemberships.includes(group.id) ? 'View' : 'Join'}
-                    </Button>
+                    {userGroupMemberships.includes(group.id) ? (
+                      <>
+                        <Button 
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/group/${group.id}?tab=reviews`);
+                          }}
+                        >
+                          <Star className="h-4 w-4 mr-1" />
+                          {t('common.review', 'Review')}
+                        </Button>
+                        <Button 
+                          variant="default"
+                          size="sm"
+                          className="flex-1"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedGroup({ id: group.id, name: group.name, view: 'chat' });
+                          }}
+                        >
+                          <MessageCircle className="h-4 w-4 mr-1" />
+                          {t('common.chat', 'Chat')}
+                        </Button>
+                      </>
+                    ) : (
+                      <Button 
+                        variant="default"
+                        size="sm"
+                        className="flex-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          joinGroup(group.id);
+                        }}
+                      >
+                        {t('common.join', 'Join')}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>

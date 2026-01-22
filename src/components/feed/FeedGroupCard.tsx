@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Users, Lock, Globe, Share2, Sparkles } from 'lucide-react';
+import { Users, Lock, Globe, Share2, Sparkles, Star, MessageCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProfileHoverCard from '@/components/ProfileHoverCard';
@@ -27,13 +27,17 @@ interface FeedGroupCardProps {
   };
   onShare: (group: any) => void;
   isNew?: boolean;
+  isMember?: boolean;
+  onChat?: (groupId: string) => void;
 }
 
 const FeedGroupCard: React.FC<FeedGroupCardProps> = ({ 
   group, 
   creator, 
   onShare, 
-  isNew = false 
+  isNew = false,
+  isMember = false,
+  onChat
 }) => {
   const navigate = useNavigate();
 
@@ -145,11 +149,34 @@ const FeedGroupCard: React.FC<FeedGroupCardProps> = ({
           <Share2 className="h-4 w-4 mr-1" />
           Share
         </Button>
-        <Link to={`/group/${group.id}`}>
-          <Button variant="outline" size="sm">
-            View Group
-          </Button>
-        </Link>
+        
+        {isMember ? (
+          <div className="flex gap-2">
+            <Link to={`/group/${group.id}?tab=reviews`}>
+              <Button variant="outline" size="sm">
+                <Star className="h-4 w-4 mr-1" />
+                Review
+              </Button>
+            </Link>
+            <Button 
+              variant="default" 
+              size="sm"
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                onChat?.(group.id); 
+              }}
+            >
+              <MessageCircle className="h-4 w-4 mr-1" />
+              Chat
+            </Button>
+          </div>
+        ) : (
+          <Link to={`/group/${group.id}`}>
+            <Button variant="outline" size="sm">
+              Join Group
+            </Button>
+          </Link>
+        )}
       </div>
     </div>
   );

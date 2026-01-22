@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { RefreshCw, Users, Lock, Globe, Share2, Heart, MessageCircle } from 'lucide-react';
+import { RefreshCw, Users, Lock, Globe, Share2, Heart, MessageCircle, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProfileHoverCard from '@/components/ProfileHoverCard';
@@ -27,6 +27,8 @@ interface SharedGroupCardProps {
   shareText: string;
   sharedAt: string;
   onShare: (group: any) => void;
+  isMember?: boolean;
+  onChat?: (groupId: string) => void;
 }
 
 const SharedGroupCard: React.FC<SharedGroupCardProps> = ({
@@ -34,7 +36,9 @@ const SharedGroupCard: React.FC<SharedGroupCardProps> = ({
   sharedBy,
   shareText,
   sharedAt,
-  onShare
+  onShare,
+  isMember = false,
+  onChat
 }) => {
   const navigate = useNavigate();
 
@@ -107,11 +111,33 @@ const SharedGroupCard: React.FC<SharedGroupCardProps> = ({
 
       <div className="px-6 py-3 border-t flex gap-4">
         <Button variant="ghost" size="sm"><Heart className="h-4 w-4 mr-1" />Like</Button>
-        <Button variant="ghost" size="sm"><MessageCircle className="h-4 w-4 mr-1" />Comment</Button>
         <Button variant="ghost" size="sm" onClick={() => onShare(group)}><Share2 className="h-4 w-4 mr-1" />Share</Button>
-        <Link to={`/group/${group.id}`} className="ml-auto">
-          <Button variant="outline" size="sm">Join Group</Button>
-        </Link>
+        
+        {isMember ? (
+          <div className="flex gap-2 ml-auto">
+            <Link to={`/group/${group.id}?tab=reviews`}>
+              <Button variant="outline" size="sm">
+                <Star className="h-4 w-4 mr-1" />
+                Review
+              </Button>
+            </Link>
+            <Button 
+              variant="default" 
+              size="sm"
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                onChat?.(group.id); 
+              }}
+            >
+              <MessageCircle className="h-4 w-4 mr-1" />
+              Chat
+            </Button>
+          </div>
+        ) : (
+          <Link to={`/group/${group.id}`} className="ml-auto">
+            <Button variant="outline" size="sm">Join Group</Button>
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -135,6 +135,7 @@ const NewsFeed: React.FC = () => {
   const [shareModalEvent, setShareModalEvent] = useState<{ event: any; eventType: string } | null>(null);
   const [shareModalDiscussion, setShareModalDiscussion] = useState<any>(null);
   const [translatedPosts, setTranslatedPosts] = useState<Record<string, string>>({});
+  const [userGroupMemberships, setUserGroupMemberships] = useState<string[]>([]);
 
   // Get user interests for personalized feed
   const userInterests = user?.user_metadata?.interests || [];
@@ -147,6 +148,7 @@ const NewsFeed: React.FC = () => {
     }
     ensureUserProfile();
     fetchPosts();
+    fetchUserGroupMemberships();
 
     // Set up real-time subscriptions
     let postsChannel: any;
@@ -202,6 +204,23 @@ const NewsFeed: React.FC = () => {
       }
     };
   }, [user]);
+
+  const fetchUserGroupMemberships = async () => {
+    if (!user) return;
+    try {
+      const { data, error } = await supabase
+        .from('group_members')
+        .select('group_id')
+        .eq('user_id', user.id)
+        .eq('status', 'active');
+      
+      if (!error && data) {
+        setUserGroupMemberships(data.map(m => m.group_id));
+      }
+    } catch (error) {
+      console.error('Error fetching group memberships:', error);
+    }
+  };
 
   const ensureUserProfile = async () => {
     if (!user) return;
@@ -1542,6 +1561,8 @@ const NewsFeed: React.FC = () => {
               } : undefined}
               onShare={(group) => setShareModalGroup(group)}
               isNew={isRecentlyAdded(post.created_at)}
+              isMember={userGroupMemberships.includes(post.id)}
+              onChat={(groupId) => navigate(`/messages?group=${groupId}`)}
             />
           );
         }
@@ -1562,6 +1583,8 @@ const NewsFeed: React.FC = () => {
               shareText={post.share_text || ''}
               sharedAt={new Date(post.shared_at).toLocaleDateString()}
               onShare={(group) => setShareModalGroup(group)}
+              isMember={userGroupMemberships.includes(post.id)}
+              onChat={(groupId) => navigate(`/messages?group=${groupId}`)}
             />
           );
         }
