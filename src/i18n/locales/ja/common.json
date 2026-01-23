@@ -580,7 +580,7 @@
       "rsvp": "出欠確認"
     },
     "groups": {
-      "title": "ディスカッショングループ",
+      "title": "グループ",
       "createGroup": "グループを作成",
       "joinDiscussion": "ディスカッションに参加",
       "members": "メンバー"
