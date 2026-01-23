@@ -73,6 +73,7 @@ const Community: React.FC = () => {
   const [newDiscussionContent, setNewDiscussionContent] = useState('');
   const [showNewDiscussion, setShowNewDiscussion] = useState(false);
   const [userGroupMemberships, setUserGroupMemberships] = useState<string[]>([]);
+  const [pendingMemberships, setPendingMemberships] = useState<string[]>([]);
   const [mutualConnections, setMutualConnections] = useState<Record<string, number>>({});
   const [inviteEventModal, setInviteEventModal] = useState<{
     isOpen: boolean;
@@ -359,16 +360,28 @@ const Community: React.FC = () => {
       // Check if there's more data
       setHasMoreGroups((data?.length || 0) === ITEMS_PER_PAGE);
       
-      // If logged in, fetch user's group memberships
+      // If logged in, fetch user's group memberships (active and pending separately)
       let memberships: string[] = userGroupMemberships;
+      let pending: string[] = pendingMemberships;
       if (user && !loadMore) {
-        const { data: membershipData } = await supabase
+        // Fetch active memberships
+        const { data: activeData } = await supabase
           .from('group_members')
           .select('group_id')
-          .eq('user_id', user.id);
+          .eq('user_id', user.id)
+          .eq('status', 'active');
         
-        memberships = membershipData?.map(m => m.group_id) || [];
+        // Fetch pending memberships
+        const { data: pendingData } = await supabase
+          .from('group_members')
+          .select('group_id')
+          .eq('user_id', user.id)
+          .eq('status', 'pending');
+        
+        memberships = activeData?.map(m => m.group_id) || [];
+        pending = pendingData?.map(m => m.group_id) || [];
         setUserGroupMemberships(memberships);
+        setPendingMemberships(pending);
       }
 
       // Filter out private groups user is not a member of
@@ -436,9 +449,14 @@ const Community: React.FC = () => {
     }
 
     try {
+      // Check if group requires approval
+      const group = groups.find(g => g.id === groupId);
+      const requiresApproval = group?.join_type !== 'public' && group?.require_approval;
+      const status = requiresApproval ? 'pending' : 'active';
+
       const { error } = await supabase
         .from('group_members')
-        .insert({ group_id: groupId, user_id: user.id, role: 'member' });
+        .insert({ group_id: groupId, user_id: user.id, role: 'member', status });
 
       if (error) {
         if (error.code === '23505') {
@@ -447,7 +465,14 @@ const Community: React.FC = () => {
           throw error;
         }
       } else {
-        toast.success(t('groups.joined', 'Joined group successfully!'));
+        // Update local state immediately
+        if (status === 'active') {
+          setUserGroupMemberships(prev => [...prev, groupId]);
+          toast.success(t('groups.joined', 'Joined group successfully!'));
+        } else {
+          setPendingMemberships(prev => [...prev, groupId]);
+          toast.success(t('groups.requestSent', 'Join request sent!'));
+        }
       }
     } catch (error) {
       console.error('Error joining group:', error);
@@ -1126,6 +1151,16 @@ const Community: React.FC = () => {
                           {t('common.chat', 'Chat')}
                         </Button>
                       </>
+                    ) : pendingMemberships.includes(group.id) ? (
+                      <Button 
+                        variant="secondary"
+                        size="sm"
+                        className="flex-1"
+                        disabled
+                      >
+                        <Clock className="h-4 w-4 mr-1" />
+                        {t('groups.requestPending', 'Request Pending')}
+                      </Button>
                     ) : (
                       <Button 
                         variant="default"
@@ -1136,7 +1171,9 @@ const Community: React.FC = () => {
                           joinGroup(group.id);
                         }}
                       >
-                        {t('common.join', 'Join')}
+                        {group.join_type === 'public' || !group.require_approval 
+                          ? t('common.join', 'Join') 
+                          : t('groups.requestToJoin', 'Request to Join')}
                       </Button>
                     )}
                   </div>
