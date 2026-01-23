@@ -73,6 +73,7 @@ const Community: React.FC = () => {
   const [newDiscussionContent, setNewDiscussionContent] = useState('');
   const [showNewDiscussion, setShowNewDiscussion] = useState(false);
   const [userGroupMemberships, setUserGroupMemberships] = useState<string[]>([]);
+  const [discussionGroupFilter, setDiscussionGroupFilter] = useState<string | null>(null);
   const [pendingMemberships, setPendingMemberships] = useState<string[]>([]);
   const [mutualConnections, setMutualConnections] = useState<Record<string, number>>({});
   const [inviteEventModal, setInviteEventModal] = useState<{
@@ -1069,12 +1070,16 @@ const Community: React.FC = () => {
                 onClick={() => navigate(`/group/${group.id}`)}
               >
                 {/* Cover Photo */}
-                {(group.cover_photo || group.cover_image) && (
+                {group.cover_photo || group.cover_image ? (
                   <img 
                     src={group.cover_photo || group.cover_image} 
                     alt={group.name} 
                     className="w-full h-32 object-cover" 
                   />
+                ) : (
+                  <div className="w-full h-32 bg-gradient-to-br from-primary/20 via-primary/10 to-muted flex items-center justify-center">
+                    <Hash className="h-12 w-12 text-primary/40" />
+                  </div>
                 )}
                 
                 <div className="p-5">
@@ -1102,7 +1107,15 @@ const Community: React.FC = () => {
                   </div>
 
                   {/* Group Name */}
-                  <h4 className="font-semibold text-foreground mb-2">{group.name}</h4>
+                  <h4 
+                    className="font-semibold text-foreground mb-2 hover:text-primary hover:underline transition-colors cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/group/${group.id}`);
+                    }}
+                  >
+                    {group.name}
+                  </h4>
                   
                   {/* Description */}
                   <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
@@ -1132,11 +1145,12 @@ const Community: React.FC = () => {
                           className="flex-1"
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/group/${group.id}?tab=reviews`);
+                            setActiveTab('discussion');
+                            setDiscussionGroupFilter(group.id);
                           }}
                         >
-                          <Star className="h-4 w-4 mr-1" />
-                          {t('common.review', 'Review')}
+                          <MessageSquare className="h-4 w-4 mr-1" />
+                          {t('common.discussions', 'Discussions')}
                         </Button>
                         <Button 
                           variant="default"
