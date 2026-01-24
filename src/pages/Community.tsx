@@ -73,6 +73,7 @@ const Community: React.FC = () => {
   const [newDiscussionContent, setNewDiscussionContent] = useState('');
   const [showNewDiscussion, setShowNewDiscussion] = useState(false);
   const [userGroupMemberships, setUserGroupMemberships] = useState<string[]>([]);
+  const [creatorMemberships, setCreatorMemberships] = useState<string[]>([]);
   const [discussionGroupFilter, setDiscussionGroupFilter] = useState<string | null>(null);
   const [pendingMemberships, setPendingMemberships] = useState<string[]>([]);
   const [mutualConnections, setMutualConnections] = useState<Record<string, number>>({});
@@ -383,6 +384,12 @@ const Community: React.FC = () => {
         pending = pendingData?.map(m => m.group_id) || [];
         setUserGroupMemberships(memberships);
         setPendingMemberships(pending);
+        
+        // Also consider groups where user is the creator as implicit membership
+        const creatorGroups = (data || [])
+          .filter(g => g.creator_id === user.id)
+          .map(g => g.id);
+        setCreatorMemberships(creatorGroups);
       }
 
       // Filter out private groups user is not a member of
@@ -1137,7 +1144,7 @@ const Community: React.FC = () => {
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    {userGroupMemberships.includes(group.id) ? (
+                    {(userGroupMemberships.includes(group.id) || creatorMemberships.includes(group.id)) ? (
                       <>
                         <Button 
                           variant="outline"
