@@ -5493,6 +5493,7 @@ export type Database = {
         Args: { post_id_param: string }
         Returns: number
       }
+      can_invite_to_group: { Args: { _group_id: string }; Returns: boolean }
       create_tool_edit_request: {
         Args: {
           category_id_param: string
@@ -5696,6 +5697,10 @@ export type Database = {
       }
       is_following: {
         Args: { follower_uuid: string; following_uuid: string }
+        Returns: boolean
+      }
+      is_group_admin_or_creator: {
+        Args: { _group_id: string }
         Returns: boolean
       }
       is_user_banned_from_feature: {
