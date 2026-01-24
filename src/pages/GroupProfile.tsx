@@ -17,7 +17,8 @@ import {
   Image,
   DollarSign,
   Share2,
-  Star
+  Star,
+  UserPlus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -42,6 +43,7 @@ import GroupMembersList from '@/components/GroupMembersList';
 import ShareGroupModal from '@/components/ShareGroupModal';
 import GroupReviews from '@/components/GroupReviews';
 import RatingBadge from '@/components/RatingBadge';
+import InviteToGroupModal from '@/components/InviteToGroupModal';
 
 interface Group {
   id: string;
@@ -98,6 +100,7 @@ const GroupProfile: React.FC = () => {
   const [showMembersList, setShowMembersList] = useState(false);
   const [mutualConnections, setMutualConnections] = useState<number>(0);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
 
   useEffect(() => {
     if (groupId) {
@@ -270,10 +273,21 @@ const GroupProfile: React.FC = () => {
     }
   };
 
-  const isOwner = membership?.role === 'owner';
-  const isAdmin = membership?.role === 'admin' || isOwner;
-  const isModerator = membership?.role === 'moderator' || isAdmin;
-  const isMember = membership?.status === 'active';
+  // Creator fallback: treat creator as owner/member even if membership row is missing
+  const isCreator = user?.id && group?.creator_id === user.id;
+  const isOwner = isCreator || membership?.role === 'owner';
+  const isAdmin = isOwner || membership?.role === 'admin';
+  const isModerator = isAdmin || membership?.role === 'moderator';
+  const isMember = isCreator || membership?.status === 'active';
+  const isPending = membership?.status === 'pending';
+  
+  // Check if user can invite based on group settings
+  const canInvite = group && (
+    group.who_can_invite === 'everyone' ||
+    (group.who_can_invite === 'members' && isMember) ||
+    (group.who_can_invite === 'admins' && isAdmin) ||
+    isAdmin // Admins can always invite
+  );
 
   const getPriceDisplay = () => {
     if (!group || group.membership_type === 'free') return null;
@@ -366,6 +380,12 @@ const GroupProfile: React.FC = () => {
               
               {isMember && (
                 <>
+                  {canInvite && (
+                    <DropdownMenuItem onClick={() => setShowInviteModal(true)}>
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      {t('groups.inviteMembers', 'Invite Members')}
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={() => setShowNotificationSettings(true)}>
                     <Bell className="h-4 w-4 mr-2" />
                     {t('groups.notifications', 'Notification Settings')}
@@ -463,14 +483,14 @@ const GroupProfile: React.FC = () => {
                   <Share2 className="h-4 w-4" />
                   Share
                 </Button>
-                {!isMember ? (
+                {isPending ? (
+                  <Button disabled variant="secondary">
+                    Request Pending
+                  </Button>
+                ) : !isMember ? (
                   <Button onClick={handleJoinGroup} className="gap-2">
                     <Users className="h-4 w-4" />
                     {group.join_type === 'public' ? 'Join Group' : 'Request to Join'}
-                  </Button>
-                ) : membership?.status === 'pending' ? (
-                  <Button disabled variant="secondary">
-                    Request Pending
                   </Button>
                 ) : null}
               </div>
@@ -573,6 +593,15 @@ const GroupProfile: React.FC = () => {
           isOpen={showShareModal}
           onClose={() => setShowShareModal(false)}
           group={group}
+        />
+      )}
+
+      {group && (
+        <InviteToGroupModal
+          isOpen={showInviteModal}
+          onClose={() => setShowInviteModal(false)}
+          groupId={group.id}
+          groupName={group.name}
         />
       )}
     </>
