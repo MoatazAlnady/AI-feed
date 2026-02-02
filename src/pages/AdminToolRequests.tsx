@@ -36,7 +36,7 @@ interface EditRequest {
   sub_category_id: string[] | null;
   sub_categories?: SubCategoryInfo[];
   website: string | null;
-  pricing: string | null;
+  pricing_type: string | null;
   features: string[] | null;
   pros: string[] | null;
   cons: string[] | null;
@@ -385,11 +385,11 @@ const AdminToolRequests: React.FC = () => {
                   )}
 
                   {/* Pricing */}
-                  {selectedRequest.pricing && (
+                  {selectedRequest.pricing_type && (
                     <div>
                       <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pricing</h3>
                       <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <p className="text-gray-900 dark:text-white capitalize">{selectedRequest.pricing}</p>
+                        <p className="text-gray-900 dark:text-white capitalize">{selectedRequest.pricing_type}</p>
                       </div>
                     </div>
                   )}

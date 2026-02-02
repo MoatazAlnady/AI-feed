@@ -4794,19 +4794,19 @@ export type Database = {
           features: string[] | null
           free_plan: string | null
           id: string
-          is_dark_logo: boolean | null
           is_light_logo: boolean | null
           link_ci: string | null
           logo_url: string | null
           name: string
           name_ci: string | null
-          pricing: string
+          pricing_type: string
           pros: string[] | null
           review_count: number | null
           share_count: number | null
           status: string | null
           sub_category_id: string[] | null
           tags: string[] | null
+          tool_type: string[] | null
           updated_at: string | null
           user_id: string | null
           views: number | null
@@ -4822,19 +4822,19 @@ export type Database = {
           features?: string[] | null
           free_plan?: string | null
           id?: string
-          is_dark_logo?: boolean | null
           is_light_logo?: boolean | null
           link_ci?: string | null
           logo_url?: string | null
           name: string
           name_ci?: string | null
-          pricing?: string
+          pricing_type?: string
           pros?: string[] | null
           review_count?: number | null
           share_count?: number | null
           status?: string | null
           sub_category_id?: string[] | null
           tags?: string[] | null
+          tool_type?: string[] | null
           updated_at?: string | null
           user_id?: string | null
           views?: number | null
@@ -4850,19 +4850,19 @@ export type Database = {
           features?: string[] | null
           free_plan?: string | null
           id?: string
-          is_dark_logo?: boolean | null
           is_light_logo?: boolean | null
           link_ci?: string | null
           logo_url?: string | null
           name?: string
           name_ci?: string | null
-          pricing?: string
+          pricing_type?: string
           pros?: string[] | null
           review_count?: number | null
           share_count?: number | null
           status?: string | null
           sub_category_id?: string[] | null
           tags?: string[] | null
+          tool_type?: string[] | null
           updated_at?: string | null
           user_id?: string | null
           views?: number | null

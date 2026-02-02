@@ -15,7 +15,7 @@ interface SharedToolCardProps {
     description: string;
     logo_url?: string;
     website: string;
-    pricing?: string;
+    pricing_type?: string;
     free_plan?: string;
     tags?: string[];
     interests?: string[];
@@ -23,7 +23,6 @@ interface SharedToolCardProps {
     review_count?: number;
     views?: number;
     is_light_logo?: boolean;
-    is_dark_logo?: boolean;
     detected_language?: string | null;
   };
   sharedBy: {
@@ -48,10 +47,12 @@ const SharedToolCard: React.FC<SharedToolCardProps> = ({
   const { theme } = useTheme();
   const [translatedDescription, setTranslatedDescription] = useState<string | null>(null);
 
+  // is_light_logo TRUE = light logo, invert in LIGHT mode to make visible
+  // is_light_logo FALSE = dark logo, invert in DARK mode to make visible
   const shouldInvertLogo = () => {
     if (!tool.logo_url) return false;
-    if (theme === 'dark' && tool.is_light_logo) return true;
-    if (theme === 'light' && tool.is_dark_logo) return true;
+    if (theme === 'light' && tool.is_light_logo) return true;
+    if (theme === 'dark' && !tool.is_light_logo) return true;
     return false;
   };
 
@@ -132,7 +133,7 @@ const SharedToolCard: React.FC<SharedToolCardProps> = ({
               className="mb-2"
             />
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary">{tool.pricing || 'Free'}</Badge>
+              <Badge variant="secondary">{tool.pricing_type || 'Free'}</Badge>
               {tool.free_plan === 'Yes' && (
                 <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
                   Free Plan

@@ -31,7 +31,7 @@ interface Tool {
   category_id: string;
   category_name?: string;
   sub_categories?: SubCategoryInfo[];
-  pricing: string;
+  pricing_type: string;
   free_plan?: string;
   website: string;
   features: string[];
@@ -325,8 +325,8 @@ const ToolDetails: React.FC = () => {
                         </Badge>
                       ))
                     )}
-                    <Badge variant={tool.pricing === 'free' ? 'default' : 'destructive'}>
-                      {tool.pricing}
+                    <Badge variant={tool.pricing_type === 'free' ? 'default' : 'destructive'}>
+                      {tool.pricing_type}
                     </Badge>
                     {tool.free_plan === 'Yes' && (
                       <Badge 

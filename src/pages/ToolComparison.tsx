@@ -22,7 +22,7 @@ interface ToolComparisonData {
   name: string;
   description: string;
   website: string;
-  pricing: string;
+  pricing_type: string;
   features: string[];
   pros: string[];
   cons: string[];
@@ -226,7 +226,7 @@ const ToolComparison: React.FC = () => {
   const generateInsightContent = (toolsData: ToolComparisonData[]) => {
     const toolNames = toolsData.map(t => t.name).join(', ');
     const avgRatings = toolsData.map(t => `${t.name}: ${t.average_rating.toFixed(1)}/5`).join(', ');
-    const pricingComparison = toolsData.map(t => `${t.name}: ${t.pricing}`).join(', ');
+    const pricingComparison = toolsData.map(t => `${t.name}: ${t.pricing_type}`).join(', ');
     
     const topRated = toolsData.reduce((prev, current) => 
       prev.average_rating > current.average_rating ? prev : current
@@ -381,7 +381,7 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
               <td className="p-4 font-medium">{t('toolComparison.table.pricing')}</td>
               {tools.map(tool => (
                 <td key={tool.id} className="p-4 text-center">
-                  <Badge variant="secondary">{tool.pricing}</Badge>
+                  <Badge variant="secondary">{tool.pricing_type}</Badge>
                 </td>
               ))}
             </tr>
@@ -447,8 +447,8 @@ Based on the data analysis, ${topRated.name} appears to be the top choice with t
               <td className="p-4 font-medium">{t('toolComparison.table.freePlan')}</td>
               {tools.map(tool => (
                 <td key={tool.id} className="p-4 text-center">
-                  <Badge variant={tool.pricing.toLowerCase().includes('free') ? 'default' : 'secondary'}>
-                    {tool.pricing.toLowerCase().includes('free') ? t('common.yes') : t('common.no')}
+                  <Badge variant={tool.pricing_type.toLowerCase().includes('free') ? 'default' : 'secondary'}>
+                    {tool.pricing_type.toLowerCase().includes('free') ? t('common.yes') : t('common.no')}
                   </Badge>
                 </td>
               ))}

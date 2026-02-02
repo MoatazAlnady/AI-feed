@@ -14,7 +14,7 @@ interface Tool {
   name: string;
   description: string;
   website: string;
-  pricing: string;
+  pricing_type: string;
   features: string[];
   pros: string[];
   cons: string[];
@@ -137,7 +137,7 @@ export default function TrendingTools() {
                     </div>
                     <p className="text-muted-foreground text-sm line-clamp-3">{tool.description}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-secondary">{tool.pricing}</span>
+                      <span className="text-sm font-medium text-secondary">{tool.pricing_type}</span>
                       <a 
                         href={tool.website} 
                         target="_blank" 

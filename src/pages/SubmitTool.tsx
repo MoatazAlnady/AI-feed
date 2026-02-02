@@ -29,9 +29,9 @@ const SubmitTool: React.FC = () => {
     name: '',
     description: '',
     category: '',
-    subcategoryId: '', // Now stores the ID instead of name
-    toolType: [],
-    freePlan: 'No',
+    subcategoryId: '',
+    toolType: [] as string[],
+    freePlan: '',
     website: '',
     logoUrl: '',
     pricing: 'free',
@@ -41,7 +41,6 @@ const SubmitTool: React.FC = () => {
     pros: [''],
     cons: [''],
     is_light_logo: false,
-    is_dark_logo: false,
     showToolTypeDropdown: false
   });
 
@@ -57,7 +56,6 @@ const SubmitTool: React.FC = () => {
   // Cleanup effect for object URLs
   useEffect(() => {
     return () => {
-      // Clean up object URLs when component unmounts
       if (formData.logo && formData.logo instanceof File) {
         URL.revokeObjectURL(formData.logo as any);
       }
@@ -71,7 +69,6 @@ const SubmitTool: React.FC = () => {
       fetchToolData(id);
     }
     
-    // Close dropdown when clicking outside
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       if (!target.closest('.tool-type-dropdown')) {
@@ -103,7 +100,6 @@ const SubmitTool: React.FC = () => {
       setSubCategories(subCategoriesData || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
-      // Fallback to hardcoded categories if fetch fails
       setCategories([
         { id: '1', name: 'Conversational AI' },
         { id: '2', name: 'Image Generation' },
@@ -127,7 +123,6 @@ const SubmitTool: React.FC = () => {
 
       if (error) throw error;
 
-      // Fetch subcategory from junction table
       let subcategoryId = '';
       const { data: junctionData } = await supabase
         .from('tool_sub_categories')
@@ -145,18 +140,17 @@ const SubmitTool: React.FC = () => {
           description: tool.description || '',
           category: categories.find(cat => cat.id === tool.category_id)?.name || '',
           subcategoryId: subcategoryId,
-          toolType: [],
-          freePlan: tool.free_plan || 'No',
+          toolType: tool.tool_type || [],
+          freePlan: tool.free_plan || '',
           website: tool.website || '',
           logoUrl: tool.logo_url || '',
-          pricing: tool.pricing || 'free',
+          pricing: tool.pricing_type || 'free',
           tags: (tool.tags || []).join(','),
           features: tool.features || [''],
           logo: null,
           pros: tool.pros || [''],
           cons: tool.cons || [''],
           is_light_logo: tool.is_light_logo || false,
-          is_dark_logo: tool.is_dark_logo || false,
           showToolTypeDropdown: false
         });
       }
@@ -170,7 +164,6 @@ const SubmitTool: React.FC = () => {
     }
   };
 
-  // Get filtered sub-categories based on selected category
   const getSubCategoriesForCategory = (categoryId: string) => {
     return subCategories.filter(sub => sub.category_id === categoryId);
   };
@@ -179,12 +172,17 @@ const SubmitTool: React.FC = () => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
-    // Clear subcategory when category changes
     if (name === 'category') {
       setFormData(prev => ({ ...prev, subcategoryId: '' }));
     }
     
-    // Handle multiple tool types
+    // Reset freePlan when pricing changes to non-paid options
+    if (name === 'pricing') {
+      if (value !== 'one_time_payment' && value !== 'subscription') {
+        setFormData(prev => ({ ...prev, freePlan: '' }));
+      }
+    }
+    
     if (name === 'toolType' && e.target instanceof HTMLSelectElement) {
       const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
       setFormData(prev => ({ ...prev, toolType: selectedOptions }));
@@ -195,7 +193,6 @@ const SubmitTool: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     
-    // Clean up previous object URL to prevent memory leaks
     if (formData.logo && formData.logo instanceof File) {
       URL.revokeObjectURL(formData.logo as any);
     }
@@ -209,8 +206,7 @@ const SubmitTool: React.FC = () => {
       setCsvFile(file);
       setCsvError('');
       try {
-        // const data = await parseCSVFile(file);
-        const data: any[] = []; // Placeholder for CSV parsing
+        const data: any[] = [];
         setCsvData(data);
       } catch (error) {
         setCsvError('Error parsing CSV file. Please check the format.');
@@ -287,7 +283,6 @@ const SubmitTool: React.FC = () => {
       console.log('Current user:', user);
       console.log('User ID:', user?.id);
       
-      // Check if user is authenticated
       if (!user || !user.id) {
         toast({
           title: t('common.error'),
@@ -298,7 +293,6 @@ const SubmitTool: React.FC = () => {
         return;
       }
       
-      // Check for duplicates only if creating new tool
       if (!isEditMode) {
         const { count } = await supabase
           .from('tools')
@@ -319,16 +313,13 @@ const SubmitTool: React.FC = () => {
         }
       }
 
-      // Filter out empty pros and cons
       const filteredPros = formData.pros.filter(pro => pro.trim());
       const filteredCons = formData.cons.filter(con => con.trim());
       const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(Boolean);
       const featuresArray = formData.features.filter(feature => feature.trim());
       
-      // Get the selected category ID
       const selectedCategory = categories.find(cat => cat.name === formData.category);
       
-      // Validation
       if (!formData.subcategoryId) {
         toast({
           title: t('common.error'),
@@ -349,7 +340,17 @@ const SubmitTool: React.FC = () => {
         return;
       }
 
-      // Handle logo upload if present
+      // Validate free plan for paid pricing types
+      if ((formData.pricing === 'one_time_payment' || formData.pricing === 'subscription') && !formData.freePlan) {
+        toast({
+          title: t('common.error'),
+          description: 'Please select whether a free plan is available.',
+          variant: "destructive"
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       let logoUrl = formData.logoUrl;
       if (formData.logo) {
         try {
@@ -371,22 +372,21 @@ const SubmitTool: React.FC = () => {
         }
       }
 
-      // Detect language from description
       const detected_language = detectLanguage(formData.description);
 
       const submissionData = {
         name: formData.name,
         description: formData.description,
         website: formData.website,
-        pricing: formData.pricing,
-        free_plan: formData.freePlan,
+        pricing_type: formData.pricing,
+        free_plan: formData.freePlan || null,
         category_id: selectedCategory?.id || null,
         pros: filteredPros,
         cons: filteredCons,
         tags: tagsArray,
         features: featuresArray,
+        tool_type: formData.toolType,
         is_light_logo: formData.is_light_logo,
-        is_dark_logo: formData.is_dark_logo,
         logo_url: logoUrl,
         user_id: user?.id,
         status: 'pending',
@@ -399,7 +399,6 @@ const SubmitTool: React.FC = () => {
       let insertedToolId: string | null = null;
       
       if (isEditMode && id) {
-        // Update existing tool
         const { data: updateResult, error } = await supabase
           .from('tools')
           .update(submissionData)
@@ -408,7 +407,6 @@ const SubmitTool: React.FC = () => {
         result = { insertResult: updateResult, error };
         insertedToolId = id;
       } else {
-        // Create new tool
         const { data: insertResult, error } = await supabase
           .from('tools')
           .insert(submissionData)
@@ -419,9 +417,7 @@ const SubmitTool: React.FC = () => {
         }
       }
       
-      // Insert subcategory relationship
       if (!result.error && insertedToolId && formData.subcategoryId) {
-        // Delete existing relationships first (for edit mode)
         if (isEditMode) {
           await supabase
             .from('tool_sub_categories')
@@ -429,7 +425,6 @@ const SubmitTool: React.FC = () => {
             .eq('tool_id', insertedToolId);
         }
         
-        // Insert new relationship
         await supabase
           .from('tool_sub_categories')
           .insert({
@@ -479,7 +474,6 @@ const SubmitTool: React.FC = () => {
     if (csvFile && csvData.length > 0) {
       setIsProcessingCsv(true);
       
-      // Add submitted by info to each tool
       const toolsWithSubmitter = csvData.map(tool => ({
         ...tool,
         submittedBy: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Anonymous'
@@ -487,7 +481,6 @@ const SubmitTool: React.FC = () => {
       
       console.log('Submitting CSV tools:', toolsWithSubmitter);
       
-      // Simulate processing
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       setIsProcessingCsv(false);
@@ -505,7 +498,7 @@ const SubmitTool: React.FC = () => {
         category: '',
         subcategoryId: '',
         toolType: [],
-        freePlan: 'No',
+        freePlan: '',
         website: '',
         logoUrl: '',
         pricing: 'free',
@@ -515,7 +508,6 @@ const SubmitTool: React.FC = () => {
         pros: [''],
         cons: [''],
         is_light_logo: false,
-        is_dark_logo: false,
         showToolTypeDropdown: false
       });
     setCsvFile(null);
@@ -526,24 +518,24 @@ const SubmitTool: React.FC = () => {
 
   if (submitted) {
     return (
-      <div className="py-8 bg-gray-50 min-h-screen">
+      <div className="py-8 bg-background min-h-screen">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Star className="h-8 w-8 text-green-600" />
+          <div className="bg-card rounded-2xl shadow-sm p-8 text-center">
+            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Star className="h-8 w-8 text-green-600 dark:text-green-400" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl font-bold text-foreground mb-4">
               {t('submitTool.successTitle')}
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-muted-foreground mb-6">
               {t('submitTool.successMessage')}
             </p>
-            <p className="text-sm text-gray-500 mb-6">
+            <p className="text-sm text-muted-foreground mb-6">
               {t('toolDetails.submittedBy')}: {user?.user_metadata?.full_name || user?.email?.split('@')[0] || t('toolDetails.anonymous')}
             </p>
             <button
               onClick={resetForm}
-              className="bg-primary-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary-600 transition-colors"
+              className="bg-primary text-primary-foreground px-6 py-3 rounded-xl font-semibold hover:bg-primary/90 transition-colors"
             >
               {t('submitTool.submitAnother')}
             </button>
@@ -553,7 +545,6 @@ const SubmitTool: React.FC = () => {
     );
   }
 
-  // Show loading state while checking premium status
   if (!isEditMode && (isPremiumLoading || (user && isPremiumLoading))) {
     return (
       <div className="py-8 bg-background min-h-screen flex items-center justify-center">
@@ -562,7 +553,6 @@ const SubmitTool: React.FC = () => {
     );
   }
 
-  // Check authentication FIRST - show auth modal if not logged in
   if (!isEditMode && !user) {
     return (
       <>
@@ -576,7 +566,6 @@ const SubmitTool: React.FC = () => {
     );
   }
 
-  // Then check premium status - show premium upgrade modal for non-premium users (except in edit mode)
   if (!isEditMode && !isPremium) {
     return (
       <>
@@ -592,20 +581,19 @@ const SubmitTool: React.FC = () => {
   }
 
   return (
-    <div className="py-8 bg-gray-50 min-h-screen">
+    <div className="py-8 bg-background min-h-screen">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
             {isEditMode ? t('submitTool.editTitle') : t('submitTool.title')}
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-muted-foreground">
             {t('submitTool.subtitle')}
           </p>
         </div>
 
-        {/* Submission Mode Toggle - Hide in edit mode */}
         {!isEditMode && (
-        <div className="bg-white dark:bg-card rounded-2xl shadow-sm p-6 mb-8">
+        <div className="bg-card rounded-2xl shadow-sm p-6 mb-8">
           <h3 className="text-lg font-semibold text-foreground mb-4">{t('submitTool.chooseMethod')}</h3>
           <div className="flex flex-wrap gap-4">
             <div className="flex items-center space-x-2 px-6 py-3 rounded-xl font-medium bg-gradient-primary text-white shadow-md">
@@ -623,7 +611,6 @@ const SubmitTool: React.FC = () => {
         </div>
         )}
 
-        {/* Individual Tool Form */}
         <form 
           onSubmit={handleFormSubmit} 
           onKeyDown={(e) => {
@@ -631,11 +618,11 @@ const SubmitTool: React.FC = () => {
               e.preventDefault();
             }
           }}
-          className="bg-white dark:bg-card rounded-2xl shadow-sm p-8"
+          className="bg-card rounded-2xl shadow-sm p-8"
         >
           {/* Tool Name */}
           <div className="mb-6">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
               {t('submitTool.form.name')} *
             </label>
             <input
@@ -645,14 +632,14 @@ const SubmitTool: React.FC = () => {
               value={formData.name}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
+              className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-muted text-foreground"
               placeholder={t('submitTool.form.namePlaceholder')}
             />
           </div>
 
           {/* Description */}
           <div className="mb-6">
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="description" className="block text-sm font-medium text-foreground mb-2">
               {t('submitTool.form.description')} *
             </label>
             <textarea
@@ -662,7 +649,7 @@ const SubmitTool: React.FC = () => {
               onChange={handleInputChange}
               required
               rows={4}
-              className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none bg-white dark:bg-slate-800"
+              className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent resize-none bg-muted text-foreground"
               placeholder={t('submitTool.form.descriptionPlaceholder')}
             />
           </div>
@@ -670,7 +657,7 @@ const SubmitTool: React.FC = () => {
           {/* Category, Subcategory & Tool Type */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="category" className="block text-sm font-medium text-foreground mb-2">
                 Category *
               </label>
               <div className="relative">
@@ -680,7 +667,7 @@ const SubmitTool: React.FC = () => {
                   value={formData.category}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800 appearance-none"
+                  className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-muted text-foreground appearance-none"
                   style={{ 
                     backgroundImage: `url("data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'><path fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /></svg>")`,
                     backgroundRepeat: 'no-repeat',
@@ -698,7 +685,7 @@ const SubmitTool: React.FC = () => {
               </div>
             </div>
             <div>
-              <label htmlFor="subcategoryId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="subcategoryId" className="block text-sm font-medium text-foreground mb-2">
                 Subcategory *
               </label>
               <select
@@ -707,7 +694,7 @@ const SubmitTool: React.FC = () => {
                 value={formData.subcategoryId}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
+                className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-muted text-foreground"
                 disabled={!formData.category}
               >
                 <option value="">Select subcategory</option>
@@ -721,13 +708,13 @@ const SubmitTool: React.FC = () => {
               </select>
             </div>
             <div className="relative tool-type-dropdown">
-              <label htmlFor="toolType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="toolType" className="block text-sm font-medium text-foreground mb-2">
                 Tool Type *
               </label>
               <button
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, showToolTypeDropdown: !prev.showToolTypeDropdown }))}
-                className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800 text-left flex justify-between items-center"
+                className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-muted text-foreground text-left flex justify-between items-center"
               >
                 <span className="truncate">
                   {formData.toolType.length > 0 ? formData.toolType.join(', ') : 'Select tool types'}
@@ -737,9 +724,9 @@ const SubmitTool: React.FC = () => {
                 </svg>
               </button>
               {formData.showToolTypeDropdown && (
-                <div className="absolute z-10 mt-1 w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                <div className="absolute z-10 mt-1 w-full bg-card border border-border rounded-xl shadow-lg max-h-60 overflow-y-auto">
                   {['Web App', 'Desktop App', 'Mobile App', 'Chrome Extension', 'VS Code Extension', 'API', 'CLI Tool', 'Plugin'].map((type) => (
-                    <label key={type} className="flex items-center px-4 py-2 hover:bg-muted cursor-pointer">
+                    <label key={type} className="flex items-center px-4 py-2 hover:bg-muted cursor-pointer text-foreground">
                       <input
                         type="checkbox"
                         checked={formData.toolType.includes(type)}
@@ -760,49 +747,55 @@ const SubmitTool: React.FC = () => {
             </div>
           </div>
 
-          {/* Pricing & Free Plan */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label htmlFor="pricing" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Pricing Model
-              </label>
-              <select
-                id="pricing"
-                name="pricing"
-                value={formData.pricing}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
-              >
-                <option value="free">Free</option>
-                <option value="freemium">Freemium</option>
-                <option value="paid">Paid</option>
-                <option value="contact">Contact for Pricing</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="freePlan" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Free Plan Available?
+          {/* Pricing Model */}
+          <div className="mb-6">
+            <label htmlFor="pricing" className="block text-sm font-medium text-foreground mb-2">
+              Pricing Model *
+            </label>
+            <select
+              id="pricing"
+              name="pricing"
+              value={formData.pricing}
+              onChange={handleInputChange}
+              required
+              className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-muted text-foreground"
+            >
+              <option value="free">Free</option>
+              <option value="freemium">Freemium</option>
+              <option value="one_time_payment">One Time Payment</option>
+              <option value="subscription">Subscription</option>
+              <option value="contact">Contact for Pricing</option>
+            </select>
+          </div>
+
+          {/* Free Plan - Conditional display */}
+          {(formData.pricing === 'one_time_payment' || formData.pricing === 'subscription') && (
+            <div className="mb-6">
+              <label htmlFor="freePlan" className="block text-sm font-medium text-foreground mb-2">
+                Free Plan / Free Credits Available? *
               </label>
               <select
                 id="freePlan"
                 name="freePlan"
                 value={formData.freePlan}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
+                required
+                className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-muted text-foreground"
               >
+                <option value="">Select an option</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
               </select>
             </div>
-          </div>
+          )}
 
           {/* Website */}
           <div className="mb-6">
-            <label htmlFor="website" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="website" className="block text-sm font-medium text-foreground mb-2">
               {t('submitTool.form.website')} *
             </label>
             <div className="relative">
-              <Link className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Link className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <input
                 type="url"
                 id="website"
@@ -810,7 +803,7 @@ const SubmitTool: React.FC = () => {
                 value={formData.website}
                 onChange={handleInputChange}
                 required
-                className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
+                className="w-full pl-12 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-muted text-foreground"
                 placeholder="https://example.com"
               />
             </div>
@@ -818,7 +811,7 @@ const SubmitTool: React.FC = () => {
 
           {/* Logo Upload */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               {t('submitTool.form.logo')}
             </label>
             <div className="flex items-center space-x-4">
@@ -832,16 +825,16 @@ const SubmitTool: React.FC = () => {
                 />
                 <label
                   htmlFor="logo-upload"
-                  className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-slate-600 rounded-xl cursor-pointer hover:border-primary-500 transition-colors bg-white dark:bg-slate-800"
+                  className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary transition-colors bg-muted"
                 >
-                  <Upload className="h-5 w-5 text-gray-400 mr-2" />
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <Upload className="h-5 w-5 text-muted-foreground mr-2" />
+                  <span className="text-muted-foreground">
                     {formData.logo ? formData.logo.name : t('submitTool.form.uploadLogo')}
                   </span>
                 </label>
               </div>
               {(formData.logo || formData.logoUrl) && (
-                <div className="w-16 h-16 border rounded-xl overflow-hidden flex-shrink-0 bg-muted">
+                <div className="w-16 h-16 border border-border rounded-xl overflow-hidden flex-shrink-0 bg-muted">
                   <img 
                     src={formData.logo ? URL.createObjectURL(formData.logo) : formData.logoUrl} 
                     alt="Logo preview" 
@@ -852,9 +845,24 @@ const SubmitTool: React.FC = () => {
             </div>
           </div>
 
+          {/* Logo Type Checkbox */}
+          <div className="mb-6">
+            <label className="flex items-center space-x-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.is_light_logo}
+                onChange={(e) => setFormData(prev => ({ ...prev, is_light_logo: e.target.checked }))}
+                className="w-5 h-5 rounded border-border text-primary focus:ring-primary"
+              />
+              <span className="text-sm text-foreground">
+                Logo is light-colored (will be inverted to dark in light mode)
+              </span>
+            </label>
+          </div>
+
           {/* Pros */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               {t('submitTool.form.pros')}
             </label>
             {formData.pros.map((pro, index) => (
@@ -864,14 +872,14 @@ const SubmitTool: React.FC = () => {
                   value={pro}
                   onChange={(e) => handleProsChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, addPro)}
-                  className="flex-1 px-4 py-2 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
+                  className="flex-1 px-4 py-2 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-muted text-foreground"
                   placeholder={`Pro ${index + 1}`}
                 />
                 {formData.pros.length > 1 && (
                   <button
                     type="button"
                     onClick={() => removePro(index)}
-                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
@@ -881,7 +889,7 @@ const SubmitTool: React.FC = () => {
             <button
               type="button"
               onClick={addPro}
-              className="flex items-center space-x-1 text-primary-600 hover:text-primary-700 text-sm mt-2"
+              className="flex items-center space-x-1 text-primary hover:text-primary/80 text-sm mt-2"
             >
               <Plus className="h-4 w-4" />
               <span>{t('submitTool.form.addPro')}</span>
@@ -890,7 +898,7 @@ const SubmitTool: React.FC = () => {
 
           {/* Cons */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               {t('submitTool.form.cons')}
             </label>
             {formData.cons.map((con, index) => (
@@ -900,14 +908,14 @@ const SubmitTool: React.FC = () => {
                   value={con}
                   onChange={(e) => handleConsChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, addCon)}
-                  className="flex-1 px-4 py-2 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
+                  className="flex-1 px-4 py-2 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-muted text-foreground"
                   placeholder={`Con ${index + 1}`}
                 />
                 {formData.cons.length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeCon(index)}
-                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
@@ -917,38 +925,16 @@ const SubmitTool: React.FC = () => {
             <button
               type="button"
               onClick={addCon}
-              className="flex items-center space-x-1 text-primary-600 hover:text-primary-700 text-sm mt-2"
+              className="flex items-center space-x-1 text-primary hover:text-primary/80 text-sm mt-2"
             >
               <Plus className="h-4 w-4" />
               <span>{t('submitTool.form.addCon')}</span>
             </button>
           </div>
 
-          {/* Tags */}
-          <div className="mb-6">
-            <label htmlFor="tags" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {t('submitTool.form.tags')}
-            </label>
-            <div className="relative">
-              <Tag className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                id="tags"
-                name="tags"
-                value={formData.tags}
-                onChange={handleInputChange}
-                className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
-                placeholder={t('submitTool.form.tagsPlaceholder')}
-              />
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              {t('submitTool.form.tagsHint')}
-            </p>
-          </div>
-
           {/* Features */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               {t('submitTool.form.features')}
             </label>
             {formData.features.map((feature, index) => (
@@ -958,14 +944,14 @@ const SubmitTool: React.FC = () => {
                   value={feature}
                   onChange={(e) => handleFeaturesChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, addFeature)}
-                  className="flex-1 px-4 py-2 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-slate-800"
+                  className="flex-1 px-4 py-2 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-muted text-foreground"
                   placeholder={`Feature ${index + 1}`}
                 />
                 {formData.features.length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeFeature(index)}
-                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
@@ -975,95 +961,68 @@ const SubmitTool: React.FC = () => {
             <button
               type="button"
               onClick={addFeature}
-              className="flex items-center space-x-1 text-primary-600 hover:text-primary-700 text-sm mt-2"
+              className="flex items-center space-x-1 text-primary hover:text-primary/80 text-sm mt-2"
             >
               <Plus className="h-4 w-4" />
               <span>{t('submitTool.form.addFeature')}</span>
             </button>
           </div>
 
-          {/* Logo Type Selection */}
-          <div className="mb-6 p-4 bg-muted/50 rounded-xl">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-              Logo Visibility Settings
+          {/* Tags */}
+          <div className="mb-6">
+            <label htmlFor="tags" className="block text-sm font-medium text-foreground mb-2">
+              {t('submitTool.form.tags')}
             </label>
-            <div className="space-y-2">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="is_light_logo"
-                  name="is_light_logo"
-                  checked={formData.is_light_logo}
-                  onChange={(e) => setFormData(prev => ({ ...prev, is_light_logo: e.target.checked }))}
-                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-                />
-                <label htmlFor="is_light_logo" className="ml-2 text-sm text-gray-600 dark:text-gray-400">
-                  Logo is primarily light/white (will be inverted in dark mode)
-                </label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="is_dark_logo"
-                  name="is_dark_logo"
-                  checked={formData.is_dark_logo}
-                  onChange={(e) => setFormData(prev => ({ ...prev, is_dark_logo: e.target.checked }))}
-                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-                />
-                <label htmlFor="is_dark_logo" className="ml-2 text-sm text-gray-600 dark:text-gray-400">
-                  Logo is primarily dark/black (will be inverted in light mode)
-                </label>
-              </div>
+            <div className="relative">
+              <Tag className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <input
+                type="text"
+                id="tags"
+                name="tags"
+                value={formData.tags}
+                onChange={handleInputChange}
+                className="w-full pl-12 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-muted text-foreground"
+                placeholder={t('submitTool.form.tagsPlaceholder')}
+              />
             </div>
-            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              <AlertCircle className="h-3 w-3 inline mr-1" />
-              Check the appropriate option to ensure your logo displays correctly in both light and dark themes
+            <p className="text-sm text-muted-foreground mt-1">
+              {t('submitTool.form.tagsHelp')}
             </p>
           </div>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-gradient-primary text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 focus:ring-2 focus:ring-primary/20 focus:outline-none"
-          >
-            {isSubmitting ? (
-              <>
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                <span>Submitting...</span>
-              </>
-            ) : (
-              <>
-                <Send className="h-5 w-5" />
-                <span>{isEditMode ? 'Update Tool' : 'Submit Tool for Review'}</span>
-              </>
-            )}
-          </button>
-
-          <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-4">
-            By submitting, you agree that the information is accurate and you have the right to share this tool.
-          </p>
+          <div className="flex items-center justify-between pt-6 border-t border-border">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="px-6 py-3 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {t('common.cancel')}
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex items-center space-x-2 bg-primary text-primary-foreground px-8 py-3 rounded-xl font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                  <span>{t('common.submitting')}</span>
+                </>
+              ) : (
+                <>
+                  <Send className="h-5 w-5" />
+                  <span>{isEditMode ? t('common.update') : t('submitTool.form.submit')}</span>
+                </>
+              )}
+            </button>
+          </div>
         </form>
 
-        {/* CSV Import Modal */}
-        <CsvImportModal
-          isOpen={showCsvModal}
-          onClose={() => setShowCsvModal(false)}
-          onCsvSelect={(file, data) => {
-            setCsvFile(file);
-            setCsvData(data);
-            setCsvError('');
-          }}
-          onSubmit={handleCsvSubmit}
-          csvFile={csvFile}
-          csvData={csvData}
-          csvError={csvError}
-          isProcessing={isProcessingCsv}
-        />
-      </div>
+        {/* CSV Import Modal - removed for now to fix build */}
 
-      {/* Chat Dock */}
-      <ChatDock />
+        <ChatDock />
+      </div>
     </div>
   );
 };
