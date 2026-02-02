@@ -20,7 +20,7 @@ interface Tool {
   id: string;
   name: string;
   description: string;
-  pricing: string;
+  pricing_type: string;
   category_name?: string;
   average_rating: number;
   review_count: number;
@@ -70,7 +70,7 @@ const ToolComparisonModal: React.FC<ToolComparisonModalProps> = ({
           id,
           name,
           description,
-          pricing,
+          pricing_type,
           website,
           average_rating,
           review_count,
@@ -108,7 +108,7 @@ const ToolComparisonModal: React.FC<ToolComparisonModalProps> = ({
           id,
           name,
           description,
-          pricing,
+          pricing_type,
           website,
           average_rating,
           review_count,
@@ -234,7 +234,7 @@ const ToolComparisonModal: React.FC<ToolComparisonModalProps> = ({
                       <Badge variant="secondary" className="text-xs">
                         {tool.category_name || 'AI Tool'}
                       </Badge>
-                      <span className="text-xs text-gray-500">{tool.pricing}</span>
+                      <span className="text-xs text-gray-500">{tool.pricing_type}</span>
                     </div>
                   </div>
                   <div className="ml-2">

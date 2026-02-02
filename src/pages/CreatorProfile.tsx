@@ -94,7 +94,7 @@ interface CreatorTool {
   name: string;
   description: string;
   logo_url?: string;
-  pricing: string;
+  pricing_type: string;
   average_rating: number;
 }
 
@@ -432,7 +432,7 @@ const CreatorProfile: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('tools')
-        .select('id, name, description, logo_url, pricing, average_rating')
+        .select('id, name, description, logo_url, pricing_type, average_rating')
         .eq('user_id', userId)
         .eq('status', 'published')
         .order('created_at', { ascending: false })

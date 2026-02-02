@@ -20,12 +20,11 @@ interface ToolCardProps {
     name: string;
     description: string;
     website: string;
-    pricing: string;
+    pricing_type?: string;
     free_plan?: string;
     category_id?: string;
     sub_categories?: SubCategoryInfo[];
     is_light_logo?: boolean;
-    is_dark_logo?: boolean;
     logo_url?: string;
     tags?: string[];
     features?: string[];
@@ -46,21 +45,22 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '', onDelete }) =
   const [showReportModal, setShowReportModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
 
-  // Determine if logo should be inverted based on theme and logo type
+  // is_light_logo TRUE = light logo, invert in LIGHT mode
+  // is_light_logo FALSE = dark logo, invert in DARK mode
   const shouldInvertLogo = () => {
     if (!tool.logo_url) return false;
-    if (theme === 'dark' && tool.is_light_logo) return true;
-    if (theme === 'light' && tool.is_dark_logo) return true;
+    if (theme === 'light' && tool.is_light_logo) return true;
+    if (theme === 'dark' && !tool.is_light_logo) return true;
     return false;
   };
 
-  const getPricingColor = (pricing: string) => {
-    switch (pricing?.toLowerCase()) {
+  const getPricingColor = (pricingType: string) => {
+    switch (pricingType?.toLowerCase()) {
       case 'free':
         return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
       case 'freemium':
         return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400';
-      case 'paid':
+      case 'one_time_payment':
         return 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400';
       case 'subscription':
         return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400';
@@ -148,7 +148,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, className = '', onDelete }) =
             {/* Pricing Badge */}
             <div className="flex items-center gap-2">
               <span className="px-2 py-1 text-xs font-medium rounded-full border bg-card border-border text-foreground">
-                {tool.pricing || 'Free'}
+                {tool.pricing_type || 'Free'}
               </span>
               {tool.free_plan === 'Yes' && (
                 <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">

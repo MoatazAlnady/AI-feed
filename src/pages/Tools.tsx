@@ -32,7 +32,7 @@ interface Tool {
   category_id: string;
   category_name?: string;
   sub_categories?: SubCategoryInfo[];
-  pricing: string;
+  pricing_type: string;
   website: string;
   features: string[];
   pros: string[];
@@ -220,13 +220,13 @@ const Tools: React.FC = () => {
       
       let matchesPrice = true;
       if (priceFilter !== 'all') {
-        const pricing = tool.pricing.toLowerCase();
+        const pricingType = tool.pricing_type.toLowerCase();
         if (priceFilter === 'free') {
-          matchesPrice = pricing === 'free';
+          matchesPrice = pricingType === 'free';
         } else if (priceFilter === 'freemium') {
-          matchesPrice = pricing.includes('freemium') || pricing.includes('free tier');
+          matchesPrice = pricingType.includes('freemium') || pricingType.includes('free tier');
         } else if (priceFilter === 'paid') {
-          matchesPrice = !pricing.includes('free');
+          matchesPrice = !pricingType.includes('free');
         }
       }
       
@@ -452,7 +452,7 @@ const Tools: React.FC = () => {
                         <span className="text-[10px] text-muted-foreground">({tool.review_count})</span>
                       </div>
                       <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                        {tool.pricing}
+                        {tool.pricing_type}
                       </Badge>
                     </div>
 
@@ -514,7 +514,7 @@ const Tools: React.FC = () => {
                         <span className="font-medium">{tool.average_rating.toFixed(1)}</span>
                         <span className="text-xs text-muted-foreground">({tool.review_count})</span>
                       </div>
-                      <Badge variant="secondary">{tool.pricing}</Badge>
+                      <Badge variant="secondary">{tool.pricing_type}</Badge>
                       <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-1">
                         <ToolActionButtons 
                           tool={tool} 

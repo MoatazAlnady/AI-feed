@@ -17,7 +17,7 @@ interface Tool {
   category_id: string;
   sub_category_id: string[];
   website: string;
-  pricing: string;
+  pricing_type: string;
   features: string[];
   pros: string[];
   cons: string[];
@@ -54,7 +54,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
     category_id: '',
     sub_category_id: [] as string[],
     website: '',
-    pricing: 'free',
+    pricing_type: 'free',
     features: [''],
     pros: [''],
     cons: [''],
@@ -106,7 +106,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
           category_id: data.category_id || '',
           sub_category_id: subCategoryIds,
           website: data.website || '',
-          pricing: data.pricing || 'free',
+          pricing_type: data.pricing_type || 'free',
           features: data.features?.length ? data.features : [''],
           pros: data.pros?.length ? data.pros : [''],
           cons: data.cons?.length ? data.cons : [''],
@@ -198,7 +198,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
         description: formData.description,
         category_id: formData.category_id,
         website: formData.website,
-        pricing: formData.pricing,
+        pricing_type: formData.pricing_type,
         features: filteredFeatures,
         pros: filteredPros,
         cons: filteredCons,
@@ -249,7 +249,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
           category_id_param: formData.category_id,
           sub_category_id_param: formData.sub_category_id,
           website_param: formData.website,
-          pricing_param: formData.pricing,
+          pricing_param: formData.pricing_type,
           features_param: filteredFeatures,
           pros_param: filteredPros,
           cons_param: filteredCons,
@@ -426,20 +426,20 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
 
                 {/* Pricing */}
                 <div className="mb-6">
-                  <label htmlFor="pricing" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label htmlFor="pricing_type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Pricing Model *
                   </label>
                   <select
-                    id="pricing"
-                    name="pricing"
-                    value={formData.pricing}
+                    id="pricing_type"
+                    name="pricing_type"
+                    value={formData.pricing_type}
                     onChange={handleInputChange}
                     required
                     className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   >
                     <option value="free">Free</option>
                     <option value="freemium">Freemium</option>
-                    <option value="paid">Paid</option>
+                    <option value="one_time_payment">One Time Payment</option>
                     <option value="subscription">Subscription</option>
                   </select>
                 </div>

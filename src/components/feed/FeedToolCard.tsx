@@ -14,7 +14,7 @@ interface FeedToolCardProps {
     description: string;
     logo_url?: string;
     website: string;
-    pricing?: string;
+    pricing_type?: string;
     free_plan?: string;
     tags?: string[];
     interests?: string[];
@@ -22,7 +22,6 @@ interface FeedToolCardProps {
     review_count?: number;
     views?: number;
     is_light_logo?: boolean;
-    is_dark_logo?: boolean;
     user_id?: string;
     created_at?: string;
     detected_language?: string | null;
@@ -47,10 +46,12 @@ const FeedToolCard: React.FC<FeedToolCardProps> = ({
   const { theme } = useTheme();
   const [translatedDescription, setTranslatedDescription] = useState<string | null>(null);
 
+  // is_light_logo TRUE = light logo, invert in LIGHT mode to make visible
+  // is_light_logo FALSE = dark logo, invert in DARK mode to make visible
   const shouldInvertLogo = () => {
     if (!tool.logo_url) return false;
-    if (theme === 'dark' && tool.is_light_logo) return true;
-    if (theme === 'light' && tool.is_dark_logo) return true;
+    if (theme === 'light' && tool.is_light_logo) return true;
+    if (theme === 'dark' && !tool.is_light_logo) return true;
     return false;
   };
 
@@ -143,7 +144,7 @@ const FeedToolCard: React.FC<FeedToolCardProps> = ({
 
             {/* Tags & Pricing */}
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary">{tool.pricing || 'Free'}</Badge>
+              <Badge variant="secondary">{tool.pricing_type || 'Free'}</Badge>
               {tool.free_plan === 'Yes' && (
                 <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
                   Free Plan
