@@ -217,6 +217,16 @@ const SubmitTool: React.FC = () => {
     }
   };
 
+  const handleCsvSelect = (file: File, data: any[]) => {
+    setCsvFile(file);
+    setCsvData(data);
+    if (data.length === 0) {
+      setCsvError('No valid data found in CSV file.');
+    } else {
+      setCsvError('');
+    }
+  };
+
   const handleProsChange = (index: number, value: string) => {
     const newPros = [...formData.pros];
     newPros[index] = value;
@@ -1019,7 +1029,16 @@ const SubmitTool: React.FC = () => {
           </div>
         </form>
 
-        {/* CSV Import Modal - removed for now to fix build */}
+        <CsvImportModal
+          isOpen={showCsvModal}
+          onClose={() => setShowCsvModal(false)}
+          onCsvSelect={handleCsvSelect}
+          onSubmit={handleCsvSubmit}
+          csvFile={csvFile}
+          csvData={csvData}
+          csvError={csvError}
+          isProcessing={isProcessingCsv}
+        />
 
         <ChatDock />
       </div>
