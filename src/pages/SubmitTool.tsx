@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Upload, Link, Tag, DollarSign, Star, Send, Plus, Minus, FileText, AlertCircle, FileSpreadsheet } from 'lucide-react';
+import { Upload, Link, Tag, DollarSign, Star, Send, Plus, Minus, FileText, AlertCircle, FileSpreadsheet, Bookmark, Loader2, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { usePremiumStatus } from '../hooks/usePremiumStatus';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import ChatDock from '../components/ChatDock';
 import PremiumUpgradeModal from '../components/PremiumUpgradeModal';
 import AuthModal from '../components/AuthModal';
@@ -19,7 +19,9 @@ const SubmitTool: React.FC = () => {
   const { toast } = useToast();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const isEditMode = !!id;
+  const [isExtracting, setIsExtracting] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
@@ -79,6 +81,56 @@ const SubmitTool: React.FC = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Auto-fill from URL parameter (bookmarklet)
+  useEffect(() => {
+    const urlParam = searchParams.get('url');
+    if (urlParam && !isEditMode) {
+      setFormData(prev => ({ ...prev, website: urlParam }));
+      extractToolInfo(urlParam);
+    }
+  }, [searchParams]);
+
+  const extractToolInfo = async (url: string) => {
+    setIsExtracting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('extract-tool-info', {
+        body: { url },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      setFormData(prev => ({
+        ...prev,
+        name: data.name || prev.name,
+        description: data.description || prev.description,
+        pricing: data.pricing_type || prev.pricing,
+        freePlan: data.free_plan || prev.freePlan,
+        features: data.features?.length > 0 ? data.features : prev.features,
+        pros: data.pros?.length > 0 ? data.pros : prev.pros,
+        cons: data.cons?.length > 0 ? data.cons : prev.cons,
+        tags: data.tags?.length > 0 ? data.tags.join(', ') : prev.tags,
+        toolType: data.tool_type?.length > 0 ? data.tool_type : prev.toolType,
+        logoUrl: data.logo_url || prev.logoUrl,
+        website: data.website || prev.website,
+      }));
+
+      toast({
+        title: "Tool details extracted!",
+        description: "Please review and adjust the information before submitting.",
+      });
+    } catch (error: any) {
+      console.error('Error extracting tool info:', error);
+      toast({
+        title: "Extraction failed",
+        description: error.message || "Could not extract tool details. Please fill the form manually.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExtracting(false);
+    }
+  };
 
   const fetchCategories = async () => {
     try {
@@ -619,6 +671,49 @@ const SubmitTool: React.FC = () => {
             </button>
           </div>
         </div>
+        )}
+
+        {/* Bookmarklet Section */}
+        {!isEditMode && (
+          <div className="bg-card rounded-2xl shadow-sm p-6 mb-8 border border-primary/20">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Sparkles className="h-5 w-5 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-foreground mb-1">One-Click Submit Bookmarklet</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Drag this button to your bookmarks bar, then click it on any AI tool's website to auto-fill this form.
+                </p>
+                <div className="flex flex-wrap items-center gap-4 mb-4">
+                  <a
+                    href={`javascript:void(window.open('https://lovable-platform-boost.lovable.app/submit-tool?url='+encodeURIComponent(location.href)))`}
+                    onClick={(e) => e.preventDefault()}
+                    draggable
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm shadow-md hover:bg-primary/90 cursor-grab active:cursor-grabbing transition-colors"
+                  >
+                    <Bookmark className="h-4 w-4" />
+                    Submit to AI Feed
+                  </a>
+                  <span className="text-xs text-muted-foreground">← Drag this to your bookmarks bar</span>
+                </div>
+                <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                  <li>Drag the button above to your browser's bookmarks bar</li>
+                  <li>Visit any AI tool website</li>
+                  <li>Click the bookmarklet — the form opens pre-filled with AI-extracted details</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Extraction Loading Overlay */}
+        {isExtracting && (
+          <div className="bg-card rounded-2xl shadow-sm p-8 mb-8 text-center border border-primary/20">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">Extracting tool information...</h3>
+            <p className="text-sm text-muted-foreground">AI is reading the website and filling in the details for you.</p>
+          </div>
         )}
 
         <form 
