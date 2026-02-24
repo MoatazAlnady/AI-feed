@@ -454,12 +454,13 @@ button {
   }
 }
 
-/* === DARK-MODE GRADIENT (remove conflicting styles) === */
+/* === DARK-MODE pre-login: match the logged-in dark gradient === */
 .dark body:not(.logged-in) {
-  background: linear-gradient(
-    135deg,
-    #202444 0%,
-    #462560 100%
+  background: radial-gradient(
+    circle at 10% 20%,
+    #0b1120 0%,
+    #131c3a 40%,
+    #1c263f 75%
   ) !important;
 }
 

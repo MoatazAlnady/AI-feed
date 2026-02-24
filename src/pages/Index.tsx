@@ -123,14 +123,14 @@ const Index = () => {
           
           {/* Search Bar */}
           <form onSubmit={handleSearch} className="max-w-4xl mx-auto">
-            <div className="relative bg-white dark:bg-[#091527] rounded-2xl shadow-lg p-2 border border-gray-200 dark:border-gray-700">
+            <div className="relative bg-card rounded-2xl shadow-lg p-2 border border-border">
               <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={t('index.hero.searchPlaceholder')}
-                className="w-full pl-14 pr-4 py-4 text-lg border-0 rounded-xl focus:ring-0 focus:outline-none bg-white dark:bg-[#091527] text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                className="w-full pl-14 pr-4 py-4 text-lg border-0 rounded-xl focus:ring-0 focus:outline-none bg-card text-foreground placeholder:text-muted-foreground"
               />
             </div>
           </form>
@@ -149,7 +149,7 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section ref={featuresAnimation.ref} className={`py-20 px-6 bg-white/30 dark:bg-[#091527]/30 backdrop-blur-sm transition-all duration-1000 ${
+      <section ref={featuresAnimation.ref} className={`py-20 px-6 bg-card/30 backdrop-blur-sm transition-all duration-1000 ${
         featuresAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}>
         <div className="container max-w-6xl mx-auto">
@@ -159,7 +159,7 @@ const Index = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className={`group hover:shadow-lg transition-all duration-500 bg-white dark:bg-[#091527] border-gray-200 dark:border-gray-700 ${
+            <Card className={`group hover:shadow-lg transition-all duration-500 bg-card border-border ${
               featuresAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`} style={{ transitionDelay: '100ms' }}>
               <CardContent className="p-8 text-center">
@@ -176,7 +176,7 @@ const Index = () => {
               </CardContent>
             </Card>
             
-            <Card className={`group hover:shadow-lg transition-all duration-500 bg-white dark:bg-[#091527] border-gray-200 dark:border-gray-700 ${
+            <Card className={`group hover:shadow-lg transition-all duration-500 bg-card border-border ${
               featuresAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`} style={{ transitionDelay: '200ms' }}>
               <CardContent className="p-8 text-center">
@@ -193,7 +193,7 @@ const Index = () => {
               </CardContent>
             </Card>
             
-            <Card className={`group hover:shadow-lg transition-all duration-500 bg-white dark:bg-[#091527] border-gray-200 dark:border-gray-700 ${
+            <Card className={`group hover:shadow-lg transition-all duration-500 bg-card border-border ${
               featuresAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`} style={{ transitionDelay: '300ms' }}>
               <CardContent className="p-8 text-center">
@@ -210,7 +210,7 @@ const Index = () => {
               </CardContent>
             </Card>
             
-            <Card className={`group hover:shadow-lg transition-all duration-500 bg-white dark:bg-[#091527] border-gray-200 dark:border-gray-700 ${
+            <Card className={`group hover:shadow-lg transition-all duration-500 bg-card border-border ${
               featuresAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`} style={{ transitionDelay: '400ms' }}>
               <CardContent className="p-8 text-center">
@@ -259,7 +259,7 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section ref={ctaAnimation.ref} className={`py-20 px-6 bg-white dark:bg-[#091527] transition-all duration-1000 ${
+      <section ref={ctaAnimation.ref} className={`py-20 px-6 bg-card/50 transition-all duration-1000 ${
         ctaAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}>
         <div className="container max-w-4xl mx-auto text-center">

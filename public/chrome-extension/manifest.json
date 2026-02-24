@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "AI Feed - Submit Tool",
+  "version": "1.0.0",
+  "description": "One-click submit AI tools to AI Feed. Visit any AI tool website and click the extension to auto-fill the submission form.",
+  "permissions": ["activeTab"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -35,7 +36,30 @@ serve(async (req) => {
 
     console.log(`[extract-tool-info] Starting extraction`, { requestId, domain: parsedUrl.hostname });
 
-    // Step 1: Fetch the website HTML
+    // Step 1: Fetch categories and subcategories from DB
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
+
+    const { data: categoriesData } = await supabaseClient
+      .from('categories')
+      .select('name, sub_categories(name)')
+      .order('name');
+
+    const categoryTree = (categoriesData || []).map((c: any) => {
+      const subs = (c.sub_categories || []).map((s: any) => s.name).join(', ');
+      return `- ${c.name}: ${subs || '(no subcategories)'}`;
+    }).join('\n');
+
+    const categoryNames = (categoriesData || []).map((c: any) => c.name);
+    const allSubcategoryNames = (categoriesData || []).flatMap((c: any) =>
+      (c.sub_categories || []).map((s: any) => s.name)
+    );
+
+    console.log(`[extract-tool-info] Loaded ${categoryNames.length} categories`, { requestId });
+
+    // Step 2: Fetch the website HTML
     const fetchResponse = await fetch(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; AIFeedBot/1.0)',
@@ -53,12 +77,12 @@ serve(async (req) => {
 
     const html = await fetchResponse.text();
 
-    // Step 2: Extract meta tags
+    // Step 3: Extract meta tags
     const ogTitle = extractMeta(html, 'og:title') || extractTitle(html) || '';
     const ogDescription = extractMeta(html, 'og:description') || extractMeta(html, 'description') || '';
     const ogImage = extractMeta(html, 'og:image') || '';
 
-    // Step 3: Strip scripts/styles and extract text content
+    // Step 4: Strip scripts/styles and extract text content
     let textContent = html
       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
       .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
@@ -68,16 +92,46 @@ serve(async (req) => {
       .replace(/\s+/g, ' ')
       .trim();
 
-    // Limit to ~8000 chars for the AI
     textContent = textContent.substring(0, 8000);
 
-    // Step 4: Call Lovable AI with tool-calling for structured output
+    // Step 5: Call Lovable AI with tool-calling for structured output
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `You are an expert at analyzing AI tool websites. Given the text content of a website, extract structured information about the AI tool. Be accurate and concise. If you can't determine a field, use reasonable defaults based on what you see.`;
+    const systemPrompt = `You are an expert at analyzing AI tool websites and classifying them into the correct category.
+
+Given the text content of a website, extract structured information about the AI tool. Be accurate and concise.
+
+## Available Categories and Sub-Categories (from the platform database):
+${categoryTree}
+
+## Classification Rules:
+- You MUST select EXACTLY ONE category from the list above. Use the exact category name.
+- You MUST select EXACTLY ONE sub-category that belongs to that category. Use the exact sub-category name.
+- Choose the most specific and relevant category/sub-category pair for the tool.
+- If unsure between categories, prefer the one that best describes the tool's PRIMARY function.
+
+## Pricing Type Rules:
+- "free": The tool is completely free with no paid options
+- "freemium": Has a free tier/plan AND paid plans with more features
+- "one_time_payment": Requires a single purchase (lifetime license, one-time fee)
+- "subscription": Requires recurring payment (monthly/yearly plans)
+- "contact": Enterprise or custom pricing where you need to contact sales
+
+## Free Plan Rules:
+- ONLY set free_plan when pricing_type is "one_time_payment" or "subscription"
+- Set to "Yes" if the tool offers a free tier, free trial, or free credits
+- Set to "No" if there is no free option at all
+- Leave as empty string "" for "free", "freemium", or "contact" pricing types
+
+## Tool Type Rules:
+- Select ALL that apply from: Web App, Desktop App, Mobile App, Chrome Extension, VS Code Extension, API, CLI Tool, Plugin
+- Most tools are at least "Web App"
+- If the tool has a mobile app (iOS/Android), include "Mobile App"
+- If it offers an API for developers, include "API"
+- If it has a browser extension, include "Chrome Extension"`;
 
     const userPrompt = `Analyze this website and extract tool information.
 
@@ -88,7 +142,7 @@ Meta Description: ${ogDescription}
 Page Content:
 ${textContent}
 
-Extract the tool's details accurately.`;
+Extract the tool's details accurately. Classify into the correct category and sub-category from the available options.`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -113,6 +167,16 @@ Extract the tool's details accurately.`;
                 properties: {
                   name: { type: "string", description: "The name of the tool" },
                   description: { type: "string", description: "A clear description of the tool (200-500 characters)" },
+                  suggested_category: {
+                    type: "string",
+                    enum: categoryNames.length > 0 ? categoryNames : undefined,
+                    description: "The best matching category name from the available categories"
+                  },
+                  suggested_subcategory: {
+                    type: "string",
+                    enum: allSubcategoryNames.length > 0 ? allSubcategoryNames : undefined,
+                    description: "The best matching sub-category name that belongs to the selected category"
+                  },
                   pricing_type: {
                     type: "string",
                     enum: ["free", "freemium", "one_time_payment", "subscription", "contact"],
@@ -152,7 +216,7 @@ Extract the tool's details accurately.`;
                     description: "What type of tool this is (can be multiple)"
                   }
                 },
-                required: ["name", "description", "pricing_type", "features", "pros", "cons", "tags", "tool_type"],
+                required: ["name", "description", "suggested_category", "suggested_subcategory", "pricing_type", "features", "pros", "cons", "tags", "tool_type"],
                 additionalProperties: false
               }
             }
@@ -205,7 +269,7 @@ Extract the tool's details accurately.`;
     };
 
     const duration = Date.now() - startTime;
-    console.log(`[extract-tool-info] Extraction complete`, { requestId, duration: `${duration}ms`, name: result.name });
+    console.log(`[extract-tool-info] Extraction complete`, { requestId, duration: `${duration}ms`, name: result.name, category: result.suggested_category, subcategory: result.suggested_subcategory });
 
     return new Response(
       JSON.stringify(result),
