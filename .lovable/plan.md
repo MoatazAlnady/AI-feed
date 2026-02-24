@@ -1,123 +1,163 @@
 
-# Plan: One-Click Tool Submission Bookmarklet
+# Plan: AI Category Intelligence, Chrome Extension, Background Consistency & About Page
 
 ## Overview
-Create a bookmarklet (a browser bookmark button) that users can click while on any AI tool's website. It will grab the URL and redirect to the AI Feed tool submission form, where an AI-powered edge function will automatically scrape the website and pre-fill all form fields.
-
-## How It Works
-
-```text
-User visits any AI tool website
-        |
-        v
-Clicks bookmarklet in browser toolbar
-        |
-        v
-Redirects to AI Feed: /submit-tool?url=https://example.com
-        |
-        v
-SubmitTool page detects ?url= parameter
-        |
-        v
-Calls edge function "extract-tool-info" with the URL
-        |
-        v
-Edge function scrapes website + uses Lovable AI to extract:
-  - Tool name, description, pricing, features, pros, cons, tags
-        |
-        v
-Form auto-fills with extracted data
-        |
-        v
-User reviews, adjusts, and submits
-```
+Three distinct changes:
+1. Upgrade the `extract-tool-info` edge function to dynamically fetch categories/subcategories from the database and provide clear AI instructions for classification
+2. Convert the bookmarklet into a proper Chrome Extension for easy installation
+3. Fix pre-login page backgrounds to match post-login styling, and rewrite the About page with proper content (translations are missing)
 
 ---
 
-## Components
+## 1. Dynamic Category Intelligence for AI Extraction
 
-### 1. New Edge Function: `extract-tool-info`
+### Problem
+The `extract-tool-info` edge function currently has no knowledge of the platform's categories or subcategories. It cannot suggest a category or subcategory for the tool.
 
-**File**: `supabase/functions/extract-tool-info/index.ts`
+### Solution
+Before calling the AI, query the database for all categories and their subcategories. Include the full category tree in the AI prompt with clear classification instructions. Add `category` and `subcategory` to the structured output.
 
-- Accepts a URL in the request body
-- Fetches the HTML of the target website (like fetch-link-metadata does)
-- Sends the HTML content to Lovable AI (google/gemini-2.5-flash) with a structured prompt asking it to extract:
-  - `name`: Tool name
-  - `description`: A clear description (200-500 chars)
-  - `pricing_type`: one of free, freemium, one_time_payment, subscription, contact
-  - `free_plan`: "Yes" or "No" (if applicable)
-  - `features`: Array of key features
-  - `pros`: Array of pros
-  - `cons`: Array of cons
-  - `tags`: Relevant tags
-  - `tool_type`: Array from [Web App, Desktop App, Mobile App, Chrome Extension, VS Code Extension, API, CLI Tool, Plugin]
-- Uses tool-calling / structured output to get clean JSON back
-- Returns the extracted data to the frontend
+**File: `supabase/functions/extract-tool-info/index.ts`**
 
-### 2. Update SubmitTool Page
+Changes:
+- Import and initialize a Supabase client inside the function
+- Query `categories` and `sub_categories` tables to build the category tree
+- Add detailed classification instructions to the system prompt, formatted as:
+```text
+Categories and their sub-categories:
+- AI Libraries: AI Agents, AI Libraries, AI Tools, GPTs, Prompt Libraries
+- Audio: AI Agent, Music Generation, Podcast, Voice Audition, Voice Over
+- Business & Finance: AI GRC, Billing, Consulting, Documentation, E-commerce, ERP, News, Planning, Supply Chain
+- Communication & Language: Content Transcribing, Culture, Learning, Translation
+- Content Creation: AI Agent, AI Checker, AI Humanizer, AI Watermarking, ...
+- Data & Analytics: Academic Research, Data Analytics, ...
+- Development & Coding: AI Agents, API Management, Coding Assistant, ...
+- HR: Assessment, ATS, Automation, Candidate Management, ...
+- Image & Designing: AI Avatar, Designing, Graphic Designing, ...
+- Marketing: Advertising, Branding, Content Marketing, ...
+... (all fetched dynamically)
+```
 
-**File**: `src/pages/SubmitTool.tsx`
+- Add clear dropdown field instructions to the prompt:
+```text
+Classification Rules:
+- Select EXACTLY ONE category and EXACTLY ONE subcategory
+- pricing_type: "free" (completely free), "freemium" (free tier + paid), "one_time_payment" (single purchase), "subscription" (recurring), "contact" (enterprise/custom pricing)
+- free_plan: Only set for "one_time_payment" or "subscription". "Yes" if free tier/credits exist, "No" otherwise. Leave empty for other pricing types.
+- tool_type: Select all that apply from [Web App, Desktop App, Mobile App, Chrome Extension, VS Code Extension, API, CLI Tool, Plugin]
+```
 
-- On mount, check for `?url=` query parameter
-- If present, show a loading state ("Extracting tool information from website...")
-- Call the `extract-tool-info` edge function via `supabase.functions.invoke`
-- Auto-fill the form with the returned data
-- Pre-fill the `website` field with the URL
-- Show a toast: "Tool details extracted! Please review and adjust before submitting."
+- Add `suggested_category` and `suggested_subcategory` to the tool-calling schema
+- Update the frontend (`SubmitTool.tsx`) to auto-select the category/subcategory if the AI suggestion matches
 
-### 3. Bookmarklet Generator in Settings/Profile
-
-**File**: `src/pages/SubmitTool.tsx` (add a section above the form)
-
-- Display a draggable bookmarklet button with instructions
-- The bookmarklet code:
-  ```javascript
-  javascript:void(window.open('https://lovable-platform-boost.lovable.app/submit-tool?url='+encodeURIComponent(location.href)))
-  ```
-- Instructions:
-  1. Drag the button to your bookmarks bar
-  2. Visit any AI tool website
-  3. Click the bookmarklet
-  4. Review the auto-filled form and submit
+### Frontend Update (`SubmitTool.tsx`)
+In `extractToolInfo`, after receiving data:
+- If `data.suggested_category` matches a category name, set `formData.category`
+- Filter subcategories for that category, and if `data.suggested_subcategory` matches, set `formData.subcategoryId`
 
 ---
 
-## Technical Details
+## 2. Chrome Extension for One-Click Submission
 
-### Edge Function: extract-tool-info
+### Problem
+Bookmarklets are hard to install and not intuitive. Users want to install a proper Chrome extension.
 
-```text
-POST /extract-tool-info
-Body: { url: "https://example.com" }
+### Solution
+Create a minimal Chrome Extension (Manifest V3) that adds a browser action button. When clicked on any page, it opens the submit-tool page with the current URL.
 
-Steps:
-1. Fetch HTML from the URL (with User-Agent header)
-2. Extract text content (strip scripts/styles, limit to ~8000 chars)
-3. Also extract meta tags (og:title, og:description, og:image)
-4. Call Lovable AI with tool-calling to extract structured data
-5. Return JSON with extracted fields + logo_url from og:image
+**New files to create in `public/chrome-extension/`:**
+
+**`manifest.json`**:
+```json
+{
+  "manifest_version": 3,
+  "name": "AI Feed - Submit Tool",
+  "version": "1.0",
+  "description": "One-click submit AI tools to AI Feed",
+  "permissions": ["activeTab"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}
 ```
 
-The AI prompt will instruct the model to analyze the website content and return structured tool information. It uses tool-calling (not raw JSON) for reliable structured output.
+**`popup.html`**: A small popup with a "Submit This Tool" button and a brief description. When clicked, it gets the current tab URL and opens the submit-tool page.
 
-### Form Auto-Fill Logic
+**`popup.js`**: Gets current tab URL via `chrome.tabs.query`, opens `https://lovable-platform-boost.lovable.app/submit-tool?url=<encoded_url>`.
 
-When `?url=` is detected:
-1. Set `website` field immediately
-2. Show loading overlay on the form
-3. Call edge function
-4. Map response fields to formData state
-5. If `og:image` is found, set it as `logoUrl`
-6. Remove loading overlay
-7. User can then select category/subcategory manually (AI can suggest but categories must match DB)
+**Icons**: Reuse existing favicons (resize from `public/favicon.png` to 16, 48, 128px).
 
-### Bookmarklet UI
+### Update Bookmarklet Section (`SubmitTool.tsx`)
+Replace the bookmarklet-only UI with a section that has two options:
+1. **Chrome Extension** (primary) - Download/install instructions + link to the extension folder
+2. **Bookmarklet** (fallback) - Keep existing draggable bookmarklet
 
-A small info card above the form with:
-- A styled draggable link (the bookmarklet)
-- Brief instructions (3 steps)
-- Works on Chrome, Firefox, Safari, Edge
+Since Chrome extensions from outside the Chrome Web Store require developer mode, include clear instructions:
+1. Download the extension folder (provide a zip or instructions)
+2. Go to `chrome://extensions`
+3. Enable Developer Mode
+4. Click "Load unpacked" and select the folder
+
+---
+
+## 3. Pre-Login Background Consistency
+
+### Problem
+Pre-login pages (Index, About, etc.) use different backgrounds than post-login pages. The `body:not(.logged-in)` CSS rule applies a light gradient, while `AnimatedBackground` adds another gradient. The logged-in pages use a different dark blue scheme.
+
+### Solution
+Update the pre-login backgrounds to match the post-login aesthetic:
+
+**File: `src/index.css`**
+
+Update the `body:not(.logged-in)` rule to use `hsl(var(--background))` instead of the separate gradient:
+```css
+body:not(.logged-in) {
+  background: hsl(var(--background));
+}
+```
+
+**File: `src/components/AnimatedBackground.tsx`**
+
+Update to match the logged-in dark mode background:
+- Light mode: Use `hsl(var(--background))` (white)
+- Dark mode: Use the same radial gradient as `body.logged-in.dark`
+
+**File: `src/pages/Index.tsx`**
+
+The Index page uses hardcoded colors like `dark:bg-[#091527]` on sections/cards. Update to use theme tokens (`bg-card`, `bg-background`) for consistency.
+
+---
+
+## 4. About Page Content Fix
+
+### Problem
+The About page uses translation keys (`t('about.title')`, etc.) but none of these keys exist in the translation files. The page renders with raw keys as text.
+
+### Solution
+Two changes:
+
+**Option A (chosen): Hardcode content directly in the component** since About page content is specific to this platform and shouldn't change per locale frequently.
+
+**File: `src/pages/About.tsx`**
+
+Rewrite with actual platform content:
+- **Hero**: "About AI Feed" / "The ultimate platform for discovering, comparing, and sharing AI tools..."
+- **Mission**: Describe the platform's mission to democratize AI tool discovery
+- **Values**: Innovation (Cutting-edge AI tools), Community (Connect with AI enthusiasts), Purpose (Help people find the right AI tools), Global (AI tools from around the world)
+- **Team/Story section**: Add a "What We Offer" section with feature highlights (Tool Directory, Community, Jobs & Talent, Blog & Articles)
+- **CTA**: "Join the AI Revolution" with proper links
+- **Background**: Remove `bg-gray-50 dark:bg-gray-900` and use `bg-background` for consistency
 
 ---
 
@@ -125,15 +165,72 @@ A small info card above the form with:
 
 | File | Action |
 |------|--------|
-| `supabase/functions/extract-tool-info/index.ts` | **Create** - New edge function |
-| `supabase/config.toml` | **Modify** - Add function config |
-| `src/pages/SubmitTool.tsx` | **Modify** - Add URL detection, auto-fill logic, bookmarklet UI |
+| `supabase/functions/extract-tool-info/index.ts` | Modify - Add dynamic category fetching and AI classification instructions |
+| `src/pages/SubmitTool.tsx` | Modify - Auto-fill category/subcategory from AI, update bookmarklet section with Chrome extension option |
+| `public/chrome-extension/manifest.json` | Create |
+| `public/chrome-extension/popup.html` | Create |
+| `public/chrome-extension/popup.js` | Create |
+| `src/index.css` | Modify - Update pre-login background |
+| `src/components/AnimatedBackground.tsx` | Modify - Match post-login backgrounds |
+| `src/pages/Index.tsx` | Modify - Use theme tokens instead of hardcoded colors |
+| `src/pages/About.tsx` | Rewrite - Add actual content, fix background |
 
 ---
 
-## Edge Cases
+## Technical Details
 
-- If the website blocks scraping, show a toast asking the user to fill manually
-- If AI extraction fails, pre-fill only the website URL and let the user fill the rest
-- Rate limit handling for the AI gateway (429/402 errors surfaced to user)
-- URL validation before sending to the edge function
+### Edge Function: Category Fetching
+```text
+// Inside the handler, before calling AI:
+const supabaseClient = createClient(
+  Deno.env.get('SUPABASE_URL')!,
+  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+);
+
+const { data: cats } = await supabaseClient
+  .from('categories')
+  .select('name, sub_categories(name)')
+  .order('name');
+
+// Build category tree string for prompt
+const categoryTree = cats.map(c =>
+  `- ${c.name}: ${c.sub_categories.map(s => s.name).join(', ')}`
+).join('\n');
+```
+
+### Chrome Extension Popup
+```html
+<button id="submit">Submit This Tool to AI Feed</button>
+<script src="popup.js"></script>
+```
+```javascript
+document.getElementById('submit').addEventListener('click', () => {
+  chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+    const url = tabs[0].url;
+    window.open(`https://lovable-platform-boost.lovable.app/submit-tool?url=${encodeURIComponent(url)}`);
+  });
+});
+```
+
+### Auto-fill Category in SubmitTool
+```text
+// After extraction, match category
+if (data.suggested_category) {
+  const matchedCat = categories.find(c =>
+    c.name.toLowerCase() === data.suggested_category.toLowerCase()
+  );
+  if (matchedCat) {
+    setFormData(prev => ({ ...prev, category: matchedCat.name }));
+    // Then match subcategory
+    if (data.suggested_subcategory) {
+      const subs = subCategories.filter(s => s.category_id === matchedCat.id);
+      const matchedSub = subs.find(s =>
+        s.name.toLowerCase() === data.suggested_subcategory.toLowerCase()
+      );
+      if (matchedSub) {
+        setFormData(prev => ({ ...prev, subcategoryId: matchedSub.id }));
+      }
+    }
+  }
+}
+```
