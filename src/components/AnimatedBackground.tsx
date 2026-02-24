@@ -3,18 +3,16 @@ import React from 'react';
 const AnimatedBackground: React.FC = () => {
   return (
     <>
-      {/* Background gradient for light mode */}
+      {/* Light mode: use theme background */}
       <div 
         className="fixed top-0 left-0 w-full h-full -z-20 dark:hidden"
-        style={{ 
-          background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 30%, #ddd6fe 70%, #f8fafc 100%)' 
-        }}
+        style={{ background: 'hsl(var(--background))' }}
       />
-      {/* Background gradient for dark mode */}
+      {/* Dark mode: match the logged-in dark gradient */}
       <div 
         className="fixed top-0 left-0 w-full h-full -z-20 hidden dark:block"
         style={{ 
-          background: 'linear-gradient(135deg, #202444 0%, #090a27 100%)' 
+          background: 'radial-gradient(circle at 10% 20%, #0b1120 0%, #131c3a 40%, #1c263f 75%)' 
         }}
       />
     </>

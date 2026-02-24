@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Upload, Link, Tag, DollarSign, Star, Send, Plus, Minus, FileText, AlertCircle, FileSpreadsheet, Bookmark, Loader2, Sparkles } from 'lucide-react';
+import { Upload, Link, Tag, DollarSign, Star, Send, Plus, Minus, FileText, AlertCircle, FileSpreadsheet, Bookmark, Loader2, Sparkles, Chrome, Download } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { usePremiumStatus } from '../hooks/usePremiumStatus';
 import { supabase } from '@/integrations/supabase/client';
@@ -115,6 +115,25 @@ const SubmitTool: React.FC = () => {
         logoUrl: data.logo_url || prev.logoUrl,
         website: data.website || prev.website,
       }));
+
+      // Auto-match category and subcategory from AI suggestion
+      if (data.suggested_category && categories.length > 0) {
+        const matchedCat = categories.find((c: any) =>
+          c.name.toLowerCase() === data.suggested_category.toLowerCase()
+        );
+        if (matchedCat) {
+          setFormData(prev => ({ ...prev, category: matchedCat.name }));
+          if (data.suggested_subcategory) {
+            const subs = subCategories.filter((s: any) => s.category_id === matchedCat.id);
+            const matchedSub = subs.find((s: any) =>
+              s.name.toLowerCase() === data.suggested_subcategory.toLowerCase()
+            );
+            if (matchedSub) {
+              setFormData(prev => ({ ...prev, subcategoryId: matchedSub.id }));
+            }
+          }
+        }
+      }
 
       toast({
         title: "Tool details extracted!",
@@ -673,7 +692,7 @@ const SubmitTool: React.FC = () => {
         </div>
         )}
 
-        {/* Bookmarklet Section */}
+        {/* Bookmarklet & Chrome Extension Section */}
         {!isEditMode && (
           <div className="bg-card rounded-2xl shadow-sm p-6 mb-8 border border-primary/20">
             <div className="flex items-start gap-4">
@@ -681,27 +700,48 @@ const SubmitTool: React.FC = () => {
                 <Sparkles className="h-5 w-5 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-foreground mb-1">One-Click Submit Bookmarklet</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-1">One-Click Submit</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Drag this button to your bookmarks bar, then click it on any AI tool's website to auto-fill this form.
+                  Install the Chrome extension or use the bookmarklet to submit tools from any website with one click.
                 </p>
-                <div className="flex flex-wrap items-center gap-4 mb-4">
-                  <a
-                    href={`javascript:void(window.open('https://lovable-platform-boost.lovable.app/submit-tool?url='+encodeURIComponent(location.href)))`}
-                    onClick={(e) => e.preventDefault()}
-                    draggable
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm shadow-md hover:bg-primary/90 cursor-grab active:cursor-grabbing transition-colors"
-                  >
-                    <Bookmark className="h-4 w-4" />
-                    Submit to AI Feed
-                  </a>
-                  <span className="text-xs text-muted-foreground">← Drag this to your bookmarks bar</span>
+
+                {/* Chrome Extension */}
+                <div className="mb-6 p-4 bg-muted/50 rounded-xl">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Chrome className="h-5 w-5 text-primary" />
+                    <h4 className="font-semibold text-foreground text-sm">Chrome Extension</h4>
+                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">Recommended</span>
+                  </div>
+                  <ol className="text-sm text-muted-foreground space-y-1.5 list-decimal list-inside mb-3">
+                    <li>Download the <a href="/chrome-extension/" target="_blank" className="text-primary hover:underline font-medium">extension folder</a> (right-click → Save As on each file)</li>
+                    <li>Open <code className="bg-muted px-1.5 py-0.5 rounded text-xs">chrome://extensions</code> in your browser</li>
+                    <li>Enable <strong>Developer Mode</strong> (top-right toggle)</li>
+                    <li>Click <strong>"Load unpacked"</strong> and select the downloaded folder</li>
+                  </ol>
+                  <p className="text-xs text-muted-foreground">Once installed, click the extension icon on any AI tool website to auto-submit it.</p>
                 </div>
-                <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-                  <li>Drag the button above to your browser's bookmarks bar</li>
-                  <li>Visit any AI tool website</li>
-                  <li>Click the bookmarklet — the form opens pre-filled with AI-extracted details</li>
-                </ol>
+
+                {/* Bookmarklet Fallback */}
+                <div className="p-4 bg-muted/50 rounded-xl">
+                  <h4 className="font-semibold text-foreground text-sm mb-3">Bookmarklet (Alternative)</h4>
+                  <div className="flex flex-wrap items-center gap-4 mb-3">
+                    <a
+                      href={`javascript:void(window.open('https://lovable-platform-boost.lovable.app/submit-tool?url='+encodeURIComponent(location.href)))`}
+                      onClick={(e) => e.preventDefault()}
+                      draggable
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm shadow-md hover:bg-primary/90 cursor-grab active:cursor-grabbing transition-colors"
+                    >
+                      <Bookmark className="h-4 w-4" />
+                      Submit to AI Feed
+                    </a>
+                    <span className="text-xs text-muted-foreground">← Drag this to your bookmarks bar</span>
+                  </div>
+                  <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                    <li>Drag the button above to your browser's bookmarks bar</li>
+                    <li>Visit any AI tool website</li>
+                    <li>Click the bookmarklet — the form opens pre-filled with AI-extracted details</li>
+                  </ol>
+                </div>
               </div>
             </div>
           </div>

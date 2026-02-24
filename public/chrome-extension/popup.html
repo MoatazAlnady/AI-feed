@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Feed - Submit Tool</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      width: 320px;
+      padding: 20px;
+      background: linear-gradient(135deg, #0b1120 0%, #131c3a 100%);
+      color: #f0f0f0;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .header img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+    .header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #00e8ff, #57139b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .description {
+      font-size: 13px;
+      color: #a0aec0;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .current-url {
+      font-size: 12px;
+      color: #718096;
+      background: rgba(255,255,255,0.05);
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    #submit-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #00e8ff, #57139b);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    #submit-btn:hover {
+      opacity: 0.9;
+    }
+    .footer {
+      margin-top: 12px;
+      text-align: center;
+      font-size: 11px;
+      color: #4a5568;
+    }
+    .footer a {
+      color: #00e8ff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="icon48.png" alt="AI Feed">
+    <h1>AI Feed</h1>
+  </div>
+  <p class="description">
+    Submit the current website as an AI tool to AI Feed. The form will be auto-filled using AI.
+  </p>
+  <div class="current-url" id="current-url">Loading...</div>
+  <button id="submit-btn">🚀 Submit This Tool</button>
+  <div class="footer">
+    <a href="https://lovable-platform-boost.lovable.app" target="_blank">aifeed.app</a>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
