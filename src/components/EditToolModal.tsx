@@ -15,7 +15,7 @@ interface Tool {
   name: string;
   description: string;
   category_id: string;
-  sub_category_id: string[];
+  sub_category_id: string | null;
   website: string;
   pricing_type: string;
   features: string[];
@@ -52,7 +52,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
     name: '',
     description: '',
     category_id: '',
-    sub_category_id: [] as string[],
+    sub_category_id: '' as string,
     website: '',
     pricing_type: 'free',
     features: [''],
@@ -87,24 +87,15 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
 
       if (error) throw error;
       
-      // Fetch sub-categories from junction table
-      let subCategoryIds: string[] = [];
-      const { data: junctionData } = await supabase
-        .from('tool_sub_categories')
-        .select('sub_category_id')
-        .eq('tool_id', String(toolId));
-      
-      if (junctionData) {
-        subCategoryIds = junctionData.map(item => item.sub_category_id);
-      }
+      // sub_category_id is now directly on the tool
       
       if (data) {
-        setTool(data);
+        setTool(data as any);
         setFormData({
           name: data.name || '',
           description: data.description || '',
           category_id: data.category_id || '',
-          sub_category_id: subCategoryIds,
+          sub_category_id: (data as any).sub_category_id || '',
           website: data.website || '',
           pricing_type: data.pricing_type || 'free',
           features: data.features?.length ? data.features : [''],
@@ -209,29 +200,13 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
         // Admin can directly update the tool
         const { error } = await supabase
           .from('tools')
-          .update(updateData)
+          .update({
+            ...updateData,
+            sub_category_id: formData.sub_category_id || null
+          } as any)
           .eq('id', String(toolId));
 
         if (error) throw error;
-        
-        // Update sub-categories in junction table
-        // First delete existing relationships
-        await supabase
-          .from('tool_sub_categories')
-          .delete()
-          .eq('tool_id', String(toolId));
-        
-        // Then insert new relationships
-        if (formData.sub_category_id.length > 0) {
-          await supabase
-            .from('tool_sub_categories')
-            .insert(
-              formData.sub_category_id.map(subCatId => ({
-                tool_id: String(toolId),
-                sub_category_id: subCatId
-              }))
-            );
-        }
         
         setSuccess('Tool updated successfully!');
         if (onToolUpdated) onToolUpdated();
@@ -247,7 +222,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
           name_param: formData.name,
           description_param: formData.description,
           category_id_param: formData.category_id,
-          sub_category_id_param: formData.sub_category_id,
+          sub_category_id_param: formData.sub_category_id || null as any,
           website_param: formData.website,
           pricing_param: formData.pricing_type,
           features_param: filteredFeatures,
@@ -376,31 +351,23 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, toolId, 
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Sub-categories (Multiple Choice)
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Sub-category (Single Choice)
                     </label>
-                    <div className="max-h-32 overflow-y-auto border rounded-md p-2 space-y-2">
+                    <select
+                      value={formData.sub_category_id}
+                      onChange={(e) => setFormData(prev => ({ ...prev, sub_category_id: e.target.value }))}
+                      className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+                    >
+                      <option value="">Select a sub-category</option>
                       {subCategories
                         .filter(sub => sub.category_id === formData.category_id)
                         .map((subCategory) => (
-                        <div key={subCategory.id} className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id={`sub-${subCategory.id}`}
-                            checked={formData.sub_category_id.includes(subCategory.id)}
-                            onChange={() => {
-                              const newIds = formData.sub_category_id.includes(subCategory.id)
-                                ? formData.sub_category_id.filter(id => id !== subCategory.id)
-                                : [...formData.sub_category_id, subCategory.id];
-                              setFormData(prev => ({ ...prev, sub_category_id: newIds }));
-                            }}
-                          />
-                          <label htmlFor={`sub-${subCategory.id}`} className="text-sm cursor-pointer">
+                          <option key={subCategory.id} value={subCategory.id}>
                             {subCategory.name}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
+                          </option>
+                        ))}
+                    </select>
                   </div>
                 </div>
 

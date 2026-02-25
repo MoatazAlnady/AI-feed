@@ -195,22 +195,13 @@ const SubmitTool: React.FC = () => {
       if (error) throw error;
 
       let subcategoryId = '';
-      const { data: junctionData } = await supabase
-        .from('tool_sub_categories')
-        .select('sub_category_id')
-        .eq('tool_id', toolId)
-        .limit(1);
-      
-      if (junctionData && junctionData.length > 0) {
-        subcategoryId = junctionData[0].sub_category_id;
-      }
 
       if (tool) {
         setFormData({
           name: tool.name || '',
           description: tool.description || '',
           category: categories.find(cat => cat.id === tool.category_id)?.name || '',
-          subcategoryId: subcategoryId,
+          subcategoryId: (tool as any).sub_category_id || '',
           toolType: tool.tool_type || [],
           freePlan: tool.free_plan || '',
           website: tool.website || '',
@@ -455,7 +446,7 @@ const SubmitTool: React.FC = () => {
 
       const detected_language = detectLanguage(formData.description);
 
-      const submissionData = {
+      const submissionData: any = {
         name: formData.name,
         description: formData.description,
         website: formData.website,
@@ -499,19 +490,10 @@ const SubmitTool: React.FC = () => {
       }
       
       if (!result.error && insertedToolId && formData.subcategoryId) {
-        if (isEditMode) {
-          await supabase
-            .from('tool_sub_categories')
-            .delete()
-            .eq('tool_id', insertedToolId);
-        }
-        
         await supabase
-          .from('tool_sub_categories')
-          .insert({
-            tool_id: insertedToolId,
-            sub_category_id: formData.subcategoryId
-          });
+          .from('tools')
+          .update({ sub_category_id: formData.subcategoryId } as any)
+          .eq('id', insertedToolId);
       }
 
       console.log('Result:', result);
@@ -713,7 +695,7 @@ const SubmitTool: React.FC = () => {
                     <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">Recommended</span>
                   </div>
                   <ol className="text-sm text-muted-foreground space-y-1.5 list-decimal list-inside mb-3">
-                    <li>Download the <a href="/chrome-extension/" target="_blank" className="text-primary hover:underline font-medium">extension folder</a> (right-click → Save As on each file)</li>
+                    <li>Download the extension files: <a href="/chrome-extension/manifest.json" download className="text-primary hover:underline font-medium">manifest.json</a>, <a href="/chrome-extension/popup.html" download className="text-primary hover:underline font-medium">popup.html</a>, <a href="/chrome-extension/popup.js" download className="text-primary hover:underline font-medium">popup.js</a>, and the icon files — save them all into one folder</li>
                     <li>Open <code className="bg-muted px-1.5 py-0.5 rounded text-xs">chrome://extensions</code> in your browser</li>
                     <li>Enable <strong>Developer Mode</strong> (top-right toggle)</li>
                     <li>Click <strong>"Load unpacked"</strong> and select the downloaded folder</li>

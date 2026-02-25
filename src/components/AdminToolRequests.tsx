@@ -24,8 +24,8 @@ interface ToolEditRequest {
   description: string;
   category_id: string;
   category_name: string;
-  sub_category_id?: string[];
-  sub_categories?: SubCategoryInfo[];
+  sub_category_id?: string;
+  sub_category_name?: string;
   website: string;
   pricing: string;
   features: string[];
@@ -60,21 +60,8 @@ const AdminToolRequests: React.FC<AdminToolRequestsProps> = ({ onRefresh }) => {
 
       if (error) throw error;
       
-      // Fetch subcategory names for each request that has sub_category_id
-      const requestsWithSubCategories = await Promise.all(
-        (data || []).map(async (request: any) => {
-          if (request.sub_category_id && request.sub_category_id.length > 0) {
-            const { data: subCats } = await supabase
-              .from('sub_categories')
-              .select('id, name, color')
-              .in('id', request.sub_category_id);
-            return { ...request, sub_categories: subCats || [] };
-          }
-          return { ...request, sub_categories: [] };
-        })
-      );
-      
-      setRequests(requestsWithSubCategories);
+      // sub_category_name is now returned directly from the DB function
+      setRequests(data || []);
     } catch (error) {
       console.error('Error fetching tool edit requests:', error);
       toast({
@@ -312,22 +299,10 @@ const AdminToolRequests: React.FC<AdminToolRequestsProps> = ({ onRefresh }) => {
                       <p className="text-sm mt-1">{selectedRequest.category_name}</p>
                     </div>
                     <div>
-                      <Label>Subcategories</Label>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {selectedRequest.sub_categories && selectedRequest.sub_categories.length > 0 ? (
-                          selectedRequest.sub_categories.map((subCat) => (
-                            <span 
-                              key={subCat.id}
-                              className="px-2 py-1 text-xs rounded-full border"
-                              style={{ borderColor: subCat.color || 'hsl(var(--border))', color: subCat.color }}
-                            >
-                              {subCat.name}
-                            </span>
-                          ))
-                        ) : (
-                          <p className="text-sm text-muted-foreground">None</p>
-                        )}
-                      </div>
+                      <Label>Subcategory</Label>
+                      <p className="text-sm mt-1">
+                        {selectedRequest.sub_category_name || 'None'}
+                      </p>
                     </div>
                   </div>
                 </div>
