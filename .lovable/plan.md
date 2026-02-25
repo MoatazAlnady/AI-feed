@@ -1,163 +1,76 @@
 
-# Plan: AI Category Intelligence, Chrome Extension, Background Consistency & About Page
 
-## Overview
-Three distinct changes:
-1. Upgrade the `extract-tool-info` edge function to dynamically fetch categories/subcategories from the database and provide clear AI instructions for classification
-2. Convert the bookmarklet into a proper Chrome Extension for easy installation
-3. Fix pre-login page backgrounds to match post-login styling, and rewrite the About page with proper content (translations are missing)
+# Plan: Fix Chrome Extension Link, Show Sub-Categories in Pending Tools, Simplify Sub-Category Storage, Add OAuth to Sign-In
 
----
+## Issues Identified
 
-## 1. Dynamic Category Intelligence for AI Extraction
+1. **Chrome extension link points to empty folder** — The link `href="/chrome-extension/"` serves a directory listing, not a downloadable file. Need to provide actual download instructions or a zip.
 
-### Problem
-The `extract-tool-info` edge function currently has no knowledge of the platform's categories or subcategories. It cannot suggest a category or subcategory for the tool.
+2. **Pending tools don't show sub-category names** — The list view (line 569 area) only shows `category_name` and `pricing` badges. Sub-category names are fetched but never displayed in the list or the review modal.
 
-### Solution
-Before calling the AI, query the database for all categories and their subcategories. Include the full category tree in the AI prompt with clear classification instructions. Add `category` and `subcategory` to the structured output.
+3. **Tools have `sub_category_id: uuid[]` (array) but should be single UUID** — Per requirements, a tool can only have ONE sub-category. The `sub_category_id` column is currently `uuid[]`, and there's a junction table `tool_sub_categories`. Need to:
+   - Migrate `sub_category_id` from `uuid[]` to a single `uuid` (nullable, FK to `sub_categories`)
+   - Drop the `tool_sub_categories` junction table
+   - Remove the `sync_tool_sub_category_id` trigger
+   - Update all frontend code that treats it as an array
+   - Update DB functions (`create_tool_edit_request`, `approve_tool_edit_request`, `get_pending_edit_requests`)
 
-**File: `supabase/functions/extract-tool-info/index.ts`**
-
-Changes:
-- Import and initialize a Supabase client inside the function
-- Query `categories` and `sub_categories` tables to build the category tree
-- Add detailed classification instructions to the system prompt, formatted as:
-```text
-Categories and their sub-categories:
-- AI Libraries: AI Agents, AI Libraries, AI Tools, GPTs, Prompt Libraries
-- Audio: AI Agent, Music Generation, Podcast, Voice Audition, Voice Over
-- Business & Finance: AI GRC, Billing, Consulting, Documentation, E-commerce, ERP, News, Planning, Supply Chain
-- Communication & Language: Content Transcribing, Culture, Learning, Translation
-- Content Creation: AI Agent, AI Checker, AI Humanizer, AI Watermarking, ...
-- Data & Analytics: Academic Research, Data Analytics, ...
-- Development & Coding: AI Agents, API Management, Coding Assistant, ...
-- HR: Assessment, ATS, Automation, Candidate Management, ...
-- Image & Designing: AI Avatar, Designing, Graphic Designing, ...
-- Marketing: Advertising, Branding, Content Marketing, ...
-... (all fetched dynamically)
-```
-
-- Add clear dropdown field instructions to the prompt:
-```text
-Classification Rules:
-- Select EXACTLY ONE category and EXACTLY ONE subcategory
-- pricing_type: "free" (completely free), "freemium" (free tier + paid), "one_time_payment" (single purchase), "subscription" (recurring), "contact" (enterprise/custom pricing)
-- free_plan: Only set for "one_time_payment" or "subscription". "Yes" if free tier/credits exist, "No" otherwise. Leave empty for other pricing types.
-- tool_type: Select all that apply from [Web App, Desktop App, Mobile App, Chrome Extension, VS Code Extension, API, CLI Tool, Plugin]
-```
-
-- Add `suggested_category` and `suggested_subcategory` to the tool-calling schema
-- Update the frontend (`SubmitTool.tsx`) to auto-select the category/subcategory if the AI suggestion matches
-
-### Frontend Update (`SubmitTool.tsx`)
-In `extractToolInfo`, after receiving data:
-- If `data.suggested_category` matches a category name, set `formData.category`
-- Filter subcategories for that category, and if `data.suggested_subcategory` matches, set `formData.subcategoryId`
+4. **OAuth buttons only shown on signup form** — The condition `mode === 'signup' && accountType !== 'employer'` (line 612) excludes sign-in mode. Should show on both.
 
 ---
 
-## 2. Chrome Extension for One-Click Submission
+## Changes Required
 
-### Problem
-Bookmarklets are hard to install and not intuitive. Users want to install a proper Chrome extension.
+### 1. Database Migration
 
-### Solution
-Create a minimal Chrome Extension (Manifest V3) that adds a browser action button. When clicked on any page, it opens the submit-tool page with the current URL.
+**Migration SQL:**
+- Add a new column `sub_category_id_single uuid` referencing `sub_categories(id)`
+- Populate it from the first element of the existing `sub_category_id` array
+- Drop the old `sub_category_id` array column
+- Rename `sub_category_id_single` to `sub_category_id`
+- Drop the `tool_sub_categories` table and its trigger `sync_tool_sub_category_id`
+- Update the `check_subcategory_deletion` function to check `tools.sub_category_id` directly
+- Update `create_tool_edit_request` to accept a single `uuid` instead of `uuid[]`
+- Update `approve_tool_edit_request` to set `sub_category_id` directly instead of managing the junction table
+- Update `get_pending_edit_requests` to return a single `sub_category_id` and join for the name
 
-**New files to create in `public/chrome-extension/`:**
+### 2. File: `src/components/AdminPendingToolsEnhanced.tsx`
 
-**`manifest.json`**:
-```json
-{
-  "manifest_version": 3,
-  "name": "AI Feed - Submit Tool",
-  "version": "1.0",
-  "description": "One-click submit AI tools to AI Feed",
-  "permissions": ["activeTab"],
-  "action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "16": "icon16.png",
-      "48": "icon48.png",
-      "128": "icon128.png"
-    }
-  },
-  "icons": {
-    "16": "icon16.png",
-    "48": "icon48.png",
-    "128": "icon128.png"
-  }
-}
-```
+- **List view (line 569 area):** Add a badge showing sub-category name after the category badge
+- **Remove junction table fetch** (lines 107-127): Instead, join sub_categories directly via `sub_category_id`
+- **Review modal (line 826-830):** Show sub-category name (it already shows `subcategory` string but should show the resolved name from the new single FK)
+- Update the `PendingTool` interface to use `sub_category_id: string | null` (single) and `sub_category_name: string | null`
 
-**`popup.html`**: A small popup with a "Submit This Tool" button and a brief description. When clicked, it gets the current tab URL and opens the submit-tool page.
+### 3. File: `src/pages/SubmitTool.tsx`
 
-**`popup.js`**: Gets current tab URL via `chrome.tabs.query`, opens `https://lovable-platform-boost.lovable.app/submit-tool?url=<encoded_url>`.
+- Update `formData.subcategoryId` handling — it's already a single string, which is correct
+- Update any code that builds `sub_category_id` as an array when submitting to Supabase — change to single value
+- Find the tool submission code and ensure it sets `sub_category_id` as a single UUID string
 
-**Icons**: Reuse existing favicons (resize from `public/favicon.png` to 16, 48, 128px).
+### 4. File: `src/components/AuthModal.tsx`
 
-### Update Bookmarklet Section (`SubmitTool.tsx`)
-Replace the bookmarklet-only UI with a section that has two options:
-1. **Chrome Extension** (primary) - Download/install instructions + link to the extension folder
-2. **Bookmarklet** (fallback) - Keep existing draggable bookmarklet
+- **Line 612:** Change condition from `mode === 'signup' && accountType !== 'employer'` to `accountType !== 'employer'` (or `(mode === 'signin' || mode === 'signup') && accountType !== 'employer'`)
+- This will show Google, LinkedIn, Discord, and GitHub buttons on both sign-in and sign-up forms
+- For sign-in mode, the `accountType` variable defaults to `'creator'`, so the employer check won't block it. Simplify to just show OAuth on sign-in always.
 
-Since Chrome extensions from outside the Chrome Web Store require developer mode, include clear instructions:
-1. Download the extension folder (provide a zip or instructions)
-2. Go to `chrome://extensions`
-3. Enable Developer Mode
-4. Click "Load unpacked" and select the folder
+### 5. File: `src/pages/SubmitTool.tsx` — Chrome Extension Link
 
----
+- **Line 716:** Replace the broken `/chrome-extension/` link with proper instructions
+- Since Chrome extensions must be loaded as unpacked folders, provide a note saying "Download all files from the chrome-extension folder" or link to individual files
+- Better approach: create a simple inline instruction that lists the files to save, or link to GitHub if available
 
-## 3. Pre-Login Background Consistency
+### 6. File: `supabase/functions/extract-tool-info/index.ts`
 
-### Problem
-Pre-login pages (Index, About, etc.) use different backgrounds than post-login pages. The `body:not(.logged-in)` CSS rule applies a light gradient, while `AnimatedBackground` adds another gradient. The logged-in pages use a different dark blue scheme.
+- Update any reference to `sub_category_id` being an array — change to single value
 
-### Solution
-Update the pre-login backgrounds to match the post-login aesthetic:
+### 7. File: `src/pages/AdminToolRequests.tsx`
 
-**File: `src/index.css`**
+- Update `EditRequest` interface: `sub_category_id` from `string[] | null` to `string | null`
+- Update sub-category enrichment logic accordingly
 
-Update the `body:not(.logged-in)` rule to use `hsl(var(--background))` instead of the separate gradient:
-```css
-body:not(.logged-in) {
-  background: hsl(var(--background));
-}
-```
+### 8. Other files referencing `tool_sub_categories` or array `sub_category_id`
 
-**File: `src/components/AnimatedBackground.tsx`**
-
-Update to match the logged-in dark mode background:
-- Light mode: Use `hsl(var(--background))` (white)
-- Dark mode: Use the same radial gradient as `body.logged-in.dark`
-
-**File: `src/pages/Index.tsx`**
-
-The Index page uses hardcoded colors like `dark:bg-[#091527]` on sections/cards. Update to use theme tokens (`bg-card`, `bg-background`) for consistency.
-
----
-
-## 4. About Page Content Fix
-
-### Problem
-The About page uses translation keys (`t('about.title')`, etc.) but none of these keys exist in the translation files. The page renders with raw keys as text.
-
-### Solution
-Two changes:
-
-**Option A (chosen): Hardcode content directly in the component** since About page content is specific to this platform and shouldn't change per locale frequently.
-
-**File: `src/pages/About.tsx`**
-
-Rewrite with actual platform content:
-- **Hero**: "About AI Feed" / "The ultimate platform for discovering, comparing, and sharing AI tools..."
-- **Mission**: Describe the platform's mission to democratize AI tool discovery
-- **Values**: Innovation (Cutting-edge AI tools), Community (Connect with AI enthusiasts), Purpose (Help people find the right AI tools), Global (AI tools from around the world)
-- **Team/Story section**: Add a "What We Offer" section with feature highlights (Tool Directory, Community, Jobs & Talent, Blog & Articles)
-- **CTA**: "Join the AI Revolution" with proper links
-- **Background**: Remove `bg-gray-50 dark:bg-gray-900` and use `bg-background` for consistency
+- Search and update all references across the codebase
 
 ---
 
@@ -165,72 +78,19 @@ Rewrite with actual platform content:
 
 | File | Action |
 |------|--------|
-| `supabase/functions/extract-tool-info/index.ts` | Modify - Add dynamic category fetching and AI classification instructions |
-| `src/pages/SubmitTool.tsx` | Modify - Auto-fill category/subcategory from AI, update bookmarklet section with Chrome extension option |
-| `public/chrome-extension/manifest.json` | Create |
-| `public/chrome-extension/popup.html` | Create |
-| `public/chrome-extension/popup.js` | Create |
-| `src/index.css` | Modify - Update pre-login background |
-| `src/components/AnimatedBackground.tsx` | Modify - Match post-login backgrounds |
-| `src/pages/Index.tsx` | Modify - Use theme tokens instead of hardcoded colors |
-| `src/pages/About.tsx` | Rewrite - Add actual content, fix background |
+| Database migration | Create — restructure `sub_category_id` column, drop junction table |
+| `src/components/AdminPendingToolsEnhanced.tsx` | Modify — show sub-category in list, simplify fetch |
+| `src/components/AuthModal.tsx` | Modify — show OAuth on sign-in mode |
+| `src/pages/SubmitTool.tsx` | Modify — fix chrome extension link, update sub-category submission |
+| `src/pages/AdminToolRequests.tsx` | Modify — update interface and enrichment |
+| `supabase/functions/extract-tool-info/index.ts` | Modify — single sub-category |
+| Other files with `tool_sub_categories` references | Modify as needed |
 
 ---
 
-## Technical Details
+## Risk Notes
 
-### Edge Function: Category Fetching
-```text
-// Inside the handler, before calling AI:
-const supabaseClient = createClient(
-  Deno.env.get('SUPABASE_URL')!,
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-);
+- The database migration changes the `sub_category_id` column type. Tools with multiple sub-categories (if any exist) will keep only the first one.
+- The `tool_sub_categories` junction table will be dropped — any code referencing it must be updated before the migration.
+- DB functions (`create_tool_edit_request`, `approve_tool_edit_request`, `get_pending_edit_requests`) must be updated in the same migration.
 
-const { data: cats } = await supabaseClient
-  .from('categories')
-  .select('name, sub_categories(name)')
-  .order('name');
-
-// Build category tree string for prompt
-const categoryTree = cats.map(c =>
-  `- ${c.name}: ${c.sub_categories.map(s => s.name).join(', ')}`
-).join('\n');
-```
-
-### Chrome Extension Popup
-```html
-<button id="submit">Submit This Tool to AI Feed</button>
-<script src="popup.js"></script>
-```
-```javascript
-document.getElementById('submit').addEventListener('click', () => {
-  chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-    const url = tabs[0].url;
-    window.open(`https://lovable-platform-boost.lovable.app/submit-tool?url=${encodeURIComponent(url)}`);
-  });
-});
-```
-
-### Auto-fill Category in SubmitTool
-```text
-// After extraction, match category
-if (data.suggested_category) {
-  const matchedCat = categories.find(c =>
-    c.name.toLowerCase() === data.suggested_category.toLowerCase()
-  );
-  if (matchedCat) {
-    setFormData(prev => ({ ...prev, category: matchedCat.name }));
-    // Then match subcategory
-    if (data.suggested_subcategory) {
-      const subs = subCategories.filter(s => s.category_id === matchedCat.id);
-      const matchedSub = subs.find(s =>
-        s.name.toLowerCase() === data.suggested_subcategory.toLowerCase()
-      );
-      if (matchedSub) {
-        setFormData(prev => ({ ...prev, subcategoryId: matchedSub.id }));
-      }
-    }
-  }
-}
-```
