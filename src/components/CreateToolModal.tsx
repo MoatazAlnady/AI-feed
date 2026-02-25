@@ -54,7 +54,7 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
     website: '',
     pricing: 'free',
     category_id: '',
-    sub_category_id: [] as string[],
+    sub_category_id: '' as string,
     features: [''],
     pros: [''],
     cons: [''],
@@ -108,7 +108,7 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
       website: '',
       pricing: 'free',
       category_id: '',
-      sub_category_id: [],
+      sub_category_id: '',
       features: [''],
       pros: [''],
       cons: [''],
@@ -141,12 +141,10 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
     }));
   };
 
-  const handleSubCategoryToggle = (subCategoryId: string) => {
+  const handleSubCategorySelect = (subCategoryId: string) => {
     setFormData(prev => ({
       ...prev,
-      sub_category_id: prev.sub_category_id.includes(subCategoryId)
-        ? prev.sub_category_id.filter(id => id !== subCategoryId)
-        : [...prev.sub_category_id, subCategoryId]
+      sub_category_id: prev.sub_category_id === subCategoryId ? '' : subCategoryId
     }));
   };
 
@@ -208,7 +206,7 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
         description: formData.description.trim(),
         website: formData.website.trim(),
         pricing: formData.pricing,
-        category_id: formData.category_id,
+        sub_category_id: formData.sub_category_id || null,
         features,
         pros,
         cons,
@@ -219,27 +217,13 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
 
       const { data: newTool, error } = await supabase
         .from('tools')
-        .insert(toolData)
+        .insert(toolData as any)
         .select()
         .single();
 
       if (error) throw error;
 
-      // Insert sub-category relationships into junction table
-      if (newTool && formData.sub_category_id.length > 0) {
-        const { error: junctionError } = await supabase
-          .from('tool_sub_categories')
-          .insert(
-            formData.sub_category_id.map(subCatId => ({
-              tool_id: newTool.id,
-              sub_category_id: subCatId
-            }))
-          );
-        
-        if (junctionError) {
-          console.error('Error inserting sub-categories:', junctionError);
-        }
-      }
+      // sub_category_id is now set directly on the tools table
 
       toast({
         title: "Success",
@@ -379,7 +363,7 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
               <Label htmlFor="category">Category * (Single Choice)</Label>
               <Select value={formData.category_id} onValueChange={(value) => {
                 handleInputChange('category_id', value);
-                setFormData(prev => ({ ...prev, sub_category_id: [] })); // Reset sub-categories when category changes
+                setFormData(prev => ({ ...prev, sub_category_id: '' })); // Reset sub-category when category changes
               }}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a category" />
@@ -402,25 +386,25 @@ const CreateToolModal: React.FC<CreateToolModalProps> = ({ isOpen, onClose, onTo
 
             {formData.category_id && availableSubCategories.length > 0 && (
               <div>
-                <Label>Sub-Categories (Multiple Choice)</Label>
-                <div className="max-h-32 overflow-y-auto border rounded-md p-2 space-y-2">
-                  {availableSubCategories.map((subCategory) => (
-                    <div key={subCategory.id} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`sub-${subCategory.id}`}
-                        checked={formData.sub_category_id.includes(subCategory.id)}
-                        onCheckedChange={() => handleSubCategoryToggle(subCategory.id)}
-                      />
-                      <label htmlFor={`sub-${subCategory.id}`} className="flex items-center gap-2 text-sm cursor-pointer">
-                        <div 
-                          className="w-2 h-2 rounded-full" 
-                          style={{ backgroundColor: subCategory.color }}
-                        />
-                        {subCategory.name}
-                      </label>
-                    </div>
-                  ))}
-                </div>
+                <Label>Sub-Category (Single Choice)</Label>
+                <Select value={formData.sub_category_id} onValueChange={(value) => setFormData(prev => ({ ...prev, sub_category_id: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a sub-category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableSubCategories.map((subCategory) => (
+                      <SelectItem key={subCategory.id} value={subCategory.id}>
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-2 h-2 rounded-full" 
+                            style={{ backgroundColor: subCategory.color }}
+                          />
+                          {subCategory.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             )}
 

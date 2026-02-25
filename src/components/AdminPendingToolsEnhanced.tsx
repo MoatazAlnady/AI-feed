@@ -104,24 +104,21 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
 
       if (usersError) throw usersError;
 
-      // Fetch subcategories from junction table
-      const toolIds = (toolsData || []).map(t => t.id);
-      let toolSubCategoriesMap = new Map<string, SubCategoryInfo[]>();
+      // Fetch subcategories directly via sub_category_id column
+      const subCatIds = (toolsData || [])
+        .map(t => (t as any).sub_category_id as string)
+        .filter(Boolean);
       
-      if (toolIds.length > 0) {
-        const { data: junctionData } = await supabase
-          .from('tool_sub_categories')
-          .select('tool_id, sub_categories(id, name, slug, color)')
-          .in('tool_id', toolIds);
+      let subCategoryMap = new Map<string, SubCategoryInfo>();
+      if (subCatIds.length > 0) {
+        const { data: subCatData } = await supabase
+          .from('sub_categories')
+          .select('id, name, slug, color')
+          .in('id', subCatIds);
         
-        if (junctionData) {
-          junctionData.forEach((item: any) => {
-            const subCat = item.sub_categories;
-            if (subCat) {
-              const existing = toolSubCategoriesMap.get(item.tool_id) || [];
-              existing.push(subCat);
-              toolSubCategoriesMap.set(item.tool_id, existing);
-            }
+        if (subCatData) {
+          subCatData.forEach((sc: any) => {
+            subCategoryMap.set(sc.id, sc);
           });
         }
       }
@@ -141,7 +138,9 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
         pricing: t?.pricing ?? '',
         category_name: categoryMap.get(t.category_id) || 'Uncategorized',
         user_name: userMap.get(t.user_id) || 'Deleted User',
-        sub_categories: toolSubCategoriesMap.get(t.id) || [],
+        sub_categories: (t as any).sub_category_id && subCategoryMap.has((t as any).sub_category_id) 
+          ? [subCategoryMap.get((t as any).sub_category_id)!] 
+          : [],
       }));
 
       console.log('Normalized pending tools data:', normalized);
@@ -567,6 +566,14 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
                           <p className="text-sm text-muted-foreground line-clamp-2">{tool.description}</p>
                           <div className="flex items-center gap-2 mt-2">
                             <Badge variant="outline">{tool.category_name}</Badge>
+                            {tool.sub_categories && tool.sub_categories.length > 0 && (
+                              <Badge variant="outline" className="text-xs" style={{ 
+                                borderColor: tool.sub_categories[0].color || undefined,
+                                color: tool.sub_categories[0].color || undefined
+                              }}>
+                                {tool.sub_categories[0].name}
+                              </Badge>
+                            )}
                             <Badge variant="secondary">{tool.pricing}</Badge>
                             <span className="text-xs text-muted-foreground">
                               by {tool.user_name} • {new Date(tool.created_at).toLocaleDateString()}
@@ -823,10 +830,17 @@ const AdminPendingToolsEnhanced: React.FC<AdminPendingToolsEnhancedProps> = ({ o
                           <dt className="basis-32 text-muted-foreground">Category</dt>
                           <dd>{selectedTool.category_name}</dd>
                         </div>
-                        {selectedTool.subcategory && (
+                        {selectedTool.sub_categories && selectedTool.sub_categories.length > 0 && (
                           <div className="flex gap-2">
                             <dt className="basis-32 text-muted-foreground">Subcategory</dt>
-                            <dd>{selectedTool.subcategory}</dd>
+                            <dd>
+                              <Badge variant="outline" style={{
+                                borderColor: selectedTool.sub_categories[0].color || undefined,
+                                color: selectedTool.sub_categories[0].color || undefined
+                              }}>
+                                {selectedTool.sub_categories[0].name}
+                              </Badge>
+                            </dd>
                           </div>
                         )}
                         <div className="flex gap-2">

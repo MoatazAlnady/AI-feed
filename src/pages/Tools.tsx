@@ -154,37 +154,37 @@ const Tools: React.FC = () => {
 
       if (categoriesError) throw categoriesError;
 
-      // Fetch subcategories from junction table for all tools
-      const toolIds = (toolsData || []).map(t => t.id);
-      let toolSubCategoriesMap = new Map<string, SubCategoryInfo[]>();
+      // Fetch subcategories directly from sub_category_id column
+      const subCatIds = (toolsData || []).map(t => (t as any).sub_category_id as string).filter(Boolean);
+      let subCategoryMap = new Map<string, SubCategoryInfo>();
       
-      if (toolIds.length > 0) {
-        const { data: junctionData } = await supabase
-          .from('tool_sub_categories')
-          .select('tool_id, sub_categories(id, name, slug, color)')
-          .in('tool_id', toolIds);
+      if (subCatIds.length > 0) {
+        const { data: subCatData } = await supabase
+          .from('sub_categories')
+          .select('id, name, slug, color')
+          .in('id', subCatIds);
         
-        if (junctionData) {
-          junctionData.forEach((item: any) => {
-            const subCat = item.sub_categories;
-            if (subCat) {
-              const existing = toolSubCategoriesMap.get(item.tool_id) || [];
-              existing.push(subCat);
-              toolSubCategoriesMap.set(item.tool_id, existing);
-            }
+        if (subCatData) {
+          subCatData.forEach((sc: any) => {
+            subCategoryMap.set(sc.id, sc);
           });
         }
       }
 
       const categoryMap = new Map(categoriesData?.map(cat => [cat.id, cat.name]) || []);
 
-      const transformedTools = (toolsData || []).map(tool => ({
-        ...tool,
-        category_name: categoryMap.get(tool.category_id) || 'Uncategorized',
-        sub_categories: toolSubCategoriesMap.get(tool.id) || [],
-        average_rating: tool.average_rating || 0,
-        review_count: tool.review_count || 0
-      }));
+      const transformedTools = (toolsData || []).map(tool => {
+        const scId = (tool as any).sub_category_id as string;
+        return {
+          ...tool,
+          category_name: categoryMap.get(tool.category_id) || 'Uncategorized',
+          sub_categories: scId && subCategoryMap.has(scId) 
+            ? [subCategoryMap.get(scId)!] 
+            : [],
+          average_rating: tool.average_rating || 0,
+          review_count: tool.review_count || 0
+        };
+      });
 
       setTools(transformedTools);
       setCategories(categoriesData || []);

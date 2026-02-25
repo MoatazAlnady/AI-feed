@@ -122,20 +122,18 @@ const ToolDetails: React.FC = () => {
         }
       }
 
-      // Fetch sub-categories from junction table
+      // Fetch sub-category directly from tools.sub_category_id
       let subCategories: SubCategoryInfo[] = [];
-      const { data: junctionData } = await supabase
-        .from('tool_sub_categories')
-        .select(`
-          sub_category_id,
-          sub_categories(id, name, slug, color)
-        `)
-        .eq('tool_id', id);
-      
-      if (junctionData) {
-        subCategories = junctionData
-          .map(item => (item as any).sub_categories)
-          .filter(Boolean);
+      if ((data as any).sub_category_id) {
+        const { data: subCatData } = await supabase
+          .from('sub_categories')
+          .select('id, name, slug, color')
+          .eq('id', (data as any).sub_category_id)
+          .single();
+        
+        if (subCatData) {
+          subCategories = [subCatData];
+        }
       }
 
       setTool({

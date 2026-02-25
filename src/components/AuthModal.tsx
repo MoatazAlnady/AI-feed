@@ -609,7 +609,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 's
           )}
 
           {/* OAuth Buttons - Hidden for employer accounts */}
-          {mode === 'signup' && accountType !== 'employer' && (
+          {accountType !== 'employer' && (
             <div className="mb-6">
               {/* Row 1: Google and LinkedIn */}
               <div className="grid grid-cols-2 gap-2 mb-2">

@@ -5548,8 +5548,8 @@ export type Database = {
           name: string
           pricing: string
           pros: string[]
-          sub_category_id: string[]
-          subcategory: string
+          sub_category_id: string
+          sub_category_name: string
           tags: string[]
           tool_id: string
           tool_name: string
